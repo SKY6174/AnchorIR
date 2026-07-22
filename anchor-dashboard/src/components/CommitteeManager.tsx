@@ -1087,10 +1087,10 @@ export default function CommitteeManager({
     });
   };
 
-  // 💡 [PDF 첨부자료 검증 및 1MB 이하 자동 압축/최적화 헬퍼 함수]
+  // 💡 [PDF 첨부자료 검증 및 2MB 이하 자동 압축/최적화 헬퍼 함수]
   // 1. 첨부자료 양식을 PDF로 제한합니다.
-  // 2. 파일 용량이 1MB(1,048,576 bytes)를 초과할 경우, 브라우저 단에서 pdf.js 및 html2pdf.js 기술을 활용해
-  //    페이지별 Canvas JPEG 렌더링 및 스케일 최적화를 적용하여 자동으로 1MB 이하로 압축한 뒤 DataURL을 반환합니다.
+  // 2. 파일 용량이 2MB(2,097,152 bytes)를 초과할 경우, 브라우저 단에서 pdf.js 및 html2pdf.js 기술을 활용해
+  //    페이지별 Canvas JPEG 렌더링 및 스케일 최적화를 적용하여 자동으로 2MB 이하로 압축한 뒤 DataURL을 반환합니다.
   const compressPdfIfNeeded = async (file) => {
     if (!file) return null;
 
@@ -1101,9 +1101,9 @@ export default function CommitteeManager({
       return null;
     }
 
-    const MAX_SIZE = 1 * 1024 * 1024; // 1MB (1,048,576 bytes)
+    const MAX_SIZE = 2 * 1024 * 1024; // 2MB (2,097,152 bytes)
 
-    // 2) 1MB 이하인 경우: 별도 압축 과정 없이 바로 DataURL 읽기
+    // 2) 2MB 이하인 경우: 별도 압축 과정 없이 원본 텍스트 레이어 포함 DataURL 읽기 (텍스트 보존)
     if (file.size <= MAX_SIZE) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1119,10 +1119,10 @@ export default function CommitteeManager({
       });
     }
 
-    // 3) 1MB 초과인 경우: pdf.js 및 html2pdf.js를 활용한 자동 최적화 압축 진행
+    // 3) 2MB 초과인 경우: pdf.js 및 html2pdf.js를 활용한 자동 최적화 압축 진행
     try {
       const origMb = (file.size / (1024 * 1024)).toFixed(2);
-      alert(`ℹ️ 업로드된 PDF 용량(${origMb}MB)이 1MB를 초과하여 자동으로 1MB 이하로 압축 최적화 후 탑재합니다. 잠시만 기다려 주세요...`);
+      alert(`ℹ️ 업로드된 PDF 용량(${origMb}MB)이 2MB를 초과하여 자동으로 2MB 이하로 압축 최적화 후 탑재합니다. 잠시만 기다려 주세요...`);
 
       // 3-1. pdf.js CDN 동적 로드
       const pdfjsLib = await new Promise((resolve, reject) => {
@@ -3973,7 +3973,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                 </div>
               </div>
 
-              {/* 💡 [회의 안건 의결 서류 파일 탑재 필드] (PDF 전용 & 1MB 자동 압축 안내) */}
+              {/* 💡 [회의 안건 의결 서류 파일 탑재 필드] (PDF 전용 & 2MB 자동 압축 안내) */}
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>의결 심의 자료 첨부 (선택)</label>
@@ -3985,7 +3985,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                     style={{ width: "100%", padding: "0.4rem", borderRadius: "6px", fontSize: "0.75rem" }}
                   />
                   <small style={{ color: "var(--text-secondary)", fontSize: "0.7rem", marginTop: "0.15rem", display: "block" }}>
-                    * pdf 확장자만 지원 (1MB 초과 시 1MB 이하로 자동 최적화 압축)
+                    * pdf 확장자만 지원 (2MB 초과 시 2MB 이하로 자동 최적화 압축)
                   </small>
                 </div>
                 <div style={{ flex: 1 }}>

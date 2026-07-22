@@ -25,3 +25,8 @@
     1. `WikiChunk`, `RAGSource`, `RAGQueryResult` 정적 인터페이스 선언 및 RAG 알고리즘 타입 어노테이션.
     2. `main.tsx` 널 가드 및 TypeScript 모듈 임포트 안전성 확보.
     3. `npm run build` 검증 결과: **0 TS Error (481ms 빌드 경과)**.
+
+- **위원회 심의자료/안건 PDF 첨부파일 허용 용량 제한 1MB ➔ 2MB 상향 조절**
+  - 원인 분석: 기존 1MB 초과 시 캔버스 JPEG 래스터화(Rasterization) 압축 과정에서 PDF 내 텍스트 레이어가 이미지화되어 글자 깨짐 및 텍스트 미출력 현상 발생.
+  - 개선 조치: `CommitteeManager.tsx` 내 PDF 용량 상한을 `2MB` (`2 * 1024 * 1024` bytes)로 확장하여 2MB 이하 PDF는 원본 텍스트 레이어 및 베터 폰트 바이너리 그대로 즉시 탑재되도록 수정. UI 안내 문구 및 경고 알림도 2MB로 완전 동기화.
+  - 빌드 검증: `npm run build` 성공 (**0 Error / 472ms**).

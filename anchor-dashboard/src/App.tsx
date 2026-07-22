@@ -761,7 +761,7 @@ function formatDataToMultiYear(data) {
             progYears[yr].budget_categories = standardCategories.map((catName) => {
               const srcCat = prog.budget_categories.find(c => c.category === catName);
               const isMatch = srcCat !== undefined;
-              
+
               let bVal = isMatch ? (srcCat.budget || 0) : 0;
               let bcVal = isMatch ? (srcCat.budget_carry || 0) : 0;
               let sVal = isMatch ? (srcCat.spent || 0) : 0;
@@ -1121,7 +1121,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
                       // 10대 비목이 기본으로 전부 포함되므로, 단순 종류 비교가 아닌 예산이 배정된 '실제 유효 비목'의 종류가 서로 일치하는지 정밀 대조합니다.
                       const hasBimokMismatch = () => {
                         if (!y || !y.budget_categories || !sy || !sy.budget_categories) return true;
-                        
+
                         const yActiveCats = y.budget_categories
                           .filter(c => {
                             const b = parseInt(String(c.budget || "0").replace(/,/g, ""), 10) || 0;
@@ -3803,7 +3803,7 @@ export default function App() {
       const ws = XLSX.utils.json_to_sheet(excelData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "진행현황");
-      
+
       const today = new Date();
       const yyyy = today.getFullYear();
       const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -9030,403 +9030,403 @@ export default function App() {
         {activeTab === "projects" && (
           <div className="projects-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
             {/* 서브탭 내비게이션 바 (프레임 밖/위에 배치) */}
-              <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
-                <button
-                  type="button"
-                  onClick={() => setProjectsSubTab("unit_system")}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    fontSize: "1rem",
-                    fontWeight: "800",
-                    cursor: "pointer",
-                    padding: "0.5rem 1rem",
-                    color: projectsSubTab === "unit_system" ? "var(--accent-color)" : "var(--text-secondary)",
-                    borderBottom: projectsSubTab === "unit_system" ? "2px solid var(--accent-color)" : "none",
-                    transition: "all 0.2s ease"
-                  }}
-                >
-                  단위과제 체계
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setProjectsSubTab("unit_status")}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    fontSize: "1rem",
-                    fontWeight: "800",
-                    cursor: "pointer",
-                    padding: "0.5rem 1rem",
-                    color: projectsSubTab === "unit_status" ? "var(--accent-color)" : "var(--text-secondary)",
-                    borderBottom: projectsSubTab === "unit_status" ? "2px solid var(--accent-color)" : "none",
-                    transition: "all 0.2s ease"
-                  }}
-                >
-                  단위과제 진행상황
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setProjectsSubTab("program_mgmt")}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    fontSize: "1rem",
-                    fontWeight: "800",
-                    cursor: "pointer",
-                    padding: "0.5rem 1rem",
-                    color: projectsSubTab === "program_mgmt" ? "var(--accent-color)" : "var(--text-secondary)",
-                    borderBottom: projectsSubTab === "program_mgmt" ? "2px solid var(--accent-color)" : "none",
-                    transition: "all 0.2s ease"
-                  }}
-                >
-                  프로그램 관리
-                </button>
-              </div>
+            <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
+              <button
+                type="button"
+                onClick={() => setProjectsSubTab("unit_system")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: projectsSubTab === "unit_system" ? "var(--accent-color)" : "var(--text-secondary)",
+                  borderBottom: projectsSubTab === "unit_system" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                단위과제 체계
+              </button>
+              <button
+                type="button"
+                onClick={() => setProjectsSubTab("unit_status")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: projectsSubTab === "unit_status" ? "var(--accent-color)" : "var(--text-secondary)",
+                  borderBottom: projectsSubTab === "unit_status" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                단위과제 진행상황
+              </button>
+              <button
+                type="button"
+                onClick={() => setProjectsSubTab("program_mgmt")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  fontSize: "1rem",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  color: projectsSubTab === "program_mgmt" ? "var(--accent-color)" : "var(--text-secondary)",
+                  borderBottom: projectsSubTab === "program_mgmt" ? "2px solid var(--accent-color)" : "none",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                프로그램 관리
+              </button>
+            </div>
 
-              {/* 본문 콘텐츠 블록만 glass-card 로 감싸주어 서브메뉴와 분리 */}
-              <div className="glass-card" style={{ padding: "1.25rem" }}>
-                {projectsSubTab === "unit_status" && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                    {/* 💡 [요구사항 반영] 파일 다운로드 내보내기 버튼 그룹 신설 */}
-                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", flexWrap: "wrap" }}>
-                      <button
-                        type="button"
-                        onClick={handleExportExcel}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.3rem",
-                          padding: "0.45rem 0.85rem",
-                          fontSize: "0.8rem",
-                          fontWeight: "700",
-                          borderRadius: "6px",
-                          background: "rgba(16, 185, 129, 0.15)",
-                          border: "1px solid rgba(16, 185, 129, 0.3)",
-                          color: "#10b981",
-                          cursor: "pointer",
-                          transition: "all 0.2s"
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
+            {/* 본문 콘텐츠 블록만 glass-card 로 감싸주어 서브메뉴와 분리 */}
+            <div className="glass-card" style={{ padding: "1.25rem" }}>
+              {projectsSubTab === "unit_status" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                  {/* 💡 [요구사항 반영] 파일 다운로드 내보내기 버튼 그룹 신설 */}
+                  <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", flexWrap: "wrap" }}>
+                    <button
+                      type="button"
+                      onClick={handleExportExcel}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        padding: "0.45rem 0.85rem",
+                        fontSize: "0.8rem",
+                        fontWeight: "700",
+                        borderRadius: "6px",
+                        background: "rgba(16, 185, 129, 0.15)",
+                        border: "1px solid rgba(16, 185, 129, 0.3)",
+                        color: "#10b981",
+                        cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
+                        e.currentTarget.style.transform = "translateY(0)";
+                      }}
+                    >
+                      <FileSpreadsheet size={14} />
+                      Excel 다운로드
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleExportPDF}
+                      disabled={isDownloadingPdf === "unit_status"}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        padding: "0.45rem 0.85rem",
+                        fontSize: "0.8rem",
+                        fontWeight: "700",
+                        borderRadius: "6px",
+                        background: "rgba(239, 68, 68, 0.15)",
+                        border: "1px solid rgba(239, 68, 68, 0.3)",
+                        color: "#ef4444",
+                        cursor: isDownloadingPdf === "unit_status" ? "not-allowed" : "pointer",
+                        transition: "all 0.2s"
+                      }}
+                      onMouseEnter={(e) => {
+                        if (isDownloadingPdf !== "unit_status") {
+                          e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
                           e.currentTarget.style.transform = "translateY(-1px)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
-                          e.currentTarget.style.transform = "translateY(0)";
-                        }}
-                      >
-                        <FileSpreadsheet size={14} />
-                        Excel 다운로드
-                      </button>
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "rgba(239, 68, 68, 0.15)";
+                        e.currentTarget.style.transform = "translateY(0)";
+                      }}
+                    >
+                      {isDownloadingPdf === "unit_status" ? (
+                        <>
+                          <div className="spinner" style={{ width: "12px", height: "12px", border: "2px solid rgba(239,68,68,0.3)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block", marginRight: "4px" }} />
+                          PDF 내보내는 중...
+                        </>
+                      ) : (
+                        <>
+                          <FileText size={14} />
+                          PDF 다운로드
+                        </>
+                      )}
+                    </button>
 
-                      <button
-                        type="button"
-                        onClick={handleExportPDF}
-                        disabled={isDownloadingPdf === "unit_status"}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.3rem",
-                          padding: "0.45rem 0.85rem",
-                          fontSize: "0.8rem",
-                          fontWeight: "700",
-                          borderRadius: "6px",
-                          background: "rgba(239, 68, 68, 0.15)",
-                          border: "1px solid rgba(239, 68, 68, 0.3)",
-                          color: "#ef4444",
-                          cursor: isDownloadingPdf === "unit_status" ? "not-allowed" : "pointer",
-                          transition: "all 0.2s"
-                        }}
-                        onMouseEnter={(e) => {
-                          if (isDownloadingPdf !== "unit_status") {
-                            e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
-                            e.currentTarget.style.transform = "translateY(-1px)";
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "rgba(239, 68, 68, 0.15)";
-                          e.currentTarget.style.transform = "translateY(0)";
-                        }}
-                      >
-                        {isDownloadingPdf === "unit_status" ? (
-                          <>
-                            <div className="spinner" style={{ width: "12px", height: "12px", border: "2px solid rgba(239,68,68,0.3)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block", marginRight: "4px" }} />
-                            PDF 내보내는 중...
-                          </>
-                        ) : (
-                          <>
-                            <FileText size={14} />
-                            PDF 다운로드
-                          </>
-                        )}
-                      </button>
+                    <button
+                      type="button"
+                      onClick={handleExportMarkdown}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        padding: "0.45rem 0.85rem",
+                        fontSize: "0.8rem",
+                        fontWeight: "700",
+                        borderRadius: "6px",
+                        background: "rgba(59, 130, 246, 0.15)",
+                        border: "1px solid rgba(59, 130, 246, 0.3)",
+                        color: "#3b82f6",
+                        cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                        e.currentTarget.style.transform = "translateY(0)";
+                      }}
+                    >
+                      <Download size={14} />
+                      Markdown 다운로드
+                    </button>
+                  </div>
 
-                      <button
-                        type="button"
-                        onClick={handleExportMarkdown}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.3rem",
-                          padding: "0.45rem 0.85rem",
-                          fontSize: "0.8rem",
-                          fontWeight: "700",
-                          borderRadius: "6px",
-                          background: "rgba(59, 130, 246, 0.15)",
-                          border: "1px solid rgba(59, 130, 246, 0.3)",
-                          color: "#3b82f6",
-                          cursor: "pointer",
-                          transition: "all 0.2s"
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
-                          e.currentTarget.style.transform = "translateY(-1px)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
-                          e.currentTarget.style.transform = "translateY(0)";
-                        }}
-                      >
-                        <Download size={14} />
-                        Markdown 다운로드
-                      </button>
-                    </div>
-
-                    <div className="table-panel">
+                  <div className="table-panel">
                     <table className="custom-table" style={{ fontSize: "0.85rem" }}>
                       <thead>
                         <tr style={{ background: "rgba(255,255,255,0.02)" }}>
-                        <th rowSpan={2} style={{ textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0.5rem", fontSize: "0.95rem" }}>단위과제</th>
-                        <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0", fontSize: "0.95rem" }}>
-                          예산 배정 및 집행 (단위: 백만원)
-                        </th>
-                        <th colSpan={5} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0", fontSize: "0.95rem" }}>
-                          프로그램 진행
-                        </th>
-                      </tr>
-                      <tr>
-                        <th style={{ fontSize: "0.88rem", textAlign: "right", paddingRight: "1rem", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>본예산</th>
-                        {selectedYear >= 2 && <th style={{ fontSize: "0.88rem", textAlign: "right", paddingRight: "1rem", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>이월예산</th>}
-                        <th style={{ fontSize: "0.88rem", textAlign: "right", paddingRight: "1rem", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>총 배정액</th>
-                        <th style={{ fontSize: "0.88rem", textAlign: "right", paddingRight: "1rem", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>누적 집행</th>
-                        <th style={{ fontSize: "0.88rem", borderRight: "1px solid var(--border-color)", textAlign: "right", paddingRight: "1rem", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>집행률</th>
-                        <th style={{ fontSize: "0.88rem", textAlign: "center", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>총 개수</th>
-                        <th style={{ fontSize: "0.88rem", textAlign: "center", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>준비</th>
-                        <th style={{ fontSize: "0.88rem", textAlign: "center", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>진행</th>
-                        <th style={{ fontSize: "0.88rem", textAlign: "center", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>완료</th>
-                        <th style={{ fontSize: "0.88rem", textAlign: "center", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>진행률</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(() => {
-                        const sortedUnits = displayProjects.flatMap((p) => p.units)
-                          .sort((a, b) => {
-                            if (a.id === "Common" || a.id === "X0") return 1;
-                            if (b.id === "Common" || b.id === "X0") return -1;
-                            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-                          });
+                          <th rowSpan={2} style={{ textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0.5rem", fontSize: "0.95rem" }}>단위과제</th>
+                          <th colSpan={selectedYear >= 2 ? 5 : 4} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", borderRight: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0", fontSize: "0.95rem" }}>
+                            예산 배정 및 집행 (단위: 백만원)
+                          </th>
+                          <th colSpan={5} style={{ textAlign: "center", borderBottom: "1px solid var(--border-color)", fontWeight: "800", color: "#10b981", background: "rgba(16, 185, 129, 0.08)", padding: "0.55rem 0", fontSize: "0.95rem" }}>
+                            프로그램 진행
+                          </th>
+                        </tr>
+                        <tr>
+                          <th style={{ fontSize: "0.88rem", textAlign: "right", paddingRight: "1rem", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>본예산</th>
+                          {selectedYear >= 2 && <th style={{ fontSize: "0.88rem", textAlign: "right", paddingRight: "1rem", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>이월예산</th>}
+                          <th style={{ fontSize: "0.88rem", textAlign: "right", paddingRight: "1rem", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>총 배정액</th>
+                          <th style={{ fontSize: "0.88rem", textAlign: "right", paddingRight: "1rem", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>누적 집행</th>
+                          <th style={{ fontSize: "0.88rem", borderRight: "1px solid var(--border-color)", textAlign: "right", paddingRight: "1rem", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>집행률</th>
+                          <th style={{ fontSize: "0.88rem", textAlign: "center", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>총 개수</th>
+                          <th style={{ fontSize: "0.88rem", textAlign: "center", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>준비</th>
+                          <th style={{ fontSize: "0.88rem", textAlign: "center", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>진행</th>
+                          <th style={{ fontSize: "0.88rem", textAlign: "center", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>완료</th>
+                          <th style={{ fontSize: "0.88rem", textAlign: "center", color: "#3b82f6", background: "rgba(16, 185, 129, 0.08)" }}>진행률</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(() => {
+                          const sortedUnits = displayProjects.flatMap((p) => p.units)
+                            .sort((a, b) => {
+                              if (a.id === "Common" || a.id === "X0") return 1;
+                              if (b.id === "Common" || b.id === "X0") return -1;
+                              return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+                            });
 
-                        // 합계 집계용 변수들
-                        let sumBudgetMain = 0;
-                        let sumBudgetCarry = 0;
-                        let sumTotalBudget = 0;
-                        let sumTotalSpent = 0;
-                        let sumTotalPrograms = 0;
-                        let sumReadyCount = 0;
-                        let sumInProgressCount = 0;
-                        let sumCompletedCount = 0;
-                        let sumTotalProgressSum = 0;
+                          // 합계 집계용 변수들
+                          let sumBudgetMain = 0;
+                          let sumBudgetCarry = 0;
+                          let sumTotalBudget = 0;
+                          let sumTotalSpent = 0;
+                          let sumTotalPrograms = 0;
+                          let sumReadyCount = 0;
+                          let sumInProgressCount = 0;
+                          let sumCompletedCount = 0;
+                          let sumTotalProgressSum = 0;
 
-                        sortedUnits.forEach((u) => {
-                          const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
-                          const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
-                          const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
+                          sortedUnits.forEach((u) => {
+                            const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+                            const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
+                            const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
 
-                          sumBudgetMain += (yData.budget_main || 0);
-                          sumBudgetCarry += budgetCarryVal;
-                          sumTotalBudget += ((yData.budget_main || 0) + budgetCarryVal);
-                          sumTotalSpent += ((yData.spent_main || 0) + spentCarryVal);
+                            sumBudgetMain += (yData.budget_main || 0);
+                            sumBudgetCarry += budgetCarryVal;
+                            sumTotalBudget += ((yData.budget_main || 0) + budgetCarryVal);
+                            sumTotalSpent += ((yData.spent_main || 0) + spentCarryVal);
 
-                          if (u.id !== "Common" && u.id !== "X0") {
-                            const totalProgs = u.programs?.length || 0;
-                            sumTotalPrograms += totalProgs;
+                            if (u.id !== "Common" && u.id !== "X0") {
+                              const totalProgs = u.programs?.length || 0;
+                              sumTotalPrograms += totalProgs;
 
-                            if (totalProgs > 0) {
-                              u.programs.forEach((prog) => {
-                                const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
-                                const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
-                                const progProgress = (completedSteps / 4) * 100;
-                                sumTotalProgressSum += progProgress;
-
-                                if (completedSteps === 0) {
-                                  sumReadyCount++;
-                                } else if (completedSteps === 4) {
-                                  sumCompletedCount++;
-                                } else {
-                                  sumInProgressCount++;
-                                }
-                              });
-                            }
-                          }
-                        });
-
-                        const sumRate = sumTotalBudget > 0 ? (sumTotalSpent / sumTotalBudget) * 100 : 0;
-                        const sumProgressRate = sumTotalPrograms > 0 ? (sumTotalProgressSum / sumTotalPrograms) : 0;
-
-                        return (
-                          <>
-                            {sortedUnits.map((u) => {
-                              const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
-                              const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
-                              const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
-                              const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
-                              const totalSpent = (yData.spent_main || 0) + spentCarryVal;
-                              const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
-
-                              // 프로그램 현황 집계 변수들
-                              const totalPrograms = u.programs?.length || 0;
-                              let readyCount = 0;
-                              let inProgressCount = 0;
-                              let completedCount = 0;
-                              let totalProgressSum = 0;
-
-                              if (totalPrograms > 0) {
+                              if (totalProgs > 0) {
                                 u.programs.forEach((prog) => {
                                   const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
                                   const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
                                   const progProgress = (completedSteps / 4) * 100;
-                                  totalProgressSum += progProgress;
+                                  sumTotalProgressSum += progProgress;
 
                                   if (completedSteps === 0) {
-                                    readyCount++;
+                                    sumReadyCount++;
                                   } else if (completedSteps === 4) {
-                                    completedCount++;
+                                    sumCompletedCount++;
                                   } else {
-                                    inProgressCount++;
+                                    sumInProgressCount++;
                                   }
                                 });
                               }
-                              const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
+                            }
+                          });
 
-                              return (
-                                <tr
-                                  key={u.id}
-                                  onClick={() => {
-                                    setSelectedUnitId(u.id);
-                                    setSelectedProgId(null);
-                                    setProjectsSubTab("program_mgmt"); // 단위과제 클릭 시 프로그램 관리 탭으로 연계 이동
-                                  }}
-                                  style={{
-                                    cursor: "pointer",
-                                    background: selectedUnitId === u.id ? "rgba(59, 130, 246, 0.15)" : "transparent",
-                                    transition: "background 0.2s"
-                                  }}
-                                >
-                                  <td style={{ fontWeight: "700", borderRight: "1px solid var(--border-color)" }}>
-                                    {u.id === "Common" ? "" : `${u.id}. `}{u.title}
-                                  </td>
-                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                    {formatToMillionWon(yData.budget_main)}
-                                  </td>
-                                  {selectedYear >= 2 && (
-                                    <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                      {formatToMillionWon(budgetCarryVal)}
+                          const sumRate = sumTotalBudget > 0 ? (sumTotalSpent / sumTotalBudget) * 100 : 0;
+                          const sumProgressRate = sumTotalPrograms > 0 ? (sumTotalProgressSum / sumTotalPrograms) : 0;
+
+                          return (
+                            <>
+                              {sortedUnits.map((u) => {
+                                const yData = u.years?.[selectedYear] || { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
+                                const budgetCarryVal = selectedYear === 1 ? 0 : (yData.budget_carry || 0);
+                                const spentCarryVal = selectedYear === 1 ? 0 : (yData.spent_carry || 0);
+                                const totalBudget = (yData.budget_main || 0) + budgetCarryVal;
+                                const totalSpent = (yData.spent_main || 0) + spentCarryVal;
+                                const rate = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+
+                                // 프로그램 현황 집계 변수들
+                                const totalPrograms = u.programs?.length || 0;
+                                let readyCount = 0;
+                                let inProgressCount = 0;
+                                let completedCount = 0;
+                                let totalProgressSum = 0;
+
+                                if (totalPrograms > 0) {
+                                  u.programs.forEach((prog) => {
+                                    const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
+                                    const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
+                                    const progProgress = (completedSteps / 4) * 100;
+                                    totalProgressSum += progProgress;
+
+                                    if (completedSteps === 0) {
+                                      readyCount++;
+                                    } else if (completedSteps === 4) {
+                                      completedCount++;
+                                    } else {
+                                      inProgressCount++;
+                                    }
+                                  });
+                                }
+                                const progressRate = totalPrograms > 0 ? (totalProgressSum / totalPrograms) : 0;
+
+                                return (
+                                  <tr
+                                    key={u.id}
+                                    onClick={() => {
+                                      setSelectedUnitId(u.id);
+                                      setSelectedProgId(null);
+                                      setProjectsSubTab("program_mgmt"); // 단위과제 클릭 시 프로그램 관리 탭으로 연계 이동
+                                    }}
+                                    style={{
+                                      cursor: "pointer",
+                                      background: selectedUnitId === u.id ? "rgba(59, 130, 246, 0.15)" : "transparent",
+                                      transition: "background 0.2s"
+                                    }}
+                                  >
+                                    <td style={{ fontWeight: "700", borderRight: "1px solid var(--border-color)" }}>
+                                      {u.id === "Common" ? "" : `${u.id}. `}{u.title}
                                     </td>
-                                  )}
-                                  <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", textAlign: "right", paddingRight: "1rem" }}>
-                                    {formatToMillionWon(totalBudget)}
-                                  </td>
-                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                    {formatToMillionWon(totalSpent)}
-                                  </td>
-                                  <td style={{ borderRight: "1px solid var(--border-color)", fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                    {rate.toFixed(1)}%
-                                  </td>
-                                  {u.id === "Common" || u.id === "X0" ? (
-                                    <>
-                                      <td style={{ textAlign: "center" }}>-</td>
-                                      <td style={{ textAlign: "center" }}>-</td>
-                                      <td style={{ textAlign: "center" }}>-</td>
-                                      <td style={{ textAlign: "center" }}>-</td>
-                                      <td>-</td>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
-                                        {totalPrograms}개
-                                      </td>
-                                      <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary)" }}>
-                                        {readyCount}
-                                      </td>
-                                      <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
-                                        {inProgressCount}
-                                      </td>
-                                      <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "700" }}>
-                                        {completedCount}
-                                      </td>
+                                    <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                      {formatToMillionWon(yData.budget_main)}
+                                    </td>
+                                    {selectedYear >= 2 && (
                                       <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.4rem" }}>
-                                          <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
-                                            <div style={{ width: `${Math.min(progressRate, 100)}%`, height: "100%", background: "#10b981" }} />
-                                          </div>
-                                          <span style={{ fontSize: "0.8rem", fontFamily: "var(--font-data)", fontWeight: "700", color: "#10b981" }}>{progressRate.toFixed(1)}%</span>
-                                        </div>
+                                        {formatToMillionWon(budgetCarryVal)}
                                       </td>
-                                    </>
-                                  )}
-                                </tr>
-                              );
-                            })}
-                            {/* 합계 행 추가 */}
-                            <tr style={{ background: "rgba(59, 130, 246, 0.08)", fontWeight: "800", borderTop: "2px solid var(--border-color)" }}>
-                              <td style={{ fontWeight: "800", borderRight: "1px solid var(--border-color)", textAlign: "center" }}>
-                                합계
-                              </td>
-                              <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                {formatToMillionWon(sumBudgetMain)}
-                              </td>
-                              {selectedYear >= 2 && (
-                                <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                  {formatToMillionWon(sumBudgetCarry)}
+                                    )}
+                                    <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", textAlign: "right", paddingRight: "1rem" }}>
+                                      {formatToMillionWon(totalBudget)}
+                                    </td>
+                                    <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                      {formatToMillionWon(totalSpent)}
+                                    </td>
+                                    <td style={{ borderRight: "1px solid var(--border-color)", fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                      {rate.toFixed(1)}%
+                                    </td>
+                                    {u.id === "Common" || u.id === "X0" ? (
+                                      <>
+                                        <td style={{ textAlign: "center" }}>-</td>
+                                        <td style={{ textAlign: "center" }}>-</td>
+                                        <td style={{ textAlign: "center" }}>-</td>
+                                        <td style={{ textAlign: "center" }}>-</td>
+                                        <td>-</td>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
+                                          {totalPrograms}개
+                                        </td>
+                                        <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary)" }}>
+                                          {readyCount}
+                                        </td>
+                                        <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
+                                          {inProgressCount}
+                                        </td>
+                                        <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "700" }}>
+                                          {completedCount}
+                                        </td>
+                                        <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                          <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.4rem" }}>
+                                            <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                              <div style={{ width: `${Math.min(progressRate, 100)}%`, height: "100%", background: "#10b981" }} />
+                                            </div>
+                                            <span style={{ fontSize: "0.8rem", fontFamily: "var(--font-data)", fontWeight: "700", color: "#10b981" }}>{progressRate.toFixed(1)}%</span>
+                                          </div>
+                                        </td>
+                                      </>
+                                    )}
+                                  </tr>
+                                );
+                              })}
+                              {/* 합계 행 추가 */}
+                              <tr style={{ background: "rgba(59, 130, 246, 0.08)", fontWeight: "800", borderTop: "2px solid var(--border-color)" }}>
+                                <td style={{ fontWeight: "800", borderRight: "1px solid var(--border-color)", textAlign: "center" }}>
+                                  합계
                                 </td>
-                              )}
-                              <td style={{ fontFamily: "var(--font-data)", fontWeight: "800", textAlign: "right", paddingRight: "1rem", color: "var(--accent-color)" }}>
-                                {formatToMillionWon(sumTotalBudget)}
-                              </td>
-                              <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                {formatToMillionWon(sumTotalSpent)}
-                              </td>
-                              <td style={{ borderRight: "1px solid var(--border-color)", fontFamily: "var(--font-data)", fontWeight: "800", textAlign: "right", paddingRight: "1rem" }}>
-                                {sumRate.toFixed(1)}%
-                              </td>
-                              <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
-                                {sumTotalPrograms}개
-                              </td>
-                              <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary)" }}>
-                                {sumReadyCount}
-                              </td>
-                              <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
-                                {sumInProgressCount}
-                              </td>
-                              <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "800" }}>
-                                {sumCompletedCount}
-                              </td>
-                              <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
-                                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.4rem" }}>
-                                  <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
-                                    <div style={{ width: `${Math.min(sumProgressRate, 100)}%`, height: "100%", background: "#10b981" }} />
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                  {formatToMillionWon(sumBudgetMain)}
+                                </td>
+                                {selectedYear >= 2 && (
+                                  <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                    {formatToMillionWon(sumBudgetCarry)}
+                                  </td>
+                                )}
+                                <td style={{ fontFamily: "var(--font-data)", fontWeight: "800", textAlign: "right", paddingRight: "1rem", color: "var(--accent-color)" }}>
+                                  {formatToMillionWon(sumTotalBudget)}
+                                </td>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                  {formatToMillionWon(sumTotalSpent)}
+                                </td>
+                                <td style={{ borderRight: "1px solid var(--border-color)", fontFamily: "var(--font-data)", fontWeight: "800", textAlign: "right", paddingRight: "1rem" }}>
+                                  {sumRate.toFixed(1)}%
+                                </td>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center" }}>
+                                  {sumTotalPrograms}개
+                                </td>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--text-secondary)" }}>
+                                  {sumReadyCount}
+                                </td>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "#f59e0b" }}>
+                                  {sumInProgressCount}
+                                </td>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "center", color: "var(--success-color)", fontWeight: "800" }}>
+                                  {sumCompletedCount}
+                                </td>
+                                <td style={{ fontFamily: "var(--font-data)", textAlign: "right", paddingRight: "1rem" }}>
+                                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.4rem" }}>
+                                    <div style={{ width: "40px", height: "6px", background: "rgba(255,255,255,0.1)", borderRadius: "3px", overflow: "hidden" }}>
+                                      <div style={{ width: `${Math.min(sumProgressRate, 100)}%`, height: "100%", background: "#10b981" }} />
+                                    </div>
+                                    <span style={{ fontSize: "0.8rem", fontFamily: "var(--font-data)", fontWeight: "800", color: "#10b981" }}>{sumProgressRate.toFixed(1)}%</span>
                                   </div>
-                                  <span style={{ fontSize: "0.8rem", fontFamily: "var(--font-data)", fontWeight: "800", color: "#10b981" }}>{sumProgressRate.toFixed(1)}%</span>
-                                </div>
-                              </td>
-                            </tr>
-                          </>
-                        );
-                      })()}
-                    </tbody>
-                  </table>
-                </div>
+                                </td>
+                              </tr>
+                            </>
+                          );
+                        })()}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
 
@@ -9454,13 +9454,13 @@ export default function App() {
                   />
                 </div>
               )}
-              </div>
             </div>
+          </div>
         )}
 
         {activeTab === "management" && currentRole && (
           <div className="management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-            
+
             {/* 서브탭 내비게이션 바 (프레임 밖/위에 배치, 0.5rem 마진 및 1rem 폰트) */}
             <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.8rem", marginBottom: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
               {/* 1. 승인처리 탭 노출 가드 (최고 관리자군 또는 특화 승인권자) */}
@@ -9724,953 +9724,953 @@ export default function App() {
                 </div>
               )}
 
-            {mgmtSubTab === "members" && (
-              <div>
-                {/* 참여중 / 미참여 구분을 위한 삼분할 필터 바 */}
-                <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
-                  <button
-                    onClick={() => setMemberFilter("all")}
-                    style={{
-                      padding: "0.35rem 0.75rem",
-                      fontSize: "0.75rem",
-                      borderRadius: "0.25rem",
-                      border: memberFilter === "all" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
-                      background: memberFilter === "all" ? "rgba(59,130,246,0.15)" : "transparent",
-                      color: memberFilter === "all" ? "var(--accent-color)" : "var(--text-secondary)",
-                      cursor: "pointer",
-                      fontWeight: "700",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    전체 ({members.length}명)
-                  </button>
-                  <button
-                    onClick={() => setMemberFilter("active")}
-                    style={{
-                      padding: "0.35rem 0.75rem",
-                      fontSize: "0.75rem",
-                      borderRadius: "0.25rem",
-                      border: memberFilter === "active" ? "1px solid var(--success-color)" : "1px solid var(--border-color)",
-                      background: memberFilter === "active" ? "rgba(16,185,129,0.15)" : "transparent",
-                      color: memberFilter === "active" ? "var(--success-color)" : "var(--text-secondary)",
-                      cursor: "pointer",
-                      fontWeight: "700",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    참여중 ({members.filter(m => getMemberStatusForYear(m, selectedYear) !== "미참여").length}명)
-                  </button>
-                  <button
-                    onClick={() => setMemberFilter("retired")}
-                    style={{
-                      padding: "0.35rem 0.75rem",
-                      fontSize: "0.75rem",
-                      borderRadius: "0.25rem",
-                      border: memberFilter === "retired" ? "1px solid #ef4444" : "1px solid var(--border-color)",
-                      background: memberFilter === "retired" ? "rgba(239,68,68,0.15)" : "transparent",
-                      color: memberFilter === "retired" ? "#ef4444" : "var(--text-secondary)",
-                      cursor: "pointer",
-                      fontWeight: "700",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    미참여 ({members.filter(m => getMemberStatusForYear(m, selectedYear) === "미참여").length}명)
-                  </button>
-                </div>
-
-                <div className="table-panel">
-                  <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%" }}>
-                    <thead>
-                      <tr>
-                        <th
-                          onClick={() => requestMemberSort("dept")}
-                          style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-                          onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
-                          onMouseLeave={(e) => e.target.style.color = ""}
-                        >
-                          소속 부서 {memberSortConfig.key === "dept" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
-                        </th>
-                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>성명</th>
-                        <th
-                          onClick={() => requestMemberSort("role")}
-                          style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-                          onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
-                          onMouseLeave={(e) => e.target.style.color = ""}
-                        >
-                          직책 {memberSortConfig.key === "role" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
-                        </th>
-                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>직급/직위</th>
-                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>이메일</th>
-                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>교내 전화</th>
-                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>휴대전화</th>
-                        <th
-                          onClick={() => requestMemberSort("startDate")}
-                          style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-                          onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
-                          onMouseLeave={(e) => e.target.style.color = ""}
-                        >
-                          시작일 {memberSortConfig.key === "startDate" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
-                        </th>
-                        <th style={{ textAlign: "center", verticalAlign: "middle" }}>종료일</th>
-                        <th
-                          onClick={() => requestMemberSort("status")}
-                          style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-                          onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
-                          onMouseLeave={(e) => e.target.style.color = ""}
-                        >
-                          참여 여부 {memberSortConfig.key === "status" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
-                        </th>
-                        {currentRole.rank <= 2 && <th style={{ textAlign: "center", verticalAlign: "middle" }}>관리</th>}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {getSortedMembers().map((m) => {
-                        const isRetired = getMemberStatusForYear(m, selectedYear) === "미참여";
-                        return (
-                          <tr
-                            key={m.id}
-                            style={{
-                              opacity: isRetired ? 0.45 : 1,
-                              background: isRetired ? "rgba(255, 255, 255, 0.01)" : "transparent",
-                              transition: "all 0.2s"
-                            }}
-                          >
-                            <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{m.dept}</td>
-                            <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "800", color: isRetired ? "var(--text-secondary)" : "var(--text-primary)" }}>{m.name}</td>
-                            <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                              {renderRoleBadge(m.role, isRetired)}
-                            </td>
-                            <td style={{ textAlign: "center", verticalAlign: "middle" }}>{m.grade}</td>
-                            <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.email}</td>
-                            <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.phoneOffice || "-"}</td>
-                            <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.phoneMobile || "-"}</td>
-                            <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.startDate || m.hireDate || "-"}</td>
-                            <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.endDate || "-"}</td>
-                            <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                              <span
-                                className={`badge ${isRetired ? "badge-red" : "badge-green"
-                                  }`}
-                                style={{
-                                  fontSize: "0.65rem",
-                                  background: isRetired ? "rgba(239, 68, 68, 0.15)" : undefined,
-                                  color: isRetired ? "#f87171" : undefined
-                                }}
-                              >
-                                {getMemberStatusForYear(m, selectedYear)}
-                              </span>
-                            </td>
-                            {currentRole.rank <= 2 && (
-                              <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                                <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center", alignItems: "center" }}>
-                                  <button
-                                    className="btn-primary"
-                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.25rem", background: "rgba(59,130,246,0.15)", border: "1px solid var(--accent-color)", color: "#60a5fa" }}
-                                    onClick={() => {
-                                      setEditingMember(m);
-                                      setIsMemberModalOpen(true);
-                                    }}
-                                  >
-                                    수정
-                                  </button>
-                                  <button
-                                    className="btn-primary"
-                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.25rem", background: "rgba(239,68,68,0.15)", border: "1px solid #ef4444", color: "#f87171" }}
-                                    onClick={async () => {
-                                      if (window.confirm(`정말 ${m.name} 구성원을 삭제하시겠습니까?`)) {
-                                        setMembers(members.filter((item) => item.id !== m.id));
-                                        try {
-                                          const { error } = await supabase
-                                            .from("rise_members")
-                                            .delete()
-                                            .eq("id", m.id);
-                                          if (error) throw error;
-                                        } catch (err) {
-                                          console.error("Failed to delete member from DB:", err);
-                                        }
-                                      }
-                                    }}
-                                  >
-                                    삭제
-                                  </button>
-                                </div>
-                              </td>
-                            )}
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {mgmtSubTab === "programs" && (
-              <div>
-                <div style={{ marginBottom: "1.2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
-                    <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>단위과제 필터:</span>
-                    <select
-                      className="user-selector"
-                      value={assignFilterUnitId}
-                      onChange={(e) => setAssignFilterUnitId(e.target.value)}
+              {mgmtSubTab === "members" && (
+                <div>
+                  {/* 참여중 / 미참여 구분을 위한 삼분할 필터 바 */}
+                  <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
+                    <button
+                      onClick={() => setMemberFilter("all")}
                       style={{
-                        padding: "0.3rem 0.6rem",
-                        fontSize: "0.78rem",
+                        padding: "0.35rem 0.75rem",
+                        fontSize: "0.75rem",
                         borderRadius: "0.25rem",
-                        background: "var(--panel-bg)",
-                        border: "1px solid var(--border-color)",
-                        color: "var(--text-primary)",
-                        outline: "none",
-                        width: "280px",
-                        textOverflow: "ellipsis"
+                        border: memberFilter === "all" ? "1px solid var(--accent-color)" : "1px solid var(--border-color)",
+                        background: memberFilter === "all" ? "rgba(59,130,246,0.15)" : "transparent",
+                        color: memberFilter === "all" ? "var(--accent-color)" : "var(--text-secondary)",
+                        cursor: "pointer",
+                        fontWeight: "700",
+                        transition: "all 0.2s"
                       }}
                     >
-                      <option value="all" style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>전체 단위과제</option>
-                      {displayProjects.flatMap((p) => p.units)
-                        .sort((a, b) => {
-                          if (a.id === "Common" || a.id === "X0") return 1;
-                          if (b.id === "Common" || b.id === "X0") return -1;
-                          return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-                        })
-                        .map((u) => (
-                          <option key={u.id} value={u.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
-                        ))}
-                    </select>
+                      전체 ({members.length}명)
+                    </button>
+                    <button
+                      onClick={() => setMemberFilter("active")}
+                      style={{
+                        padding: "0.35rem 0.75rem",
+                        fontSize: "0.75rem",
+                        borderRadius: "0.25rem",
+                        border: memberFilter === "active" ? "1px solid var(--success-color)" : "1px solid var(--border-color)",
+                        background: memberFilter === "active" ? "rgba(16,185,129,0.15)" : "transparent",
+                        color: memberFilter === "active" ? "var(--success-color)" : "var(--text-secondary)",
+                        cursor: "pointer",
+                        fontWeight: "700",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      참여중 ({members.filter(m => getMemberStatusForYear(m, selectedYear) !== "미참여").length}명)
+                    </button>
+                    <button
+                      onClick={() => setMemberFilter("retired")}
+                      style={{
+                        padding: "0.35rem 0.75rem",
+                        fontSize: "0.75rem",
+                        borderRadius: "0.25rem",
+                        border: memberFilter === "retired" ? "1px solid #ef4444" : "1px solid var(--border-color)",
+                        background: memberFilter === "retired" ? "rgba(239,68,68,0.15)" : "transparent",
+                        color: memberFilter === "retired" ? "#ef4444" : "var(--text-secondary)",
+                        cursor: "pointer",
+                        fontWeight: "700",
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      미참여 ({members.filter(m => getMemberStatusForYear(m, selectedYear) === "미참여").length}명)
+                    </button>
                   </div>
-                  {currentRole.rank <= 2 && (
-                    <div style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
-                      <label
-                        className="action-btn upload-btn"
-                        style={{
-                          cursor: "pointer",
-                          margin: 0
-                        }}
-                      >
-                        <Upload size={16} /> 엑셀 업로드
-                        <input type="file" accept=".xlsx, .xls" style={{ display: "none" }} ref={fileInputRef} onChange={handleUploadExcel} />
-                      </label>
-                      <button
-                        onClick={handleDownloadExcel}
-                        className="action-btn download-btn"
-                        style={{
-                          background: "var(--bg-tertiary)",
-                          cursor: "pointer"
-                        }}
-                      >
-                        <Download size={16} /> 엑셀 다운로드
-                      </button>
-                      <button
-                        onClick={handleOpenAddProgram}
-                        className="action-btn"
-                        style={{
-                          padding: "0.5rem 1.2rem",
-                          background: "var(--accent-color)",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "9999px",
-                          fontSize: "0.85rem",
-                          fontWeight: "700",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.3rem"
-                        }}
-                      >
-                        <Plus size={16} /> 신규 프로그램
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
-                  * 실무 연구원으로 등록된 구성원(직책: 연구원)만 프로그램 담당연구원 목록으로 매핑됩니다.
-                </p>
-                <div className="table-panel">
-                  <table className="custom-table" style={{ fontSize: "0.8rem", tableLayout: "fixed", width: "100%" }}>
-                    <thead>
-                      <tr>
-                        <th rowSpan={2} style={{ width: "18%", textAlign: "center", verticalAlign: "middle" }}>단위과제</th>
-                        <th rowSpan={2} style={{ width: "9%", textAlign: "center", verticalAlign: "middle" }}>프로그램 ID</th>
-                        <th rowSpan={2} style={{ width: "22%", textAlign: "center", verticalAlign: "middle" }}>프로그램명</th>
-                        <th rowSpan={2} style={{ width: "10%", textAlign: "center", verticalAlign: "middle" }}>담당부서</th>
-                        <th rowSpan={2} style={{ width: "19%", textAlign: "center", verticalAlign: "middle" }}>담당연구원</th>
-                        <th colSpan={4} style={{ textAlign: "center", width: "15%", verticalAlign: "middle" }}>진행 단계(PDCA)</th>
-                        <th rowSpan={2} style={{ width: "7%", textAlign: "center", verticalAlign: "middle" }}>작업</th>
-                      </tr>
-                      <tr>
-                        <th style={{ textAlign: "center", width: "3.75%" }}>P</th>
-                        <th style={{ textAlign: "center", width: "3.75%" }}>D</th>
-                        <th style={{ textAlign: "center", width: "3.75%" }}>C</th>
-                        <th style={{ textAlign: "center", width: "3.75%" }}>A</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {displayProjects.flatMap((p) => p.units)
-                        .filter((u) => assignFilterUnitId === "all" || u.id === assignFilterUnitId)
-                        .sort((a, b) => {
-                          if (a.id === "Common" || a.id === "X0") return 1;
-                          if (b.id === "Common" || b.id === "X0") return -1;
-                          return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
-                        })
-                        .flatMap((u) => {
-                          return u.programs.map((prog) => {
-                            let dept = "사업운영팀";
-                            if (selectedYear === 1) {
-                              if (["A1", "A2", "D4"].includes(u.id)) dept = "ECC센터";
-                              else if (["B1", "C1", "C3"].includes(u.id)) dept = "ICC센터";
-                              else if (["B2", "B3", "D1", "D3"].includes(u.id)) dept = "RCC센터";
-                              else if (u.id === "C2") dept = "AID-X지원센터";
-                              else if (u.id === "D2") dept = "울산늘봄누리센터";
-                            } else {
-                              if (["A1가", "A2", "A3"].includes(u.id)) dept = "ECC센터";
-                              else if (u.id === "A1나") dept = "신산업특화센터";
-                              else if (["B1", "B3", "B4"].includes(u.id)) dept = "ICC센터";
-                              else if (u.id === "B2") dept = "AID-X지원센터";
-                              else if (u.id === "C2") dept = "울산늘봄누리센터";
-                              else if (["C1", "D1", "D2", "D3"].includes(u.id)) dept = "RCC센터";
-                            }
 
-                            return (
-                              <tr key={prog.id}>
-                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", wordBreak: "break-all" }}>{u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`}</td>
-                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
-                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", wordBreak: "break-all" }}>{prog.title}</td>
-                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--accent-color)", fontWeight: "700" }}>{dept}</td>
-                                <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                  {currentRole.rank <= 2 ? (
-                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", alignItems: "center", justifyContent: "center" }}>
-                                      {/* 공동배정 체크박스 */}
-                                      <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", cursor: "pointer", color: "var(--text-secondary)" }}>
-                                        <input
-                                          type="checkbox"
-                                          checked={!!jointPrograms[prog.id]}
-                                          onChange={(e) => {
-                                            const isChecked = e.target.checked;
-                                            setJointPrograms(prev => ({ ...prev, [prog.id]: isChecked }));
-
-                                            // 체크 해제 시에는 단일 연구원으로 변경할 수 있도록 현재 값의 첫 번째 연구원을 기본값으로 넘김
-                                            if (!isChecked) {
-                                              const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                              const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
-                                              handleAssignChange(u.id, prog.id, parts[0] || "");
-                                            }
-                                          }}
-                                        />
-                                        2인 공동배정
-                                      </label>
-
-                                      {jointPrograms[prog.id] ? (
-                                        <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexWrap: "wrap" }}>
-                                          {/* 정 담당자 선택 */}
-                                          <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
-                                            <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "700" }}>정:</span>
-                                            <select
-                                              className="user-selector"
-                                              style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
-                                              value={(() => {
-                                                const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
-                                                return parts[0] || "";
-                                              })()}
-                                              onChange={(e) => {
-                                                const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
-                                                const first = e.target.value;
-                                                const second = parts[1] || "";
-                                                const combined = second ? `${first}, ${second}` : first;
-                                                handleAssignChange(u.id, prog.id, combined);
-                                              }}
-                                            >
-                                              <option value="">선택</option>
-                                              {members
-                                                .filter((m) => m.role === "연구원" && m.dept === dept)
-                                                .map((m) => (
-                                                  <option key={m.id} value={`${m.name} ${m.grade}`}>
-                                                    {m.name} {m.grade}
-                                                  </option>
-                                                ))}
-                                            </select>
-                                          </div>
-                                          {/* 부 담당자 선택 */}
-                                          <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
-                                            <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "700" }}>부:</span>
-                                            <select
-                                              className="user-selector"
-                                              style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
-                                              value={(() => {
-                                                const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
-                                                return parts[1] || "";
-                                              })()}
-                                              onChange={(e) => {
-                                                const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
-                                                const first = parts[0] || "";
-                                                const second = e.target.value;
-                                                const combined = second ? `${first}, ${second}` : first;
-                                                handleAssignChange(u.id, prog.id, combined);
-                                              }}
-                                            >
-                                              <option value="">선택</option>
-                                              {members
-                                                .filter((m) => m.role === "연구원" && m.dept === dept)
-                                                .map((m) => (
-                                                  <option key={m.id} value={`${m.name} ${m.grade}`}>
-                                                    {m.name} {m.grade}
-                                                  </option>
-                                                ))}
-                                            </select>
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        /* 단일 배정 드롭다운 */
-                                        <select
-                                          className="user-selector"
-                                          style={{ width: "200px", padding: "0.2rem 0.4rem", fontSize: "0.75rem" }}
-                                          value={prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "")}
-                                          onChange={(e) => handleAssignChange(u.id, prog.id, e.target.value)}
-                                        >
-                                          <option value="">미배정</option>
-                                          {members
-                                            .filter((m) => {
-                                              if (m.role !== "연구원") return false;
-                                              const currentAssignee = prog.assignees?.[selectedYear] || prog.assignee || "";
-                                              const isCurrent = currentAssignee === `${m.name} ${m.grade}`;
-                                              const isDeptMatch = m.dept === dept;
-                                              if (!isCurrent && !isDeptMatch) return false;
-
-                                              const startYear = 2024 + selectedYear;
-                                              const endYear = 2025 + selectedYear;
-                                              const yearStart = new Date(`${startYear}-03-01T00:00:00`);
-                                              const yearEnd = new Date(`${endYear}-02-28T23:59:59`);
-
-                                              const mStartStr = m.startDate || m.hireDate || "2025-03-01";
-                                              const mStartDate = new Date(mStartStr);
-                                              if (mStartDate > yearEnd) return false;
-
-                                              if (m.endDate) {
-                                                const mEndDate = new Date(m.endDate);
-                                                if (mEndDate < yearStart) return false;
-                                              }
-                                              return true;
-                                            })
-                                            .map((m) => (
-                                              <option key={m.id} value={`${m.name} ${m.grade}`}>
-                                                {m.name} {m.grade} ({m.dept})
-                                              </option>
-                                            ))}
-                                        </select>
-                                      )}
-                                    </div>
-                                  ) : (
-                                    <span>{formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}</span>
-                                  )}
-                                </td>
-                                <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>
-                                <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.d === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.d}</td>
-                                <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.c === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.c}</td>
-                                <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.a === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.a}</td>
-                                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                                  {currentRole.rank <= 2 ? (
-                                    <button
-                                      className="btn-primary"
-                                      style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", lineHeight: "1.2", whiteSpace: "normal" }}
-                                      onClick={() => {
-                                        setSelectedUnitId(u.id);
-                                        setSelectedProgId(prog.id);
-                                        setActiveTab("projects");
-                                        setTimeout(() => {
-                                          const el = document.getElementById("pdca-manager-section");
-                                          if (el) el.scrollIntoView({ behavior: "smooth" });
-                                        }, 100);
-                                      }}
-                                    >
-                                      정보<br />등록
-                                    </button>
-                                  ) : (
-                                    <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>권한 없음</span>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          });
-                        })
-                      }
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {mgmtSubTab === "users" && currentRole.rank <= 2 && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                {/* 1. 시스템 고정 계정 목록 테이블 */}
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                    <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>시스템 고정 계정 현황</h3>
-                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>관리자용 데모 및 시스템 고유 계정</span>
-                  </div>
-                  <div className="table-panel" style={{ maxHeight: "250px", overflowY: "auto" }}>
-                    <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
+                  <div className="table-panel">
+                    <table className="custom-table" style={{ fontSize: "0.8rem", width: "100%" }}>
                       <thead>
                         <tr>
-                          <th style={{ width: "25%", textAlign: "center", verticalAlign: "middle" }}>아이디</th>
-                          <th style={{ width: "12%", textAlign: "center", verticalAlign: "middle" }}>이름</th>
-                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>역할</th>
-                          <th style={{ width: "18%", textAlign: "center", verticalAlign: "middle" }}>역할키</th>
-                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>시작일</th>
-                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>속성</th>
+                          <th
+                            onClick={() => requestMemberSort("dept")}
+                            style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
+                            onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
+                            onMouseLeave={(e) => e.target.style.color = ""}
+                          >
+                            소속 부서 {memberSortConfig.key === "dept" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
+                          </th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>성명</th>
+                          <th
+                            onClick={() => requestMemberSort("role")}
+                            style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
+                            onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
+                            onMouseLeave={(e) => e.target.style.color = ""}
+                          >
+                            직책 {memberSortConfig.key === "role" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
+                          </th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>직급/직위</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>이메일</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>교내 전화</th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>휴대전화</th>
+                          <th
+                            onClick={() => requestMemberSort("startDate")}
+                            style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
+                            onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
+                            onMouseLeave={(e) => e.target.style.color = ""}
+                          >
+                            시작일 {memberSortConfig.key === "startDate" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
+                          </th>
+                          <th style={{ textAlign: "center", verticalAlign: "middle" }}>종료일</th>
+                          <th
+                            onClick={() => requestMemberSort("status")}
+                            style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
+                            onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
+                            onMouseLeave={(e) => e.target.style.color = ""}
+                          >
+                            참여 여부 {memberSortConfig.key === "status" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
+                          </th>
+                          {currentRole.rank <= 2 && <th style={{ textAlign: "center", verticalAlign: "middle" }}>관리</th>}
                         </tr>
                       </thead>
                       <tbody>
-                        {registeredUsers.filter(u => ["admin", "g_director", "hq_head", "center_director", "manager", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
-                          <tr>
-                            <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "1.5rem" }}>
-                              등록된 고정 계정이 없습니다.
-                            </td>
-                          </tr>
-                        ) : (
-                          registeredUsers
-                            .filter(u => ["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
-                            .map((u) => {
-                              const roleNames = {
-                                ADMIN: "최고 관리자",
-                                G_DIRECTOR: "사업단장",
-                                HQ_HEAD: "총괄본부장",
-                                MANAGER: "운영팀장",
-                                CENTER_ECC: "ECC센터장",
-                                CENTER_SPECIAL: "신산업특화센터장",
-                                CENTER_NURI: "늘봄누리센터장",
-                                CENTER_ICC: "ICC센터장",
-                                CENTER_RCC: "RCC센터장",
-                                TEAM_LEADER: "팀장교수",
-                                RESEARCHER: "실무 연구원"
-                              };
-                              const cleanName = (u.name || "").split(" ")[0];
-                              return (
-                                <tr key={u.id}>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{cleanName}</td>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                                    {renderRoleBadge(roleNames[u.role_key] || u.role_key, false)}
-                                  </td>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{u.role_key}</td>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)", fontWeight: "700" }}>고정 계정</td>
-                                </tr>
-                              );
-                            })
-                        )}
+                        {getSortedMembers().map((m) => {
+                          const isRetired = getMemberStatusForYear(m, selectedYear) === "미참여";
+                          return (
+                            <tr
+                              key={m.id}
+                              style={{
+                                opacity: isRetired ? 0.45 : 1,
+                                background: isRetired ? "rgba(255, 255, 255, 0.01)" : "transparent",
+                                transition: "all 0.2s"
+                              }}
+                            >
+                              <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{m.dept}</td>
+                              <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "800", color: isRetired ? "var(--text-secondary)" : "var(--text-primary)" }}>{m.name}</td>
+                              <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                {renderRoleBadge(m.role, isRetired)}
+                              </td>
+                              <td style={{ textAlign: "center", verticalAlign: "middle" }}>{m.grade}</td>
+                              <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.email}</td>
+                              <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.phoneOffice || "-"}</td>
+                              <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.phoneMobile || "-"}</td>
+                              <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.startDate || m.hireDate || "-"}</td>
+                              <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{m.endDate || "-"}</td>
+                              <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                <span
+                                  className={`badge ${isRetired ? "badge-red" : "badge-green"
+                                    }`}
+                                  style={{
+                                    fontSize: "0.65rem",
+                                    background: isRetired ? "rgba(239, 68, 68, 0.15)" : undefined,
+                                    color: isRetired ? "#f87171" : undefined
+                                  }}
+                                >
+                                  {getMemberStatusForYear(m, selectedYear)}
+                                </span>
+                              </td>
+                              {currentRole.rank <= 2 && (
+                                <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                  <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center", alignItems: "center" }}>
+                                    <button
+                                      className="btn-primary"
+                                      style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.25rem", background: "rgba(59,130,246,0.15)", border: "1px solid var(--accent-color)", color: "#60a5fa" }}
+                                      onClick={() => {
+                                        setEditingMember(m);
+                                        setIsMemberModalOpen(true);
+                                      }}
+                                    >
+                                      수정
+                                    </button>
+                                    <button
+                                      className="btn-primary"
+                                      style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.25rem", background: "rgba(239,68,68,0.15)", border: "1px solid #ef4444", color: "#f87171" }}
+                                      onClick={async () => {
+                                        if (window.confirm(`정말 ${m.name} 구성원을 삭제하시겠습니까?`)) {
+                                          setMembers(members.filter((item) => item.id !== m.id));
+                                          try {
+                                            const { error } = await supabase
+                                              .from("rise_members")
+                                              .delete()
+                                              .eq("id", m.id);
+                                            if (error) throw error;
+                                          } catch (err) {
+                                            console.error("Failed to delete member from DB:", err);
+                                          }
+                                        }
+                                      }}
+                                    >
+                                      삭제
+                                    </button>
+                                  </div>
+                                </td>
+                              )}
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
                 </div>
+              )}
 
-                {/* 2. 주소록 연동 회원 목록 테이블 */}
+              {mgmtSubTab === "programs" && (
                 <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                    <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>주소록 연동 회원 현황</h3>
-                    <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>인사 주소록 기반 가입 계정</span>
+                  <div style={{ marginBottom: "1.2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexShrink: 0 }}>
+                      <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>단위과제 필터:</span>
+                      <select
+                        className="user-selector"
+                        value={assignFilterUnitId}
+                        onChange={(e) => setAssignFilterUnitId(e.target.value)}
+                        style={{
+                          padding: "0.3rem 0.6rem",
+                          fontSize: "0.78rem",
+                          borderRadius: "0.25rem",
+                          background: "var(--panel-bg)",
+                          border: "1px solid var(--border-color)",
+                          color: "var(--text-primary)",
+                          outline: "none",
+                          width: "280px",
+                          textOverflow: "ellipsis"
+                        }}
+                      >
+                        <option value="all" style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>전체 단위과제</option>
+                        {displayProjects.flatMap((p) => p.units)
+                          .sort((a, b) => {
+                            if (a.id === "Common" || a.id === "X0") return 1;
+                            if (b.id === "Common" || b.id === "X0") return -1;
+                            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+                          })
+                          .map((u) => (
+                            <option key={u.id} value={u.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
+                          ))}
+                      </select>
+                    </div>
+                    {currentRole.rank <= 2 && (
+                      <div style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
+                        <label
+                          className="action-btn upload-btn"
+                          style={{
+                            cursor: "pointer",
+                            margin: 0
+                          }}
+                        >
+                          <Upload size={16} /> 엑셀 업로드
+                          <input type="file" accept=".xlsx, .xls" style={{ display: "none" }} ref={fileInputRef} onChange={handleUploadExcel} />
+                        </label>
+                        <button
+                          onClick={handleDownloadExcel}
+                          className="action-btn download-btn"
+                          style={{
+                            background: "var(--bg-tertiary)",
+                            cursor: "pointer"
+                          }}
+                        >
+                          <Download size={16} /> 엑셀 다운로드
+                        </button>
+                        <button
+                          onClick={handleOpenAddProgram}
+                          className="action-btn"
+                          style={{
+                            padding: "0.5rem 1.2rem",
+                            background: "var(--accent-color)",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "9999px",
+                            fontSize: "0.85rem",
+                            fontWeight: "700",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.3rem"
+                          }}
+                        >
+                          <Plus size={16} /> 신규 프로그램
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  <div className="table-panel" style={{ maxHeight: "300px", overflowY: "auto" }}>
-                    <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
+                  <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
+                    * 실무 연구원으로 등록된 구성원(직책: 연구원)만 프로그램 담당연구원 목록으로 매핑됩니다.
+                  </p>
+                  <div className="table-panel">
+                    <table className="custom-table" style={{ fontSize: "0.8rem", tableLayout: "fixed", width: "100%" }}>
                       <thead>
                         <tr>
-                          <th style={{ width: "25%", textAlign: "center", verticalAlign: "middle" }}>아이디</th>
-                          <th style={{ width: "12%", textAlign: "center", verticalAlign: "middle" }}>이름</th>
-                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>역할</th>
-                          <th style={{ width: "18%", textAlign: "center", verticalAlign: "middle" }}>역할키</th>
-                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>시작일</th>
-                          <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>관리</th>
+                          <th rowSpan={2} style={{ width: "18%", textAlign: "center", verticalAlign: "middle" }}>단위과제</th>
+                          <th rowSpan={2} style={{ width: "9%", textAlign: "center", verticalAlign: "middle" }}>프로그램 ID</th>
+                          <th rowSpan={2} style={{ width: "22%", textAlign: "center", verticalAlign: "middle" }}>프로그램명</th>
+                          <th rowSpan={2} style={{ width: "10%", textAlign: "center", verticalAlign: "middle" }}>담당부서</th>
+                          <th rowSpan={2} style={{ width: "19%", textAlign: "center", verticalAlign: "middle" }}>담당연구원</th>
+                          <th colSpan={4} style={{ textAlign: "center", width: "15%", verticalAlign: "middle" }}>진행 단계(PDCA)</th>
+                          <th rowSpan={2} style={{ width: "7%", textAlign: "center", verticalAlign: "middle" }}>작업</th>
+                        </tr>
+                        <tr>
+                          <th style={{ textAlign: "center", width: "3.75%" }}>P</th>
+                          <th style={{ textAlign: "center", width: "3.75%" }}>D</th>
+                          <th style={{ textAlign: "center", width: "3.75%" }}>C</th>
+                          <th style={{ textAlign: "center", width: "3.75%" }}>A</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {registeredUsers.filter(u => !["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
-                          <tr>
-                            <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
-                              연동된 주소록 회원이 없습니다.
-                            </td>
-                          </tr>
-                        ) : (
-                          registeredUsers
-                            .filter(u => !["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
-                            .map((u) => {
-                              const roleNames = {
-                                ADMIN: "최고 관리자",
-                                DIRECTOR: "사업단장",
-                                G_DIRECTOR: "사업단장",
-                                HQ_HEAD: "총괄본부장",
-                                MANAGER: "운영팀장",
-                                CENTER_ECC: "ECC센터장",
-                                CENTER_SPECIAL: "신산업특화센터장",
-                                CENTER_NURI: "늘봄누리센터장",
-                                CENTER_ICC: "ICC센터장",
-                                CENTER_RCC: "RCC센터장",
-                                TEAM_LEADER: "팀장교수",
-                                RESEARCHER: "실무 연구원",
-                                RESEARCH: "연구원"
-                              };
-                              const cleanName = (u.name || "").split(" ")[0];
-                              const isDirectoryUser = (members || []).some(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase() && m.status !== "미참여");
+                        {displayProjects.flatMap((p) => p.units)
+                          .filter((u) => assignFilterUnitId === "all" || u.id === assignFilterUnitId)
+                          .sort((a, b) => {
+                            if (a.id === "Common" || a.id === "X0") return 1;
+                            if (b.id === "Common" || b.id === "X0") return -1;
+                            return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+                          })
+                          .flatMap((u) => {
+                            return u.programs.map((prog) => {
+                              let dept = "사업운영팀";
+                              if (selectedYear === 1) {
+                                if (["A1", "A2", "D4"].includes(u.id)) dept = "ECC센터";
+                                else if (["B1", "C1", "C3"].includes(u.id)) dept = "ICC센터";
+                                else if (["B2", "B3", "D1", "D3"].includes(u.id)) dept = "RCC센터";
+                                else if (u.id === "C2") dept = "AID-X지원센터";
+                                else if (u.id === "D2") dept = "울산늘봄누리센터";
+                              } else {
+                                if (["A1가", "A2", "A3"].includes(u.id)) dept = "ECC센터";
+                                else if (u.id === "A1나") dept = "신산업특화센터";
+                                else if (["B1", "B3", "B4"].includes(u.id)) dept = "ICC센터";
+                                else if (u.id === "B2") dept = "AID-X지원센터";
+                                else if (u.id === "C2") dept = "울산늘봄누리센터";
+                                else if (["C1", "D1", "D2", "D3"].includes(u.id)) dept = "RCC센터";
+                              }
 
                               return (
-                                <tr key={u.id}>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{cleanName}</td>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                                    {renderRoleBadge(roleNames[u.role_key] || u.role_key, false)}
+                                <tr key={prog.id}>
+                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", wordBreak: "break-all" }}>{u.id === "Common" ? "공통운영경비" : `${u.id}. ${u.title}`}</td>
+                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
+                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", wordBreak: "break-all" }}>{prog.title}</td>
+                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--accent-color)", fontWeight: "700" }}>{dept}</td>
+                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                    {currentRole.rank <= 2 ? (
+                                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", alignItems: "center", justifyContent: "center" }}>
+                                        {/* 공동배정 체크박스 */}
+                                        <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", cursor: "pointer", color: "var(--text-secondary)" }}>
+                                          <input
+                                            type="checkbox"
+                                            checked={!!jointPrograms[prog.id]}
+                                            onChange={(e) => {
+                                              const isChecked = e.target.checked;
+                                              setJointPrograms(prev => ({ ...prev, [prog.id]: isChecked }));
+
+                                              // 체크 해제 시에는 단일 연구원으로 변경할 수 있도록 현재 값의 첫 번째 연구원을 기본값으로 넘김
+                                              if (!isChecked) {
+                                                const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                handleAssignChange(u.id, prog.id, parts[0] || "");
+                                              }
+                                            }}
+                                          />
+                                          2인 공동배정
+                                        </label>
+
+                                        {jointPrograms[prog.id] ? (
+                                          <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", flexWrap: "wrap" }}>
+                                            {/* 정 담당자 선택 */}
+                                            <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                              <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "700" }}>정:</span>
+                                              <select
+                                                className="user-selector"
+                                                style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
+                                                value={(() => {
+                                                  const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                  const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                  return parts[0] || "";
+                                                })()}
+                                                onChange={(e) => {
+                                                  const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                  const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                  const first = e.target.value;
+                                                  const second = parts[1] || "";
+                                                  const combined = second ? `${first}, ${second}` : first;
+                                                  handleAssignChange(u.id, prog.id, combined);
+                                                }}
+                                              >
+                                                <option value="">선택</option>
+                                                {members
+                                                  .filter((m) => m.role === "연구원" && m.dept === dept)
+                                                  .map((m) => (
+                                                    <option key={m.id} value={`${m.name} ${m.grade}`}>
+                                                      {m.name} {m.grade}
+                                                    </option>
+                                                  ))}
+                                              </select>
+                                            </div>
+                                            {/* 부 담당자 선택 */}
+                                            <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
+                                              <span style={{ fontSize: "0.65rem", color: "var(--accent-color)", fontWeight: "700" }}>부:</span>
+                                              <select
+                                                className="user-selector"
+                                                style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
+                                                value={(() => {
+                                                  const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                  const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                  return parts[1] || "";
+                                                })()}
+                                                onChange={(e) => {
+                                                  const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
+                                                  const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                  const first = parts[0] || "";
+                                                  const second = e.target.value;
+                                                  const combined = second ? `${first}, ${second}` : first;
+                                                  handleAssignChange(u.id, prog.id, combined);
+                                                }}
+                                              >
+                                                <option value="">선택</option>
+                                                {members
+                                                  .filter((m) => m.role === "연구원" && m.dept === dept)
+                                                  .map((m) => (
+                                                    <option key={m.id} value={`${m.name} ${m.grade}`}>
+                                                      {m.name} {m.grade}
+                                                    </option>
+                                                  ))}
+                                              </select>
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          /* 단일 배정 드롭다운 */
+                                          <select
+                                            className="user-selector"
+                                            style={{ width: "200px", padding: "0.2rem 0.4rem", fontSize: "0.75rem" }}
+                                            value={prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "")}
+                                            onChange={(e) => handleAssignChange(u.id, prog.id, e.target.value)}
+                                          >
+                                            <option value="">미배정</option>
+                                            {members
+                                              .filter((m) => {
+                                                if (m.role !== "연구원") return false;
+                                                const currentAssignee = prog.assignees?.[selectedYear] || prog.assignee || "";
+                                                const isCurrent = currentAssignee === `${m.name} ${m.grade}`;
+                                                const isDeptMatch = m.dept === dept;
+                                                if (!isCurrent && !isDeptMatch) return false;
+
+                                                const startYear = 2024 + selectedYear;
+                                                const endYear = 2025 + selectedYear;
+                                                const yearStart = new Date(`${startYear}-03-01T00:00:00`);
+                                                const yearEnd = new Date(`${endYear}-02-28T23:59:59`);
+
+                                                const mStartStr = m.startDate || m.hireDate || "2025-03-01";
+                                                const mStartDate = new Date(mStartStr);
+                                                if (mStartDate > yearEnd) return false;
+
+                                                if (m.endDate) {
+                                                  const mEndDate = new Date(m.endDate);
+                                                  if (mEndDate < yearStart) return false;
+                                                }
+                                                return true;
+                                              })
+                                              .map((m) => (
+                                                <option key={m.id} value={`${m.name} ${m.grade}`}>
+                                                  {m.name} {m.grade} ({m.dept})
+                                                </option>
+                                              ))}
+                                          </select>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <span>{formatAssignee(prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : prog.assignee)}</span>
+                                    )}
                                   </td>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{u.role_key}</td>
-                                  <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.p === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.p}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.d === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.d}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.c === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.c}</td>
+                                  <td style={{ textAlign: "center", verticalAlign: "middle", color: prog.pdca.a === "완료" ? "var(--success-color)" : "inherit", fontWeight: "700" }}>{prog.pdca.a}</td>
                                   <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                                    {!isDirectoryUser ? (
+                                    {currentRole.rank <= 2 ? (
                                       <button
-                                        onClick={() => handleDeleteUser(u.id)}
                                         className="btn-primary"
-                                        style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--danger-color)", cursor: "pointer", border: "none" }}
+                                        style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", lineHeight: "1.2", whiteSpace: "normal" }}
+                                        onClick={() => {
+                                          setSelectedUnitId(u.id);
+                                          setSelectedProgId(prog.id);
+                                          setActiveTab("projects");
+                                          setTimeout(() => {
+                                            const el = document.getElementById("pdca-manager-section");
+                                            if (el) el.scrollIntoView({ behavior: "smooth" });
+                                          }, 100);
+                                        }}
                                       >
-                                        삭제
+                                        정보<br />등록
                                       </button>
                                     ) : (
-                                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "700" }}>주소록 회원</span>
+                                      <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>권한 없음</span>
                                     )}
                                   </td>
                                 </tr>
                               );
-                            })
-                        )}
+                            });
+                          })
+                        }
                       </tbody>
                     </table>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {mgmtSubTab === "approvals" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                {(() => {
-                  const approverNames = ["심현미", "김현수", "송경영", "이규상", "임은애", "황수진", "최주명"];
-                  const hasNamePermission = currentUser && approverNames.some(name => (currentUser.name || "").includes(name));
-                  const hasRolePermission = currentRole && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentRole.id || "");
-                  const isApprover = hasNamePermission || hasRolePermission;
+              {mgmtSubTab === "users" && currentRole.rank <= 2 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                  {/* 1. 시스템 고정 계정 목록 테이블 */}
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                      <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>시스템 고정 계정 현황</h3>
+                      <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>관리자용 데모 및 시스템 고유 계정</span>
+                    </div>
+                    <div className="table-panel" style={{ maxHeight: "250px", overflowY: "auto" }}>
+                      <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
+                        <thead>
+                          <tr>
+                            <th style={{ width: "25%", textAlign: "center", verticalAlign: "middle" }}>아이디</th>
+                            <th style={{ width: "12%", textAlign: "center", verticalAlign: "middle" }}>이름</th>
+                            <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>역할</th>
+                            <th style={{ width: "18%", textAlign: "center", verticalAlign: "middle" }}>역할키</th>
+                            <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>시작일</th>
+                            <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>속성</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {registeredUsers.filter(u => ["admin", "g_director", "hq_head", "center_director", "manager", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
+                            <tr>
+                              <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "1.5rem" }}>
+                                등록된 고정 계정이 없습니다.
+                              </td>
+                            </tr>
+                          ) : (
+                            registeredUsers
+                              .filter(u => ["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
+                              .map((u) => {
+                                const roleNames = {
+                                  ADMIN: "최고 관리자",
+                                  G_DIRECTOR: "사업단장",
+                                  HQ_HEAD: "총괄본부장",
+                                  MANAGER: "운영팀장",
+                                  CENTER_ECC: "ECC센터장",
+                                  CENTER_SPECIAL: "신산업특화센터장",
+                                  CENTER_NURI: "늘봄누리센터장",
+                                  CENTER_ICC: "ICC센터장",
+                                  CENTER_RCC: "RCC센터장",
+                                  TEAM_LEADER: "팀장교수",
+                                  RESEARCHER: "실무 연구원"
+                                };
+                                const cleanName = (u.name || "").split(" ")[0];
+                                return (
+                                  <tr key={u.id}>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{cleanName}</td>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                      {renderRoleBadge(roleNames[u.role_key] || u.role_key, false)}
+                                    </td>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{u.role_key}</td>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)", fontWeight: "700" }}>고정 계정</td>
+                                  </tr>
+                                );
+                              })
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
 
-                  if (!isApprover) {
+                  {/* 2. 주소록 연동 회원 목록 테이블 */}
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                      <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>주소록 연동 회원 현황</h3>
+                      <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>인사 주소록 기반 가입 계정</span>
+                    </div>
+                    <div className="table-panel" style={{ maxHeight: "300px", overflowY: "auto" }}>
+                      <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
+                        <thead>
+                          <tr>
+                            <th style={{ width: "25%", textAlign: "center", verticalAlign: "middle" }}>아이디</th>
+                            <th style={{ width: "12%", textAlign: "center", verticalAlign: "middle" }}>이름</th>
+                            <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>역할</th>
+                            <th style={{ width: "18%", textAlign: "center", verticalAlign: "middle" }}>역할키</th>
+                            <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>시작일</th>
+                            <th style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>관리</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {registeredUsers.filter(u => !["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
+                            <tr>
+                              <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
+                                연동된 주소록 회원이 없습니다.
+                              </td>
+                            </tr>
+                          ) : (
+                            registeredUsers
+                              .filter(u => !["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
+                              .map((u) => {
+                                const roleNames = {
+                                  ADMIN: "최고 관리자",
+                                  DIRECTOR: "사업단장",
+                                  G_DIRECTOR: "사업단장",
+                                  HQ_HEAD: "총괄본부장",
+                                  MANAGER: "운영팀장",
+                                  CENTER_ECC: "ECC센터장",
+                                  CENTER_SPECIAL: "신산업특화센터장",
+                                  CENTER_NURI: "늘봄누리센터장",
+                                  CENTER_ICC: "ICC센터장",
+                                  CENTER_RCC: "RCC센터장",
+                                  TEAM_LEADER: "팀장교수",
+                                  RESEARCHER: "실무 연구원",
+                                  RESEARCH: "연구원"
+                                };
+                                const cleanName = (u.name || "").split(" ")[0];
+                                const isDirectoryUser = (members || []).some(m => m.email && m.email.trim().toLowerCase() === u.id.trim().toLowerCase() && m.status !== "미참여");
+
+                                return (
+                                  <tr key={u.id}>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{u.id}</td>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle", fontWeight: "700" }}>{cleanName}</td>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                      {renderRoleBadge(roleNames[u.role_key] || u.role_key, false)}
+                                    </td>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{u.role_key}</td>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)" }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                                    <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                                      {!isDirectoryUser ? (
+                                        <button
+                                          onClick={() => handleDeleteUser(u.id)}
+                                          className="btn-primary"
+                                          style={{ padding: "0.2rem 0.5rem", fontSize: "0.7rem", borderRadius: "0.3rem", background: "var(--danger-color)", cursor: "pointer", border: "none" }}
+                                        >
+                                          삭제
+                                        </button>
+                                      ) : (
+                                        <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: "700" }}>주소록 회원</span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {mgmtSubTab === "approvals" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  {(() => {
+                    const approverNames = ["심현미", "김현수", "송경영", "이규상", "임은애", "황수진", "최주명"];
+                    const hasNamePermission = currentUser && approverNames.some(name => (currentUser.name || "").includes(name));
+                    const hasRolePermission = currentRole && ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentRole.id || "");
+                    const isApprover = hasNamePermission || hasRolePermission;
+
+                    if (!isApprover) {
+                      return (
+                        <div className="card" style={{ padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", textAlign: "center" }}>
+                          <Info size={40} style={{ marginBottom: "0.75rem", opacity: 0.4, color: "var(--accent-color)" }} />
+                          <span style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.5rem" }}>결재 승인 권한 없음</span>
+                          <span>프로그램 기획 및 예산 변경 결재 권한은 <strong>심현미 운영팀장, 김현수 총괄본부장, 송경영 사업단장</strong> 3인에게만 부여되어 있습니다.</span>
+                        </div>
+                      );
+                    }
+
                     return (
-                      <div className="card" style={{ padding: "3rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "var(--panel-bg)", border: "1px solid var(--border-color)", color: "var(--text-secondary)", textAlign: "center" }}>
-                        <Info size={40} style={{ marginBottom: "0.75rem", opacity: 0.4, color: "var(--accent-color)" }} />
-                        <span style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.5rem" }}>결재 승인 권한 없음</span>
-                        <span>프로그램 기획 및 예산 변경 결재 권한은 <strong>심현미 운영팀장, 김현수 총괄본부장, 송경영 사업단장</strong> 3인에게만 부여되어 있습니다.</span>
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div>
-                      {/* 💡 [교육용 한글 주석] 예산변경과 시설사용 결재를 전환 선택할 수 있는 탭 세그먼트바를 렌더링합니다. */}
-                      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
-                        {!(currentUser && ["이규상", "임은애", "황수진", "최주명"].some(n => (currentUser.name || "").includes(n))) && (
+                      <div>
+                        {/* 💡 [교육용 한글 주석] 예산변경과 시설사용 결재를 전환 선택할 수 있는 탭 세그먼트바를 렌더링합니다. */}
+                        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
+                          {!(currentUser && ["이규상", "임은애", "황수진", "최주명"].some(n => (currentUser.name || "").includes(n))) && (
+                            <button
+                              onClick={() => setApprovalsTab("budget")}
+                              style={{
+                                padding: "0.4rem 1rem",
+                                fontSize: "0.85rem",
+                                fontWeight: "800",
+                                borderRadius: "0.3rem",
+                                border: "none",
+                                background: approvalsTab === "budget" ? "var(--accent-color)" : "transparent",
+                                color: approvalsTab === "budget" ? "white" : "var(--text-secondary)",
+                                cursor: "pointer",
+                                transition: "all 0.2s"
+                              }}
+                            >
+                              💰 예산 및 기획변경 승인
+                            </button>
+                          )}
                           <button
-                            onClick={() => setApprovalsTab("budget")}
+                            onClick={() => setApprovalsTab("facility")}
                             style={{
                               padding: "0.4rem 1rem",
                               fontSize: "0.85rem",
                               fontWeight: "800",
                               borderRadius: "0.3rem",
                               border: "none",
-                              background: approvalsTab === "budget" ? "var(--accent-color)" : "transparent",
-                              color: approvalsTab === "budget" ? "white" : "var(--text-secondary)",
+                              background: approvalsTab === "facility" ? "var(--accent-color)" : "transparent",
+                              color: approvalsTab === "facility" ? "white" : "var(--text-secondary)",
                               cursor: "pointer",
                               transition: "all 0.2s"
                             }}
                           >
-                            💰 예산 및 기획변경 승인
+                            🏫 교육환경 시설사용 승인
                           </button>
-                        )}
-                        <button
-                          onClick={() => setApprovalsTab("facility")}
-                          style={{
-                            padding: "0.4rem 1rem",
-                            fontSize: "0.85rem",
-                            fontWeight: "800",
-                            borderRadius: "0.3rem",
-                            border: "none",
-                            background: approvalsTab === "facility" ? "var(--accent-color)" : "transparent",
-                            color: approvalsTab === "facility" ? "white" : "var(--text-secondary)",
-                            cursor: "pointer",
-                            transition: "all 0.2s"
-                          }}
-                        >
-                          🏫 교육환경 시설사용 승인
-                        </button>
-                      </div>
+                        </div>
 
-                      {approvalsTab === "budget" && !(currentUser && ["이규상", "임은애", "황수진", "최주명"].some(n => (currentUser.name || "").includes(n))) ? (
-                        <div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                            <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>프로그램 기획 및 예산 변경 결재함</h3>
-                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>연구원들의 기획 리비전 신청 관리</span>
-                          </div>
-                          <div className="table-panel">
-                            <table className="custom-table" style={{ fontSize: "0.75rem" }}>
-                              <thead>
-                                <tr>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>결재번호</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>프로그램 ID</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "280px" }}>프로그램명</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>변경 차수</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>상태</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청자</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청 및 처리 일시</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 처리</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {versionRequests.length === 0 ? (
+                        {approvalsTab === "budget" && !(currentUser && ["이규상", "임은애", "황수진", "최주명"].some(n => (currentUser.name || "").includes(n))) ? (
+                          <div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                              <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>프로그램 기획 및 예산 변경 결재함</h3>
+                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>연구원들의 기획 리비전 신청 관리</span>
+                            </div>
+                            <div className="table-panel">
+                              <table className="custom-table" style={{ fontSize: "0.75rem" }}>
+                                <thead>
                                   <tr>
-                                    <td colSpan="8" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
-                                      결재 대기 중이거나 처리된 변경 요청 문서가 없습니다.
-                                    </td>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>결재번호</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>프로그램 ID</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "280px" }}>프로그램명</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>변경 차수</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>상태</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청자</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>신청 및 처리 일시</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "80px" }}>결재 처리</th>
                                   </tr>
-                                ) : (
-                                  versionRequests.map((req, idx) => {
-                                    // 💡 [교육용 한글 주석] 송경영 단장님의 직접 수정 이력은 공식 수정 횟차(seq) 집계에 들어가지 않도록 배제 처리합니다.
-                                    const approvedRequests = versionRequests.filter(r => r.status === "승인완료" && r.version_name !== "송경영 단장 직접 수정");
-                                    const isApproved = req.status === "승인완료";
-                                    let displayNo = "-";
-                                    if (isApproved) {
-                                      const approvedIdx = approvedRequests.findIndex(r => r.id === req.id);
-                                      const seq = approvedIdx !== -1 ? (approvedRequests.length - approvedIdx) : 1;
-                                      displayNo = `${2024 + req.year}-${req.unit_id}-${seq}`;
-                                    }
+                                </thead>
+                                <tbody>
+                                  {versionRequests.length === 0 ? (
+                                    <tr>
+                                      <td colSpan="8" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
+                                        결재 대기 중이거나 처리된 변경 요청 문서가 없습니다.
+                                      </td>
+                                    </tr>
+                                  ) : (
+                                    versionRequests.map((req, idx) => {
+                                      // 💡 [교육용 한글 주석] 송경영 단장님의 직접 수정 이력은 공식 수정 횟차(seq) 집계에 들어가지 않도록 배제 처리합니다.
+                                      const approvedRequests = versionRequests.filter(r => r.status === "승인완료" && r.version_name !== "송경영 단장 직접 수정");
+                                      const isApproved = req.status === "승인완료";
+                                      let displayNo = "-";
+                                      if (isApproved) {
+                                        const approvedIdx = approvedRequests.findIndex(r => r.id === req.id);
+                                        const seq = approvedIdx !== -1 ? (approvedRequests.length - approvedIdx) : 1;
+                                        displayNo = `${2024 + req.year}-${req.unit_id}-${seq}`;
+                                      }
 
-                                    return (
-                                      <tr key={req.id}>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{displayNo}</td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{req.program_id}</td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", width: "280px", maxWidth: "280px", wordBreak: "keep-all", lineHeight: "1.3", whiteSpace: "normal" }}>{req.program_title}</td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                          <span className="badge badge-blue" style={{ fontSize: "0.65rem", whiteSpace: "normal", maxWidth: "85px", lineHeight: "1.3", display: "inline-block", textAlign: "center", padding: "0.15rem 0.25rem" }}>
-                                            {req.version_name === "송경영 단장 직접 수정" ? (
-                                              <>송경영 단장<br />직접 수정</>
-                                            ) : req.version_name}
-                                          </span>
-                                        </td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                          <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                                            <span className={`badge ${req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
-                                              }`} style={{ fontSize: "0.65rem" }}>
-                                              {req.status}
+                                      return (
+                                        <tr key={req.id}>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{displayNo}</td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{req.program_id}</td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", width: "280px", maxWidth: "280px", wordBreak: "keep-all", lineHeight: "1.3", whiteSpace: "normal" }}>{req.program_title}</td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                            <span className="badge badge-blue" style={{ fontSize: "0.65rem", whiteSpace: "normal", maxWidth: "85px", lineHeight: "1.3", display: "inline-block", textAlign: "center", padding: "0.15rem 0.25rem" }}>
+                                              {req.version_name === "송경영 단장 직접 수정" ? (
+                                                <>송경영 단장<br />직접 수정</>
+                                              ) : req.version_name}
                                             </span>
-                                            {(req.status === "승인완료" || req.status === "반려") && req.approved_by && (
-                                              <span style={{ fontSize: "0.62rem", color: "var(--text-secondary)", marginTop: "0.15rem" }}>
-                                                ({req.approved_by})
+                                          </td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                            <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                                              <span className={`badge ${req.status === "승인완료" ? "badge-green" : (req.status === "반려" ? "badge-red" : "badge-gray")
+                                                }`} style={{ fontSize: "0.65rem" }}>
+                                                {req.status}
                                               </span>
-                                            )}
-                                          </div>
-                                        </td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{(req.requested_by || "").replace(/\s*\(.*?\)/g, "").replace(/\)/g, "").trim()}</td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                          <div style={{ display: "inline-flex", flexDirection: "column", gap: "0.2rem", lineHeight: "1.4", fontFamily: "var(--font-data)", textAlign: "left" }}>
-                                            <div>
-                                              <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>신청: </span>
-                                              {new Date(req.requested_at).toLocaleString("ko-KR")}
+                                              {(req.status === "승인완료" || req.status === "반려") && req.approved_by && (
+                                                <span style={{ fontSize: "0.62rem", color: "var(--text-secondary)", marginTop: "0.15rem" }}>
+                                                  ({req.approved_by})
+                                                </span>
+                                              )}
                                             </div>
-                                            <div style={{ marginTop: "0.15rem" }}>
-                                              <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>처리: </span>
-                                              {req.approved_at
-                                                ? new Date(req.approved_at).toLocaleString("ko-KR")
-                                                : <span style={{ color: "var(--text-secondary)" }}>대기 중</span>
-                                              }
+                                          </td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>{(req.requested_by || "").replace(/\s*\(.*?\)/g, "").replace(/\)/g, "").trim()}</td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                            <div style={{ display: "inline-flex", flexDirection: "column", gap: "0.2rem", lineHeight: "1.4", fontFamily: "var(--font-data)", textAlign: "left" }}>
+                                              <div>
+                                                <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>신청: </span>
+                                                {new Date(req.requested_at).toLocaleString("ko-KR")}
+                                              </div>
+                                              <div style={{ marginTop: "0.15rem" }}>
+                                                <span style={{ color: "var(--text-secondary)", fontSize: "0.65rem" }}>처리: </span>
+                                                {req.approved_at
+                                                  ? new Date(req.approved_at).toLocaleString("ko-KR")
+                                                  : <span style={{ color: "var(--text-secondary)" }}>대기 중</span>
+                                                }
+                                              </div>
                                             </div>
-                                          </div>
-                                        </td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
-                                            <button
-                                              onClick={() => setSelectedRequest(req)}
-                                              className="btn-primary"
-                                              style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "var(--accent-color)", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
-                                            >
-                                              상세보기
-                                            </button>
-                                            {req.status === "승인대기" && (
-                                              <>
+                                          </td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                                              <button
+                                                onClick={() => setSelectedRequest(req)}
+                                                className="btn-primary"
+                                                style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "var(--accent-color)", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                              >
+                                                상세보기
+                                              </button>
+                                              {req.status === "승인대기" && (
+                                                <>
+                                                  <button
+                                                    onClick={() => handleApproveRequest(req)}
+                                                    className="btn-primary"
+                                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                                  >
+                                                    승인
+                                                  </button>
+                                                  <button
+                                                    onClick={() => handleRejectRequest(req)}
+                                                    className="btn-primary"
+                                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                                  >
+                                                    반려
+                                                  </button>
+                                                </>
+                                              )}
+                                              {isSongDirector && (
                                                 <button
-                                                  onClick={() => handleApproveRequest(req)}
-                                                  className="btn-primary"
-                                                  style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
-                                                >
-                                                  승인
-                                                </button>
-                                                <button
-                                                  onClick={() => handleRejectRequest(req)}
+                                                  onClick={() => handleDeleteRequest(req)}
                                                   className="btn-primary"
                                                   style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
                                                 >
-                                                  반려
+                                                  삭제
                                                 </button>
-                                              </>
-                                            )}
-                                            {isSongDirector && (
-                                              <button
-                                                onClick={() => handleDeleteRequest(req)}
-                                                className="btn-primary"
-                                                style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
-                                              >
-                                                삭제
-                                              </button>
-                                            )}
-                                          </div>
-                                        </td>
-                                      </tr>
-                                    );
-                                  })
-                                )}
-                              </tbody>
-                            </table>
+                                              )}
+                                            </div>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })
+                                  )}
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                            <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>교육환경 시설사용 예약 승인함</h3>
-                            <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>공간 사용 신청 및 충돌 승인 관리</span>
-                          </div>
-                          <div className="table-panel">
-                            <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
-                              <thead>
-                                <tr>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "116px" }}>예약일자</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "137px" }}>사용시간</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "169px" }}>시설명(호실번호)</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "116px" }}>신청부서</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "95px" }}>신청자</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>사용목적</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "100px" }}>결재 상태</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "90px" }}>일정 조정</th>
-                                  <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "100px" }}>결재 처리</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {reservations.length === 0 ? (
+                        ) : (
+                          <div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                              <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--accent-color)", borderLeft: "3px solid var(--accent-color)", paddingLeft: "0.4rem" }}>교육환경 시설사용 예약 승인함</h3>
+                              <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)" }}>공간 사용 신청 및 충돌 승인 관리</span>
+                            </div>
+                            <div className="table-panel">
+                              <table className="custom-table" style={{ fontSize: "0.75rem", tableLayout: "fixed", width: "100%" }}>
+                                <thead>
                                   <tr>
-                                    <td colSpan="9" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
-                                      접수된 교육환경 공간 예약 승인 신청 문서가 없습니다.
-                                    </td>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "116px" }}>예약일자</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "137px" }}>사용시간</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "169px" }}>시설명(호실번호)</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "116px" }}>신청부서</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "95px" }}>신청자</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap" }}>사용목적</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "100px" }}>결재 상태</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "90px" }}>일정 조정</th>
+                                    <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", verticalAlign: "middle", whiteSpace: "nowrap", width: "100px" }}>결재 처리</th>
                                   </tr>
-                                ) : (
-                                  reservations.map((res) => {
-                                    const SPACE_ROOMS = {
-                                      "AI∙DX다목적강의실": "M-404",
-                                      "AI∙DX강의실1": "M-402",
-                                      "AI∙DX강의실2": "M-405",
-                                      "울산늘봄누리센터": "1-108",
-                                      "앵커사업단회의실": "앵커사업단"
-                                    };
-                                    const roomSuffix = SPACE_ROOMS[res.space_name] ? `(${SPACE_ROOMS[res.space_name]})` : "";
-                                    return (
-                                      <tr key={res.id}>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{res.reserved_date}</td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", whiteSpace: "nowrap" }}>{res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}</td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.space_name}{roomSuffix}</td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.dept}</td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.reserver_name}</td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", wordBreak: "break-all" }}>{res.purpose}</td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                          <span className={`badge ${res.status === "승인완료" ? "badge-green" : "badge-orange"}`} style={{ fontSize: "0.65rem" }}>
-                                            {res.status || "승인대기"}
-                                          </span>
-                                        </td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                          <button
-                                            onClick={() => handleOpenEditTime(res)}
-                                            style={{
-                                              background: "none",
-                                              border: "none",
-                                              color: "#60A5FA",
-                                              cursor: "pointer",
-                                              display: "inline-flex",
-                                              alignItems: "center",
-                                              gap: "0.15rem",
-                                              fontSize: "0.65rem",
-                                              fontWeight: "800"
-                                            }}
-                                            title="예약 일시 수정 조율 권한"
-                                          >
-                                            <Edit2 size={12} />
-                                            <span>조정</span>
-                                          </button>
-                                        </td>
-                                        <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
-                                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
-                                            {res.status !== "승인완료" ? (
-                                              <>
-                                                <button
-                                                  onClick={() => handleApproveReservation(res)}
-                                                  className="btn-primary"
-                                                  style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
-                                                >
-                                                  승인
-                                                </button>
+                                </thead>
+                                <tbody>
+                                  {reservations.length === 0 ? (
+                                    <tr>
+                                      <td colSpan="9" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
+                                        접수된 교육환경 공간 예약 승인 신청 문서가 없습니다.
+                                      </td>
+                                    </tr>
+                                  ) : (
+                                    reservations.map((res) => {
+                                      const SPACE_ROOMS = {
+                                        "AI∙DX다목적강의실": "M-404",
+                                        "AI∙DX강의실1": "M-402",
+                                        "AI∙DX강의실2": "M-405",
+                                        "울산늘봄누리센터": "1-108",
+                                        "앵커사업단회의실": "앵커사업단"
+                                      };
+                                      const roomSuffix = SPACE_ROOMS[res.space_name] ? `(${SPACE_ROOMS[res.space_name]})` : "";
+                                      return (
+                                        <tr key={res.id}>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", fontWeight: "700" }}>{res.reserved_date}</td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontFamily: "var(--font-data)", whiteSpace: "nowrap" }}>{res.start_time.substring(0, 5)} ~ {res.end_time.substring(0, 5)}</td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.space_name}{roomSuffix}</td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.dept}</td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{res.reserver_name}</td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle", wordBreak: "break-all" }}>{res.purpose}</td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                            <span className={`badge ${res.status === "승인완료" ? "badge-green" : "badge-orange"}`} style={{ fontSize: "0.65rem" }}>
+                                              {res.status || "승인대기"}
+                                            </span>
+                                          </td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                            <button
+                                              onClick={() => handleOpenEditTime(res)}
+                                              style={{
+                                                background: "none",
+                                                border: "none",
+                                                color: "#60A5FA",
+                                                cursor: "pointer",
+                                                display: "inline-flex",
+                                                alignItems: "center",
+                                                gap: "0.15rem",
+                                                fontSize: "0.65rem",
+                                                fontWeight: "800"
+                                              }}
+                                              title="예약 일시 수정 조율 권한"
+                                            >
+                                              <Edit2 size={12} />
+                                              <span>조정</span>
+                                            </button>
+                                          </td>
+                                          <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", verticalAlign: "middle" }}>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                                              {res.status !== "승인완료" ? (
+                                                <>
+                                                  <button
+                                                    onClick={() => handleApproveReservation(res)}
+                                                    className="btn-primary"
+                                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#10B981", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                                  >
+                                                    승인
+                                                  </button>
+                                                  <button
+                                                    onClick={() => handleRejectReservation(res)}
+                                                    className="btn-primary"
+                                                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
+                                                  >
+                                                    반려
+                                                  </button>
+                                                </>
+                                              ) : (
                                                 <button
                                                   onClick={() => handleRejectReservation(res)}
                                                   className="btn-primary"
                                                   style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
                                                 >
-                                                  반려
+                                                  취소/삭제
                                                 </button>
-                                              </>
-                                            ) : (
-                                              <button
-                                                onClick={() => handleRejectReservation(res)}
-                                                className="btn-primary"
-                                                style={{ padding: "0.2rem 0.4rem", fontSize: "0.65rem", borderRadius: "0.3rem", background: "#EF4444", cursor: "pointer", border: "none", color: "white", width: "100%", minWidth: "56px", maxWidth: "68px", fontWeight: "700" }}
-                                              >
-                                                취소/삭제
-                                              </button>
-                                            )}
-                                          </div>
-                                        </td>
-                                      </tr>
-                                    );
-                                  })
-                                )}
-                              </tbody>
-                            </table>
+                                              )}
+                                            </div>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })
+                                  )}
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
 
-            {mgmtSubTab === "org_chart" && (
-              <OrgChartManager key={`org-${darkMode}`} />
-            )}
+              {mgmtSubTab === "org_chart" && (
+                <OrgChartManager key={`org-${darkMode}`} />
+              )}
 
-            {mgmtSubTab === "center_org_chart" && (
-              <CenterOrgChartManager key={`center-org-${darkMode}`} />
-            )}
-
+              {mgmtSubTab === "center_org_chart" && (
+                <CenterOrgChartManager key={`center-org-${darkMode}`} />
+              )}
 
 
-            {mgmtSubTab === "partners" && (
-              <PartnerManager key={`partner-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
-            )}
 
-            {mgmtSubTab === "instructor_pool" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
-              <InstructorPoolManager key={`instructors-${darkMode}`} currentUser={currentUser} currentRole={currentRole} />
-            )}
+              {mgmtSubTab === "partners" && (
+                <PartnerManager key={`partner-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
+              )}
 
-            {mgmtSubTab === "portal_config" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
-              <PortalConfigManager
-                key={`config-${darkMode}`}
-                initialVisibility={menuVisibility}
-                onSave={handleSaveMenuVisibility}
-              />
-            )}
-          </div>
+              {mgmtSubTab === "instructor_pool" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
+                <InstructorPoolManager key={`instructors-${darkMode}`} currentUser={currentUser} currentRole={currentRole} />
+              )}
+
+              {mgmtSubTab === "portal_config" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
+                <PortalConfigManager
+                  key={`config-${darkMode}`}
+                  initialVisibility={menuVisibility}
+                  onSave={handleSaveMenuVisibility}
+                />
+              )}
+            </div>
           </div>
         )}
 
@@ -12054,188 +12054,188 @@ export default function App() {
               style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}
             >
               <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem", flex: 1, overflowY: "auto" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>성명 *</label>
+                    <input
+                      type="text"
+                      required
+                      className="form-input"
+                      value={editingMember.name}
+                      onChange={(e) => setEditingMember({ ...editingMember, name: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>소속 부서</label>
+                    <select
+                      className="form-select"
+                      value={editingMember.dept}
+                      onChange={(e) => setEditingMember({ ...editingMember, dept: e.target.value })}
+                    >
+                      <option value="-" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>-</option>
+                      <option value="운영본부" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>운영본부</option>
+                      <option value="사업운영팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사업운영팀</option>
+                      <option value="ECC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ECC센터</option>
+                      <option value="ICC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ICC센터</option>
+                      <option value="RCC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>RCC센터</option>
+                      <option value="AID-X지원센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>AID-X지원센터</option>
+                      <option value="울산늘봄누리센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>울산늘봄누리센터</option>
+                      <option value="신산업특화센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>신산업특화센터</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>직책(역할)</label>
+                    <select
+                      className="form-select"
+                      value={editingMember.role}
+                      onChange={(e) => {
+                        const nextRole = e.target.value;
+                        let nextGrade = "연구원";
+                        if (["사업단장", "총괄본부장", "센터장", "운영팀장", "팀장교수"].includes(nextRole)) {
+                          nextGrade = "정교수";
+                        } else if (nextRole === "운영팀장") {
+                          nextGrade = "부장";
+                        }
+                        setEditingMember({ ...editingMember, role: nextRole, grade: nextGrade });
+                      }}
+                    >
+                      <option value="사업단장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사업단장</option>
+                      <option value="총괄본부장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>총괄본부장</option>
+                      <option value="센터장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>센터장</option>
+                      <option value="운영팀장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>운영팀장</option>
+                      <option value="팀장교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>팀장교수</option>
+                      <option value="연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>연구원</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>직급/직위</label>
+                    <select
+                      className="form-select"
+                      value={editingMember.grade}
+                      onChange={(e) => setEditingMember({ ...editingMember, grade: e.target.value })}
+                    >
+                      {["사업단장", "총괄본부장", "센터장", "운영팀장", "팀장교수"].includes(editingMember.role) ? (
+                        <>
+                          <option value="정교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>정교수</option>
+                          <option value="부교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>부교수</option>
+                          <option value="조교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>조교수</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="부장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>부장</option>
+                          <option value="차장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>차장</option>
+                          <option value="과장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>과장</option>
+                          <option value="대리" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>대리</option>
+                          <option value="사원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사원</option>
+                          <option value="책임연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>책임연구원</option>
+                          <option value="선임연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>선임연구원</option>
+                          <option value="연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>연구원</option>
+                        </>
+                      )}
+                    </select>
+                  </div>
+                </div>
+
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>성명 *</label>
+                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>이메일 *</label>
                   <input
-                    type="text"
+                    type="email"
                     required
                     className="form-input"
-                    value={editingMember.name}
-                    onChange={(e) => setEditingMember({ ...editingMember, name: e.target.value })}
+                    value={editingMember.email}
+                    onChange={(e) => setEditingMember({ ...editingMember, email: e.target.value })}
                   />
                 </div>
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>소속 부서</label>
-                  <select
-                    className="form-select"
-                    value={editingMember.dept}
-                    onChange={(e) => setEditingMember({ ...editingMember, dept: e.target.value })}
-                  >
-                    <option value="-" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>-</option>
-                    <option value="운영본부" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>운영본부</option>
-                    <option value="사업운영팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사업운영팀</option>
-                    <option value="ECC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ECC센터</option>
-                    <option value="ICC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ICC센터</option>
-                    <option value="RCC센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>RCC센터</option>
-                    <option value="AID-X지원센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>AID-X지원센터</option>
-                    <option value="울산늘봄누리센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>울산늘봄누리센터</option>
-                    <option value="신산업특화센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>신산업특화센터</option>
-                  </select>
-                </div>
-              </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>직책(역할)</label>
-                  <select
-                    className="form-select"
-                    value={editingMember.role}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>교내 전화번호</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="052-230-XXXX"
+                      value={editingMember.phoneOffice}
+                      onChange={(e) => setEditingMember({ ...editingMember, phoneOffice: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>휴대전화번호</label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="010-XXXX-XXXX"
+                      value={editingMember.phoneMobile}
+                      onChange={(e) => setEditingMember({ ...editingMember, phoneMobile: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.2rem" }}>
+                  <input
+                    type="checkbox"
+                    id="is_active"
+                    checked={editingMember.status !== "미참여"}
                     onChange={(e) => {
-                      const nextRole = e.target.value;
-                      let nextGrade = "연구원";
-                      if (["사업단장", "총괄본부장", "센터장", "운영팀장", "팀장교수"].includes(nextRole)) {
-                        nextGrade = "정교수";
-                      } else if (nextRole === "운영팀장") {
-                        nextGrade = "부장";
-                      }
-                      setEditingMember({ ...editingMember, role: nextRole, grade: nextGrade });
+                      const isActive = e.target.checked;
+                      setEditingMember({
+                        ...editingMember,
+                        status: isActive ? "참여중" : "미참여",
+                        endDate: isActive ? "" : (editingMember.endDate || "")
+                      });
                     }}
-                  >
-                    <option value="사업단장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사업단장</option>
-                    <option value="총괄본부장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>총괄본부장</option>
-                    <option value="센터장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>센터장</option>
-                    <option value="운영팀장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>운영팀장</option>
-                    <option value="팀장교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>팀장교수</option>
-                    <option value="연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>연구원</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>직급/직위</label>
-                  <select
-                    className="form-select"
-                    value={editingMember.grade}
-                    onChange={(e) => setEditingMember({ ...editingMember, grade: e.target.value })}
-                  >
-                    {["사업단장", "총괄본부장", "센터장", "운영팀장", "팀장교수"].includes(editingMember.role) ? (
-                      <>
-                        <option value="정교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>정교수</option>
-                        <option value="부교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>부교수</option>
-                        <option value="조교수" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>조교수</option>
-                      </>
-                    ) : (
-                      <>
-                        <option value="부장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>부장</option>
-                        <option value="차장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>차장</option>
-                        <option value="과장" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>과장</option>
-                        <option value="대리" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>대리</option>
-                        <option value="사원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사원</option>
-                        <option value="책임연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>책임연구원</option>
-                        <option value="선임연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>선임연구원</option>
-                        <option value="연구원" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>연구원</option>
-                      </>
-                    )}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>이메일 *</label>
-                <input
-                  type="email"
-                  required
-                  className="form-input"
-                  value={editingMember.email}
-                  onChange={(e) => setEditingMember({ ...editingMember, email: e.target.value })}
-                />
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>교내 전화번호</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="052-230-XXXX"
-                    value={editingMember.phoneOffice}
-                    onChange={(e) => setEditingMember({ ...editingMember, phoneOffice: e.target.value })}
                   />
+                  <label htmlFor="is_active" style={{ fontWeight: "700", cursor: "pointer" }}>현재 사업단 참여중</label>
                 </div>
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>휴대전화번호</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="010-XXXX-XXXX"
-                    value={editingMember.phoneMobile}
-                    onChange={(e) => setEditingMember({ ...editingMember, phoneMobile: e.target.value })}
-                  />
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>시작일</label>
+                    <input
+                      type="date"
+                      className="form-input"
+                      value={editingMember.startDate || editingMember.hireDate || ""}
+                      onChange={(e) => setEditingMember({ ...editingMember, startDate: e.target.value, hireDate: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>종료일</label>
+                    <input
+                      type="date"
+                      className="form-input"
+                      disabled={editingMember.status !== "미참여"}
+                      value={editingMember.endDate || ""}
+                      onChange={(e) => setEditingMember({ ...editingMember, endDate: e.target.value })}
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.2rem" }}>
-                <input
-                  type="checkbox"
-                  id="is_active"
-                  checked={editingMember.status !== "미참여"}
-                  onChange={(e) => {
-                    const isActive = e.target.checked;
-                    setEditingMember({
-                      ...editingMember,
-                      status: isActive ? "참여중" : "미참여",
-                      endDate: isActive ? "" : (editingMember.endDate || "")
-                    });
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
+                  onClick={() => {
+                    setIsMemberModalOpen(false);
+                    setEditingMember(null);
                   }}
-                />
-                <label htmlFor="is_active" style={{ fontWeight: "700", cursor: "pointer" }}>현재 사업단 참여중</label>
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
+                >
+                  저장
+                </button>
               </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>시작일</label>
-                  <input
-                    type="date"
-                    className="form-input"
-                    value={editingMember.startDate || editingMember.hireDate || ""}
-                    onChange={(e) => setEditingMember({ ...editingMember, startDate: e.target.value, hireDate: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>종료일</label>
-                  <input
-                    type="date"
-                    className="form-input"
-                    disabled={editingMember.status !== "미참여"}
-                    value={editingMember.endDate || ""}
-                    onChange={(e) => setEditingMember({ ...editingMember, endDate: e.target.value })}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
-                onClick={() => {
-                  setIsMemberModalOpen(false);
-                  setEditingMember(null);
-                }}
-              >
-                취소
-              </button>
-              <button
-                type="submit"
-                className="btn-primary"
-                style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
-              >
-                저장
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
-      </div>
       )}
 
       {showProgramEditor && (
@@ -12278,84 +12278,84 @@ export default function App() {
 
             <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem", flex: 1, overflowY: "auto" }}>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>단위과제 *</label>
-                <select
-                  value={programForm.unitId}
-                  onChange={(e) => setProgramForm({ ...programForm, unitId: e.target.value })}
-                  className="form-select"
-                  disabled={!!editingProgram}
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>단위과제 *</label>
+                  <select
+                    value={programForm.unitId}
+                    onChange={(e) => setProgramForm({ ...programForm, unitId: e.target.value })}
+                    className="form-select"
+                    disabled={!!editingProgram}
+                  >
+                    <option value="" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>단위과제를 선택하세요</option>
+                    {displayProjects.flatMap(p => p.units).map(u => (
+                      <option key={u.id} value={u.id} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>프로그램 ID *</label>
+                  <input
+                    type="text"
+                    value={programForm.id}
+                    onChange={(e) => setProgramForm({ ...programForm, id: e.target.value })}
+                    placeholder="예: 1-1, Common-1 등"
+                    className="form-input"
+                    disabled={!!editingProgram}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>프로그램명 *</label>
+                  <input
+                    type="text"
+                    value={programForm.title}
+                    onChange={(e) => setProgramForm({ ...programForm, title: e.target.value })}
+                    placeholder="프로그램명을 입력하세요"
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>담당부서</label>
+                  <select
+                    value={programForm.dept}
+                    onChange={(e) => setProgramForm({ ...programForm, dept: e.target.value })}
+                    className="form-select"
+                  >
+                    <option value="사업운영팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사업운영팀</option>
+                    <option value="늘봄누리센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>늘봄누리센터</option>
+                    <option value="신산업특화센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>신산업특화센터</option>
+                    <option value="ECC" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ECC</option>
+                    <option value="ICC" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ICC</option>
+                    <option value="RCC" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>RCC</option>
+                    <option value="AID-X" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>AID-X</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
+                  onClick={() => setShowProgramEditor(false)}
                 >
-                  <option value="" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>단위과제를 선택하세요</option>
-                  {displayProjects.flatMap(p => p.units).map(u => (
-                    <option key={u.id} value={u.id} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{u.id === "Common" ? "" : `${u.id}. `}{u.title}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>프로그램 ID *</label>
-                <input
-                  type="text"
-                  value={programForm.id}
-                  onChange={(e) => setProgramForm({ ...programForm, id: e.target.value })}
-                  placeholder="예: 1-1, Common-1 등"
-                  className="form-input"
-                  disabled={!!editingProgram}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>프로그램명 *</label>
-                <input
-                  type="text"
-                  value={programForm.title}
-                  onChange={(e) => setProgramForm({ ...programForm, title: e.target.value })}
-                  placeholder="프로그램명을 입력하세요"
-                  className="form-input"
-                />
-              </div>
-
-              <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>담당부서</label>
-                <select
-                  value={programForm.dept}
-                  onChange={(e) => setProgramForm({ ...programForm, dept: e.target.value })}
-                  className="form-select"
+                  취소
+                </button>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
+                  onClick={handleSaveProgram}
                 >
-                  <option value="사업운영팀" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>사업운영팀</option>
-                  <option value="늘봄누리센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>늘봄누리센터</option>
-                  <option value="신산업특화센터" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>신산업특화센터</option>
-                  <option value="ECC" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ECC</option>
-                  <option value="ICC" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>ICC</option>
-                  <option value="RCC" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>RCC</option>
-                  <option value="AID-X" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>AID-X</option>
-                </select>
+                  저장
+                </button>
               </div>
-            </div>
-
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", padding: "0.85rem 1.25rem", flexShrink: 0 }}>
-              <button
-                type="button"
-                className="btn-secondary"
-                style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
-                onClick={() => setShowProgramEditor(false)}
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                className="btn-primary"
-                style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
-                onClick={handleSaveProgram}
-              >
-                저장
-              </button>
             </div>
           </div>
         </div>
-      </div>
       )}
 
       {isPasswordModalOpen && currentUser && !isGuest && (
@@ -12875,7 +12875,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       TOTAL_INVESTMENT_5YEAR_DATA.forEach((u) => {
         const totalObj = u.total[5] || { main: 0, carry: 0 };
         const mainSum = (totalObj.main || 0) + (totalObj.carry || 0);
-        
+
         tableRowsHtml += `
           <tr style="background: ${u.id === "Common" || u.id === "X0" ? "#fffbeb" : "#ffffff"}; font-weight: bold; page-break-inside: avoid; break-inside: avoid;">
             <td style="border: 1px solid #d1d5db; padding: 8px 6px; font-size: 10px; font-weight: bold; text-align: left;">${u.title}</td>
