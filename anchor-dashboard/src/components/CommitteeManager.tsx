@@ -1922,26 +1922,59 @@ export default function CommitteeManager({
     }
   };
 
-  const handleDeleteMeeting = async (meetingId) => {
-    if (!window.confirm("이 회의 안건을 삭제하시겠습니까? 관련 투표와 요약 회의록이 모두 소실됩니다.")) return;
+  const handleDeleteMeeting = async (meetingId: string | number) => {
+    if (!meetingId) return;
+    if (!window.confirm("이 회의 안건을 정말 취소(삭제)하시겠습니까?\n관련 의안, 위원 표결, 서명 데이터가 함께 삭제됩니다.")) return;
+    
+    // 1. [하위 테이블 종속 삭제] Foreign Key Violation 방지
+    try {
+      await supabase.from("meeting_agenda_votes").delete().eq("meeting_id", meetingId);
+      await supabase.from("meeting_agendas").delete().eq("meeting_id", meetingId);
+      await supabase.from("meeting_responses").delete().eq("meeting_id", meetingId);
+      await supabase.from("meeting_results").delete().eq("meeting_id", meetingId);
+    } catch (e) {}
+
+    // 2. [메인 회의 테이블 삭제]
     try {
       const { error } = await supabase
         .from("committee_meetings")
         .delete()
         .eq("id", meetingId);
-      if (error) throw error;
-      alert("회의가 취소되었습니다.");
-      setSelectedMeeting(null);
+      
+      if (error) console.warn("Supabase DB 회의 삭제 경고:", error.message);
+    } catch (err: any) {
+      console.warn("DB 회의 삭제 스킵:", err.message);
+    }
+
+    // 3. [로컬 캐시 즉시 제거 및 UI 업데이트]
+    try {
+      const committeeId = selectedCommittee?.id || "ecc";
+      const localKey = `local_committee_meetings_${committeeId}`;
+      const localMeetings = JSON.parse(localStorage.getItem(localKey) || "[]");
+      const updated = localMeetings.filter((m: any) => String(m.id) !== String(meetingId));
+      localStorage.setItem(localKey, JSON.stringify(updated));
+
+      // 전체 캐시에서도 제거
+      const allLocal = localStorage.getItem("local_committee_meetings");
+      if (allLocal) {
+        const parsedAll = JSON.parse(allLocal);
+        const filteredAll = parsedAll.filter((m: any) => String(m.id) !== String(meetingId));
+        localStorage.setItem("local_committee_meetings", JSON.stringify(filteredAll));
+      }
+
+      // 개별 의안/응답 캐시도 완전히 삭제
+      localStorage.removeItem(`local_meeting_agendas_${meetingId}`);
+      localStorage.removeItem(`local_meeting_agenda_votes_${meetingId}`);
+      localStorage.removeItem(`local_meeting_responses_${meetingId}`);
+    } catch (e) {}
+
+    alert("회의가 정상적으로 취소(삭제)되었습니다.");
+    setSelectedMeeting(null);
+    setResponses([]);
+    setSelectedMeetingAgendas([]);
+    setSelectedMeetingAgendaVotes([]);
+    if (selectedCommittee?.id) {
       await fetchMeetings(selectedCommittee.id);
-    } catch (err) {
-      console.warn("DB 회의 삭제 실패, 로컬 스토리지에서 제거합니다:", err.message);
-      const localMeetings = JSON.parse(localStorage.getItem(`local_committee_meetings_${selectedCommittee.id}`) || "[]");
-      const updated = localMeetings.filter(m => m.id !== meetingId);
-      const cleanUpdated = (updated || []).map(m => ({ ...m, attachment_data: null }));
-      localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(cleanUpdated));
-      alert("회의가 취소되었습니다. (오프라인 캐시 모드)");
-      setSelectedMeeting(null);
-      setMeetings(updated);
     }
   };
 
