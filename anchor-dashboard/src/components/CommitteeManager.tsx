@@ -3502,7 +3502,20 @@ ${selectedMeetingAgendas.map((a, idx) => {
                               agName = parts[idx];
                             }
                           }
-                          let agData = ag.attachment_data || (idx === 0 ? selectedMeeting.attachment_data : null);
+                          let agData = ag.attachment_data;
+                          if (!agData && selectedMeeting.attachment_data) {
+                            const rawStr = String(selectedMeeting.attachment_data);
+                            if (rawStr.startsWith("[")) {
+                              try {
+                                const parsedArr = JSON.parse(rawStr);
+                                if (parsedArr[idx] && parsedArr[idx].length > 0) {
+                                  agData = parsedArr[idx];
+                                }
+                              } catch (e) { }
+                            } else if (idx === 0) {
+                              agData = selectedMeeting.attachment_data;
+                            }
+                          }
 
                           // 로컬 스토리지 백업에서 2차 무손실 복원
                           if (!agData || !agName) {
