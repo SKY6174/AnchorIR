@@ -77,6 +77,21 @@ const getDynamicTeamName = (dateStr) => {
   return date >= splitDate ? "앵커사업단" : "RISE사업단";
 };
 
+export interface UnifiedCertificateManagerProps {
+  projects?: any[];
+  certificates?: any[];
+  selectedYear?: number | string;
+  onAddCertificate?: (cert: any) => void;
+  onUpdateCertificate?: (cert: any) => void;
+  onDeleteCertificate?: (id: any) => void;
+  setCertificates?: React.Dispatch<React.SetStateAction<any[]>>;
+  currentRole?: any;
+  members?: any[];
+  managerType?: "award" | "certificate" | "all";
+  darkMode?: boolean;
+  currentUser?: any;
+}
+
 export default function UnifiedCertificateManager({
   projects = [],
   certificates = [],
@@ -87,8 +102,8 @@ export default function UnifiedCertificateManager({
   setCertificates,
   currentRole,
   members = [],
-  managerType = "all" // "award", "certificate", or "all"
-}) {
+  managerType = "all"
+}: UnifiedCertificateManagerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const fileInputRef = useRef(null);
