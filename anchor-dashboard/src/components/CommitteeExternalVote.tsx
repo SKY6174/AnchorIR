@@ -161,8 +161,19 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           }
         }
 
-        // 영문 알파벳, 숫자, +, /, = 외 모든 특수문자/공백 완전 제거 정제
+        // URL 인코딩 정제 및 영문/숫자/+/=/ 외 특수문자 정제
+        try {
+          if (base64Content.includes("%")) {
+            base64Content = decodeURIComponent(base64Content);
+          }
+        } catch (e) { }
+
         base64Content = base64Content.replace(/[^A-Za-z0-9+/=]/g, "");
+
+        // 4의 배수 길이 padding 보정
+        while (base64Content.length % 4 !== 0) {
+          base64Content += "=";
+        }
 
         const byteString = atob(base64Content);
         const ab = new ArrayBuffer(byteString.length);
@@ -178,11 +189,11 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           URL.revokeObjectURL(url);
         };
       } catch (e) {
-        console.warn("❌ PDF Base64 Blob 변환 예외 가드:", e);
-        setCurrentBlobUrl(null);
+        console.warn("❌ PDF Base64 Blob 변환 예외 가드 (안전 rawStr 폴백 적용):", e);
+        setCurrentBlobUrl(rawStr);
       }
     } else {
-      setCurrentBlobUrl(null);
+      setCurrentBlobUrl(rawStr);
     }
   }, [currentFileData, activeAgendaIndex]);
 
