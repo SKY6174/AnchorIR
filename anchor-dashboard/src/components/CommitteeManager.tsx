@@ -763,33 +763,58 @@ export default function CommitteeManager({
   };
 
   const fetchMeetings = async (committeeId: string) => {
+    if (!committeeId) return;
+
+    let loadedMeetings: any[] = [];
+
+    // 1. Supabase DB 조회 시도
     try {
       const { data, error } = await supabase
         .from("committee_meetings")
         .select("*")
         .eq("committee_id", committeeId)
         .order("meeting_date", { ascending: false });
-      if (error) throw error;
-      
-      setMeetings(data || []);
-      const cleanMeetings = (data || []).map(m => ({ ...m, attachment_data: null }));
-      localStorage.setItem(`local_committee_meetings_${committeeId}`, JSON.stringify(cleanMeetings));
-      
-      if (data && data.length > 0) {
-        setSelectedMeeting(data[0]);
-      } else {
-        setSelectedMeeting(null);
+
+      if (!error && data && data.length > 0) {
+        loadedMeetings = data;
+        const cleanMeetings = data.map(m => ({ ...m, attachment_data: null }));
+        localStorage.setItem(`local_committee_meetings_${committeeId}`, JSON.stringify(cleanMeetings));
       }
     } catch (err: any) {
-      console.error("회의 조회 에러 (로컬 캐시 스위칭):", err.message);
-      const localData = localStorage.getItem(`local_committee_meetings_${committeeId}`);
-      const parsed = localData ? JSON.parse(localData) : [];
-      setMeetings(parsed);
-      if (parsed.length > 0) {
-        setSelectedMeeting(parsed[0]);
-      } else {
-        setSelectedMeeting(null);
+      console.warn("committee_meetings DB 조회 스킵 (로컬 폴백 사용):", err.message);
+    }
+
+    // 2. DB 데이터가 없거나 에러 시 로컬 캐시 스토리지에서 복원
+    if (loadedMeetings.length === 0) {
+      try {
+        const localData = localStorage.getItem(`local_committee_meetings_${committeeId}`);
+        if (localData) {
+          loadedMeetings = JSON.parse(localData);
+        } else {
+          const allLocal = localStorage.getItem("local_committee_meetings");
+          if (allLocal) {
+            const parsed = JSON.parse(allLocal);
+            loadedMeetings = parsed.filter((m: any) => String(m.committee_id) === String(committeeId) || committeeId === "all");
+          }
+        }
+      } catch (err) {
+        loadedMeetings = [];
       }
+    }
+
+    setMeetings(loadedMeetings);
+
+    if (loadedMeetings.length > 0) {
+      const firstMeeting = loadedMeetings[0];
+      setSelectedMeeting(firstMeeting);
+
+      // 💡 selectedMeeting에 포함된 responses_data가 존재하면 즉시 responses 상태로 복원하여 0명 표출 방지!
+      if (firstMeeting.responses_data && Array.isArray(firstMeeting.responses_data)) {
+        setResponses(firstMeeting.responses_data);
+      }
+    } else {
+      setSelectedMeeting(null);
+      setResponses([]);
     }
   };
 

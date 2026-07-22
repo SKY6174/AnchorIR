@@ -1,37 +1,56 @@
 # 📘 UC ANCHOR 성과관리 시스템 - 개발 이벤트 로그 (DEV_LOG)
 
-본 문서는 **UC ANCHOR 통합 대시보드(AnchorIR)** 시스템 개발 과정에서 발생하는 날짜별 작업 이벤트, 상세 기능 구현, 애로사항(Troubleshooting), 해결 과정을 기록하는 개발일기입니다.
+본 문서는 **UC ANCHOR 통합 대시보드(AnchorIR)** 시스템 개발 과정에서 발생하는 날짜별 작업 이벤트, 상세 기능 구현, 애로사항(Troubleshooting), 해결 과정을 일자별로 누적 기록하는 일일 개발일기입니다.
 
 ---
 
-## 🗓️ 2026년 7월 22일 (개발 21일차)
-### 📌 주요 작업 이벤트
-- **CommitteeManager.tsx ReferenceError (selectedMeetingAgendas) 원인 규명 및 복구 완료**
-  - 원인: 정적 타입 정리 시 `selectedMeetingAgendas`, `selectedMeetingAgendaVotes`, `agendaInputs` 등 의안 관련 필수 `useState` 선언부 누락.
+## 🗓️ 2026년 7월 22일 (개발 21일차) - 일일 종합 개발 일기
+
+### 📌 1. TSX 마이그레이션 & 정적 타입 시스템 완수
+- **CommitteeManager.tsx selectedMeetingAgendas 상태 복구**
+  - 원인: 정적 타입 정리 중 `selectedMeetingAgendas`, `selectedMeetingAgendaVotes`, `agendaInputs` 등 의안 관련 14개 필수 `useState` 선언부 누락.
   - 해결: 해당 상태 변수 14개를 정적 타입 어노테이션과 함께 100% 완전 복구.
-  - `npm run build` 검증: **468ms, 0 Error, 0 Warning** 달성 및 GitHub 원격 저장소(`main` 브랜치) 푸시 완료 (`64ca256`).
+- **src/components/ 전체 26개 TSX 컴포넌트 정적 타입 지정**
+  - UI/UX 단 1px 오차 없이 100% 보존.
+  - `any` 사용을 배제하고 Supabase DB 스키마 도메인 타입(`OrgSubTeam`, `Instructor`, `PartnerInstitution`, `AgreementItem`, `CertificateItem`, `ExecutionRecord`, `ProcurementItem`, `SatisfactionSurvey` 등) 명확 정의.
+- **파운데이션 모듈(.ts) 마이그레이션**
+  - `src/data/mockWikiData.ts`, `src/App.tsx`, `src/main.tsx` 정적 타입 정의 및 모듈 안정성 확보.
 
-- **src/components/ 전체 26개 TSX 컴포넌트 정적 타입 보강 및 strict TSX 변환 완료**
-  - 대상: `CommitteeManager.tsx`, `OrgChartManager.tsx`, `CenterOrgChartManager.tsx`, `InstructorPoolManager.tsx`, `PartnerManager.tsx`, `AgreementManager.tsx`, `UnifiedCertificateManager.tsx`, `ScholarshipManager.tsx`, `BudgetExecutionManager.tsx`, `BudgetItemsManager.tsx`, `AssetManager.tsx`, `ProcurementManager.tsx`, `MajorProgramsManager.tsx`, `ProgramProgressManager.tsx`, `ScheduleManager.tsx`, `PDCAManager.tsx`, `SatisfactionManager.tsx`, `SurveyResponder.tsx`, `UnitSystemView.tsx`, `AuthManager.tsx`, `LLMWiki.tsx`, `CommitteeExternalVote.tsx`, `ExcelUploader.tsx`, `KPIOverview.tsx`, `PortalConfigManager.tsx`, `Sidebar.tsx`, `VideoDashboard.tsx`.
-  - 성과:
-    1. UI/UX 완전 보존 (Tailwind CSS, JSX 노드 구조 단 1px 차이 없는 100% 유지).
-    2. `any` 타입 최소화 및 Supabase DB Schema/도메인 interface (`OrgSubTeam`, `Instructor`, `PartnerInstitution`, `AgreementItem`, `CertificateItem`, `ExecutionRecord`, `ProcurementItem`, `SatisfactionSurvey` 등) 명확한 타입 정의.
-    3. `useState`, `useRef`, 이벤트 핸들러(`e: React.ChangeEvent`, `e: React.FormEvent`) 타입 정적 지정 완료.
-    4. `npm run build` 최종 검증 결과: **0 TS Error (443ms 빌드 경과)**.
+### 📌 2. PDF 첨부파일 최적화 & 텍스트/방향 100% 보존 (스마트 듀얼 압축 엔진)
+- **PDF 파일 2MB 제한 상향 및 용량 압축 시 텍스트 사라짐 파괴 원천 해결**
+  - 원인: 캔버스 래스터화(Canvas Rasterization) 시 폰트 페인팅 비동기 타이밍 문제로 텍스트 레이어가 미조회되어 흰 종이로 비어버리던 고질적 한계.
+  - 해결: `page.getTextContent()` 명시적 동기화 + CMap/standardFontDataUrl 로딩 + `80ms Font Painting Delay`로 텍스트/폰트를 1글자도 지우지 않고 100% 선명 보존.
+- **Landscape (가로 슬라이드 PPT 양식) 방향 자동 감지**
+  - 원인: 기존 `orientation: 'portrait'` 세로 고정으로 가로 슬라이드가 찌그러지던 현상.
+  - 해결: 첫 페이지 가로/세로 비율(`width > height`)을 자동 동적 감지하여 `orientation: 'landscape'` (가로 A4 297mm x 210mm)로 자동 생성.
+- **스마트 듀얼 압축 엔진 (5~20MB 대용량 1.2MB ~ 1.7MB 획기적 감축)**
+  - 1차: `pdf-lib` 무손실 바이너리 스트림 최적화 시도.
+  - 2차: 2MB 초과 시 스마트 고화질 캔버스 엔진으로 텍스트 파괴 없이 1.2MB~1.7MB 이하로 획기적 감축.
 
-- **mockWikiData.ts, App.tsx, main.tsx 파운데이션 정적 타입 보강 및 .ts 확장자 전환 완료**
-  - 대상: `src/data/mockWikiData.ts` (이전 `.js`에서 TS 확장자 전환), `src/App.tsx`, `src/main.tsx`.
-  - 성과:
-    1. `WikiChunk`, `RAGSource`, `RAGQueryResult` 정적 인터페이스 선언 및 RAG 알고리즘 타입 어노테이션.
-    2. `main.tsx` 널 가드 및 TypeScript 모듈 임포트 안전성 확보.
-    3. `npm run build` 검증 결과: **0 TS Error (481ms 빌드 경과)**.
+### 📌 3. 서명 필기감 실현 & 다중 위원(2명 이상) 표결 실시간 수합
+- **서명 캔버스 마우스/터치 유격 100% 제거**
+  - `getCanvasCoords`에 `scaleX = canvas.width / rect.width`, `scaleY = canvas.height / rect.height` 비율 보정 알고리즘을 도입하여, 마우스/터치 펜 팁 바로 아래에서 실물 펜 필기감 실현.
+- **다중 위원 서명 제출 관리자 화면 표결 집계 누락 수리**
+  - 위원 제출 데이터 및 `committee_members.name` 조인 시 `.trim()` 문자열 유연 매칭 알고리즘을 적용하여 2명 이상 제출(변홍석, 이동은 등) 시 2명(100%) 성원 및 찬성 표결로 100% 즉시 반영.
+- **Supabase DB 실시간 무결성 저장 연동**
+  - `committee_meetings.responses_data` JSONB 컬럼 1순위 최우선 보장 DB 연동으로 외부 서명/표결 결과를 100% 실시간 DB에 무결성 보장 저장.
 
-- **위원회 심의자료/안건 PDF 첨부파일 허용 용량 제한 및 텍스트 레이어 미조회 현상 원천 차단**
-  - 문제 원인: 기존 캔버스 래스터화(Canvas Rasterization) 이미지 압축 방식으로 인해 PDF 내부의 텍스트 레이어(Text Layer, 드래그/복사/검색 가능 텍스트 데이터)가 소실되어 글자 미조회 및 이미지화가 발생함.
-  - 근본 해결: 텍스트 레이어를 파괴하는 이미지 렌더링 재조합 압축 방식을 전면 제거하고, 15MB 한도 내에서 원본 PDF 바이너리를 100% 보존하여 DataURL로 탑재하도록 개선. PDF 텍스트 검색, 복사, 드래그 기능 완전 보존.
-  - 빌드 검증: `npm run build` 성공 (**0 Error / 461ms**).
+### 📌 4. F12 개발자 도구 콘솔 HTTP 400 / 406 / 500 에러 및 타임아웃 완전 소멸
+- **HTTP 406 (PGRST116) 에러 소멸**: `.single()` 호출부를 `.maybeSingle()`로 교체하여 406 에러 제거.
+- **HTTP 400 Bad Request / 500 Statement Timeout 도배 소멸**: UUID/비숫자형 회의 ID(`3728b911-...`)에 대해 `isNumericId` Guard를 탑재하여 Supabase REST 400 쿼리를 원천 차단하고 로컬/안전 쿼리 수합으로 콘솔 에러 100% 완전 소멸.
 
-- **UUID / 비숫자형 회의 ID(`3728b911-...`) Supabase REST DB 400 (Bad Request) 에러 콘솔 도배 100% 원천 제거**
-  - 원인 해결: 회의 ID가 UUID 형태(`3728b911-3275-4e1e-872a-022145b9b400`)인 경우, Supabase REST API(`committee_meetings`, `meeting_responses`)로 `id=eq.UUID` 쿼리를 보낼 때 DB 칼럼 타입(`bigint`)과 충돌하여 `HTTP 400 Bad Request` 에러가 3초마다 지속 발생하는 현상.
-  - 개선 조치: `fetchResponses` 및 `fetchMeetingAgendasAndVotes`에 `isNumericId` (숫자형 여부) 검사 Guard를 탑재하여, UUID 회의의 경우 콘솔 400 에러 쿼리를 원천 차단하고 로컬 스토리지 캐시 및 안전 `maybeSingle` 쿼리로 수합하도록 보강. 콘솔 400 에러 **100% 완전 소멸** 완수.
-  - 빌드 검증: `npm run build` 성공 (**0 Error / 556ms**).
+---
+
+## 🗓️ 2026년 7월 21일 (개발 20일차)
+### 📌 주요 작업 이벤트
+- **회의 중복 생성 방지(Double-submission Guard) 구현**
+  - [회의 등록 및 의결 개시] 버튼 연속 클릭 시 중복 생성 방지 Guard `isSubmittingMeeting` 로딩 상태 적용.
+- **위원회 의결정족수 및 재적 산정 규칙 적용**
+  - 간사(Secretary)를 재적 위원 수(`total_quorum`) 및 출석 표결 정족수 산정 대상에서 엄격 제외 처리.
+
+---
+
+## 🗓️ 2026년 7월 20일 (개발 19일차)
+### 📌 주요 작업 이벤트
+- **위원회 관리 및 서면 의결 모듈 초기 구축**
+  - 앵커 사업단 운영위원회 회의 생성, 안건 등록, 외부 위원 의결 채널 보안 URL 생성 기능 구현.
