@@ -64,7 +64,14 @@ const defaultSurveys = [
   }
 ];
 
-export default function SatisfactionManager({ selectedYear }) {
+export interface SatisfactionManagerProps {
+  selectedYear?: number | string;
+  darkMode?: boolean;
+  currentUser?: any;
+  currentRole?: any;
+}
+
+export default function SatisfactionManager({ selectedYear }: SatisfactionManagerProps) {
   const [surveys, setSurveys] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
