@@ -1,7 +1,19 @@
 import React, { useState } from "react";
 import { Network, Users, ChevronRight, Info, ShieldAlert, Award, ArrowRightLeft } from "lucide-react";
 
-export default function CenterOrgChartManager() {
+export interface CenterOrgChartManagerProps {
+  darkMode?: boolean;
+  selectedYear?: number;
+  currentRole?: any;
+  currentUser?: any;
+}
+
+export default function CenterOrgChartManager({
+  darkMode,
+  selectedYear,
+  currentRole,
+  currentUser
+}: CenterOrgChartManagerProps = {}) {
   // 사용자가 마우스를 올린 조직 노드의 ID를 저장하는 상태(State)입니다.
   const [hoveredNode, setHoveredNode] = useState(null);
 
