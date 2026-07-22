@@ -248,15 +248,41 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       }
     }
 
-    // 💡 4. title 정제 및 attachment_name 보강
+    // 💡 4. title 정제 및 global_attachment_map 파일 데이터 100% 무손실 합성
     if (finalAgendas && finalAgendas.length > 0) {
-      finalAgendas = finalAgendas.map(ag => {
+      let globalMap: any = {};
+      try {
+        const globalMapStr = localStorage.getItem("global_attachment_map") || "{}";
+        globalMap = JSON.parse(globalMapStr);
+      } catch (e) { }
+
+      finalAgendas = finalAgendas.map((ag, idx) => {
         const isEval = ag.is_evaluation || ag.title?.includes("성과") || ag.title?.includes("평가") || ag.title?.includes("5점");
         const cleaned = ag.title ? ag.title.replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim() : ag.title;
+
+        let attachName = ag.attachment_name;
+        let attachData = ag.attachment_data;
+
+        // 회의 개체 targetMtg 내 agendas 배열에서 attachment_name / attachment_data 2차 수합
+        if (targetMtg && Array.isArray(targetMtg.agendas)) {
+          const matchedTargetAg = targetMtg.agendas.find((ta: any, tIdx: number) => String(ta.id) === String(ag.id) || tIdx === idx);
+          if (matchedTargetAg) {
+            if (!attachName && matchedTargetAg.attachment_name) attachName = matchedTargetAg.attachment_name;
+            if (!attachData && matchedTargetAg.attachment_data) attachData = matchedTargetAg.attachment_data;
+          }
+        }
+
+        // 글로벌 바이너리 맵 3차 수합
+        if (!attachData && attachName && globalMap[attachName.trim()]) {
+          attachData = globalMap[attachName.trim()];
+        }
+
         return {
           ...ag,
           title: cleaned,
-          is_evaluation: isEval
+          is_evaluation: isEval,
+          attachment_name: attachName || null,
+          attachment_data: attachData || null
         };
       });
     }
@@ -447,13 +473,14 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           }
         }
 
-        // 파일명 기준 글로벌 바이너리 맵 3차 영구 복원
-        if (!foundData && activeAgendaItem?.attachment_name) {
+        // 파일명 기준 글로벌 바이너리 맵 3차 영구 복원 (currentFileName 및 activeAgendaItem 백업 수합)
+        const targetFileName = activeAgendaItem?.attachment_name || currentFileName;
+        if (!foundData && targetFileName) {
           try {
             const globalMapStr = localStorage.getItem("global_attachment_map") || "{}";
             const globalMap = JSON.parse(globalMapStr);
-            if (globalMap[activeAgendaItem.attachment_name.trim()]) {
-              foundData = globalMap[activeAgendaItem.attachment_name.trim()];
+            if (globalMap[targetFileName.trim()]) {
+              foundData = globalMap[targetFileName.trim()];
             }
           } catch (e) { }
         }
