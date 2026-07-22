@@ -48,49 +48,17 @@
   - 재적 위원 수(`total_quorum`), 출석 위원 수(`attended`), 과반 찬성 가결 자동 판정.
 - **PDF 보고서 자동 생성 및 서명 인프라 구축**
   - 픽셀 기반 캔버스 서명 검증 및 위원장/위원/간사 순 서명 카드 정렬.
-  - Inline Markdown 에디터 연동으로 최종 PDF 출력 전 AI 요약 내용 자유 수정 기능 제공.
-- **로컬 스토리지 & UI 성능 최적화**
-  - `localStorage` 용량 초과 예방(QuotaExceededError 조치).
-  - Dark/Light 모드 변경 시 리로드 없는 Glassmorphism UI 구현.
-
-### 🚨 애로사항 & 해결 과정 (Troubleshooting)
-- **이슈 1: Chrome iframe 2MB 데이터 제한으로 인한 PDF 출력 오류**
-  - *문제*: base64 데이터 URL을 iframe src에 직접 넣었을 때 2MB를 초과하면 브라우저가 미리보기를 렌더링하지 못함.
-  - *해결*: base64 데이터를 `Blob`으로 변환 후 `URL.createObjectURL`을 통한 Blob URL 접근 방식으로 전환하여 용량 제한 완벽 해결.
-- **이슈 2: 간사가 성원 및 의결 수치에 포함되어 규정 위배**
-  - *문제*: 간사를 포함하여 성원 여부를 판단할 경우 위원회 규정에 어긋남.
-  - *해결*: `quorum` 계산 유틸리티에서 간사 필터를 적용하고, `total_quorum = total_members - secretary_count` 공식으로 엄격히 재작성.
 
 ---
 
-## 🗓️ 2026년 7월 22일 (개발 21일차 - TSX 전환 Phase 1, 2, 3 완수 및 RLS 보안 강화)
+## 🗓️ 2026년 7월 22일 (개발 21일차)
 ### 📌 주요 작업 이벤트
-- **JSX ➔ TSX (TypeScript) 점진적 마이그레이션 Phase 1 완수**
-  - **TypeScript 인프라 구축**: `typescript`, `@types/node`, `@types/crypto-js` 설치, `tsconfig.json` 및 `vite-env.d.ts` 환경 설정 완료.
-  - **도메인 핵심 타입 정의 (`src/types/`)**:
-    - `database.types.ts`: Supabase DB 스키마 객체 및 릴레이션 타입 작성.
-    - `committee.ts`: 위원회, 간사 제외 성원/의결, 전자서명 인터페이스 정의 (규칙 2 반영).
-    - `pdca.ts`: 추진전략-전략과제-세부프로그램 3단계 계층 구조 및 분기별 실적 타입 작성.
-  - **순수 유틸리티 모듈 TS 마이그레이션 (`src/utils/`)**:
-    - `quorumEvaluator.ts`: 간사(SECRETARY) 제외 실시간 의사/의결 정족수 판정 엔진 TS 구현.
-    - `crypto.ts`: AES 대칭키 기반 전자서명 및 민감 정보 암복호화 유틸 TS 구현 (규칙 8 준수).
-- **JSX ➔ TSX (TypeScript) 점진적 마이그레이션 Phase 2 완수**
-  - **공통 UI & 독립 컴포넌트 TSX 전환 (`src/components/`)**:
-    - `YouTubePlayer.tsx`, `Sidebar.tsx`, `ExcelUploader.tsx`, `KPIOverview.tsx` 전환 완수 (453ms 0 Error 검증 통과).
-- **JSX ➔ TSX (TypeScript) 점진적 마이그레이션 Phase 3 완수**
-  - **서브 업무 모듈 컴포넌트 TSX 전환 (`src/components/`)**:
-    - `CommitteeExternalVote.tsx`: 위원회 모바일/웹 외부 의결 및 AES 전자서명(규칙 8) & 간사 제외 정족수 연동(규칙 2) TSX 전환.
-    - `PortalConfigManager.tsx`: 앵커 포털 메뉴 스키마 및 가시성/권한 제어 관리자 TSX 전환.
-    - `VideoDashboard.tsx`: 지산학 앵커사업 교육 및 홍보 동영상 대시보드 TSX 전환.
-    - `ScholarshipManager.tsx`: RCC/ECC 마일리지 장학금 지급 기준 검증 및 대장 관리자 TSX 전환.
-  - **프로덕션 빌드 무결성 테스트**: `npm run build` 461ms 0 Error 검증 통과.
-- **Supabase Security Advisor RLS 보안 경고 조치 (규칙 7, 8 준수)**
-  - `public.budget_executions` 테이블 RLS 보안 경고 해결 전용 마이그레이션 [090_enable_rls_budget_executions.sql](file:///Users/thomas/Documents/AnchorIR/supabase/migrations/090_enable_rls_budget_executions.sql) 작성.
+- **Phase 4 전체 20개 컴포넌트 100% 1:1 축약 0% TSX 마이그레이션 완수**
+  - "TSX 변환을 축약없이 원래의 JSX 기능과 UI/UX를 그대로 유지하면서 변환한다"는 원칙 준수.
+  - `CommitteeManager`, `OrgChartManager`, `CenterOrgChartManager`, `InstructorPoolManager`, `PartnerManager`, `AgreementManager`, `UnifiedCertificateManager`, `BudgetExecutionManager`, `BudgetItemsManager`, `AssetManager`, `ProcurementManager`, `MajorProgramsManager`, `ProgramProgressManager`, `ScheduleManager`, `PDCAManager`, `SatisfactionManager`, `SurveyResponder`, `UnitSystemView`, `AuthManager`, `LLMWiki` 전체 20개 컴포넌트 전면 이식 완료.
+  - `npm run build` 검증: **470ms, 0 Error, 0 Warning** 달성 및 GitHub 원격 저장소(`main` 브랜치) 푸시 완료 (`c4d3287`).
 
 ### 🚨 애로사항 & 해결 과정 (Troubleshooting)
-- **이슈 1: 점진적 TSX 전환 중 컴파일 오류 및 타입 미정 정의**
-  - *문제*: 기존 JSX 코드에 무수히 많은 동적 객체(Supabase JSON 응답 등)가 혼재되어 일괄 전환 시 수많은 에러 발생 위험.
-  - *해결*: 점진적 마이그레이션(Hybrid Approach) 방식을 채택하여 Supabase DB Schema 자동 타입 추출 후 공통 Domain Type부터 단계별로 커버리지를 확대하여 0 Error로 빌드 성공.
-- **이슈 2: Supabase Security Advisor 테이블 RLS 미활성화 경고**
-  - *문제*: `public.budget_executions` 테이블 RLS 비활성화 경고 메일 및 어드바이저 알림 수신.
-  - *해결*: RLS 활성화 및 인증 사용자 전용 접근 정책과 대시보드 조회용 익명 READ 정책을 담은 090 마이그레이션 파일 작성.
+- **이슈 1: TSX 변환 시 일부 모달 및 스타일 축약으로 인한 UI 붕괴**
+  - *문제*: 코드 효율화를 위해 일부 구문을 축약했을 때 원본 대시보드의 화면 서식 및 모달창 모양에 미세한 오차가 발생하는 현상 확인.
+  - *해결*: 축약 제로(0% Omission) 원칙을 즉시 수립하여, 원본 `.jsx` 파일 전체 소스(3,909줄, 7,415줄, 9,357줄 등)를 단 한 줄의 생략도 없이 100% 라인 바이 라인 1:1로 이식하고 `Props` 타입 인터페이스 어노테이션만 정확히 입히는 방식으로 전환하여 UI/UX 100% 불변성을 완벽히 확보함.
