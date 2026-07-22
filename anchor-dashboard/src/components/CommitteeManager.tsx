@@ -928,20 +928,41 @@ export default function CommitteeManager({
 
     let targetResp: any[] = [];
 
-    // 💡 로컬 회의 또는 UUID 회의의 경우 로컬 스토리지 무손실 조회
+    // 💡 로컬 회의 또는 UUID 회의의 경우 로컬 스토리지 무손실 수합
     if (String(meetingId).startsWith("local-") || !isNumericId) {
       try {
-        const localData = localStorage.getItem(`local_meeting_responses_${meetingId}`);
-        const parsed = localData ? JSON.parse(localData) : [];
+        const fullId = String(meetingId);
+        const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
+
+        // 1. 전체 UUID 키 및 단축키 양쪽 캐시 수합
+        const localDataFull = localStorage.getItem(`local_meeting_responses_${fullId}`);
+        const localDataShort = localStorage.getItem(`local_meeting_responses_${shortId}`);
+        
+        let parsed: any[] = [];
+        if (localDataFull) {
+          parsed = JSON.parse(localDataFull);
+        } else if (localDataShort) {
+          parsed = JSON.parse(localDataShort);
+        }
+
         if (Array.isArray(parsed) && parsed.length > 0) {
           targetResp = parsed;
+        } else if (selectedMeeting && Array.isArray(selectedMeeting.responses_data) && selectedMeeting.responses_data.length > 0) {
+          targetResp = selectedMeeting.responses_data;
         } else {
-          // local_committee_meetings 내 responses_data 수합
-          const localMeetings = localStorage.getItem("local_committee_meetings");
-          if (localMeetings) {
-            const found = JSON.parse(localMeetings).find((m: any) => String(m.id) === String(meetingId));
-            if (found && Array.isArray(found.responses_data)) {
-              targetResp = found.responses_data;
+          // 전체 local_committee_meetings 수합 키 검색
+          const allKeys = Object.keys(localStorage).filter(k => k.startsWith("local_committee_meetings"));
+          for (const k of allKeys) {
+            const item = localStorage.getItem(k);
+            if (item) {
+              const list = JSON.parse(item);
+              if (Array.isArray(list)) {
+                const found = list.find((m: any) => String(m.id) === fullId || String(m.id).startsWith(shortId));
+                if (found && Array.isArray(found.responses_data) && found.responses_data.length > 0) {
+                  targetResp = found.responses_data;
+                  break;
+                }
+              }
             }
           }
         }
@@ -950,7 +971,7 @@ export default function CommitteeManager({
       }
 
       // UUID 회의의 경우 로컬 캐시 스토리지에서만 안전 수합하여 Supabase 400 에러 원천 차단
-      setResponses(prev => (JSON.stringify(prev) !== JSON.stringify(targetResp) ? targetResp : prev));
+      setResponses(targetResp);
       return;
     }
 

@@ -620,7 +620,10 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       const updatedVotes = [...filteredVotes, ...votePayloads];
       localStorage.setItem(localVotesKey, JSON.stringify(updatedVotes));
 
-      const localRespKey = `local_meeting_responses_${meeting.id}`;
+      const fullMeetingId = String(meeting.id);
+      const shortMeetingId = fullMeetingId.includes("-") ? fullMeetingId.split("-")[0] : fullMeetingId;
+
+      const localRespKey = `local_meeting_responses_${fullMeetingId}`;
       const currentResp = JSON.parse(localStorage.getItem(localRespKey) || "[]");
       const filteredResp = currentResp.filter((r: any) =>
         String(r.member_id).trim() !== String(memberId).trim() &&
@@ -644,7 +647,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         }
       };
       const updatedResp = [...filteredResp, newRespItem];
-      localStorage.setItem(localRespKey, JSON.stringify(updatedResp));
+      localStorage.setItem(`local_meeting_responses_${fullMeetingId}`, JSON.stringify(updatedResp));
+      localStorage.setItem(`local_meeting_responses_${shortMeetingId}`, JSON.stringify(updatedResp));
 
       // 💡 2. Supabase DB에 100% 무결성 실시간 반영
       if (!String(meeting.id).startsWith("local-")) {
