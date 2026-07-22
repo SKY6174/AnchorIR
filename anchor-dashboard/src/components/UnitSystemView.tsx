@@ -1078,7 +1078,14 @@ const STRATEGY_TASK_MAPPING = {
   }
 };
 
-export default function UnitSystemView({ selectedYear = 2 }) {
+export interface UnitSystemViewProps {
+  selectedYear?: number;
+  darkMode?: boolean;
+  currentUser?: any;
+  currentRole?: any;
+}
+
+export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps) {
   const [selectedProjectId, setSelectedProjectId] = useState("A");
   
   const currentProjectsData = selectedYear === 1 ? PROJECTS_DATA_Y1 : PROJECTS_DATA;
