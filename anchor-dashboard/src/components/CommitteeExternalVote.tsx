@@ -141,37 +141,21 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     }
   };
 
-  const fetchMeetingAgendasAndVotes = async (mId: string | number) => {
+  const fetchMeetingAgendasAndVotes = async (mId: string | number, currentMtg?: any) => {
     if (!mId) return;
     const isNumericId = !isNaN(Number(mId)) && String(mId).trim() !== "";
+    const targetMtg = currentMtg || meeting;
 
     let finalAgendas: any[] = [];
     let finalVotes: any[] = [];
 
     // 💡 1. 로컬 스토리지 캐시 및 회의 개체 내 안건 복원
     try {
-      const localAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
-      if (localAgendas) {
-        finalAgendas = JSON.parse(localAgendas);
-      } else {
-        // 전체 로컬 회의 목록에서 안건 수합
-        const allLocal = localStorage.getItem("local_committee_meetings");
-        if (allLocal) {
-          const parsed = JSON.parse(allLocal);
-          const found = parsed.find((m: any) => String(m.id) === String(mId));
-          if (found && found.agenda) {
-            // "agenda" 요약 텍스트 파싱하여 의안 생성
-            const lines = found.agenda.split("\n").filter((l: string) => l.trim().length > 0);
-            finalAgendas = lines.map((l: string, idx: number) => ({
-              id: `ag-${idx + 1}`,
-              meeting_id: mId,
-              title: l.replace(/\[안건 \d+\]\s*/, "").trim() || `의안 ${idx + 1}`,
-              description: "",
-              is_evaluation: false,
-              sort_order: idx + 1
-            }));
-          }
-        }
+      const fullAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
+      if (fullAgendas) {
+        finalAgendas = JSON.parse(fullAgendas);
+      } else if (targetMtg && Array.isArray(targetMtg.agendas) && targetMtg.agendas.length > 0) {
+        finalAgendas = targetMtg.agendas;
       }
     } catch (e) { }
 
@@ -213,8 +197,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
     // 💡 3. 기본 의안이 비어있는 경우 회의 agenda 텍스트 파싱하여 100% 무손실 복원
     if (finalAgendas.length === 0) {
-      if (meeting && meeting.agenda) {
-        const lines = String(meeting.agenda).split("\n").map(l => l.trim()).filter(l => l.length > 0);
+      if (targetMtg && targetMtg.agenda) {
+        const lines = String(targetMtg.agenda).split("\n").map(l => l.trim()).filter(l => l.length > 0);
         finalAgendas = lines.map((l, idx) => {
           const cleanTitle = l.replace(/^\[안건\s*\d+\]\s*/, "").replace(/^\[의안\s*\d+\]\s*/, "").replace(/^\d+[\.\)]\s*/, "").trim();
           return {
@@ -224,8 +208,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             description: `[상정 의안 #${idx + 1}] ${cleanTitle || "안건 심의 및 의결"}`,
             is_evaluation: false,
             sort_order: idx + 1,
-            attachment_name: idx === 0 ? (meeting.attachment_name || null) : null,
-            attachment_data: idx === 0 ? (meeting.attachment_data || null) : null
+            attachment_name: idx === 0 ? (targetMtg.attachment_name || null) : null,
+            attachment_data: idx === 0 ? (targetMtg.attachment_data || null) : null
           };
         });
       } else {
@@ -237,8 +221,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             description: "상정된 회의 안건에 대해 심의하고 의결을 진행합니다.",
             is_evaluation: false,
             sort_order: 1,
-            attachment_name: meeting?.attachment_name || null,
-            attachment_data: meeting?.attachment_data || null
+            attachment_name: targetMtg?.attachment_name || null,
+            attachment_data: targetMtg?.attachment_data || null
           }
         ];
       }
@@ -330,7 +314,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
         if (foundMeeting) {
           setMeeting(foundMeeting);
-          await fetchMeetingAgendasAndVotes(targetMeetingId);
+          await fetchMeetingAgendasAndVotes(targetMeetingId, foundMeeting);
         } else {
           // 모의 임시 회의 셋업으로 폼 차단 방지
           const tempMeeting = {
@@ -340,7 +324,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             access_pin: "123456"
           };
           setMeeting(tempMeeting);
-          await fetchMeetingAgendasAndVotes(targetMeetingId);
+          await fetchMeetingAgendasAndVotes(targetMeetingId, tempMeeting);
         }
       } catch (e: any) {
         console.error("회의 조회 에러:", e);
