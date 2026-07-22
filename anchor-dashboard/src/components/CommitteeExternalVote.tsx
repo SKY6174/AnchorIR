@@ -183,9 +183,22 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     let finalAgendas: any[] = [];
     let finalVotes: any[] = [];
 
-    // 💡 1. 로컬 스토리지 캐시 및 회의 개체 내 안건 복원
+    // 💡 1. 로컬 스토리지 캐시 및 회의 개체 내 안건 복원 (전수 키 탐색)
     try {
-      const fullAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
+      let fullAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
+      if (!fullAgendas) {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith("local_meeting_agendas_")) {
+            const val = localStorage.getItem(k);
+            if (val) {
+              fullAgendas = val;
+              break;
+            }
+          }
+        }
+      }
+
       if (fullAgendas) {
         finalAgendas = JSON.parse(fullAgendas);
       } else if (targetMtg && Array.isArray(targetMtg.agendas) && targetMtg.agendas.length > 0) {
@@ -458,9 +471,22 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       return;
     }
 
-    // 2. [2순위] 로컬 스토리지 무손실 백업에서 해당 의안의 attachment_data 조회
+    // 2. [2순위] 로컬 스토리지 무손실 백업에서 해당 의안의 attachment_data 조회 (전수 키 수색)
     try {
-      const localAgendasStr = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
+      let localAgendasStr = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
+      if (!localAgendasStr) {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith("local_meeting_agendas_")) {
+            const val = localStorage.getItem(k);
+            if (val) {
+              localAgendasStr = val;
+              break;
+            }
+          }
+        }
+      }
+
       if (localAgendasStr) {
         const parsed = JSON.parse(localAgendasStr);
         const found = parsed.find((a: any, idx: number) => String(a.id) === String(activeAgendaId) || idx === activeAgendaIndex);
