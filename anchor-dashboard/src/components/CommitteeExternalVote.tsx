@@ -339,19 +339,32 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   useEffect(() => {
     if (!activeAgendaId || !meeting?.id) return;
     const activeAgendaItem = selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
-    if (!activeAgendaItem || !activeAgendaItem.attachment_name) {
+
+    const attachName = activeAgendaItem?.attachment_name || meeting?.attachment_name;
+    const attachData = activeAgendaItem?.attachment_data || meeting?.attachment_data;
+
+    if (!attachName && !attachData) {
       setActiveAttachmentData(null);
+      return;
+    }
+
+    if (attachData) {
+      setActiveAttachmentData(attachData);
+      setActiveAttachmentLoading(false);
       return;
     }
 
     const fetchAttachmentData = async () => {
       setActiveAttachmentLoading(true);
       try {
-        if (String(meeting.id).startsWith("local-")) {
-          const localAgendas = localStorage.getItem(`local_meeting_agendas_${meeting.id}`);
+        if (String(meeting.id).startsWith("local-") || isNaN(Number(meeting.id))) {
+          const fullId = String(meeting.id);
+          const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
+
+          const localAgendas = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
           if (localAgendas) {
             const parsed = JSON.parse(localAgendas);
-            const found = parsed.find((a: any) => String(a.id) === String(activeAgendaId));
+            const found = parsed.find((a: any) => String(a.id) === String(activeAgendaId) || a.attachment_data);
             if (found && found.attachment_data) {
               setActiveAttachmentData(found.attachment_data);
               setActiveAttachmentLoading(false);
@@ -366,18 +379,21 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           .eq("id", activeAgendaId)
           .maybeSingle();
 
-        if (error) throw error;
-        setActiveAttachmentData(data?.attachment_data || null);
+        if (!error && data?.attachment_data) {
+          setActiveAttachmentData(data.attachment_data);
+        } else {
+          setActiveAttachmentData(meeting?.attachment_data || null);
+        }
       } catch (err: any) {
-        console.error("❌ 개별 첨부파일 조회 실패:", err.message);
-        setActiveAttachmentData(null);
+        console.warn("개별 첨부파일 조회 스킵, 회의 첨부파일 참조:", err.message);
+        setActiveAttachmentData(meeting?.attachment_data || null);
       } finally {
         setActiveAttachmentLoading(false);
       }
     };
 
     fetchAttachmentData();
-  }, [activeAgendaId, meeting?.id, selectedMeetingAgendas]);
+  }, [activeAgendaId, meeting?.id, selectedMeetingAgendas, meeting?.attachment_data]);
 
   // 위원 성명/PIN 인증 핸들러
   const handleAuthSubmit = async (e: React.FormEvent) => {
@@ -983,74 +999,111 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                       )}
                     </div>
 
-                    {/* 동의 / 부동의 / 기권 표결 버튼 */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem", marginBottom: "0.85rem" }}>
-                      <button
-                        type="button"
-                        onClick={() => setAgendaInputs({
-                          ...agendaInputs,
-                          [agenda.id]: { ...currentInp, vote: "APPROVE" }
-                        })}
-                        style={{
-                          padding: "0.75rem 0.5rem",
-                          fontSize: "0.95rem",
-                          borderRadius: "8px",
-                          border: currentInp.vote === "APPROVE" ? "2px solid #10b981" : "1px solid var(--border-color)",
-                          background: currentInp.vote === "APPROVE" ? "#10b981" : "rgba(255,255,255,0.05)",
-                          color: currentInp.vote === "APPROVE" ? "#ffffff" : "var(--text-secondary)",
-                          fontWeight: "800",
-                          cursor: "pointer",
-                          boxShadow: currentInp.vote === "APPROVE" ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none",
-                          transition: "all 0.15s ease"
-                        }}
-                      >
-                        동의
-                      </button>
+                    {/* 💡 5점 척도 평가 UI vs 동의/부동의/기권 표결 버튼 동적 분기 */}
+                    {agenda.is_evaluation ? (
+                      <div style={{ marginBottom: "0.85rem" }}>
+                        <div style={{ fontSize: "0.82rem", color: "#3b82f6", fontWeight: "bold", marginBottom: "0.5rem" }}>
+                          ★ 5점 척도 평점 선택 (현재 평가: {currentInp.score || 5}점)
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.4rem" }}>
+                          {[1, 2, 3, 4, 5].map(scoreVal => (
+                            <button
+                              key={scoreVal}
+                              type="button"
+                              onClick={() => setAgendaInputs({
+                                ...agendaInputs,
+                                [agenda.id]: {
+                                  ...currentInp,
+                                  score: scoreVal,
+                                  vote: scoreVal >= 3 ? "APPROVE" : "REJECT"
+                                }
+                              })}
+                              style={{
+                                padding: "0.65rem 0.25rem",
+                                fontSize: "0.8rem",
+                                borderRadius: "6px",
+                                border: (currentInp.score || 5) === scoreVal ? "2px solid #3b82f6" : "1px solid var(--border-color)",
+                                background: (currentInp.score || 5) === scoreVal ? "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)" : "rgba(255,255,255,0.05)",
+                                color: (currentInp.score || 5) === scoreVal ? "#ffffff" : "var(--text-secondary)",
+                                fontWeight: "bold",
+                                cursor: "pointer",
+                                boxShadow: (currentInp.score || 5) === scoreVal ? "0 4px 10px rgba(59, 130, 246, 0.3)" : "none"
+                              }}
+                            >
+                              {scoreVal}점
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem", marginBottom: "0.85rem" }}>
+                        <button
+                          type="button"
+                          onClick={() => setAgendaInputs({
+                            ...agendaInputs,
+                            [agenda.id]: { ...currentInp, vote: "APPROVE" }
+                          })}
+                          style={{
+                            padding: "0.75rem 0.5rem",
+                            fontSize: "0.95rem",
+                            borderRadius: "8px",
+                            border: currentInp.vote === "APPROVE" ? "2px solid #10b981" : "1px solid var(--border-color)",
+                            background: currentInp.vote === "APPROVE" ? "#10b981" : "rgba(255,255,255,0.05)",
+                            color: currentInp.vote === "APPROVE" ? "#ffffff" : "var(--text-secondary)",
+                            fontWeight: "800",
+                            cursor: "pointer",
+                            boxShadow: currentInp.vote === "APPROVE" ? "0 4px 12px rgba(16, 185, 129, 0.3)" : "none",
+                            transition: "all 0.15s ease"
+                          }}
+                        >
+                          동의
+                        </button>
 
-                      <button
-                        type="button"
-                        onClick={() => setAgendaInputs({
-                          ...agendaInputs,
-                          [agenda.id]: { ...currentInp, vote: "REJECT" }
-                        })}
-                        style={{
-                          padding: "0.75rem 0.5rem",
-                          fontSize: "0.95rem",
-                          borderRadius: "8px",
-                          border: currentInp.vote === "REJECT" ? "2px solid #ef4444" : "1px solid var(--border-color)",
-                          background: currentInp.vote === "REJECT" ? "#ef4444" : "rgba(255,255,255,0.05)",
-                          color: currentInp.vote === "REJECT" ? "#ffffff" : "var(--text-secondary)",
-                          fontWeight: "800",
-                          cursor: "pointer",
-                          boxShadow: currentInp.vote === "REJECT" ? "0 4px 12px rgba(239, 68, 68, 0.3)" : "none",
-                          transition: "all 0.15s ease"
-                        }}
-                      >
-                        부동의
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => setAgendaInputs({
+                            ...agendaInputs,
+                            [agenda.id]: { ...currentInp, vote: "REJECT" }
+                          })}
+                          style={{
+                            padding: "0.75rem 0.5rem",
+                            fontSize: "0.95rem",
+                            borderRadius: "8px",
+                            border: currentInp.vote === "REJECT" ? "2px solid #ef4444" : "1px solid var(--border-color)",
+                            background: currentInp.vote === "REJECT" ? "#ef4444" : "rgba(255,255,255,0.05)",
+                            color: currentInp.vote === "REJECT" ? "#ffffff" : "var(--text-secondary)",
+                            fontWeight: "800",
+                            cursor: "pointer",
+                            boxShadow: currentInp.vote === "REJECT" ? "0 4px 12px rgba(239, 68, 68, 0.3)" : "none",
+                            transition: "all 0.15s ease"
+                          }}
+                        >
+                          부동의
+                        </button>
 
-                      <button
-                        type="button"
-                        onClick={() => setAgendaInputs({
-                          ...agendaInputs,
-                          [agenda.id]: { ...currentInp, vote: "ABSTAIN" }
-                        })}
-                        style={{
-                          padding: "0.75rem 0.5rem",
-                          fontSize: "0.95rem",
-                          borderRadius: "8px",
-                          border: currentInp.vote === "ABSTAIN" ? "2px solid #6b7280" : "1px solid var(--border-color)",
-                          background: currentInp.vote === "ABSTAIN" ? "#6b7280" : "rgba(255,255,255,0.05)",
-                          color: currentInp.vote === "ABSTAIN" ? "#ffffff" : "var(--text-secondary)",
-                          fontWeight: "800",
-                          cursor: "pointer",
-                          boxShadow: currentInp.vote === "ABSTAIN" ? "0 4px 12px rgba(107, 114, 128, 0.3)" : "none",
-                          transition: "all 0.15s ease"
-                        }}
-                      >
-                        기권
-                      </button>
-                    </div>
+                        <button
+                          type="button"
+                          onClick={() => setAgendaInputs({
+                            ...agendaInputs,
+                            [agenda.id]: { ...currentInp, vote: "ABSTAIN" }
+                          })}
+                          style={{
+                            padding: "0.75rem 0.5rem",
+                            fontSize: "0.95rem",
+                            borderRadius: "8px",
+                            border: currentInp.vote === "ABSTAIN" ? "2px solid #6b7280" : "1px solid var(--border-color)",
+                            background: currentInp.vote === "ABSTAIN" ? "#6b7280" : "rgba(255,255,255,0.05)",
+                            color: currentInp.vote === "ABSTAIN" ? "#ffffff" : "var(--text-secondary)",
+                            fontWeight: "800",
+                            cursor: "pointer",
+                            boxShadow: currentInp.vote === "ABSTAIN" ? "0 4px 12px rgba(107, 114, 128, 0.3)" : "none",
+                            transition: "all 0.15s ease"
+                          }}
+                        >
+                          기권
+                        </button>
+                      </div>
+                    )}
 
                     {agenda.is_evaluation && (
                       <div style={{ marginBottom: "0.85rem" }}>

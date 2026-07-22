@@ -1874,8 +1874,12 @@ export default function CommitteeManager({
 
     const generatedPin = meetingForm.access_pin.trim() || "123456";
 
-    // 하위 호환 및 DB non-null 제약 해소를 위해 의안 리스트 요약을 agenda 컬럼에 채움
-    const summaryAgendaText = meetingForm.agendas.map((a, idx) => `[안건 ${idx + 1}] ${a.title}`).join("\n");
+    // 하위 호환 및 DB non-null 제약 해소를 위해 의안 리스트 요약을 agenda 컬럼에 채움 (5점 척도 & 첨부파일명 메타마크 포함)
+    const summaryAgendaText = meetingForm.agendas.map((a, idx) => {
+      const scaleStr = a.is_evaluation ? " (5점척도)" : "";
+      const attachStr = a.attachment_name ? ` [첨부: ${a.attachment_name}]` : "";
+      return `[안건 ${idx + 1}] ${a.title.trim()}${scaleStr}${attachStr}`;
+    }).join("\n");
 
     const payload = {
       committee_id: selectedCommittee.id,
@@ -1883,8 +1887,8 @@ export default function CommitteeManager({
       meeting_date: meetingForm.meeting_date,
       meeting_type: meetingForm.meeting_type,
       agenda: summaryAgendaText,
-      attachment_name: meetingForm.attachment_name || null,
-      attachment_data: meetingForm.attachment_data || null,
+      attachment_name: meetingForm.attachment_name || meetingForm.agendas.find(a => a.attachment_name)?.attachment_name || null,
+      attachment_data: meetingForm.attachment_data || meetingForm.agendas.find(a => a.attachment_data)?.attachment_data || null,
       access_pin: generatedPin,
       status: "ACTIVE"
     };
@@ -1901,8 +1905,8 @@ export default function CommitteeManager({
             meeting_date: meetingForm.meeting_date,
             meeting_type: meetingForm.meeting_type,
             agenda: summaryAgendaText,
-            attachment_name: meetingForm.attachment_name || null,
-            attachment_data: meetingForm.attachment_data || null,
+            attachment_name: payload.attachment_name,
+            attachment_data: payload.attachment_data,
             access_pin: generatedPin
           })
           .eq("id", editingMeetingId)
@@ -1986,17 +1990,23 @@ export default function CommitteeManager({
       const targetMeetingId = isEditMode ? editingMeetingId : `local-meeting-${Date.now()}`;
       const localMeetings = JSON.parse(localStorage.getItem(`local_committee_meetings_${selectedCommittee.id}`) || "[]");
       let updatedMeetings;
-      const localPayload = { ...payload, id: targetMeetingId, created_at: new Date().toISOString() };
+      const localPayload = {
+        ...payload,
+        id: targetMeetingId,
+        agendas: meetingForm.agendas,
+        created_at: new Date().toISOString()
+      };
 
       if (isEditMode) {
         updatedMeetings = localMeetings.map(m => m.id === targetMeetingId ? localPayload : m);
       } else {
         updatedMeetings = [localPayload, ...localMeetings];
       }
-      const cleanUpdatedMeetings = (updatedMeetings || []).map(m => ({ ...m, attachment_data: null }));
-      localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(cleanUpdatedMeetings));
+      
+      // 첨부파일 무손실 저장
+      localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(updatedMeetings));
 
-      // 로컬 스토리지용 의안 정보 모의 적재
+      // 로컬 스토리지용 의안 정보 모의 적재 (첨부파일 무손실 보존)
       const localAgendas = meetingForm.agendas.map((a, idx) => ({
         id: a.id || `local-agenda-${Date.now()}-${idx}`,
         meeting_id: targetMeetingId,
@@ -2007,8 +2017,10 @@ export default function CommitteeManager({
         attachment_name: a.attachment_name || null,
         attachment_data: a.attachment_data || null
       }));
-      const cleanLocalAgendas = (localAgendas || []).map(a => ({ ...a, attachment_data: null }));
-      localStorage.setItem(`local_meeting_agendas_${targetMeetingId}`, JSON.stringify(cleanLocalAgendas));
+      
+      localStorage.setItem(`local_meeting_agendas_${targetMeetingId}`, JSON.stringify(localAgendas));
+      const shortCode = String(targetMeetingId).includes("-") ? String(targetMeetingId).split("-")[0] : targetMeetingId;
+      localStorage.setItem(`local_meeting_agendas_${shortCode}`, JSON.stringify(localAgendas));
 
       if (isEditMode) {
         alert("회의 정보 및 심의 안건이 수정되었습니다. (오프라인 캐시 모드)");
