@@ -406,7 +406,14 @@ const majorProgramsData = {
   }
 };
 
-export default function MajorProgramsManager({ selectedYear }) {
+export interface MajorProgramsManagerProps {
+  selectedYear?: number | string;
+  darkMode?: boolean;
+  currentUser?: any;
+  currentRole?: any;
+}
+
+export default function MajorProgramsManager({ selectedYear }: MajorProgramsManagerProps) {
   // 현재 연도에 해당하는 단위과제 목록 추출
   const yearData = majorProgramsData[selectedYear] || {};
   const unitKeys = Object.keys(yearData);
