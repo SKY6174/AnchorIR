@@ -101,10 +101,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [currentBlobUrl, setCurrentBlobUrl] = useState<string | null>(null);
 
-  const activeAgenda = selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
-  // 💡 선택된 의안 개별 파일이 우선, 없으면 회의 대표 첨부파일로 100% 폴백 연동!
-  const currentFileName = activeAgenda?.attachment_name || meeting?.attachment_name || null;
-  const currentFileData = activeAttachmentData || meeting?.attachment_data || null;
+  const activeAgendaIndex = selectedMeetingAgendas.findIndex(a => String(a.id) === String(activeAgendaId));
+  const activeAgenda = selectedMeetingAgendas[activeAgendaIndex] || selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
+
+  // 💡 선택된 의안 개별 파일이 최우선이며, 1번 의안일 경우에만 회의 대표 파일 폴백 인정! (2번, 3번 의안에 1번 파일 엉킴 원천 방지)
+  const currentFileName = activeAgenda?.attachment_name || (activeAgendaIndex === 0 ? meeting?.attachment_name : null);
+  const currentFileData = activeAttachmentData || (activeAgendaIndex === 0 ? meeting?.attachment_data : null);
 
   useEffect(() => {
     if (!currentFileData) {
@@ -372,39 +374,40 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   // 💡 선택된 활성 의안(activeAgendaItem)의 개별 첨부파일 비동기/동기 로더 (의안 전환 시 100% 동기화)
   useEffect(() => {
     if (!activeAgendaId || !meeting?.id) return;
-    const activeAgendaItem = selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
+    const fullId = String(meeting.id).trim();
+    const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
 
-    // 1. [1순위] 선택된 의안의 개별 첨부파일 데이터 최우선 로드!
+    const activeAgendaIndex = selectedMeetingAgendas.findIndex(a => String(a.id) === String(activeAgendaId));
+    const activeAgendaItem = selectedMeetingAgendas[activeAgendaIndex] || selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
+
+    // 이전 활성 파일 데이터 즉시 클리어
+    setActiveAttachmentData(null);
+
+    // 1. [1순위] 선택된 의안 개체에 개별 첨부파일 데이터가 있으면 즉시 활성화!
     if (activeAgendaItem && activeAgendaItem.attachment_data) {
       setActiveAttachmentData(activeAgendaItem.attachment_data);
       setActiveAttachmentLoading(false);
       return;
     }
 
-    // 2. [2순위] 선택된 의안에 파일 데이터가 없고 대표 회의 파일 데이터가 연결된 경우
-    if (meeting && meeting.attachment_data && (!activeAgendaItem?.attachment_name || activeAgendaItem?.attachment_name === meeting?.attachment_name)) {
-      setActiveAttachmentData(meeting.attachment_data);
-      setActiveAttachmentLoading(false);
-      return;
-    }
+    // 2. [2순위] 로컬 스토리지 무손실 백업에서 해당 의안의 attachment_data 조회
+    try {
+      const localAgendasStr = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
+      if (localAgendasStr) {
+        const parsed = JSON.parse(localAgendasStr);
+        const found = parsed.find((a: any, idx: number) => String(a.id) === String(activeAgendaId) || idx === activeAgendaIndex);
+        if (found && found.attachment_data) {
+          setActiveAttachmentData(found.attachment_data);
+          setActiveAttachmentLoading(false);
+          return;
+        }
+      }
+    } catch (e) { }
 
+    // 3. [3순위] DB 비동기 조회
     const fetchAttachmentData = async () => {
       setActiveAttachmentLoading(true);
       try {
-        const fullId = String(meeting.id);
-        const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
-
-        const localAgendas = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
-        if (localAgendas) {
-          const parsed = JSON.parse(localAgendas);
-          const found = parsed.find((a: any) => String(a.id) === String(activeAgendaId));
-          if (found && found.attachment_data) {
-            setActiveAttachmentData(found.attachment_data);
-            setActiveAttachmentLoading(false);
-            return;
-          }
-        }
-
         const { data, error } = await supabase
           .from("meeting_agendas")
           .select("attachment_data")
@@ -413,12 +416,18 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
         if (!error && data?.attachment_data) {
           setActiveAttachmentData(data.attachment_data);
+        } else if (activeAgendaIndex === 0 && meeting?.attachment_data) {
+          // 1번 의안일 경우에만 회의 대표 attachment_data 활용
+          setActiveAttachmentData(meeting.attachment_data);
         } else {
           setActiveAttachmentData(null);
         }
       } catch (err: any) {
-        console.warn("개별 첨부파일 조회 스킵:", err.message);
-        setActiveAttachmentData(null);
+        if (activeAgendaIndex === 0 && meeting?.attachment_data) {
+          setActiveAttachmentData(meeting.attachment_data);
+        } else {
+          setActiveAttachmentData(null);
+        }
       } finally {
         setActiveAttachmentLoading(false);
       }
