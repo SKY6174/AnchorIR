@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabaseClient";
-import { Users, Lock, FileText, Check, AlertTriangle, Send, Vote, Upload, RefreshCw } from "lucide-react";
+import { Users, Lock, FileText, Check, AlertTriangle, Send, Vote, Upload, RefreshCw, LogOut } from "lucide-react";
 import CryptoJS from "crypto-js";
 
 /**
@@ -458,6 +458,16 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     }
   };
 
+  const handleLogout = () => {
+    if (window.confirm("인증 해제하고 로그아웃하시겠습니까?")) {
+      setIsAuthorized(false);
+      setAuthMember(null);
+      setLoginForm({ name: "", pin: "" });
+      setHasSubmitted(false);
+      setSignatureImage("");
+    }
+  };
+
   // 💡 [요구사항 3] 터치 및 마우스 반응형 좌표 계산 헬퍼 함수 (scaleX, scaleY 비율 보정으로 마우스/펜 팁 이격 100% 차단)
   const getCanvasCoords = (e: any) => {
     const canvas = canvasRef.current;
@@ -764,11 +774,38 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             <h1 style={{ fontSize: "1.5rem", fontWeight: "800" }}>{meeting?.title}</h1>
             <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginTop: "0.4rem" }}>{meeting?.location}</p>
           </div>
-          <div style={{ textAlign: "right" }}>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>접속 위원:</span>
-            <div style={{ fontWeight: "700", color: "var(--accent-color)", fontSize: "1.05rem" }}>
-              {authMember?.name} {authMember?.rank ? `(${authMember.rank})` : ""}
+          <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
+            <div>
+              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>접속 위원: </span>
+              <span style={{ fontWeight: "700", color: "var(--accent-color)", fontSize: "1.05rem" }}>
+                {authMember?.name} {authMember?.rank ? `(${authMember.rank})` : (authMember?.dept ? `(${authMember.dept})` : "")}
+              </span>
             </div>
+            <button
+              onClick={handleLogout}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.35rem",
+                padding: "0.35rem 0.75rem",
+                fontSize: "0.78rem",
+                fontWeight: "600",
+                color: "#ef4444",
+                background: "rgba(239, 68, 68, 0.12)",
+                border: "1px solid rgba(239, 68, 68, 0.35)",
+                borderRadius: "6px",
+                cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(239, 68, 68, 0.12)";
+              }}
+            >
+              <LogOut size={13} /> 인증 해제 / 로그아웃
+            </button>
           </div>
         </div>
       </div>
