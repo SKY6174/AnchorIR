@@ -114,7 +114,17 @@ const getProgramTimeline = (progId) => {
   }
 };
 
-export default function ProgramProgressManager({ projects, selectedYear, darkMode, onSelectProgram, onUpdateProgramDetails }) {
+export interface ProgramProgressManagerProps {
+  projects?: any[];
+  selectedYear?: number;
+  darkMode?: boolean;
+  onSelectProgram?: (program: any) => void;
+  onUpdateProgramDetails?: (unitId: string, programId: string, details: any) => void;
+  currentUser?: any;
+  currentRole?: any;
+}
+
+export default function ProgramProgressManager({ projects, selectedYear = 2, darkMode, onSelectProgram, onUpdateProgramDetails }: ProgramProgressManagerProps) {
   const startYr = 2024 + selectedYear;
   const endYr = 2025 + selectedYear;
   const startYrShort = String(startYr).slice(-2);
