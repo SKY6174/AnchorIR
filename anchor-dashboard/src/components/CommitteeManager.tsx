@@ -3381,53 +3381,69 @@ ${selectedMeetingAgendas.map((a, idx) => {
                     </p>
                   </div>
 
-                  {/* 💡 [회의 첨부파일 뷰어 / 다운로드 영역] (요구사항 3 반영) */}
-                  {selectedMeeting.attachment_name && (
-                    <div style={{ marginTop: "0.75rem", padding: "0.75rem", background: "rgba(99, 102, 241, 0.05)", borderRadius: "6px", border: "1px solid rgba(99, 102, 241, 0.2)" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                        <span style={{ fontSize: "0.8rem", color: "var(--text-primary)", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                          📎 심의 첨부 자료: {selectedMeeting.attachment_name}
-                        </span>
-                        <button
-                          className="btn btn-secondary"
-                          style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}
-                          onClick={() => {
-                            const link = document.createElement("a");
-                            link.href = selectedMeeting.attachment_data;
-                            link.download = selectedMeeting.attachment_name;
-                            link.click();
-                          }}
-                        >
-                          다운로드
-                        </button>
-                      </div>
+                  {/* 💡 [의안별 심의 첨부자료 표출 카드 전면 개편] */}
+                  <div style={{ marginTop: "0.75rem", padding: "0.85rem", background: "rgba(99, 102, 241, 0.05)", borderRadius: "8px", border: "1px solid rgba(99, 102, 241, 0.2)" }}>
+                    <strong style={{ fontSize: "0.85rem", color: "var(--accent-color)", display: "block", marginBottom: "0.6rem" }}>
+                      📎 안건별 심의 첨부자료 목록
+                    </strong>
 
-                      {/* 이미지 파일일 경우 이미지 뷰어 즉시 노출 */}
-                      {/\.(png|jpe?g)$/i.test(selectedMeeting.attachment_name) && (
-                        <div style={{ display: "flex", justifyContent: "center", background: "#000", padding: "0.5rem", borderRadius: "4px", marginTop: "0.5rem", maxHeight: "250px", overflow: "hidden" }}>
-                          <img
-                            src={selectedMeeting.attachment_data}
-                            alt="첨부 이미지"
-                            style={{ maxWidth: "100%", maxHeight: "230px", objectFit: "contain", borderRadius: "4px" }}
-                          />
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      {selectedMeetingAgendas && selectedMeetingAgendas.length > 0 ? (
+                        selectedMeetingAgendas.map((ag, idx) => {
+                          const agName = ag.attachment_name || (idx === 0 ? selectedMeeting.attachment_name : null);
+                          const agData = ag.attachment_data || (idx === 0 ? selectedMeeting.attachment_data : null);
+
+                          return (
+                            <div key={ag.id || idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.45rem 0.65rem", background: "rgba(255,255,255,0.03)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.08)", fontSize: "0.82rem" }}>
+                              <span style={{ fontWeight: "700", color: "var(--text-primary)" }}>
+                                의안 #{idx + 1}: <span style={{ color: agName ? "var(--accent-color)" : "var(--text-secondary)" }}>{agName ? `📎 ${agName}` : "등록된 첨부자료 없음"}</span>
+                              </span>
+                              {agData ? (
+                                <button
+                                  className="btn btn-secondary"
+                                  style={{ padding: "0.2rem 0.55rem", fontSize: "0.75rem" }}
+                                  onClick={() => {
+                                    const link = document.createElement("a");
+                                    link.href = agData;
+                                    link.download = agName || `의안_${idx + 1}_첨부자료.pdf`;
+                                    link.click();
+                                  }}
+                                >
+                                  다운로드
+                                </button>
+                              ) : (
+                                <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontStyle: "italic" }}>미첨부</span>
+                              )}
+                            </div>
+                          );
+                        })
+                      ) : selectedMeeting.attachment_name ? (
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.45rem 0.65rem", background: "rgba(255,255,255,0.03)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.08)", fontSize: "0.82rem" }}>
+                          <span style={{ fontWeight: "700", color: "var(--text-primary)" }}>
+                            의안 #1: <span style={{ color: "var(--accent-color)" }}>📎 {selectedMeeting.attachment_name}</span>
+                          </span>
+                          {selectedMeeting.attachment_data && (
+                            <button
+                              className="btn btn-secondary"
+                              style={{ padding: "0.2rem 0.55rem", fontSize: "0.75rem" }}
+                              onClick={() => {
+                                const link = document.createElement("a");
+                                link.href = selectedMeeting.attachment_data;
+                                link.download = selectedMeeting.attachment_name;
+                                link.click();
+                              }}
+                            >
+                              다운로드
+                            </button>
+                          )}
                         </div>
-                      )}
-
-                      {/* 마크다운 파일(.md)일 경우 텍스트 영역에 간이 파싱 노출 */}
-                      {/\.md$/i.test(selectedMeeting.attachment_name) && (
-                        <div style={{ background: "#111", padding: "0.75rem", borderRadius: "4px", marginTop: "0.5rem", border: "1px solid var(--border-color)", fontSize: "0.8rem", color: "var(--text-secondary)", maxHeight: "200px", overflowY: "auto", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>
-                          {(() => {
-                            try {
-                              const base64Str = selectedMeeting.attachment_data.split(",")[1];
-                              return decodeURIComponent(atob(base64Str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-                            } catch (e) {
-                              return "마크다운 문서 디코딩 실패 또는 데이터 형식 오류";
-                            }
-                          })()}
+                      ) : (
+                        <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontStyle: "italic" }}>
+                          등록된 심의 첨부자료가 없습니다.
                         </div>
                       )}
                     </div>
-                  )}
+                  </div>
 
                   {/* 💡 [외부 위원 전용 접속 링크 및 보안 PIN 배너 - 구글 폼 스타일 단축 URL 적용] */}
                   {(() => {
