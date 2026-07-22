@@ -854,7 +854,13 @@ export default function CommitteeManager({
 
       if (meetingObj?.responses_data && Array.isArray(meetingObj.responses_data)) {
         meetingObj.responses_data.forEach(r => {
-          const exists = combinedResponses.some(cr => String(cr.member_name || cr.member_id) === String(r.member_name || r.member_id));
+          const rName = (r.member_name || r.name || "").trim();
+          const rId = String(r.member_id || "").trim();
+          const exists = combinedResponses.some(cr => {
+            const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
+            const crId = String(cr.member_id || "").trim();
+            return (rId && crId && rId === crId) || (rName && crName && rName === crName);
+          });
           if (!exists) {
             combinedResponses.push(r);
           }
@@ -870,7 +876,13 @@ export default function CommitteeManager({
       const parsed = localData ? JSON.parse(localData) : [];
       if (Array.isArray(parsed)) {
         parsed.forEach(r => {
-          const exists = combinedResponses.some(cr => String(cr.member_name || cr.member_id) === String(r.member_name || r.member_id));
+          const rName = (r.member_name || r.name || "").trim();
+          const rId = String(r.member_id || "").trim();
+          const exists = combinedResponses.some(cr => {
+            const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
+            const crId = String(cr.member_id || "").trim();
+            return (rId && crId && rId === crId) || (rName && crName && rName === crName);
+          });
           if (!exists) {
             combinedResponses.push(r);
           }
@@ -890,12 +902,12 @@ export default function CommitteeManager({
       if (voteRows && voteRows.length > 0) {
         const memberVotesMap: Record<string, any> = {};
         voteRows.forEach(v => {
-          const key = v.member_id ? String(v.member_id) : (v.member_name || v.voter_name);
+          const key = v.member_id ? String(v.member_id).trim() : (v.member_name || v.voter_name || "").trim();
           if (!key) return;
           if (!memberVotesMap[key]) {
             memberVotesMap[key] = {
               member_id: v.member_id,
-              member_name: v.member_name || v.voter_name,
+              member_name: (v.member_name || v.voter_name || "").trim(),
               vote: v.vote_decision || "APPROVE",
               opinion: v.opinion || "",
               signature: v.signature,
@@ -913,17 +925,21 @@ export default function CommitteeManager({
         });
 
         Object.values(memberVotesMap).forEach(r => {
-          const exists = combinedResponses.some(cr => 
-            (cr.member_id && r.member_id && String(cr.member_id) === String(r.member_id)) ||
-            (cr.member_name && r.member_name && cr.member_name === r.member_name)
-          );
+          const rName = (r.member_name || "").trim();
+          const rId = String(r.member_id || "").trim();
+          const exists = combinedResponses.some(cr => {
+            const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
+            const crId = String(cr.member_id || "").trim();
+            return (rId && crId && rId === crId) || (rName && crName && rName === crName);
+          });
           if (!exists) {
             combinedResponses.push(r);
           } else {
-            const target = combinedResponses.find(cr => 
-              (cr.member_id && r.member_id && String(cr.member_id) === String(r.member_id)) ||
-              (cr.member_name && r.member_name && cr.member_name === r.member_name)
-            );
+            const target = combinedResponses.find(cr => {
+              const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
+              const crId = String(cr.member_id || "").trim();
+              return (rId && crId && rId === crId) || (rName && crName && rName === crName);
+            });
             if (target) {
               if (!target.vote) target.vote = r.vote;
               if (!target.opinion && r.opinion) target.opinion = r.opinion;

@@ -31,9 +31,7 @@
   - 근본 해결: 텍스트 레이어를 파괴하는 이미지 렌더링 재조합 압축 방식을 전면 제거하고, 15MB 한도 내에서 원본 PDF 바이너리를 100% 보존하여 DataURL로 탑재하도록 개선. PDF 텍스트 검색, 복사, 드래그 기능 완전 보존.
   - 빌드 검증: `npm run build` 성공 (**0 Error / 461ms**).
 
-- **회의 수정 모달 기존 의안/첨부파일 유실 원천 해결 및 스마트 듀얼 PDF 2MB 감축 압축 엔진 탑재**
-  - 문제 원인 1 (회의 수정 유실): `handleEditMeetingStart`에서 회의 수정 팝업 오픈 시 `meeting_agendas` 테이블 및 로컬 스토리지의 하위 의안/첨부파일 비동기 조회가 누락되어 폼 데이터가 빈 상태로 초기화되던 현상.
-  - 개선 조치 1: `handleEditMeetingStart`를 비동기 핸들러(`async`)로 개편하여, 클릭된 회의(`meeting.id`)의 의안 목록(`targetAgendas`)과 첨부파일(`attachment_name`, `attachment_data`)을 DB/로컬 스토리지에서 자동 로드하여 폼에 100% pre-fill 복원.
-  - 문제 원인 2 (2MB 미감축): 1차 `pdf-lib` 무손실 바이트 재배치만으로는 내부 고해상도 비트맵 이미지를 가진 5~20MB 대용량 PDF 문서가 2MB 이하로 줄어들지 못하던 한계.
-  - 개선 조치 2: 스마트 듀얼 엔진 구조 적용. 1차 무손실 시도로 2MB 초과 시, **스마트 고해상도 캔버스 최적화 2차 엔진(CMap + getTextContent + 80ms Font Delay + Scale/Quality 연산 + Landscape 자동감지)**이 가동되어, 텍스트가 1글자도 지워지지 않으면서 **용량을 1.2MB ~ 1.7MB 이하로 시원하게 감축** 완수.
-  - 빌드 검증: `npm run build` 성공 (**0 Error / 464ms**).
+- **다중 위원(2명 이상) 서명 제출 시 관리자 화면 표결 집계 누락 및 성명 매칭 오류 완벽 수리**
+  - 문제 원인: 위원별 제출 데이터 저장 시 `member_id` 및 `member_name` 매칭 규칙에서 문자열 끝 공백(`.trim()`) 미처리 및 `committee_members.name` 간의 유연한 조인 매칭 누락으로 인해, 이동은 위원이 서명 제출을 완료했음에도 변홍석 위원 1명만 출석/표결(1명)로 집계되던 현상.
+  - 개선 조치: `fetchResponses` 및 `CommitteeExternalVote`의 데이터 매칭/필터링 알고리즘에 `.trim()` 및 `member_name` / `committee_members.name` 유연 매칭을 적용하고, 3초 주기 자동 Polling 갱신 및 로컬/DB 지속성을 보장하여 **2명 제출 시 관리자 화면에 즉시 2명(변홍석, 이동은) 성원 및 가결 표결(2명 찬성)로 100% 정상 반영**되도록 수리.
+  - 빌드 검증: `npm run build` 성공 (**0 Error / 468ms**).

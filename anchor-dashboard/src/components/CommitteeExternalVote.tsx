@@ -454,13 +454,19 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       // 💡 [듀얼 지속성 보장] 1. 로컬 스토리지에 무조건 캐시 기록
       const localVotesKey = `local_meeting_agenda_votes_${meeting.id}`;
       const currentVotes = JSON.parse(localStorage.getItem(localVotesKey) || "[]");
-      const filteredVotes = currentVotes.filter((v: any) => String(v.member_id) !== String(memberId));
+      const filteredVotes = currentVotes.filter((v: any) => 
+        String(v.member_id).trim() !== String(memberId).trim() &&
+        String(v.member_name || "").trim() !== String(authMember.name).trim()
+      );
       const updatedVotes = [...filteredVotes, ...votePayloads];
       localStorage.setItem(localVotesKey, JSON.stringify(updatedVotes));
 
       const localRespKey = `local_meeting_responses_${meeting.id}`;
       const currentResp = JSON.parse(localStorage.getItem(localRespKey) || "[]");
-      const filteredResp = currentResp.filter((r: any) => String(r.member_id) !== String(memberId));
+      const filteredResp = currentResp.filter((r: any) => 
+        String(r.member_id).trim() !== String(memberId).trim() &&
+        String(r.member_name || "").trim() !== String(authMember.name).trim()
+      );
       const newRespItem = {
         meeting_id: meeting.id,
         member_id: memberId,
