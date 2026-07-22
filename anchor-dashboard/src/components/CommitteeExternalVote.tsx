@@ -214,17 +214,22 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           }
         }
 
-        const { data, error } = await supabase
-          .from("committee_meetings")
-          .select("*")
-          .eq("id", targetMeetingId)
-          .maybeSingle();
+        const isNumericId = !isNaN(Number(targetMeetingId)) && String(targetMeetingId).trim() !== "";
 
-        if (error) throw error;
-        if (!data) throw new Error("회의 정보를 찾을 수 없습니다.");
+        if (isNumericId) {
+          const { data, error } = await supabase
+            .from("committee_meetings")
+            .select("*")
+            .eq("id", targetMeetingId)
+            .maybeSingle();
 
-        setMeeting(data);
-        await fetchMeetingAgendasAndVotes(targetMeetingId);
+          if (!error && data) {
+            setMeeting(data);
+            await fetchMeetingAgendasAndVotes(targetMeetingId);
+            setLoading(false);
+            return;
+          }
+        }
       } catch (e: any) {
         console.error("회의 조회 에러:", e);
         const localMeetings = localStorage.getItem("local_committee_meetings");

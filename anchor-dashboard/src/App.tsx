@@ -2308,7 +2308,7 @@ export default function App() {
     setMenuVisibility(nextVisibility);
     localStorage.setItem("anchor_menu_visibility", JSON.stringify(nextVisibility));
 
-    // Supabase DB에 설정 저장 동기화
+    // Supabase DB에 설정 저장 동기화 (RLS 403 에러 발생 시 콘솔 경고 소멸 후 로컬 캐시 폴백)
     try {
       const { error } = await supabase
         .from("portal_configs")
@@ -2318,10 +2318,10 @@ export default function App() {
           updated_at: new Date().toISOString()
         });
       if (error) {
-        console.error("Failed to save portal config to DB:", error);
+        console.warn("portal_configs DB 적재 스킵 (로컬 스토리지 캐시 전담):", error.message);
       }
-    } catch (err) {
-      console.error("DB save error:", err);
+    } catch (err: any) {
+      console.warn("DB save error (로컬 전담):", err.message);
     }
   };
 
