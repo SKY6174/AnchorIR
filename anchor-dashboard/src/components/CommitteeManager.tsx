@@ -104,7 +104,6 @@ const MOCK_COMMITTEE_MEMBERS_FALLBACK = {
     { id: 502, committee_id: "advisory", type: "위원", name: "이상희", org: "청강문화산업대학교", dept: "혁신지원사업단", rank: "단장", location: "교외", note: "", sort_order: 2 },
     { id: 503, committee_id: "advisory", type: "위원", name: "황영국", org: "조선이공대학교", dept: "산학협력단", rank: "단장", location: "교외", note: "", sort_order: 3 },
     { id: 504, committee_id: "advisory", type: "위원", name: "이수경", org: "거제대학교", dept: "-", rank: "교수", location: "교외", note: "", sort_order: 4 },
-    { id: 505, committee_id: "advisory", type: "위원", name: "최영오", org: "영남이공대학교", dept: "-", rank: "교수", location: "교외", note: "", sort_order: 5 },
     { id: 506, committee_id: "advisory", type: "위원", name: "남현욱", org: "춘해보건대학교", dept: "기획처", rank: "처장", location: "교외", note: "", sort_order: 6 },
     { id: 507, committee_id: "advisory", type: "위원", name: "이종향", org: "거제대학교", dept: "-", rank: "교수", location: "교외", note: "", sort_order: 7 },
     { id: 508, committee_id: "advisory", type: "간사", name: "심현미", org: "울산과학대학교", dept: "앵커사업단운영팀", rank: "팀장", location: "교내", note: "", sort_order: 8 }
@@ -147,9 +146,101 @@ const MOCK_COMMITTEE_MEMBERS_FALLBACK = {
   ]
 };
 
+export interface GovernanceCommitteeMaster {
+  id: string;
+  name: string;
+  purpose: string;
+  badge: string;
+  color: string;
+  constitution: string;
+  cycle: string;
+}
+
+export interface CommitteeMember {
+  id?: number | string;
+  committee_id?: string;
+  type?: string;
+  role?: string;
+  position?: string;
+  name: string;
+  org?: string;
+  dept?: string;
+  rank?: string;
+  location?: string;
+  note?: string;
+  sort_order?: number;
+  signed_at?: string;
+}
+
+export interface CommitteeAgenda {
+  id?: number | string;
+  meeting_id?: number | string;
+  title: string;
+  description?: string;
+  is_evaluation?: boolean;
+  item_order?: number;
+}
+
+export interface CommitteeAgendaVote {
+  id?: number | string;
+  agenda_id?: number | string;
+  member_name?: string;
+  member_org?: string;
+  vote_decision?: string;
+  score?: number;
+  opinion?: string;
+  submitted_at?: string;
+}
+
+export interface CommitteeMeeting {
+  id?: number | string;
+  committee_id?: string;
+  title: string;
+  meeting_date: string;
+  meeting_type?: string;
+  agenda?: string;
+  attachment_name?: string;
+  attachment_data?: string;
+  access_pin?: string;
+  created_at?: string;
+  status?: string;
+}
+
+export interface CommitteeResponse {
+  id?: number | string;
+  meeting_id?: number | string;
+  member_name: string;
+  vote?: string;
+  opinion?: string;
+  signature?: string;
+  submitted_at?: string;
+  pin_code?: string;
+}
+
+export interface MeetingResult {
+  id?: number | string;
+  meeting_id?: number | string;
+  quorum_status?: string;
+  decision_status?: string;
+  ai_summary?: string;
+  total_quorum?: number;
+  attended_count?: number;
+  agree_count?: number;
+  oppose_count?: number;
+  abstain_count?: number;
+}
+
+export interface CurrentUser {
+  id?: string | number;
+  name?: string;
+  role_key?: string;
+  dept_name?: string;
+  email?: string;
+}
+
 export interface CommitteeManagerProps {
   currentRole?: any;
-  currentUser?: any;
+  currentUser?: CurrentUser;
   activeSubTab?: string;
   onChangeSubTab?: (subTab: string) => void;
   darkMode?: boolean;
@@ -162,7 +253,7 @@ export interface CommitteeManagerProps {
   setMeetingSchedules?: React.Dispatch<React.SetStateAction<any[]>>;
   pressReleases?: any[];
   setPressReleases?: React.Dispatch<React.SetStateAction<any[]>>;
-  members?: any[];
+  members?: CommitteeMember[];
 }
 
 export default function CommitteeManager({ 
@@ -206,85 +297,9 @@ export default function CommitteeManager({
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [responses, setResponses] = useState([]);
   const [members, setMembers] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
-
-  // 사용자 권한 가드 상태
-  const isManager = ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser?.role_key);
-
-  // 💡 [위원장 및 간사 수정 권한 감지] 현재 선택된 위원회에서 로그인 사용자가 간사(Secretary) 또는 위원장(Chair) 직책인지 식별
-  const isMeetingManager = isManager || (currentUser && members.some(m => {
-    const cleanName = m.name ? m.name.split(" ")[0].split("(")[0].trim() : "";
-    const cleanUser = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
-    if (cleanName === cleanUser) {
-      const type = String(m.type || "").toUpperCase();
-      const role = String(m.role || "").toUpperCase();
-      const pos = String(m.position || "").toUpperCase();
-      return type.includes("CHAIR") || type.includes("위원장") || type.includes("SECRETARY") || type.includes("간사") ||
-             role.includes("CHAIR") || role.includes("위원장") || role.includes("SECRETARY") || role.includes("간사") ||
-             pos.includes("CHAIR") || pos.includes("위원장") || pos.includes("SECRETARY") || pos.includes("간사");
-    }
-    return false;
-  }));
-
-  const [meetingResult, setMeetingResult] = useState(null);
-  const [isEditingReport, setIsEditingReport] = useState(false);
-  const [editedReportText, setEditedReportText] = useState("");
-
-  const [myMemberships, setMyMemberships] = useState([]); // 로그인 유저가 소속된 위원회 정보
-
-  // 모달 및 폼 제어 상태
-  const [isCommitteeModalOpen, setIsCommitteeModalOpen] = useState(false);
-  const [committeeForm, setCommitteeForm] = useState({ name: "", total_quorum: 5, voting_rule: "majority_of_attendees" });
-  
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editingMeetingId, setEditingMeetingId] = useState(null);
-  
-  const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
-  const [meetingForm, setMeetingForm] = useState({ 
-    title: "", 
-    meeting_date: "", 
-    meeting_type: "ONLINE_WRITTEN", 
-    agenda: "",
-    attachment_name: "",
-    attachment_data: "",
-    access_pin: "",
-    agendas: [{ title: "", description: "", is_evaluation: false }] // 💡 [의안 개조] 기본 1개 안건 인풋 자동 생성
-  });
-
-  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
-  const [memberForm, setMemberForm] = useState({
-    name: "",
-    type: "위원",
-    org: "울산과학대학교",
-    dept: "",
-    rank: "",
-    location: "교내",
-    note: "",
-    sort_order: 10
-  });
-
-  // 💡 [의안 개조] 선택된 회의의 의안 리스트 및 의안별 수집된 위원 투표/평가 상태
-  const [selectedMeetingAgendas, setSelectedMeetingAgendas] = useState([]);
-  const [selectedMeetingAgendaVotes, setSelectedMeetingAgendaVotes] = useState([]);
-  
-  // 💡 [의안 개조] 위원 로그인 후 각 의안별 선택한 의결/의견 맵 상태 ({ [agendaId]: { vote, score, opinion } })
-  const [agendaInputs, setAgendaInputs] = useState({});
-
-  // 위원 의사결정 제출 폼 상태
-  const [userVote, setUserVote] = useState("");
-  const [userOpinion, setUserOpinion] = useState("");
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  
-  // ChatGPT 4o (OpenAI) API 키 관리
-  const [openaiKey, setOpenaiKey] = useState(() => {
-    return import.meta.env.VITE_OPENAI_API_KEY || localStorage.getItem("user_openai_api_key") || "";
-  });
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showKeyInput, setShowKeyInput] = useState(false);
-
   // 전자서명 패드 Canvas 레퍼런스
-  const canvasRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
 
   // 💡 [로컬 캐시 Quota 초과 자가치유] 대용량 base64 PDF 데이터 캐시로 가득 찬 localStorage를 안전하게 정리
   useEffect(() => {
@@ -395,14 +410,15 @@ export default function CommitteeManager({
       const myName = currentUser?.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
       const myMemberObj = members.find(m => m.name === myName);
       
-      const newInputs = {};
+      const newInputs: Record<string | number, { vote?: string; score?: number; opinion?: string }> = {};
       selectedMeetingAgendas.forEach(a => {
+        if (!a.id) return;
         // 이미 낸 투표가 있는지 찾기
         const existingVote = selectedMeetingAgendaVotes.find(
-          v => v.agenda_id === a.id && (myMemberObj ? v.member_id === myMemberObj.id : false)
+          v => v.agenda_id === a.id && (myMemberObj ? (v as any).member_id === myMemberObj.id : false)
         );
         newInputs[a.id] = {
-          vote: existingVote?.vote || "",
+          vote: existingVote?.vote_decision || "",
           score: existingVote?.score || 0,
           opinion: existingVote?.opinion || ""
         };
@@ -412,23 +428,23 @@ export default function CommitteeManager({
   }, [selectedMeeting, selectedMeetingAgendas, selectedMeetingAgendaVotes, members, currentUser]);
 
   // 💡 [의안 개조] 의안별 투표/평가 통계 산출 헬퍼 함수
-  const getAgendaVoteStats = (agendaId, isEvaluation) => {
+  const getAgendaVoteStats = (agendaId: number | string, isEvaluation?: boolean) => {
     const votes = selectedMeetingAgendaVotes.filter(v => String(v.agenda_id) === String(agendaId));
     let totalVotes = votes.length;
     
     if (isEvaluation) {
-      const scores = votes.map(v => v.score).filter(s => s && s >= 1 && s <= 5);
+      const scores = votes.map(v => v.score).filter((s): s is number => typeof s === "number" && s >= 1 && s <= 5);
       const sum = scores.reduce((a, b) => a + b, 0);
       const avg = scores.length > 0 ? (sum / scores.length).toFixed(2) : "0.00";
       
-      const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      const distribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
       scores.forEach(s => { distribution[s] = (distribution[s] || 0) + 1; });
       
       return { totalVotes, avg, distribution };
     } else {
-      let approve = votes.filter(v => v.vote === "APPROVE").length;
-      let reject = votes.filter(v => v.vote === "REJECT").length;
-      let abstain = votes.filter(v => v.vote === "ABSTAIN").length;
+      let approve = votes.filter(v => v.vote_decision === "APPROVE").length;
+      let reject = votes.filter(v => v.vote_decision === "REJECT").length;
+      let abstain = votes.filter(v => v.vote_decision === "ABSTAIN").length;
 
       // 💡 [Fallback Aggregation] selectedMeetingAgendaVotes에 데이터가 부족한 경우 responses 제출 목록과 통합 수합
       if (totalVotes === 0 && responses.length > 0) {
@@ -446,14 +462,16 @@ export default function CommitteeManager({
   };
 
   useEffect(() => {
-    if (selectedMeeting) {
+    if (selectedMeeting && selectedMeeting.id) {
       fetchResponses(selectedMeeting.id);
       fetchMeetingAgendasAndVotes(selectedMeeting.id);
       fetchMeetingResult(selectedMeeting.id);
 
       const interval = setInterval(() => {
-        fetchResponses(selectedMeeting.id);
-        fetchMeetingAgendasAndVotes(selectedMeeting.id);
+        if (selectedMeeting.id) {
+          fetchResponses(selectedMeeting.id);
+          fetchMeetingAgendasAndVotes(selectedMeeting.id);
+        }
       }, 3000);
 
       return () => clearInterval(interval);
@@ -465,7 +483,7 @@ export default function CommitteeManager({
     }
   }, [selectedMeeting]);
 
-  const fetchMeetingResult = async (meetingId) => {
+  const fetchMeetingResult = async (meetingId: number | string) => {
     try {
       const { data, error } = await supabase
         .from("meeting_results")
@@ -474,7 +492,7 @@ export default function CommitteeManager({
         .maybeSingle();
       if (error) throw error;
       setMeetingResult(data || null);
-    } catch (err) {
+    } catch (err: any) {
       console.warn("회의 결과 조회 실패:", err.message);
       setMeetingResult(null);
     }
@@ -519,7 +537,7 @@ export default function CommitteeManager({
           setSelectedCommittee(found);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("위원회 조회 에러 (폴백 마스터 전환):", err.message);
       setCommittees(GOVERNANCE_COMMITTEES_MASTER);
 
@@ -591,12 +609,12 @@ export default function CommitteeManager({
         .order("name", { ascending: true });
       if (error) throw error;
       setAllUsers(data || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error("사용자 조회 에러:", err.message);
     }
   };
 
-  const fetchMeetings = async (committeeId) => {
+  const fetchMeetings = async (committeeId: string) => {
     try {
       const { data, error } = await supabase
         .from("committee_meetings")
@@ -614,7 +632,7 @@ export default function CommitteeManager({
       } else {
         setSelectedMeeting(null);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("회의 조회 에러 (로컬 캐시 스위칭):", err.message);
       const localData = localStorage.getItem(`local_committee_meetings_${committeeId}`);
       const parsed = localData ? JSON.parse(localData) : [];
@@ -627,7 +645,7 @@ export default function CommitteeManager({
     }
   };
 
-  const fetchMembers = async (committeeId) => {
+  const fetchMembers = async (committeeId: string) => {
     try {
       const { data, error } = await supabase
         .from("committee_members")
@@ -637,7 +655,7 @@ export default function CommitteeManager({
         .order("id", { ascending: true });
       if (error) throw error;
       
-      const fallback = MOCK_COMMITTEE_MEMBERS_FALLBACK[committeeId] || [
+      const fallback: CommitteeMember[] = (MOCK_COMMITTEE_MEMBERS_FALLBACK as any)[committeeId] || [
         { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
         { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
       ];
@@ -671,18 +689,18 @@ export default function CommitteeManager({
           const finalData = refreshedData && refreshedData.length > 0 ? refreshedData : fallback;
           setMembers(finalData);
           localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(finalData));
-        } catch (dbInsErr) {
+        } catch (dbInsErr: any) {
           // DB 실패 시 로컬 스토리지에 모의 배정 저장
           console.warn("위원 자동 배정 DB 적재 실패 (오프라인 로컬 저장소 캐싱):", dbInsErr.message);
           setMembers(fallback);
           localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(fallback));
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("위원 조회 에러 (로컬 캐시 스위칭 및 강제 마이그레이션):", err.message);
       const localData = localStorage.getItem(`local_committee_members_${committeeId}`);
       const parsed = localData ? JSON.parse(localData) : [];
-      const fallback = MOCK_COMMITTEE_MEMBERS_FALLBACK[committeeId] || [
+      const fallback: CommitteeMember[] = (MOCK_COMMITTEE_MEMBERS_FALLBACK as any)[committeeId] || [
         { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
         { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
       ];
@@ -696,8 +714,8 @@ export default function CommitteeManager({
     }
   };
 
-  const fetchResponses = async (meetingId) => {
-    let combinedResponses = [];
+  const fetchResponses = async (meetingId: number | string) => {
+    let combinedResponses: any[] = [];
     
     // 1. meeting_responses DB 테이블 수합
     try {
@@ -711,7 +729,7 @@ export default function CommitteeManager({
       if (data && data.length > 0) {
         combinedResponses = [...data];
       }
-    } catch (err) {
+    } catch (err: any) {
       console.warn("meeting_responses DB 조회 스킵:", err.message);
     }
 
