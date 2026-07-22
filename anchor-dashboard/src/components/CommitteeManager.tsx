@@ -2,20 +2,20 @@ import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
 import ScheduleManager from "./ScheduleManager";
-import { 
-  Users, 
-  ClipboardList, 
-  Plus, 
-  Check, 
-  X, 
-  FileText, 
-  Vote, 
-  Award, 
-  Clock, 
-  Cpu, 
-  Trash2, 
-  Edit, 
-  Edit3, 
+import {
+  Users,
+  ClipboardList,
+  Plus,
+  Check,
+  X,
+  FileText,
+  Vote,
+  Award,
+  Clock,
+  Cpu,
+  Trash2,
+  Edit,
+  Edit3,
   Lock,
   ChevronRight,
   UserCheck,
@@ -256,12 +256,12 @@ export interface CommitteeManagerProps {
   members?: CommitteeMember[];
 }
 
-export default function CommitteeManager({ 
-  currentRole, 
-  currentUser, 
-  activeSubTab = "committees", 
-  onChangeSubTab, 
-  darkMode, 
+export default function CommitteeManager({
+  currentRole,
+  currentUser,
+  activeSubTab = "committees",
+  onChangeSubTab,
+  darkMode,
   selectedYear,
   monthlySchedules,
   setMonthlySchedules,
@@ -279,7 +279,7 @@ export default function CommitteeManager({
   const [selectedGroup, setSelectedGroup] = useState(() => {
     return localStorage.getItem("anchor_selected_committee_group") || "agency";
   }); // "agency"(사업단) 또는 "center"(센터별)
-  
+
   // 💡 [전자서명 CryptoJS 복호화 헬퍼 함수] (요구사항 4 반영)
   const decryptSignature = (encSig) => {
     if (!encSig) return null;
@@ -312,8 +312,8 @@ export default function CommitteeManager({
       const role = String(m.role || "").toUpperCase();
       const pos = String(m.position || "").toUpperCase();
       return type.includes("CHAIR") || type.includes("위원장") || type.includes("SECRETARY") || type.includes("간사") ||
-             role.includes("CHAIR") || role.includes("위원장") || role.includes("SECRETARY") || role.includes("간사") ||
-             pos.includes("CHAIR") || pos.includes("위원장") || pos.includes("SECRETARY") || pos.includes("간사");
+        role.includes("CHAIR") || role.includes("위원장") || role.includes("SECRETARY") || role.includes("간사") ||
+        pos.includes("CHAIR") || pos.includes("위원장") || pos.includes("SECRETARY") || pos.includes("간사");
     }
     return false;
   }));
@@ -327,10 +327,10 @@ export default function CommitteeManager({
   // 모달 및 폼 제어 상태
   const [isCommitteeModalOpen, setIsCommitteeModalOpen] = useState<boolean>(false);
   const [committeeForm, setCommitteeForm] = useState<{ name: string; total_quorum: number; voting_rule: string }>({ name: "", total_quorum: 5, voting_rule: "majority_of_attendees" });
-  
+
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [editingMeetingId, setEditingMeetingId] = useState<number | string | null>(null);
-  
+
   const [isMeetingModalOpen, setIsMeetingModalOpen] = useState<boolean>(false);
   const [meetingForm, setMeetingForm] = useState<{
     title: string;
@@ -341,10 +341,10 @@ export default function CommitteeManager({
     attachment_data: string;
     access_pin: string;
     agendas: { title: string; description: string; is_evaluation?: boolean }[];
-  }>({ 
-    title: "", 
-    meeting_date: "", 
-    meeting_type: "ONLINE_WRITTEN", 
+  }>({
+    title: "",
+    meeting_date: "",
+    meeting_type: "ONLINE_WRITTEN",
     agenda: "",
     attachment_name: "",
     attachment_data: "",
@@ -376,7 +376,7 @@ export default function CommitteeManager({
   // 💡 [의안 개조] 선택된 회의의 의안 리스트 및 의안별 수집된 위원 투표/평가 상태
   const [selectedMeetingAgendas, setSelectedMeetingAgendas] = useState<CommitteeAgenda[]>([]);
   const [selectedMeetingAgendaVotes, setSelectedMeetingAgendaVotes] = useState<CommitteeAgendaVote[]>([]);
-  
+
   // 💡 [의안 개조] 위원 로그인 후 각 의안별 선택한 의결/의견 맵 상태 ({ [agendaId]: { vote, score, opinion } })
   const [agendaInputs, setAgendaInputs] = useState<Record<string | number, { vote?: string; score?: number; opinion?: string }>>({});
 
@@ -384,7 +384,7 @@ export default function CommitteeManager({
   const [userVote, setUserVote] = useState<string>("");
   const [userOpinion, setUserOpinion] = useState<string>("");
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
-  
+
   // ChatGPT 4o (OpenAI) API 키 관리
   const [openaiKey, setOpenaiKey] = useState<string>(() => {
     return (import.meta.env.VITE_OPENAI_API_KEY as string) || localStorage.getItem("user_openai_api_key") || "";
@@ -542,7 +542,7 @@ export default function CommitteeManager({
     if (selectedMeeting && selectedMeetingAgendas.length > 0) {
       const myName = currentUser?.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
       const myMemberObj = members.find(m => m.name === myName);
-      
+
       const newInputs: Record<string | number, { vote?: string; score?: number; opinion?: string }> = {};
       selectedMeetingAgendas.forEach(a => {
         if (!a.id) return;
@@ -564,15 +564,15 @@ export default function CommitteeManager({
   const getAgendaVoteStats = (agendaId: number | string, isEvaluation?: boolean) => {
     const votes = selectedMeetingAgendaVotes.filter(v => String(v.agenda_id) === String(agendaId));
     let totalVotes = votes.length;
-    
+
     if (isEvaluation) {
       const scores = votes.map(v => v.score).filter((s): s is number => typeof s === "number" && s >= 1 && s <= 5);
       const sum = scores.reduce((a, b) => a + b, 0);
       const avg = scores.length > 0 ? (sum / scores.length).toFixed(2) : "0.00";
-      
+
       const distribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
       scores.forEach(s => { distribution[s] = (distribution[s] || 0) + 1; });
-      
+
       return { totalVotes, avg, distribution };
     } else {
       const isApproveVote = (vStr: any) => {
@@ -605,7 +605,7 @@ export default function CommitteeManager({
           else approve++;
         });
       }
-      
+
       return { totalVotes, approve, reject, abstain };
     }
   };
@@ -670,7 +670,7 @@ export default function CommitteeManager({
         .select("*")
         .order("name", { ascending: true });
       if (error) throw error;
-      
+
       let list = GOVERNANCE_COMMITTEES_MASTER;
       if (data && data.length > 0) {
         list = data;
@@ -810,7 +810,7 @@ export default function CommitteeManager({
                 if (Array.isArray(parsed)) tempArr.push(...parsed);
                 else if (parsed && typeof parsed === "object") tempArr.push(parsed);
               }
-            } catch (e) {}
+            } catch (e) { }
           });
 
           if (tempArr.length > 0) {
@@ -844,7 +844,7 @@ export default function CommitteeManager({
               setResponses(parsedResp);
             }
           }
-        } catch (e) {}
+        } catch (e) { }
       }
     } else {
       setSelectedMeeting(null);
@@ -861,7 +861,7 @@ export default function CommitteeManager({
         .order("sort_order", { ascending: true })
         .order("id", { ascending: true });
       if (error) throw error;
-      
+
       const fallback: CommitteeMember[] = (MOCK_COMMITTEE_MEMBERS_FALLBACK as any)[committeeId] || [
         { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
         { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
@@ -873,10 +873,10 @@ export default function CommitteeManager({
         localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(data));
       } else {
         console.log(`위원회 [${committeeId}]에 소속된 위원 수(${data ? data.length : 0}명)가 최신 마스터 위원 수(${fallback.length}명)보다 적으므로 자동 업그레이드를 시작합니다.`);
-        
+
         // insert 시 id 필드는 DB auto-increment를 위해 제외
         const insertPayloads = fallback.map(({ id, ...rest }) => rest);
-        
+
         try {
           if (data && data.length > 0) {
             await supabase.from("committee_members").delete().eq("committee_id", committeeId);
@@ -885,14 +885,14 @@ export default function CommitteeManager({
             .from("committee_members")
             .insert(insertPayloads);
           if (insErr) throw insErr;
-          
+
           // 성공 시 최신 정보 다시 조회
           const { data: refreshedData } = await supabase
             .from("committee_members")
             .select(`id, committee_id, type, name, org, dept, rank, location, note, sort_order`)
             .eq("committee_id", committeeId)
             .order("sort_order", { ascending: true });
-          
+
           const finalData = refreshedData && refreshedData.length > 0 ? refreshedData : fallback;
           setMembers(finalData);
           localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(finalData));
@@ -911,7 +911,7 @@ export default function CommitteeManager({
         { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
         { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
       ];
-      
+
       if (parsed.length >= fallback.length) {
         setMembers(parsed);
       } else {
@@ -955,7 +955,7 @@ export default function CommitteeManager({
     }
 
     let combinedResponses: any[] = [];
-    
+
     if (isNumericId) {
       // 1. [1순위] committee_meetings 테이블의 responses_data 수합 (DB 실시간 수합 보장 메인 소스)
       try {
@@ -1031,60 +1031,60 @@ export default function CommitteeManager({
           .select("*")
           .eq("meeting_id", meetingId);
 
-      if (voteRows && voteRows.length > 0) {
-        const memberVotesMap: Record<string, any> = {};
-        voteRows.forEach(v => {
-          const key = v.member_id ? String(v.member_id).trim() : (v.member_name || v.voter_name || "").trim();
-          if (!key) return;
-          if (!memberVotesMap[key]) {
-            memberVotesMap[key] = {
-              member_id: v.member_id,
-              member_name: (v.member_name || v.voter_name || "").trim(),
-              vote: v.vote_decision || "APPROVE",
-              opinion: v.opinion || "",
-              signature: v.signature,
-              encrypted_signature: v.encrypted_signature,
-              submitted_at: v.created_at || new Date().toISOString(),
-              attended: true
-            };
-          } else {
-            if (v.opinion) {
-              memberVotesMap[key].opinion = memberVotesMap[key].opinion 
-                ? `${memberVotesMap[key].opinion} / ${v.opinion}` 
-                : v.opinion;
+        if (voteRows && voteRows.length > 0) {
+          const memberVotesMap: Record<string, any> = {};
+          voteRows.forEach(v => {
+            const key = v.member_id ? String(v.member_id).trim() : (v.member_name || v.voter_name || "").trim();
+            if (!key) return;
+            if (!memberVotesMap[key]) {
+              memberVotesMap[key] = {
+                member_id: v.member_id,
+                member_name: (v.member_name || v.voter_name || "").trim(),
+                vote: v.vote_decision || "APPROVE",
+                opinion: v.opinion || "",
+                signature: v.signature,
+                encrypted_signature: v.encrypted_signature,
+                submitted_at: v.created_at || new Date().toISOString(),
+                attended: true
+              };
+            } else {
+              if (v.opinion) {
+                memberVotesMap[key].opinion = memberVotesMap[key].opinion
+                  ? `${memberVotesMap[key].opinion} / ${v.opinion}`
+                  : v.opinion;
+              }
             }
-          }
-        });
-
-        Object.values(memberVotesMap).forEach(r => {
-          const rName = (r.member_name || "").trim();
-          const rId = String(r.member_id || "").trim();
-          const exists = combinedResponses.some(cr => {
-            const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
-            const crId = String(cr.member_id || "").trim();
-            return (rId && crId && rId === crId) || (rName && crName && rName === crName);
           });
-          if (!exists) {
-            combinedResponses.push(r);
-          } else {
-            const target = combinedResponses.find(cr => {
+
+          Object.values(memberVotesMap).forEach(r => {
+            const rName = (r.member_name || "").trim();
+            const rId = String(r.member_id || "").trim();
+            const exists = combinedResponses.some(cr => {
               const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
               const crId = String(cr.member_id || "").trim();
               return (rId && crId && rId === crId) || (rName && crName && rName === crName);
             });
-            if (target) {
-              if (!target.vote) target.vote = r.vote;
-              if (!target.opinion && r.opinion) target.opinion = r.opinion;
-              if (!target.submitted_at) target.submitted_at = r.submitted_at;
-              target.attended = true;
+            if (!exists) {
+              combinedResponses.push(r);
+            } else {
+              const target = combinedResponses.find(cr => {
+                const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
+                const crId = String(cr.member_id || "").trim();
+                return (rId && crId && rId === crId) || (rName && crName && rName === crName);
+              });
+              if (target) {
+                if (!target.vote) target.vote = r.vote;
+                if (!target.opinion && r.opinion) target.opinion = r.opinion;
+                if (!target.submitted_at) target.submitted_at = r.submitted_at;
+                target.attended = true;
+              }
             }
-          }
-        });
+          });
+        }
+      } catch (err: any) {
+        console.warn("meeting_agenda_votes 기반 위원 수합 스킵:", err.message);
       }
-    } catch (err: any) {
-      console.warn("meeting_agenda_votes 기반 위원 수합 스킵:", err.message);
     }
-  }
 
     // 💡 깜빡임 100% 방지 Guard: 이전 상태값과 데이터 비교 후 차이가 있을 때만 Re-render 유도!
     setResponses(prev => (JSON.stringify(prev) !== JSON.stringify(combinedResponses) ? combinedResponses : prev));
@@ -1119,7 +1119,7 @@ export default function CommitteeManager({
         .select("committee_id, type, name")
         .eq("name", myName);
       if (error) throw error;
-      
+
       const mapped = (data || []).map(m => ({
         committee_id: m.committee_id,
         role: m.type === "위원장" ? "CHAIRMAN" : m.type === "간사" ? "SECRETARY" : "MEMBER"
@@ -1419,7 +1419,7 @@ export default function CommitteeManager({
         sort_order: 10
       });
       await fetchMembers(selectedCommittee.id);
-      
+
       // 💡 [간사 제외 정족수 규칙 적용] 간사를 제외한 순수 의결 위원 수 산정
       const currentVotingCount = members.filter(m => !m.type?.includes("간사")).length;
       const isAddingSecretary = payload.type?.includes("간사");
@@ -1433,12 +1433,12 @@ export default function CommitteeManager({
       window.dispatchEvent(new CustomEvent("anchor_committee_members_updated", { detail: { committeeId: selectedCommittee.id } }));
     } catch (err) {
       console.warn("DB 위원 배정 실패, 로컬 스토리지에 모의 저장합니다:", err.message);
-      
+
       const localMembers = JSON.parse(localStorage.getItem(`local_committee_members_${selectedCommittee.id}`) || "[]");
       const localPayload = { ...payload, id: `local-member-${Date.now()}` };
       const updated = [...localMembers, localPayload];
       localStorage.setItem(`local_committee_members_${selectedCommittee.id}`, JSON.stringify(updated));
-      
+
       alert("위원이 배정되었습니다. (오프라인 캐시 모드)");
       setIsMemberModalOpen(false);
       setMemberForm({
@@ -1534,7 +1534,7 @@ export default function CommitteeManager({
   // 💡 [의안 개조] 위원 참석 및 의안별 의결/평가(의결서) 제출 핸들러 (Rule 8 암호화 적용)
   const handleSubmitVote = async () => {
     if (!selectedMeeting) return;
-    
+
     const myName = currentUser?.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
     const myMemberObj = members.find(m => m.name === myName);
     if (!myMemberObj) {
@@ -1566,7 +1566,7 @@ export default function CommitteeManager({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const signatureDataUrl = canvas.toDataURL("image/png");
-    
+
     const blankCanvas = document.createElement("canvas");
     blankCanvas.width = canvas.width;
     blankCanvas.height = canvas.height;
@@ -1595,8 +1595,8 @@ export default function CommitteeManager({
       return `[안건 ${idx + 1}] ${choiceStr}: ${detail.opinion}`;
     }).join("\n");
 
-    const representativeVote = selectedMeetingAgendas[0]?.is_evaluation 
-      ? "EVALUATION" 
+    const representativeVote = selectedMeetingAgendas[0]?.is_evaluation
+      ? "EVALUATION"
       : (agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "ABSTAIN");
 
     const responsePayload = {
@@ -1628,7 +1628,7 @@ export default function CommitteeManager({
       await fetchResponses(selectedMeeting.id);
     } catch (err) {
       console.warn("DB 의결 제출 실패, 로컬 스토리지에 모의 기록합니다:", err.message);
-      
+
       // 로컬 스토리지 모의 기록 연동
       const localVotes = JSON.parse(localStorage.getItem(`local_meeting_agenda_votes_${selectedMeeting.id}`) || "[]");
       const updatedVotes = [...localVotes];
@@ -1654,7 +1654,7 @@ export default function CommitteeManager({
           dept: myMemberObj.dept
         }
       };
-      
+
       const idx = localResponses.findIndex(r => r.member_id === myMemberObj.id);
       let updated;
       if (idx > -1) {
@@ -1674,7 +1674,7 @@ export default function CommitteeManager({
   const handleEditMeetingStart = async (meeting) => {
     setIsEditMode(true);
     setEditingMeetingId(meeting.id);
-    
+
     // meeting_date 포맷팅 처리 (datetime-local 타입 연동을 위해 YYYY-MM-DDTHH:mm 형태로 교정)
     let formattedDate = "";
     if (meeting.meeting_date) {
@@ -1697,7 +1697,7 @@ export default function CommitteeManager({
           .select("*")
           .eq("meeting_id", meeting.id)
           .order("id", { ascending: true });
-        
+
         if (!error && dbAgendas && dbAgendas.length > 0) {
           targetAgendas = dbAgendas;
         }
@@ -1759,7 +1759,7 @@ export default function CommitteeManager({
     setIsSubmittingMeeting(true);
 
     const generatedPin = meetingForm.access_pin.trim() || "123456";
-    
+
     // 하위 호환 및 DB non-null 제약 해소를 위해 의안 리스트 요약을 agenda 컬럼에 채움
     const summaryAgendaText = meetingForm.agendas.map((a, idx) => `[안건 ${idx + 1}] ${a.title}`).join("\n");
 
@@ -1827,7 +1827,7 @@ export default function CommitteeManager({
           .select();
         if (error) throw error;
         createdMeeting = data[0];
-        
+
         // 2-B. 신규 의안 데이터 적재
         if (createdMeeting && meetingForm.agendas.length > 0) {
           const agendaPayloads = meetingForm.agendas.map((a, idx) => ({
@@ -1839,7 +1839,7 @@ export default function CommitteeManager({
             attachment_name: a.attachment_name || null,
             attachment_data: a.attachment_data || null
           }));
-          
+
           const { error: agErr } = await supabase
             .from("meeting_agendas")
             .insert(agendaPayloads);
@@ -1852,10 +1852,10 @@ export default function CommitteeManager({
       setIsMeetingModalOpen(false);
       setIsEditMode(false);
       setEditingMeetingId(null);
-      setMeetingForm({ 
-        title: "", 
-        meeting_date: "", 
-        meeting_type: "ONLINE_WRITTEN", 
+      setMeetingForm({
+        title: "",
+        meeting_date: "",
+        meeting_type: "ONLINE_WRITTEN",
         agenda: "",
         attachment_name: "",
         attachment_data: "",
@@ -1868,7 +1868,7 @@ export default function CommitteeManager({
       }
     } catch (err) {
       console.warn("DB 회의 처리 실패, 로컬 스토리지에 모의 저장합니다:", err.message);
-      
+
       const targetMeetingId = isEditMode ? editingMeetingId : `local-meeting-${Date.now()}`;
       const localMeetings = JSON.parse(localStorage.getItem(`local_committee_meetings_${selectedCommittee.id}`) || "[]");
       let updatedMeetings;
@@ -1895,7 +1895,7 @@ export default function CommitteeManager({
       }));
       const cleanLocalAgendas = (localAgendas || []).map(a => ({ ...a, attachment_data: null }));
       localStorage.setItem(`local_meeting_agendas_${targetMeetingId}`, JSON.stringify(cleanLocalAgendas));
-      
+
       if (isEditMode) {
         alert("회의 정보 및 심의 안건이 수정되었습니다. (오프라인 캐시 모드)");
       } else {
@@ -1905,10 +1905,10 @@ export default function CommitteeManager({
       setIsMeetingModalOpen(false);
       setIsEditMode(false);
       setEditingMeetingId(null);
-      setMeetingForm({ 
-        title: "", 
-        meeting_date: "", 
-        meeting_type: "ONLINE_WRITTEN", 
+      setMeetingForm({
+        title: "",
+        meeting_date: "",
+        meeting_type: "ONLINE_WRITTEN",
         agenda: "",
         attachment_name: "",
         attachment_data: "",
@@ -1925,14 +1925,14 @@ export default function CommitteeManager({
   const handleDeleteMeeting = async (meetingId: string | number) => {
     if (!meetingId) return;
     if (!window.confirm("이 회의 안건을 정말 취소(삭제)하시겠습니까?\n관련 의안, 위원 표결, 서명 데이터가 함께 삭제됩니다.")) return;
-    
+
     // 1. [하위 테이블 종속 삭제] Foreign Key Violation 방지
     try {
       await supabase.from("meeting_agenda_votes").delete().eq("meeting_id", meetingId);
       await supabase.from("meeting_agendas").delete().eq("meeting_id", meetingId);
       await supabase.from("meeting_responses").delete().eq("meeting_id", meetingId);
       await supabase.from("meeting_results").delete().eq("meeting_id", meetingId);
-    } catch (e) {}
+    } catch (e) { }
 
     // 2. [메인 회의 테이블 삭제]
     try {
@@ -1940,7 +1940,7 @@ export default function CommitteeManager({
         .from("committee_meetings")
         .delete()
         .eq("id", meetingId);
-      
+
       if (error) console.warn("Supabase DB 회의 삭제 경고:", error.message);
     } catch (err: any) {
       console.warn("DB 회의 삭제 스킵:", err.message);
@@ -1966,7 +1966,7 @@ export default function CommitteeManager({
       localStorage.removeItem(`local_meeting_agendas_${meetingId}`);
       localStorage.removeItem(`local_meeting_agenda_votes_${meetingId}`);
       localStorage.removeItem(`local_meeting_responses_${meetingId}`);
-    } catch (e) {}
+    } catch (e) { }
 
     alert("회의가 정상적으로 취소(삭제)되었습니다.");
     setSelectedMeeting(null);
@@ -1981,17 +1981,17 @@ export default function CommitteeManager({
   // 5. 전자서명 그리기 캔버스 핸들러 (DPR 및 바운딩 렉트 비율 스케일링 보정 적용)
   const getCanvasCoordinates = (canvas, e) => {
     const rect = canvas.getBoundingClientRect();
-    
+
     // 모바일 터치 및 데스크톱 마우스 좌표 동시 대응
     const clientX = e.clientX || (e.touches && e.touches[0]?.clientX);
     const clientY = e.clientY || (e.touches && e.touches[0]?.clientY);
-    
+
     if (clientX === undefined || clientY === undefined) return null;
-    
+
     // 캔버스 자체 크기와 바운딩 렉트 크기의 비율을 계산하여 좌표 튐 버그 완벽 보정
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    
+
     return {
       x: (clientX - rect.left) * scaleX,
       y: (clientY - rect.top) * scaleY
@@ -2002,13 +2002,13 @@ export default function CommitteeManager({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    
+
     // 만년필 필체 느낌을 위해 라인 두께 및 결합 둥글기 설정
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.strokeStyle = "#1e3a8a"; // 투명 배경 위에서도 지적인 느낌을 풍기는 만년필용 로열 인디고 블루 잉크색
-    
+
     const coords = getCanvasCoordinates(canvas, e);
     if (!coords) return;
 
@@ -2022,7 +2022,7 @@ export default function CommitteeManager({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    
+
     const coords = getCanvasCoordinates(canvas, e);
     if (!coords) return;
 
@@ -2046,7 +2046,7 @@ export default function CommitteeManager({
   // 7. 정족수 실시간 계산 유틸리티 연동 (간사는 소속/재적 위원 및 정족수 산정에서 전면 제외)
   const calculateQuorum = () => {
     if (!selectedCommittee || !selectedMeeting) return null;
-    
+
     // 💡 [간사 의결권 제외 규칙 적용] 간사는 의결 권한이 없는 행정 실무 진행자이므로 재적 위원 수 및 의결정족수 산정에서 전면 제외합니다.
     const votingMembers = members.filter(m => !m.type?.includes("간사"));
     // 재적 위원 수: 소속 위원 중 간사를 제외한 순수 의결 위원 수 (예: 4명 중 간사 1명 제외 3명)
@@ -2078,7 +2078,7 @@ export default function CommitteeManager({
       const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
       return memberObj ? !memberObj.type?.includes("간사") : true;
     }).filter(r => r.attended || r.submitted_at || r.vote).length;
-    
+
     // 의사정족수 (성원 요건): 간사를 제외한 재적 위원 수(N명)의 과반수 (N=3이면 Math.floor(3/2) + 1 = 2명 이상 출석 시 성원 완료!)
     const majorityLimit = Math.floor(total / 2) + 1;
     const isEstablished = attended >= majorityLimit;
@@ -2161,7 +2161,7 @@ export default function CommitteeManager({
       const opinionsContext = selectedMeetingAgendas.map((agenda, aIdx) => {
         const votes = selectedMeetingAgendaVotes.filter(v => v.agenda_id === agenda.id);
         const stats = getAgendaVoteStats(agenda.id, agenda.is_evaluation);
-        
+
         let statsText = "";
         if (agenda.is_evaluation) {
           statsText = `평균 평점: ${stats.avg}점 / 5.00점 만점 (점수 분포: 5점 ${stats.distribution[5]}명, 4점 ${stats.distribution[4]}명, 3점 ${stats.distribution[3]}명, 2점 ${stats.distribution[2]}명, 1점 ${stats.distribution[1]}명)`;
@@ -2250,13 +2250,13 @@ ${opinionsContext}
 
 ### 2. 안건(평가영역)별 분석 보고 및 보완 권고사항
 ${selectedMeetingAgendas.map((a, idx) => {
-  const stats = getAgendaVoteStats(a.id, a.is_evaluation);
-  if (a.is_evaluation) {
-    return `- [안건 ${idx + 1}: ${a.title}]: 자체평가 평균 ${stats.avg}점/5.00점 만점으로 우수한 성과로 평가되었습니다. 추가 보완사항으로 연계 질 관리 및 모니터링 강화를 권고합니다.`;
-  } else {
-    return `- [안건 ${idx + 1}: ${a.title}]: 표결 결과 찬성 ${stats.approve}표, 반대 ${stats.reject}표, 기권 ${stats.abstain}표로 ${stats.approve >= Math.floor(qInfo?.attended / 2) + 1 ? "원안 가결" : "부결/보완"} 처리되었습니다.`;
-  }
-}).join("\n")}
+          const stats = getAgendaVoteStats(a.id, a.is_evaluation);
+          if (a.is_evaluation) {
+            return `- [안건 ${idx + 1}: ${a.title}]: 자체평가 평균 ${stats.avg}점/5.00점 만점으로 우수한 성과로 평가되었습니다. 추가 보완사항으로 연계 질 관리 및 모니터링 강화를 권고합니다.`;
+          } else {
+            return `- [안건 ${idx + 1}: ${a.title}]: 표결 결과 찬성 ${stats.approve}표, 반대 ${stats.reject}표, 기권 ${stats.abstain}표로 ${stats.approve >= Math.floor(qInfo?.attended / 2) + 1 ? "원안 가결" : "부결/보완"} 처리되었습니다.`;
+          }
+        }).join("\n")}
 
 ### 3. 향후 사업단 추진 방향 및 AI 종합 제언
 위원회의 심의 의결 결과에 따라 확정된 안건의 세부 실행 계획을 차년도 RISE 사업에 적시 반영하고, 제시된 주요 의견을 모니터링 지표로 활용할 것을 제언합니다.`;
@@ -2363,7 +2363,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
   const handleDownloadSignedPDF = async (rep) => {
     try {
       setIsDownloadingPdf(rep.id);
-      
+
       // 1. 필요한 상세 의결 데이터 실시간 쿼리
       const [agendasRes, votesRes, responsesRes] = await Promise.all([
         supabase
@@ -2428,14 +2428,14 @@ ${selectedMeetingAgendas.map((a, idx) => {
       // 💡 [PDF 전용 마크다운 HTML 파서 헬퍼] ###, ####, **bold**, - list 해석
       const convertMarkdownToPdfHtml = (text) => {
         if (!text) return "<p>종합 의견 분석 대기 중입니다.</p>";
-        
+
         return text.split("\n").map(line => {
           let trimmed = line.trim();
           if (!trimmed) return "";
-          
+
           // **bold** 강조 파싱
           trimmed = trimmed.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-          
+
           if (trimmed.startsWith("####")) {
             return `<h5 style="font-size: 13px; font-weight: bold; color: #1e3a8a; margin-top: 0.8rem; margin-bottom: 0.3rem;">${trimmed.replace(/^####\s*/, "")}</h5>`;
           }
@@ -2457,12 +2457,12 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
       // 💡 [의결 형태별 포맷 분기] 서면의결 시에는 일자만 표기하며, 대면회의 시에는 시작시간 정보까지 함께 렌더링합니다.
       const isWritten = rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN";
-      const dateStr = rep.committee_meetings?.meeting_date 
-        ? new Date(rep.committee_meetings.meeting_date).toLocaleDateString("ko-KR", 
-            isWritten 
-              ? { year: 'numeric', month: 'long', day: 'numeric' } 
-              : { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
-          )
+      const dateStr = rep.committee_meetings?.meeting_date
+        ? new Date(rep.committee_meetings.meeting_date).toLocaleDateString("ko-KR",
+          isWritten
+            ? { year: 'numeric', month: 'long', day: 'numeric' }
+            : { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+        )
         : "-";
 
       // 💡 [동적 생성일자 조립] 결과보고서의 실제 발행일자(published_at)를 YYYY. M. D. 형태로 동적 포맷팅
@@ -2535,7 +2535,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
       agendas.forEach((ag, idx) => {
         const agendaVotes = votes.filter(v => v.agenda_id === ag.id);
         let resultSummary = "-";
-        
+
         if (ag.is_evaluation) {
           const validScores = agendaVotes.filter(v => v.score !== null && v.score !== undefined);
           const avgScore = validScores.length > 0
@@ -2616,13 +2616,13 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
       sortedResponses.forEach((resp) => {
         const decryptedSig = (resp.encrypted_signature ? decryptSignature(resp.encrypted_signature) : null) || resp.signature || (resp as any).signature_data;
-        const sigImage = decryptedSig 
+        const sigImage = decryptedSig
           ? `<img src="${decryptedSig}" style="max-height: 40px; max-width: 90px; object-fit: contain; vertical-align: middle; display: inline-block; background: #fff; padding: 2px; border: 1px solid #e5e7eb; border-radius: 4px;" />`
           : `<span style="font-size: 11px; color: #ef4444; font-style: italic;">서명 미날인</span>`;
 
         const memberName = resp.committee_members?.name || resp.member_name || "위원";
         const computedRole = checkRoleType(resp.committee_members);
-        
+
         let formattedName = `${memberName} 위원`;
         if (computedRole === "CHAIR") {
           formattedName = `${memberName} 위원장`;
@@ -2830,7 +2830,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
         .order("published_at", { ascending: false });
       if (error) throw error;
       setReports(data || []);
-      
+
       // 💡 [UI 개편] 로드된 결과보고서가 있고 아직 선택된 보고서가 없는 경우 첫 번째 보고서를 자동 선택
       if (data && data.length > 0) {
         setSelectedReportId(prev => prev || data[0].id);
@@ -2863,7 +2863,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
   return (
     <div className="card" style={{ padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)", background: "var(--card-bg)" }}>
-      
+
       {/* AI API 키 설정 플로팅 위젯 */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
         <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem" }}>
@@ -2925,10 +2925,10 @@ ${selectedMeetingAgendas.map((a, idx) => {
       {/* ======================================================== */}
       {activeSubTab === "committee_meeting" && (
         <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
-          
+
           {/* 좌측 사이드: 위원회 및 회의 목록 선택 */}
           <div style={{ flex: "1 1 25%", minWidth: "260px", display: "flex", flexDirection: "column", gap: "1rem" }}>
-            
+
             {/* 위원회 선택 헤더 */}
             <div className="card" style={{ padding: "1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
@@ -3019,7 +3019,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                 )}
               </div>
             </div>
- 
+
             {/* 회의 안건 리스트 */}
             <div className="card" style={{ padding: "1rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", flex: 1 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
@@ -3032,7 +3032,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   </button>
                 )}
               </div>
- 
+
               <div style={{ maxHeight: "250px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                 {meetings.length === 0 ? (
                   <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>개설된 회의가 없습니다.</span>
@@ -3072,7 +3072,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
               </div>
             </div>
           </div>
- 
+
           {/* 우측 메인: 회의 상세 현황 및 위원 투표 입력판 */}
           <div style={{ flex: "1 1 70%", minWidth: "400px", display: "flex", flexDirection: "column", gap: "1rem" }}>
             {selectedMeeting ? (
@@ -3307,7 +3307,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                       </strong>
                     </div>
                   </div>
-                  
+
                   <div style={{ fontSize: "0.75rem", color: "var(--accent-color)", marginTop: "0.5rem", textStyle: "italic" }}>
                     ℹ️ 의결 정족수 기준: {qInfo?.ruleText}
                   </div>
@@ -3598,7 +3598,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         const memberObj = members.find(m => String(m.id) === String(r.member_id) || (r.member_name && m.name === r.member_name));
                         const displayName = r.committee_members?.name || r.member_name || memberObj?.name || "위원회 위원";
                         const displayDept = r.committee_members?.dept || memberObj?.dept || memberObj?.org || "운영위원회";
-                        
+
                         const isApprove = r.vote === "APPROVE" || r.vote === "찬성" || !r.vote || r.vote === "EVALUATION";
                         const isReject = r.vote === "REJECT" || r.vote === "반대";
                         const isAbstain = r.vote === "ABSTAIN" || r.vote === "기권";
@@ -3636,7 +3636,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                                 </p>
                               )}
                             </div>
-                            
+
                             {/* 서명 완료 마크 및 전자 서명 이미지 첨부 표출 */}
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", flexShrink: 0 }}>
                               <div style={{ display: "flex", alignItems: "center", gap: "0.1rem", color: "var(--success-color)", fontSize: "0.7rem", fontWeight: "bold" }}>
@@ -3669,7 +3669,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                     )}
                   </div>
                 </div>
-                
+
                 {/* 💡 [회의 진행 탭 상세에서도 AI 심의 분석서 상시 노출 및 실시간 편집 인터페이스 연동] */}
                 {meetingResult && (
                   <div style={{ marginTop: "1.25rem", padding: "1.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
@@ -3678,7 +3678,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         <Cpu size={16} style={{ color: "var(--accent-color)" }} />
                         앵커사업단 각종 위원회 심의 분석서
                       </strong>
-                      
+
                       <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                         {isMeetingManager && (
                           <button
@@ -3773,7 +3773,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
       {/* ======================================================== */}
       {activeSubTab === "committee_report" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-          
+
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div>
               <h2 style={{ fontSize: "1.2rem", fontWeight: "800", color: "var(--text-primary)" }}>
@@ -3793,13 +3793,13 @@ ${selectedMeetingAgendas.map((a, idx) => {
           ) : (
             // 💡 [UI 개편 - Master-Detail 2열 레이아웃 적용] 좌측 리스트와 우측 상세 뷰어를 flex 구조로 분리
             <div style={{ display: "flex", gap: "1.5rem", alignItems: "flex-start", marginTop: "0.5rem" }}>
-              
+
               {/* 왼쪽 블록: 위원회 회의 결과보고 목록 리스트 */}
-              <div 
-                style={{ 
-                  width: "280px", 
-                  display: "flex", 
-                  flexDirection: "column", 
+              <div
+                style={{
+                  width: "280px",
+                  display: "flex",
+                  flexDirection: "column",
                   gap: "0.75rem",
                   background: "rgba(255,255,255,0.02)",
                   border: "1px solid var(--border-color)",
@@ -3850,11 +3850,11 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   // 💡 [의결 형태별 일시 표기 분기] 서면의결인 경우 시간 없이 일자만 표시, 대면인 경우 시작시간까지 표시
                   const isWrittenMeeting = activeRep.committee_meetings?.meeting_type === "ONLINE_WRITTEN";
                   const displayDate = activeRep.committee_meetings?.meeting_date
-                    ? new Date(activeRep.committee_meetings.meeting_date).toLocaleDateString("ko-KR", 
-                        isWrittenMeeting 
-                          ? { year: 'numeric', month: 'long', day: 'numeric' } 
-                          : { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
-                      )
+                    ? new Date(activeRep.committee_meetings.meeting_date).toLocaleDateString("ko-KR",
+                      isWrittenMeeting
+                        ? { year: 'numeric', month: 'long', day: 'numeric' }
+                        : { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+                    )
                     : "-";
 
                   return (
@@ -4216,8 +4216,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
           <div className="modal-contentcard" style={{ background: "var(--modal-bg)", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)", width: "500px", maxWidth: "95%", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
               <h3 style={{ color: "var(--text-primary)", fontWeight: "800", fontSize: "1.1rem", margin: 0 }}>{isEditMode ? "회의 정보 및 의결 안건 수정" : "신규 회의 의결 개설"}</h3>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => {
                   setIsMeetingModalOpen(false);
                   setIsEditMode(false);
@@ -4264,7 +4264,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   </select>
                 </div>
               </div>
-              
+
               {/* 💡 [회의 안건 다중화 개조] 개별 의안 관리 컨트롤러 */}
               <div style={{ border: "1px solid var(--border-color)", borderRadius: "8px", padding: "0.75rem", background: "rgba(0,0,0,0.1)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -4370,7 +4370,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         className="form-textarea"
                         style={{ width: "100%", padding: "0.3rem 0.5rem", borderRadius: "4px", fontSize: "0.78rem", resize: "none", marginBottom: "0.4rem" }}
                       />
-                      
+
                       {/* 안건별 개별 자료 첨부 입력 컨트롤 (PDF 전용 & 1MB 자동 압축) */}
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>📄 심의자료:</label>
@@ -4471,8 +4471,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                     cursor: isSubmittingMeeting ? "not-allowed" : "pointer"
                   }}
                 >
-                  {isSubmittingMeeting 
-                    ? (isEditMode ? "⏳ 수정사항 저장 중..." : "⏳ 회의 등록 및 의결 개시 중...") 
+                  {isSubmittingMeeting
+                    ? (isEditMode ? "⏳ 수정사항 저장 중..." : "⏳ 회의 등록 및 의결 개시 중...")
                     : (isEditMode ? "수정사항 저장" : "회의 등록 및 의결 개시")}
                 </button>
               </div>
