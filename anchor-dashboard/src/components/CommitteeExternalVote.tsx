@@ -200,29 +200,27 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       }
     } catch (e) { }
 
-    // 💡 2. 숫자형 mId인 경우 Supabase DB 쿼리로 동기화 (attachment_data 필드 100% 수신)
+    // 💡 2. 숫자형 mId인 경우 Supabase DB 쿼리로 동기화 (DB 400 에러 방지 select 처리 및 로컬 바이너리 무손실 합성)
     if (isNumericId) {
       try {
         const { data: agendas, error: agErr } = await supabase
           .from("meeting_agendas")
-          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name, attachment_data")
+          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
           .eq("meeting_id", mId)
           .order("sort_order", { ascending: true });
 
         if (!agErr && agendas && agendas.length > 0) {
-          finalAgendas = agendas;
-          // attachment_data 무손실 캐시 저장
-          localStorage.setItem(`local_meeting_agendas_${mId}`, JSON.stringify(agendas));
-        }
+          const localAgendasStr = localStorage.getItem(`local_meeting_agendas_${mId}`);
+          const localCache = localAgendasStr ? JSON.parse(localAgendasStr) : [];
 
-        const { data: votes, error: vtErr } = await supabase
-          .from("meeting_agenda_votes")
-          .select("*")
-          .eq("meeting_id", mId);
-
-        if (!vtErr && votes && votes.length > 0) {
-          finalVotes = votes;
-          localStorage.setItem(`local_meeting_agenda_votes_${mId}`, JSON.stringify(votes));
+          finalAgendas = agendas.map((ag: any, idx: number) => {
+            const cached = localCache.find((c: any) => String(c.id) === String(ag.id) || c.sort_order === ag.sort_order || idx === (c.sort_order ? c.sort_order - 1 : idx));
+            return {
+              ...ag,
+              attachment_name: ag.attachment_name || cached?.attachment_name || null,
+              attachment_data: cached?.attachment_data || null
+            };
+          });
         }
       } catch (err: any) {
         console.warn("DB 의안 조회 스킵 (로컬 폴백 사용):", err.message);
@@ -366,6 +364,25 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       } finally {
         setLoading(false);
       }
+
+      // 💡 [세션 지속 보존] 새로고침(Cmd+Shift+R) 시에도 로그아웃 전까지 위원 인증 세션 100% 보존
+      try {
+        const targetMId = meetingId || targetMeetingId;
+        const savedAuthSession = sessionStorage.getItem(`committee_auth_session_${targetMId}`);
+        if (savedAuthSession) {
+          const parsedAuth = JSON.parse(savedAuthSession);
+          setAuthMember(parsedAuth);
+          setIsAuthorized(true);
+          if (targetMId && parsedAuth) {
+            checkAlreadySubmitted(targetMId, parsedAuth.id || parsedAuth.name);
+            const memName = parsedAuth.name || "guest";
+            const savedDraft = localStorage.getItem(`local_meeting_draft_${targetMId}_${memName}`);
+            if (savedDraft) {
+              setAgendaInputs(JSON.parse(savedDraft));
+            }
+          }
+        }
+      } catch (e) { }
     };
 
     fetchMeeting();
@@ -520,9 +537,15 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       if (memberMatch) {
         setAuthMember(memberMatch);
         setIsAuthorized(true);
+
+        const targetMId = meetingId || meeting?.id;
+        if (targetMId) {
+          sessionStorage.setItem(`committee_auth_session_${targetMId}`, JSON.stringify(memberMatch));
+        }
+
         try {
-          if (meeting && meeting.id) {
-            await checkAlreadySubmitted(meeting.id, memberMatch.id || memberMatch.name);
+          if (targetMId) {
+            await checkAlreadySubmitted(targetMId, memberMatch.id || memberMatch.name);
           }
         } catch (e) {
           console.warn("제출 여부 확인 예외 스킵:", e);
@@ -539,6 +562,10 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
   const handleLogout = () => {
     if (window.confirm("인증 해제하고 로그아웃하시겠습니까?")) {
+      const targetMId = meetingId || meeting?.id;
+      if (targetMId) {
+        sessionStorage.removeItem(`committee_auth_session_${targetMId}`);
+      }
       setIsAuthorized(false);
       setAuthMember(null);
       setLoginForm({ name: "", pin: "" });
@@ -1011,8 +1038,28 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
               <Check size={56} />
               <h4 style={{ fontSize: "1.25rem", fontWeight: "800" }}>의결 표결이 완료되었습니다.</h4>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
-                제출해주신 의결 결과 및 자필 암호화 전자서명이 안전하게 처리되었습니다.
+                제출해주신 의결 결과 및 자필 암호화 전자서명이 안전하게 수합 처리되었습니다.
               </p>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  setHasSubmitted(false);
+                }}
+                style={{
+                  marginTop: "0.5rem",
+                  padding: "0.55rem 1.25rem",
+                  fontSize: "0.88rem",
+                  fontWeight: "bold",
+                  background: "rgba(59, 130, 246, 0.15)",
+                  border: "1px solid var(--accent-color)",
+                  color: "var(--accent-color)",
+                  borderRadius: "6px",
+                  cursor: "pointer"
+                }}
+              >
+                ✏️ 의결 내역 및 서명 수정하기
+              </button>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
@@ -1224,31 +1271,61 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
               * 화면에 직접 서명하거나 이미지 파일(도장/서명)을 업로드할 수 있습니다.
             </span>
 
-            {/* 4. 맨 아래에 최종 의결 표결 및 서명 제출 버튼 배치 */}
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={handleSubmitVote}
-              style={{
-                width: "100%",
-                padding: "1.05rem",
-                fontSize: "1.1rem",
-                fontWeight: "900",
-                marginTop: "0.75rem",
-                background: "var(--accent-color)",
-                color: "#ffffff",
-                borderRadius: "10px",
-                boxShadow: "0 6px 20px rgba(59, 130, 246, 0.4)",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "0.5rem"
-              }}
-            >
-              <Send size={22} />
-              <span>최종 의결 표결 및 서명 제출</span>
-            </button>
+            {/* 4. 맨 아래에 임시 저장 및 최종 의결 표결/서명 제출 버튼 배치 */}
+            <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.75rem" }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  try {
+                    const targetMId = meetingId || meeting?.id;
+                    const memName = authMember?.name || "guest";
+                    localStorage.setItem(`local_meeting_draft_${targetMId}_${memName}`, JSON.stringify(agendaInputs));
+                    alert("💾 안건별 의결 표결 내역이 임시 저장되었습니다.\n(언제든지 작성 중이던 내용으로 다시 불러와 수정 후 최종 제출하실 수 있습니다.)");
+                  } catch (e) {
+                    alert("임시 저장에 실패하였습니다.");
+                  }
+                }}
+                style={{
+                  width: "180px",
+                  padding: "1.05rem",
+                  fontSize: "1rem",
+                  fontWeight: "bold",
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid var(--border-color)",
+                  color: "var(--text-primary)",
+                  borderRadius: "10px",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                💾 임시 저장
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleSubmitVote}
+                style={{
+                  flex: 1,
+                  padding: "1.05rem",
+                  fontSize: "1.1rem",
+                  fontWeight: "900",
+                  background: "var(--accent-color)",
+                  color: "#ffffff",
+                  borderRadius: "10px",
+                  boxShadow: "0 6px 20px rgba(59, 130, 246, 0.4)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem"
+                }}
+              >
+                <Send size={22} />
+                <span>최종 의결 표결 및 서명 제출</span>
+              </button>
+            </div>
           </div>
         )}
 
