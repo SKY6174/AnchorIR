@@ -2655,7 +2655,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
         </div>
 
         <h3 style="font-size: 16px; font-weight: bold; border-left: 4px solid #1e3a8a; padding-left: 8px; margin-bottom: 0.5rem; margin-top: 1.5rem; color: #000; page-break-inside: avoid; break-inside: avoid;">4. 위원 자필 서명 날인부 (디지털 보존)</h3>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 1rem; border: 1px solid #000; padding: 10px; background: #fff; page-break-inside: avoid; break-inside: avoid;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 0.8rem; page-break-inside: avoid; break-inside: avoid;">
       `;
 
       // 💡 [위원 직책 순 정렬 및 명시 연계 (Zero-Miss Chairman Guard)]
@@ -2703,9 +2703,11 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
       sortedResponses.forEach((resp) => {
         const decryptedSig = (resp.encrypted_signature ? decryptSignature(resp.encrypted_signature) : null) || resp.signature || (resp as any).signature_data;
+
+        // 💡 [투명 PNG 서명 렌더링 + mix-blend-mode: multiply 배경 투명화 지정]
         const sigImage = decryptedSig
-          ? `<img src="${decryptedSig}" style="max-height: 40px; max-width: 90px; object-fit: contain; vertical-align: middle; display: inline-block; background: #fff; padding: 2px; border: 1px solid #e5e7eb; border-radius: 4px;" />`
-          : `<span style="font-size: 11px; color: #ef4444; font-style: italic;">서명 미날인</span>`;
+          ? `<img src="${decryptedSig}" style="max-height: 42px; max-width: 95px; object-fit: contain; vertical-align: middle; display: inline-block; background: transparent; border: none; mix-blend-mode: multiply; position: relative; z-index: 2;" />`
+          : `<span style="font-size: 11px; color: #94a3b8; font-style: italic; position: relative; z-index: 2;">미날인</span>`;
 
         const memberName = resp.committee_members?.name || resp.member_name || "위원";
         const computedRole = checkRoleType(resp.committee_members);
@@ -2718,12 +2720,14 @@ ${selectedMeetingAgendas.map((a, idx) => {
         }
 
         htmlContent += `
-          <div style="border: 1px solid #ddd; padding: 8px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; background: #fff; color: #000; page-break-inside: avoid; break-inside: avoid;">
+          <div style="border: 1px solid #cbd5e1; padding: 10px 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; background: #ffffff; color: #000; page-break-inside: avoid; break-inside: avoid;">
             <div style="text-align: left;">
-              <div style="font-size: 12px; font-weight: bold;">${formattedName}</div>
-              <div style="font-size: 10px; color: #666;">${resp.submitted_at ? new Date(resp.submitted_at).toLocaleString("ko-KR", { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "의결서 보관"}</div>
+              <div style="font-size: 12.5px; font-weight: 800; color: #0f172a;">${formattedName}</div>
+              <div style="font-size: 10px; color: #64748b; margin-top: 2px;">${resp.submitted_at ? new Date(resp.submitted_at).toLocaleString("ko-KR", { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "의결서 보관"}</div>
             </div>
-            <div style="text-align: right; width: 100px; height: 45px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; background: #fbfbfb;">
+            <!-- 은은한 (서명) 워터마크 안내 배경 + 투명 서명 겹침 레이어 -->
+            <div style="position: relative; width: 105px; height: 44px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius: 4px;">
+              <span style="position: absolute; font-size: 11px; font-weight: 600; color: #cbd5e1; letter-spacing: 1px; user-select: none; z-index: 1;">(서명)</span>
               ${sigImage}
             </div>
           </div>
