@@ -1122,6 +1122,23 @@ const phaseWeight = {
   "Rq": 1, "DR": 2, "PDR": 2, "DL": 3, "BC": 4, "CS": 5
 };
 
+export interface ProcurementManagerProps {
+  currentRole?: any;
+  currentUser?: any;
+  selectedYear?: number | string;
+  setSelectedYear?: (year: any) => void;
+  subTab?: string;
+  onChangeSubTab?: (subTab: string) => void;
+  envData?: any[];
+  setEnvData?: React.Dispatch<React.SetStateAction<any[]>>;
+  equipData?: any[];
+  setEquipData?: React.Dispatch<React.SetStateAction<any[]>>;
+  serviceData?: any[];
+  setServiceData?: React.Dispatch<React.SetStateAction<any[]>>;
+  projects?: any[];
+  darkMode?: boolean;
+}
+
 export default function ProcurementManager({
   currentRole,
   currentUser,
@@ -1137,7 +1154,7 @@ export default function ProcurementManager({
   setServiceData,
   projects = [],
   darkMode = true
-}) {
+}: ProcurementManagerProps) {
   const monthsOrder = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
 
   // 날짜 문자열로부터 해당 연도 회계연도 기준(3월~익년2월) 월 인덱스(0~11)를 반환하는 로컬 헬퍼
