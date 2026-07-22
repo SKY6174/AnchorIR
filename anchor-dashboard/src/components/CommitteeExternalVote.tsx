@@ -312,18 +312,22 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             : rawStr.split(",").map(p => p.trim());
           if (parts[idx] && parts[idx].length > 0) {
             attachName = parts[idx];
+          } else if (parts[0]) {
+            attachName = parts[0];
           }
         }
-        if (!attachData && idx === 0 && targetMtg?.attachment_data) {
-          attachData = targetMtg.attachment_data;
-        }
 
-        // 5순위: 글로벌 바이너리 맵 순서(idx) 또는 파일명으로 인출
+        // 5순위: 글로벌 바이너리 맵 순서(idx) 또는 파일명으로 바이너리/URL 무손실 복원
         if (!attachName && globalMapKeys[idx]) {
           attachName = globalMapKeys[idx];
         }
-        if (!attachData && attachName && globalMap[attachName.trim()]) {
-          attachData = globalMap[attachName.trim()];
+
+        if (!attachData) {
+          if (attachName && globalMap[attachName.trim()]) {
+            attachData = globalMap[attachName.trim()];
+          } else if (targetMtg?.attachment_data) {
+            attachData = targetMtg.attachment_data;
+          }
         }
 
         return {
