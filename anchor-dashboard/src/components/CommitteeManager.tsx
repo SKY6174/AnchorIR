@@ -147,6 +147,24 @@ const MOCK_COMMITTEE_MEMBERS_FALLBACK = {
   ]
 };
 
+export interface CommitteeManagerProps {
+  currentRole?: any;
+  currentUser?: any;
+  activeSubTab?: string;
+  onChangeSubTab?: (subTab: string) => void;
+  darkMode?: boolean;
+  selectedYear?: number | string;
+  monthlySchedules?: any[];
+  setMonthlySchedules?: React.Dispatch<React.SetStateAction<any[]>>;
+  eventSchedules?: any[];
+  setEventSchedules?: React.Dispatch<React.SetStateAction<any[]>>;
+  meetingSchedules?: any[];
+  setMeetingSchedules?: React.Dispatch<React.SetStateAction<any[]>>;
+  pressReleases?: any[];
+  setPressReleases?: React.Dispatch<React.SetStateAction<any[]>>;
+  members?: any[];
+}
+
 export default function CommitteeManager({ 
   currentRole, 
   currentUser, 
@@ -163,7 +181,7 @@ export default function CommitteeManager({
   pressReleases,
   setPressReleases,
   members: allMembers
-}) {
+}: CommitteeManagerProps) {
   // 1. 상태(State) 정의
   const [committees, setCommittees] = useState([]);
   const [selectedCommittee, setSelectedCommittee] = useState(null);
