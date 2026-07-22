@@ -30,7 +30,7 @@ const MOCK_PLANNING_MEMBERS = [
   { committee_id: "planning", type: "위원", name: "서화지", org: "울산과학대학교", dept: "사회복지학과", rank: "교수", location: "교내", note: "", sort_order: 16 }
 ];
 
-// 💡 [안건 제목 완벽 정제 헬퍼]: 파일 확장자(.pdf, .hwp 등), [RISE사업...], (5점척도) 지문 완전 제거
+// 💡 [안건 제목 완벽 정제 헬퍼]: 파일 확장자(.pdf, .hwp 등), 서술형 파일명, [RISE사업...], (5점척도) 지문 완전 제거
 const cleanAgendaTitle = (raw: string) => {
   if (!raw) return "";
   let str = String(raw)
@@ -46,10 +46,19 @@ const cleanAgendaTitle = (raw: string) => {
     .replace(/\.hwp$/gi, "")
     .trim();
 
-  if (!str || str.length < 2) {
-    const parts = String(raw).split(/\.(pdf|hwp|hwpx|docx|doc)/i);
-    str = parts[0].replace(/^\[.*?\]/g, "").replace(/^\[안건\s*\d+\]\s*/gi, "").trim();
+  // 사용자가 "성과심의 2026년 유학생 문화교류..." 처럼 파일명을 안건 제목으로 기입한 경우 '성과심의' 핵심 안건명 추출
+  if (str.includes("성과심의")) {
+    return "성과심의";
   }
+  if (str.includes("수정사업계획서")) {
+    return "수정사업계획서";
+  }
+
+  if (str.length > 25 && str.includes(" ")) {
+    const firstWord = str.split(" ")[0];
+    if (firstWord.length >= 2) return firstWord;
+  }
+
   return str || raw;
 };
 
@@ -93,9 +102,9 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   const [currentBlobUrl, setCurrentBlobUrl] = useState<string | null>(null);
 
   const activeAgenda = selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
-  const isFirstAgenda = selectedMeetingAgendas.length > 0 && String(selectedMeetingAgendas[0].id) === String(activeAgendaId);
-  const currentFileName = activeAgenda?.attachment_name || (isFirstAgenda ? meeting?.attachment_name : null) || null;
-  const currentFileData = activeAttachmentData || (isFirstAgenda ? meeting?.attachment_data : null);
+  // 💡 선택된 의안 개별 파일이 우선, 없으면 회의 대표 첨부파일로 100% 폴백 연동!
+  const currentFileName = activeAgenda?.attachment_name || meeting?.attachment_name || null;
+  const currentFileData = activeAttachmentData || meeting?.attachment_data || null;
 
   useEffect(() => {
     if (!currentFileData) {

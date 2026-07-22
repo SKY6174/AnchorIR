@@ -1800,8 +1800,11 @@ export default function CommitteeManager({
 
     let targetAgendas = [];
     try {
-      if (String(meeting.id).startsWith("local-")) {
-        const localAgendas = localStorage.getItem(`local_meeting_agendas_${meeting.id}`);
+      if (String(meeting.id).startsWith("local-") || isNaN(Number(meeting.id))) {
+        const fullId = String(meeting.id);
+        const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
+
+        const localAgendas = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
         if (localAgendas) {
           targetAgendas = JSON.parse(localAgendas);
         }
@@ -1810,7 +1813,7 @@ export default function CommitteeManager({
           .from("meeting_agendas")
           .select("*")
           .eq("meeting_id", meeting.id)
-          .order("id", { ascending: true });
+          .order("sort_order", { ascending: true });
 
         if (!error && dbAgendas && dbAgendas.length > 0) {
           targetAgendas = dbAgendas;
@@ -1818,6 +1821,11 @@ export default function CommitteeManager({
       }
     } catch (err) {
       console.warn("수정 대상 회의 안건 비동기 조회 실패, 기존 상태 참조:", err);
+    }
+
+    // sort_order 기준 100% 엄격한 오름차순 정렬 보장
+    if (targetAgendas && targetAgendas.length > 0) {
+      targetAgendas.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     }
 
     // DB/로컬 스토리지에 조회된 의안이 없으면 selectedMeetingAgendas 참조 fallback
