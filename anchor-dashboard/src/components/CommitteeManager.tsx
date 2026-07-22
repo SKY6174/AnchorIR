@@ -4579,12 +4579,12 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         style={{ width: "100%", padding: "0.3rem 0.5rem", borderRadius: "4px", fontSize: "0.78rem", resize: "none", marginBottom: "0.4rem" }}
                       />
 
-                      {/* 안건별 개별 자료 첨부 입력 컨트롤 (PDF 전용 & FileReader 안전 폴백) */}
+                      {/* 안건별 개별 자료 첨부 입력 컨트롤 (모든 문서/이미지 확장자 지원 & FileReader 무손실 업로드) */}
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>📄 심의자료:</label>
                         <input
                           type="file"
-                          accept=".pdf,application/pdf"
+                          accept=".pdf,.hwp,.hwpx,.doc,.docx,.xls,.xlsx,.ppt,.pptx,image/*"
                           onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (!file) return;
@@ -4592,20 +4592,19 @@ ${selectedMeetingAgendas.map((a, idx) => {
                             let fileName = file.name;
                             let fileDataUrl = "";
 
-                            try {
-                              const res = await compressPdfIfNeeded(file);
-                              if (res && res.dataUrl) {
-                                fileName = res.name;
-                                fileDataUrl = res.dataUrl;
-                              } else {
-                                fileDataUrl = await new Promise((resolve) => {
-                                  const reader = new FileReader();
-                                  reader.onload = () => resolve(reader.result as string);
-                                  reader.onerror = () => resolve("");
-                                  reader.readAsDataURL(file);
-                                });
-                              }
-                            } catch (err) {
+                            // PDF 파일인 경우 압축 시도, 그 외 파일은 즉시 FileReader로 읽기
+                            if (file.type === "application/pdf" || fileName.toLowerCase().endsWith(".pdf")) {
+                              try {
+                                const res = await compressPdfIfNeeded(file);
+                                if (res && res.dataUrl) {
+                                  fileName = res.name;
+                                  fileDataUrl = res.dataUrl;
+                                }
+                              } catch (err) { }
+                            }
+
+                            // PDF 압축 실패 또는 비-PDF 문서 파일의 안전 FileReader 로드
+                            if (!fileDataUrl) {
                               fileDataUrl = await new Promise((resolve) => {
                                 const reader = new FileReader();
                                 reader.onload = () => resolve(reader.result as string);
@@ -4625,14 +4624,14 @@ ${selectedMeetingAgendas.map((a, idx) => {
                                 return { ...prev, agendas: updated };
                               });
                             } else {
-                              alert("선택하신 PDF 파일 데이터를 읽어들이지 못했습니다.");
+                              alert("선택하신 심의자료 첨부파일 데이터를 읽어들이지 못했습니다.");
                             }
                           }}
                           style={{ flex: 1, fontSize: "0.68rem", color: "var(--text-secondary)", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-color)", padding: "0.15rem 0.3rem", borderRadius: "4px" }}
                         />
                         {agenda.attachment_name && (
                           <div style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontSize: "0.68rem", color: "var(--success-color)", whiteSpace: "nowrap" }}>
-                            <span>📎 {agenda.attachment_name.substring(0, 10)}...</span>
+                            <span>📎 {agenda.attachment_name.length > 15 ? agenda.attachment_name.substring(0, 15) + "..." : agenda.attachment_name}</span>
                             <button
                               type="button"
                               onClick={() => {
