@@ -863,6 +863,63 @@ export default function CommitteeManager({
       console.warn("로컬 캐시 수합 스킵:", err.message);
     }
 
+    // 4. 💡 [안건별 표결 통합 수합] meeting_agenda_votes에 표결한 위원 데이터 수합하여 0명 표출 문제 원천 방지
+    try {
+      const { data: voteRows } = await supabase
+        .from("meeting_agenda_votes")
+        .select("*")
+        .eq("meeting_id", meetingId);
+
+      if (voteRows && voteRows.length > 0) {
+        const memberVotesMap: Record<string, any> = {};
+        voteRows.forEach(v => {
+          const key = v.member_id ? String(v.member_id) : (v.member_name || v.voter_name);
+          if (!key) return;
+          if (!memberVotesMap[key]) {
+            memberVotesMap[key] = {
+              member_id: v.member_id,
+              member_name: v.member_name || v.voter_name,
+              vote: v.vote_decision || "APPROVE",
+              opinion: v.opinion || "",
+              signature: v.signature,
+              encrypted_signature: v.encrypted_signature,
+              submitted_at: v.created_at || new Date().toISOString(),
+              attended: true
+            };
+          } else {
+            if (v.opinion) {
+              memberVotesMap[key].opinion = memberVotesMap[key].opinion 
+                ? `${memberVotesMap[key].opinion} / ${v.opinion}` 
+                : v.opinion;
+            }
+          }
+        });
+
+        Object.values(memberVotesMap).forEach(r => {
+          const exists = combinedResponses.some(cr => 
+            (cr.member_id && r.member_id && String(cr.member_id) === String(r.member_id)) ||
+            (cr.member_name && r.member_name && cr.member_name === r.member_name)
+          );
+          if (!exists) {
+            combinedResponses.push(r);
+          } else {
+            const target = combinedResponses.find(cr => 
+              (cr.member_id && r.member_id && String(cr.member_id) === String(r.member_id)) ||
+              (cr.member_name && r.member_name && cr.member_name === r.member_name)
+            );
+            if (target) {
+              if (!target.vote) target.vote = r.vote;
+              if (!target.opinion && r.opinion) target.opinion = r.opinion;
+              if (!target.submitted_at) target.submitted_at = r.submitted_at;
+              target.attended = true;
+            }
+          }
+        });
+      }
+    } catch (err: any) {
+      console.warn("meeting_agenda_votes 기반 위원 수합 스킵:", err.message);
+    }
+
     setResponses(combinedResponses);
     localStorage.setItem(`local_meeting_responses_${meetingId}`, JSON.stringify(combinedResponses));
 
@@ -1589,22 +1646,66 @@ export default function CommitteeManager({
     // 재적 위원 수: 소속 위원 중 간사를 제외한 순수 의결 위원 수 (예: 4명 중 간사 1명 제외 3명)
     const total = votingMembers.length;
 
-    // 간사를 제외한 순수 의결 참석 응답 추출
-    const votingResponses = responses.filter(r => {
-      const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
-      return memberObj ? !memberObj.type?.includes("간사") : true;
+    // 💡 [출석/참여 유니크 위원 집계] responses 제출자 + selectedMeetingAgendaVotes 안건 표결 참여 위원 유합(Union)
+    const attendedMemberKeys = new Set<string>();
+
+    responses.forEach(r => {
+      const memberObj = members.find(m => String(m.id) === String(r.member_id) || (r.member_name && m.name === r.member_name));
+      const isSecretary = memberObj ? memberObj.type?.includes("간사") : (r.member_name && r.member_name.includes("간사"));
+      if (!isSecretary && (r.attended || r.submitted_at || r.vote || r.opinion)) {
+        const key = memberObj ? String(memberObj.id) : (r.member_name || String(r.member_id));
+        if (key) attendedMemberKeys.add(key);
+      }
     });
 
-    const attended = votingResponses.filter(r => r.attended || r.submitted_at || r.vote).length;
+    selectedMeetingAgendaVotes.forEach(v => {
+      const voterName = v.member_name || (v as any).voter_name || "";
+      const memberObj = members.find(m => String(m.id) === String(v.member_id) || (voterName && m.name === voterName));
+      const isSecretary = memberObj ? memberObj.type?.includes("간사") : voterName.includes("간사");
+      if (!isSecretary && (v.vote_decision || v.opinion || v.score)) {
+        const key = memberObj ? String(memberObj.id) : (voterName || String(v.member_id));
+        if (key) attendedMemberKeys.add(key);
+      }
+    });
+
+    const attended = attendedMemberKeys.size || responses.filter(r => {
+      const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
+      return memberObj ? !memberObj.type?.includes("간사") : true;
+    }).filter(r => r.attended || r.submitted_at || r.vote).length;
     
     // 의사정족수 (성원 요건): 간사를 제외한 재적 위원 수(N명)의 과반수 (N=3이면 Math.floor(3/2) + 1 = 2명 이상 출석 시 성원 완료!)
     const majorityLimit = Math.floor(total / 2) + 1;
     const isEstablished = attended >= majorityLimit;
 
     // 의결정족수 (가결 요건): 찬성/반대/기권표 산출
-    const approveCount = votingResponses.filter(r => r.vote === "APPROVE").length;
-    const rejectCount = votingResponses.filter(r => r.vote === "REJECT").length;
-    const abstainCount = votingResponses.filter(r => r.vote === "ABSTAIN").length;
+    let approveCount = responses.filter(r => {
+      const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
+      return (memberObj ? !memberObj.type?.includes("간사") : true) && r.vote === "APPROVE";
+    }).length;
+
+    let rejectCount = responses.filter(r => {
+      const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
+      return (memberObj ? !memberObj.type?.includes("간사") : true) && r.vote === "REJECT";
+    }).length;
+
+    let abstainCount = responses.filter(r => {
+      const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
+      return (memberObj ? !memberObj.type?.includes("간사") : true) && r.vote === "ABSTAIN";
+    }).length;
+
+    // responses에 표결이 부족할 경우 selectedMeetingAgendaVotes 안건 표결 합산
+    if (approveCount === 0 && rejectCount === 0 && abstainCount === 0 && selectedMeetingAgendaVotes.length > 0) {
+      selectedMeetingAgendaVotes.forEach(v => {
+        const voterName = v.member_name || (v as any).voter_name || "";
+        const memberObj = members.find(m => String(m.id) === String(v.member_id) || (voterName && m.name === voterName));
+        const isSecretary = memberObj ? memberObj.type?.includes("간사") : voterName.includes("간사");
+        if (!isSecretary) {
+          if (v.vote_decision === "REJECT") rejectCount++;
+          else if (v.vote_decision === "ABSTAIN") abstainCount++;
+          else if (v.vote_decision === "APPROVE") approveCount++;
+        }
+      });
+    }
 
     // 💡 [가결 기준] 회의 성원 시, 실제 출석(참여)한 위원 수(M명)의 과반수(Math.floor(M/2) + 1 명) 이상 찬성 시 의결(가결)
     const reqApprove = Math.floor(attended / 2) + 1;

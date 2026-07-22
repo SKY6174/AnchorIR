@@ -36,5 +36,6 @@
   - `src/components/` 내 **전체 26개 TSX 컴포넌트**에 명확한 `interface` / `type` 및 `useState`, `useRef`, `React.ChangeEvent`, `React.FormEvent` 정적 타입 지정 완료 (`any` 사용 최소화).
   - 파운데이션 모듈(`mockWikiData.ts`, `App.tsx`, `main.tsx`) 정적 인터페이스 선언 및 `.ts` 확장자 마이그레이션 완수.
   - 위원회 심의/안건 자료 PDF 파일의 **텍스트 레이어(Text Layer) 미조회 현상 원천 차단** (이미지 래스터화 압축 제거 및 최대 15MB 원본 바이너리 100% 유지).
+  - 안건 표결(`meeting_agenda_votes`)과 회의 출석 정족수(`attended`) 및 위원 심의 의견 제출 수 간의 데이터 자동 통합 동기화 구현.
   - 100% 동일한 UI/UX, Tailwind CSS 디자인 체계 및 JSX 노드 레이아웃 보존.
-  - `npm run build` 검증 **461ms / 0 TS Error** 최종 빌드 성공 및 원격 저장소(`main` 브랜치) 자동 Git Push 완수.
+  - `npm run build` 검증 **475ms / 0 TS Error** 최종 빌드 성공 및 원격 저장소(`main` 브랜치) 자동 Git Push 완수.
