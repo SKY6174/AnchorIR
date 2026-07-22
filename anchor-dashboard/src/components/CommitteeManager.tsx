@@ -2364,42 +2364,54 @@ ${selectedMeetingAgendas.map((a, idx) => {
     try {
       setIsDownloadingPdf(rep.id);
 
-      // 1. 필요한 상세 의결 데이터 실시간 쿼리
-      const [agendasRes, votesRes, responsesRes] = await Promise.all([
-        supabase
-          .from("meeting_agendas")
-          .select("*")
-          .eq("meeting_id", rep.meeting_id)
-          .order("sort_order", { ascending: true }),
-        supabase
-          .from("meeting_agenda_votes")
-          .select(`
-            id,
-            vote,
-            score,
-            opinion,
-            agenda_id,
-            member_id,
-            committee_members ( id, name, type )
-          `)
-          .eq("meeting_id", rep.meeting_id),
-        supabase
-          .from("meeting_responses")
-          .select(`
-            id,
-            attended,
-            vote,
-            opinion,
-            encrypted_signature,
-            submitted_at,
-            committee_members ( id, name, type, role, position, org, dept )
-          `)
-          .eq("meeting_id", rep.meeting_id)
-      ]);
+      let agendas: any[] = [];
+      let votes: any[] = [];
+      let responses: any[] = [];
 
-      const agendas = agendasRes.data || [];
-      const votes = votesRes.data || [];
-      let responses = responsesRes.data || [];
+      const isNumericMeetingId = !isNaN(Number(rep.meeting_id)) && String(rep.meeting_id).trim() !== "";
+
+      // 1. 숫자형 회의 ID 일 때만 DB 상세 의결 데이터 쿼리발송 (UUID 400 Bad Request 원천 차단)
+      if (isNumericMeetingId) {
+        try {
+          const [agendasRes, votesRes, responsesRes] = await Promise.all([
+            supabase
+              .from("meeting_agendas")
+              .select("*")
+              .eq("meeting_id", rep.meeting_id)
+              .order("sort_order", { ascending: true }),
+            supabase
+              .from("meeting_agenda_votes")
+              .select(`
+                id,
+                vote,
+                score,
+                opinion,
+                agenda_id,
+                member_id,
+                committee_members ( id, name, type )
+              `)
+              .eq("meeting_id", rep.meeting_id),
+            supabase
+              .from("meeting_responses")
+              .select(`
+                id,
+                attended,
+                vote,
+                opinion,
+                encrypted_signature,
+                submitted_at,
+                committee_members ( id, name, type, role, position, org, dept )
+              `)
+              .eq("meeting_id", rep.meeting_id)
+          ]);
+
+          agendas = agendasRes.data || [];
+          votes = votesRes.data || [];
+          responses = responsesRes.data || [];
+        } catch (dbErr) {
+          console.warn("DB PDF 정보 조회 스킵:", dbErr);
+        }
+      }
 
       // 💡 [Zero Signature Miss Guard] DB 응답 결과가 비어있는 경우 로컬 캐시 스토리지에서 자동 폴백 로드
       if (!responses || responses.length === 0) {
