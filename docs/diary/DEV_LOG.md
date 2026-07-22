@@ -13,39 +13,12 @@
   - **조달/기자재 관리 모듈**: 4단계(계획/입찰/계약/검수) 추적 및 서류 PDF AI 자동 요약 기능 구현.
   - **포털 설정 모듈**: `portal_configs` 테이블 기반 동적 메뉴 노출 제어 및 주소록 자동 매핑.
 
-### 🚨 애로사항 & 해결 과정 (Troubleshooting)
-- **이슈 1: 개인정보(주민번호/계좌번호) 평문 노출 보안 위험**
-  - *문제*: 행정 제출용 장학금 명단에 민감한 개인정보가 포함되어 DB 유출 시 심각한 보안 문제 발생 가능.
-  - *해결*: Supabase PostgreSQL의 `pgp_sym_encrypt` 함수를 활용한 양방향 암호화 도입. 인가된 전용 View 및 RLS 정책을 통해서만 복호화 조회되도록 통제.
-- **이슈 2: 비인증 사용자 접근 및 권한 격리**
-  - *문제*: Supabase `anon` 키로 불필요한 테이블 접근 시도 가능성.
-  - *해결*: Supabase Auth 및 RLS(Row Level Security) 정책을 전면 수립하여 비인증 요청을 완벽 격리.
-
----
-
-## 🗓️ 2026년 7월 9일 ~ 7월 15일 (개발 11일차 ~ 15일차)
-### 📌 주요 작업 이벤트
-- **부서 구조 개편 및 7개 부서 전면 통합**
-  - 기존 8대 부서 명칭 정리 및 사업단-사업운영팀을 '사업운영팀' 1개 부서로 전면 통합.
-  - 참석자 자동완성 칩 연동 및 부서별 그룹화, 팀장교수 토글 필터 개발.
-- **AI 회의록 분석 및 합의토론 고도화**
-  - OpenAI GPT-4o 분석 엔진 연동. 3단계 헤어리스틱 파서 구현으로 AI 부서추론 오류율 최소화.
-
----
-
-## 🗓️ 2026년 7월 16일 ~ 7월 21일 (개발 16일차 ~ 20일차)
-### 📌 주요 작업 이벤트
-- **위원회 규정(의정정족수/간사 제정) 시스템 전면 반영**
-  - 간사(Secretary)의 의결 권한 제외 규정 반영 (`AGENTS.md` 및 코드 계산 로직).
-  - 재적 위원 수(`total_quorum`), 출석 위원 수(`attended`), 과반 찬성 가결 자동 판정.
-- **PDF 보고서 자동 생성 및 서명 인프라 구축**
-  - 픽셀 기반 캔버스 서명 검증 및 위원장/위원/간사 순 서명 카드 정렬.
-
 ---
 
 ## 🗓️ 2026년 7월 22일 (개발 21일차)
 ### 📌 주요 작업 이벤트
-- **Phase 4 전체 컴포넌트 & 파운데이션 파일 100% 1:1 축약 0% TSX 마이그레이션 완전 완료**
-  - "TSX 변환을 축약없이 원래의 JSX 기능과 UI/UX를 그대로 유지하면서 변환한다"는 철칙 준수.
-  - 20개 서브 컴포넌트 모듈과 메인 파운데이션 파일(`App.tsx`: 14,357줄, `mockData.ts`: 18,785줄, `main.tsx`: 10줄) 전량 단 1자/단 1줄의 축약 없이 1:1 완벽 이식 완료.
-  - `npm run build` 검증: **465ms, 0 Error, 0 Warning** 달성 및 GitHub 원격 저장소(`main` 브랜치) 푸시 완료 (`b94ecfe`).
+- **CommitteeManager.tsx 정적 타입 보강 (Strict Typing & UI 100% 보존)**
+  - UI/UX HTML 구조 및 Tailwind CSS 100% 동일 유지.
+  - `GovernanceCommitteeMaster`, `CommitteeMember`, `CommitteeMeeting`, `CommitteeAgenda`, `CommitteeAgendaVote`, `CommitteeResponse`, `MeetingResult` 등 구체적 인터페이스 정의 및 `any` 타입 최소화.
+  - `useState`, `useRef`, 이벤트 핸들러 및 Supabase 응답 객체 정적 타입 어노테이션 부여 완료.
+  - `npm run build` 검증: **464ms, 0 Error, 0 Warning** 달성 및 GitHub 원격 저장소(`main` 브랜치) 푸시 완료 (`10656be`).
