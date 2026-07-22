@@ -766,35 +766,53 @@ export default function CommitteeManager({
     if (!committeeId) return;
 
     let loadedMeetings: any[] = [];
+    const isNumericCommitteeId = !isNaN(Number(committeeId)) && String(committeeId).trim() !== "";
 
-    // 1. Supabase DB 조회 시도
-    try {
-      const { data, error } = await supabase
-        .from("committee_meetings")
-        .select("*")
-        .eq("committee_id", committeeId)
-        .order("meeting_date", { ascending: false });
+    // 1. committeeId가 숫자형인 경우에만 Supabase DB 쿼리 발송 (HTTP 400 Bad Request 원천 차단)
+    if (isNumericCommitteeId) {
+      try {
+        const { data, error } = await supabase
+          .from("committee_meetings")
+          .select("*")
+          .eq("committee_id", committeeId)
+          .order("meeting_date", { ascending: false });
 
-      if (!error && data && data.length > 0) {
-        loadedMeetings = data;
-        const cleanMeetings = data.map(m => ({ ...m, attachment_data: null }));
-        localStorage.setItem(`local_committee_meetings_${committeeId}`, JSON.stringify(cleanMeetings));
+        if (!error && data && data.length > 0) {
+          loadedMeetings = data;
+          const cleanMeetings = data.map(m => ({ ...m, attachment_data: null }));
+          localStorage.setItem(`local_committee_meetings_${committeeId}`, JSON.stringify(cleanMeetings));
+        }
+      } catch (err: any) {
+        console.warn("committee_meetings DB 조회 스킵 (로컬 폴백 사용):", err.message);
       }
-    } catch (err: any) {
-      console.warn("committee_meetings DB 조회 스킵 (로컬 폴백 사용):", err.message);
     }
 
-    // 2. DB 데이터가 없거나 에러 시 로컬 캐시 스토리지에서 복원
+    // 2. DB 데이터가 없거나 문자열 committeeId일 경우 로컬 캐시 스토리지에서 복원
     if (loadedMeetings.length === 0) {
       try {
         const localData = localStorage.getItem(`local_committee_meetings_${committeeId}`);
         if (localData) {
           loadedMeetings = JSON.parse(localData);
         } else {
-          const allLocal = localStorage.getItem("local_committee_meetings");
-          if (allLocal) {
-            const parsed = JSON.parse(allLocal);
-            loadedMeetings = parsed.filter((m: any) => String(m.committee_id) === String(committeeId) || committeeId === "all");
+          // 전체 로컬 회의 수합 키 검색
+          const allLocalKeys = Object.keys(localStorage).filter(k => k.startsWith("local_committee_meetings"));
+          let tempArr: any[] = [];
+          allLocalKeys.forEach(k => {
+            try {
+              const item = localStorage.getItem(k);
+              if (item) {
+                const parsed = JSON.parse(item);
+                if (Array.isArray(parsed)) tempArr.push(...parsed);
+                else if (parsed && typeof parsed === "object") tempArr.push(parsed);
+              }
+            } catch (e) {}
+          });
+
+          if (tempArr.length > 0) {
+            // 중복 제거
+            const map = new Map();
+            tempArr.forEach(m => { if (m && m.id) map.set(String(m.id), m); });
+            loadedMeetings = Array.from(map.values());
           }
         }
       } catch (err) {
@@ -809,8 +827,19 @@ export default function CommitteeManager({
       setSelectedMeeting(firstMeeting);
 
       // 💡 selectedMeeting에 포함된 responses_data가 존재하면 즉시 responses 상태로 복원하여 0명 표출 방지!
-      if (firstMeeting.responses_data && Array.isArray(firstMeeting.responses_data)) {
+      if (firstMeeting.responses_data && Array.isArray(firstMeeting.responses_data) && firstMeeting.responses_data.length > 0) {
         setResponses(firstMeeting.responses_data);
+      } else {
+        // 해당 meetingId에 연결된 local_meeting_responses_${meetingId} 캐시 수합
+        try {
+          const respData = localStorage.getItem(`local_meeting_responses_${firstMeeting.id}`);
+          if (respData) {
+            const parsedResp = JSON.parse(respData);
+            if (Array.isArray(parsedResp) && parsedResp.length > 0) {
+              setResponses(parsedResp);
+            }
+          }
+        } catch (e) {}
       }
     } else {
       setSelectedMeeting(null);
