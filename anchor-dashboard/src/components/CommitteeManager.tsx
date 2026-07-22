@@ -536,17 +536,33 @@ export default function CommitteeManager({
       
       return { totalVotes, avg, distribution };
     } else {
-      let approve = votes.filter(v => v.vote_decision === "APPROVE").length;
-      let reject = votes.filter(v => v.vote_decision === "REJECT").length;
-      let abstain = votes.filter(v => v.vote_decision === "ABSTAIN").length;
+      const isApproveVote = (vStr: any) => {
+        const s = String(vStr || "").toUpperCase();
+        return s === "APPROVE" || s === "찬성" || s === "YES" || s === "AGREE";
+      };
+      const isRejectVote = (vStr: any) => {
+        const s = String(vStr || "").toUpperCase();
+        return s === "REJECT" || s === "반대" || s === "NO" || s === "DISAGREE";
+      };
+      const isAbstainVote = (vStr: any) => {
+        const s = String(vStr || "").toUpperCase();
+        return s === "ABSTAIN" || s === "기권";
+      };
 
-      // 💡 [Fallback Aggregation] selectedMeetingAgendaVotes에 데이터가 부족한 경우 responses 제출 목록과 통합 수합
-      if (totalVotes === 0 && responses.length > 0) {
+      let approve = votes.filter(v => isApproveVote(v.vote_decision || (v as any).vote)).length;
+      let reject = votes.filter(v => isRejectVote(v.vote_decision || (v as any).vote)).length;
+      let abstain = votes.filter(v => isAbstainVote(v.vote_decision || (v as any).vote)).length;
+
+      // 💡 [Fallback & Integration Aggregation] votes에 찬성표 집계가 부족하거나 responses에 찬성 기록이 있을 때 상호 통합 수합
+      if ((totalVotes === 0 || (approve === 0 && reject === 0)) && responses.length > 0) {
         const submittedResponses = responses.filter(r => r.submitted_at || r.vote || r.opinion);
-        totalVotes = submittedResponses.length;
+        totalVotes = Math.max(totalVotes, submittedResponses.length);
+        approve = 0;
+        reject = 0;
+        abstain = 0;
         submittedResponses.forEach(r => {
-          if (r.vote === "REJECT") reject++;
-          else if (r.vote === "ABSTAIN") abstain++;
+          if (isRejectVote(r.vote)) reject++;
+          else if (isAbstainVote(r.vote)) abstain++;
           else approve++;
         });
       }
@@ -3159,53 +3175,78 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         현재 제출된 위원 심의 의견서가 없습니다.
                       </span>
                     ) : (
-                      responses.map((r, idx) => (
-                        <div key={r.id} style={{ padding: "0.6rem 0.8rem", borderRadius: "6px", background: "rgba(120, 120, 120, 0.08)", border: "1px solid var(--border-color)", display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
-                          <span style={{
-                            fontSize: "0.7rem",
-                            padding: "0.15rem 0.4rem",
-                            borderRadius: "4px",
-                            fontWeight: "bold",
-                            background: r.vote === "APPROVE" ? "rgba(34, 197, 94, 0.15)" : r.vote === "REJECT" ? "rgba(239, 68, 68, 0.15)" : r.vote === "EVALUATION" ? "rgba(99, 102, 241, 0.15)" : "rgba(156, 163, 175, 0.15)",
-                            color: r.vote === "APPROVE" ? "#22c55e" : r.vote === "REJECT" ? "#ef4444" : r.vote === "EVALUATION" ? "var(--accent-color)" : "#9ca3af"
-                          }}>
-                            {r.vote === "APPROVE" ? "찬성" : r.vote === "REJECT" ? "반대" : r.vote === "EVALUATION" ? "평가완료" : "기권"}
-                          </span>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                              <strong style={{ fontSize: "0.8rem", color: "var(--text-primary)" }}>
-                                {r.committee_members?.name} <small style={{ color: "var(--text-secondary)" }}>({r.committee_members?.dept || "소속 없음"})</small>
-                              </strong>
-                              <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>
-                                {r.submitted_at ? new Date(r.submitted_at).toLocaleString() : ""}
-                              </span>
-                            </div>
-                            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.2rem", whiteSpace: "pre-line", lineHeight: "1.4" }}>{r.opinion}</p>
-                          </div>
-                          
-                          {/* 서명 완료 마크 및 복호화 이미지 시각화 */}
-                          {r.encrypted_signature && (
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.1rem", color: "var(--success-color)", fontSize: "0.7rem" }}>
-                                <UserCheck size={12} /> 서명필
+                      responses.map((r, idx) => {
+                        const memberObj = members.find(m => String(m.id) === String(r.member_id) || (r.member_name && m.name === r.member_name));
+                        const displayName = r.committee_members?.name || r.member_name || memberObj?.name || "위원회 위원";
+                        const displayDept = r.committee_members?.dept || memberObj?.dept || memberObj?.org || "운영위원회";
+                        
+                        const isApprove = r.vote === "APPROVE" || r.vote === "찬성" || !r.vote || r.vote === "EVALUATION";
+                        const isReject = r.vote === "REJECT" || r.vote === "반대";
+                        const isAbstain = r.vote === "ABSTAIN" || r.vote === "기권";
+                        const voteBadgeText = isReject ? "반대" : isAbstain ? "기권" : (r.vote === "EVALUATION" ? "평가완료" : "찬성");
+                        const voteBadgeBg = isReject ? "rgba(239, 68, 68, 0.15)" : isAbstain ? "rgba(156, 163, 175, 0.15)" : "rgba(34, 197, 94, 0.15)";
+                        const voteBadgeColor = isReject ? "#ef4444" : isAbstain ? "#9ca3af" : "#22c55e";
+
+                        const sigUrl = (r.encrypted_signature ? decryptSignature(r.encrypted_signature) : null) || r.signature || (r as any).signature_data;
+
+                        return (
+                          <div key={r.id || idx} style={{ padding: "0.6rem 0.8rem", borderRadius: "6px", background: "rgba(120, 120, 120, 0.08)", border: "1px solid var(--border-color)", display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+                            <span style={{
+                              fontSize: "0.7rem",
+                              padding: "0.15rem 0.45rem",
+                              borderRadius: "4px",
+                              fontWeight: "bold",
+                              background: voteBadgeBg,
+                              color: voteBadgeColor
+                            }}>
+                              {voteBadgeText}
+                            </span>
+
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <strong style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>
+                                  {displayName} <small style={{ color: "var(--accent-color)", fontWeight: "600" }}>({displayDept})</small>
+                                </strong>
+                                <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>
+                                  {r.submitted_at ? new Date(r.submitted_at).toLocaleString() : ""}
+                                </span>
                               </div>
-                              {decryptSignature(r.encrypted_signature) && (
-                                <img
-                                  src={decryptSignature(r.encrypted_signature)}
-                                  alt="전자서명"
-                                  style={{
-                                    height: "28px",
-                                    background: "transparent",
-                                    padding: "2px",
-                                    objectFit: "contain",
-                                    filter: "drop-shadow(0px 1px 2px rgba(0,0,0,0.5))"
-                                  }}
-                                />
+                              {r.opinion && (
+                                <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.3rem", whiteSpace: "pre-line", lineHeight: "1.4" }}>
+                                  {r.opinion}
+                                </p>
                               )}
                             </div>
-                          )}
-                        </div>
-                      ))
+                            
+                            {/* 서명 완료 마크 및 전자 서명 이미지 첨부 표출 */}
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.2rem", flexShrink: 0 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.1rem", color: "var(--success-color)", fontSize: "0.7rem", fontWeight: "bold" }}>
+                                <UserCheck size={13} /> {sigUrl ? "서명 완료" : "의결 제출"}
+                              </div>
+                              {sigUrl ? (
+                                <img
+                                  src={sigUrl}
+                                  alt="전자서명"
+                                  style={{
+                                    height: "32px",
+                                    maxWidth: "95px",
+                                    background: "#ffffff",
+                                    padding: "2px 4px",
+                                    borderRadius: "4px",
+                                    border: "1px solid #d1d5db",
+                                    objectFit: "contain",
+                                    boxShadow: "0 1px 3px rgba(0,0,0,0.15)"
+                                  }}
+                                />
+                              ) : (
+                                <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", fontStyle: "italic" }}>
+                                  (암호화 서명)
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })
                     )}
                   </div>
                 </div>
