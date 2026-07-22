@@ -617,101 +617,116 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         </div>
       </div>
 
-      {/* 안건 및 의결 표결 메인 그리드 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "1.5rem" }}>
+      {/* 💡 [전체 1열 카드 레이아웃 구조 개편] */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
-        {/* [좌측]: 상정 안건 및 열람 자료 (드롭다운 방식 지원) */}
+        {/* 1. 상정 안건 및 관련 자료 (1열 전체 블록) */}
         <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <FileText size={20} />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
+            <h3 style={{ fontSize: "1.15rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <FileText size={22} style={{ color: "var(--accent-color)" }} />
               <span>상정 안건 및 관련 자료</span>
             </h3>
           </div>
 
-          {/* 💡 [요구사항 1] 상정 의안 안건 드롭다운 선택 메뉴 */}
           {selectedMeetingAgendas.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-              <label style={{ fontSize: "0.8rem", fontWeight: "700", color: "var(--text-secondary)" }}>
-                📋 열람할 상정 의안 선택 ({selectedMeetingAgendas.length}건 중)
-              </label>
-              <select
-                value={activeAgendaId || ""}
-                onChange={(e) => setActiveAgendaId(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.65rem 0.85rem",
-                  borderRadius: "8px",
-                  border: "1px solid var(--accent-color)",
-                  background: "var(--input-bg)",
-                  color: "var(--text-primary)",
-                  fontSize: "0.92rem",
-                  fontWeight: "800",
-                  cursor: "pointer"
-                }}
-              >
-                {selectedMeetingAgendas.map((agenda, index) => (
-                  <option key={agenda.id} value={agenda.id}>
-                    의안 #{index + 1}: {agenda.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : null}
+            /* 그 안에서 2열 그리드: 왼쪽(드롭다운 + 안건설명), 오른쪽(첨부파일 + PDF 뷰어) */
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginTop: "0.25rem" }}>
+              
+              {/* 왼쪽 영역: 드롭다운 + 안건 정보 */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                  <label style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-secondary)" }}>
+                    📋 열람할 상정 의안 선택 ({selectedMeetingAgendas.length}건 중)
+                  </label>
+                  <select
+                    value={activeAgendaId || ""}
+                    onChange={(e) => setActiveAgendaId(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "0.7rem 0.85rem",
+                      borderRadius: "8px",
+                      border: "2px solid var(--accent-color)",
+                      background: "var(--input-bg)",
+                      color: "var(--text-primary)",
+                      fontSize: "0.95rem",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      boxShadow: "0 2px 8px rgba(59, 130, 246, 0.2)"
+                    }}
+                  >
+                    {selectedMeetingAgendas.map((agenda, index) => (
+                      <option key={agenda.id} value={agenda.id}>
+                        의안 #{index + 1}: {agenda.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-          {/* 선택된 안건 본문 내용 */}
-          {activeAgenda ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", marginTop: "0.5rem" }}>
-              <div style={{ padding: "0.75rem", borderRadius: "6px", background: "rgba(59, 130, 246, 0.08)", borderLeft: "4px solid var(--accent-color)" }}>
-                <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)", display: "block" }}>
-                  선택된 안건 상세
-                </span>
-                <h4 style={{ fontSize: "1.1rem", fontWeight: "800", margin: "0.2rem 0 0 0" }}>{activeAgenda.title}</h4>
-              </div>
-
-              {activeAgenda.description && (
-                <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: "1.6", whiteSpace: "pre-wrap" }}>
-                  {activeAgenda.description}
-                </p>
-              )}
-
-              {/* 안건 문서 뷰어 */}
-              {currentFileName && (
-                <div style={{ marginTop: "1rem" }}>
-                  <div style={{ fontSize: "0.85rem", fontWeight: "700", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                    <span>📎 첨부 파일:</span>
-                    <span style={{ color: "var(--accent-color)" }}>{currentFileName}</span>
-                  </div>
-                  <div ref={viewerRef} style={{ width: "100%", height: "480px", border: "1px solid var(--border-color)", borderRadius: "8px", overflow: "hidden", background: "#fff" }}>
-                    {activeAttachmentLoading ? (
-                      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#000" }}>
-                        문서를 불러오는 중입니다...
-                      </div>
-                    ) : currentBlobUrl ? (
-                      <iframe src={currentBlobUrl} style={{ width: "100%", height: "100%", border: "none" }} title="문서 뷰어" />
+                {activeAgenda && (
+                  <div style={{ padding: "0.85rem", borderRadius: "8px", background: "rgba(59, 130, 246, 0.06)", borderLeft: "4px solid var(--accent-color)", border: "1px solid rgba(59, 130, 246, 0.2)" }}>
+                    <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)", display: "block" }}>
+                      선택된 안건 상세
+                    </span>
+                    <h4 style={{ fontSize: "1.1rem", fontWeight: "800", margin: "0.3rem 0 0.5rem 0" }}>{activeAgenda.title}</h4>
+                    {activeAgenda.description ? (
+                      <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: "1.6", whiteSpace: "pre-wrap", margin: 0 }}>
+                        {activeAgenda.description}
+                      </p>
                     ) : (
-                      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#000" }}>
-                        문서 데이터를 불러올 수 없습니다.
-                      </div>
+                      <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", fontStyle: "italic", margin: 0 }}>
+                        안건 관련 세부 설명 및 평가기준이 등록되어 있습니다. 오른쪽 자료를 참조해 주세요.
+                      </p>
                     )}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+
+              {/* 오른쪽 영역: 첨부파일 + PDF 뷰어 */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {currentFileName ? (
+                  <>
+                    <div style={{ fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.03)", padding: "0.4rem 0.75rem", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
+                      <span style={{ color: "var(--accent-color)", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                        📎 첨부 파일: {currentFileName}
+                      </span>
+                    </div>
+                    <div ref={viewerRef} style={{ width: "100%", height: "480px", border: "1px solid var(--border-color)", borderRadius: "8px", overflow: "hidden", background: "#fff" }}>
+                      {activeAttachmentLoading ? (
+                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#000" }}>
+                          문서를 불러오는 중입니다...
+                        </div>
+                      ) : currentBlobUrl ? (
+                        <iframe src={currentBlobUrl} style={{ width: "100%", height: "100%", border: "none" }} title="문서 뷰어" />
+                      ) : (
+                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#000" }}>
+                          문서 데이터를 불러올 수 없습니다.
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ height: "100%", minHeight: "250px", border: "1px dashed var(--border-color)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
+                    등록된 첨부 심의 자료가 없습니다.
+                  </div>
+                )}
+              </div>
+
             </div>
           ) : (
             <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>상정된 의안이 없습니다.</p>
           )}
         </div>
 
-        {/* [우측]: 의결 표결 및 자필 서명 / 업로드 / 최종 제출 */}
+        {/* 2. 의결 표결 카드 (1열 독립 블록 - 의안별 별도 표결) */}
         <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-          <h3 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Vote size={20} />
-            <span>의결 표결 및 서명</span>
+          <h3 style={{ fontSize: "1.15rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
+            <Vote size={22} style={{ color: "var(--accent-color)" }} />
+            <span>의결 표결 (안건별 표결)</span>
           </h3>
 
           {hasSubmitted ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem", padding: "4rem 1rem", textAlign: "center", color: "#10b981" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem", padding: "3rem 1rem", textAlign: "center", color: "#10b981" }}>
               <Check size={56} />
               <h4 style={{ fontSize: "1.25rem", fontWeight: "800" }}>의결 표결이 완료되었습니다.</h4>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
@@ -720,8 +735,6 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-              
-              {/* 💡 [요구사항 2] 의안별 개별 표결 카드 (동의 / 부동의 / 기권 뚜렷한 버튼 표시) */}
               {selectedMeetingAgendas.map((agenda, index) => {
                 const currentInp = agendaInputs[agenda.id] || { vote: "APPROVE", score: 5, opinion: "" };
                 const isCurrentActive = String(agenda.id) === String(activeAgendaId);
@@ -738,7 +751,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                     }}
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                      <span style={{ fontWeight: "800", fontSize: "0.95rem", color: isCurrentActive ? "var(--accent-color)" : "var(--text-primary)" }}>
+                      <span style={{ fontWeight: "800", fontSize: "1rem", color: isCurrentActive ? "var(--accent-color)" : "var(--text-primary)" }}>
                         의안 #{index + 1}: {agenda.title}
                       </span>
                       {isCurrentActive && (
@@ -748,9 +761,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                       )}
                     </div>
 
-                    {/* 💡 [요구사항 2] 동의 / 부동의 / 기권 뚜렷한 표결 버튼 3개 */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem", marginBottom: "0.85rem" }}>
-                      {/* 동의 버튼 */}
+                    {/* 동의 / 부동의 / 기권 표결 버튼 */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem", marginBottom: "0.85rem" }}>
                       <button
                         type="button"
                         onClick={() => setAgendaInputs({
@@ -758,8 +770,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                           [agenda.id]: { ...currentInp, vote: "APPROVE" }
                         })}
                         style={{
-                          padding: "0.6rem 0.3rem",
-                          fontSize: "0.9rem",
+                          padding: "0.75rem 0.5rem",
+                          fontSize: "0.95rem",
                           borderRadius: "8px",
                           border: currentInp.vote === "APPROVE" ? "2px solid #10b981" : "1px solid var(--border-color)",
                           background: currentInp.vote === "APPROVE" ? "#10b981" : "rgba(255,255,255,0.05)",
@@ -773,7 +785,6 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                         동의
                       </button>
 
-                      {/* 부동의 버튼 */}
                       <button
                         type="button"
                         onClick={() => setAgendaInputs({
@@ -781,8 +792,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                           [agenda.id]: { ...currentInp, vote: "REJECT" }
                         })}
                         style={{
-                          padding: "0.6rem 0.3rem",
-                          fontSize: "0.9rem",
+                          padding: "0.75rem 0.5rem",
+                          fontSize: "0.95rem",
                           borderRadius: "8px",
                           border: currentInp.vote === "REJECT" ? "2px solid #ef4444" : "1px solid var(--border-color)",
                           background: currentInp.vote === "REJECT" ? "#ef4444" : "rgba(255,255,255,0.05)",
@@ -796,7 +807,6 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                         부동의
                       </button>
 
-                      {/* 기권 버튼 */}
                       <button
                         type="button"
                         onClick={() => setAgendaInputs({
@@ -804,8 +814,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                           [agenda.id]: { ...currentInp, vote: "ABSTAIN" }
                         })}
                         style={{
-                          padding: "0.6rem 0.3rem",
-                          fontSize: "0.9rem",
+                          padding: "0.75rem 0.5rem",
+                          fontSize: "0.95rem",
                           borderRadius: "8px",
                           border: currentInp.vote === "ABSTAIN" ? "2px solid #6b7280" : "1px solid var(--border-color)",
                           background: currentInp.vote === "ABSTAIN" ? "#6b7280" : "rgba(255,255,255,0.05)",
@@ -820,7 +830,6 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                       </button>
                     </div>
 
-                    {/* 정량 평가 점수 선택 (해당하는 경우) */}
                     {agenda.is_evaluation && (
                       <div style={{ marginBottom: "0.85rem" }}>
                         <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)", display: "block", marginBottom: "0.3rem" }}>평가 점수 (5점 만점)</label>
@@ -835,8 +844,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                               })}
                               style={{
                                 flex: 1,
-                                padding: "0.4rem",
-                                fontSize: "0.8rem",
+                                padding: "0.45rem",
+                                fontSize: "0.85rem",
                                 borderRadius: "6px",
                                 border: "1px solid var(--border-color)",
                                 background: currentInp.score === scoreVal ? "var(--accent-color)" : "transparent",
@@ -852,7 +861,6 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                       </div>
                     )}
 
-                    {/* 검토 의견 입력 */}
                     <div>
                       <input
                         type="text"
@@ -862,101 +870,101 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                           [agenda.id]: { ...currentInp, opinion: e.target.value }
                         })}
                         placeholder="의견이나 수정을 제안할 내용을 입력하세요."
-                        style={{ width: "100%", padding: "0.6rem 0.8rem", fontSize: "0.85rem", borderRadius: "6px", border: "1px solid var(--border-color)", background: "var(--input-bg)", color: "var(--text-primary)" }}
+                        style={{ width: "100%", padding: "0.65rem 0.8rem", fontSize: "0.88rem", borderRadius: "6px", border: "1px solid var(--border-color)", background: "var(--input-bg)", color: "var(--text-primary)" }}
                       />
                     </div>
                   </div>
                 );
               })}
-
-              {/* 💡 [요구사항 3] 자필 전자서명 & 서명파일 업로드 (맨 아래 이동) */}
-              <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "1.25rem", marginTop: "0.5rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.6rem" }}>
-                  <label style={{ fontSize: "0.9rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                    <span>자필 서명 (AES 암호화 저장)</span>
-                    <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "normal" }}>(모바일/패드 멀티터치 지원)</span>
-                  </label>
-
-                  <div style={{ display: "flex", gap: "0.4rem" }}>
-                    {/* 서명 파일 업로드 버튼 */}
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleSignatureFileUpload}
-                      accept="image/*"
-                      style={{ display: "none" }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontSize: "0.75rem", color: "var(--accent-color)", background: "rgba(59, 130, 246, 0.1)", border: "1px solid var(--accent-color)", borderRadius: "4px", padding: "0.2rem 0.5rem", cursor: "pointer", fontWeight: "700" }}
-                    >
-                      <Upload size={12} />
-                      <span>서명 파일 업로드</span>
-                    </button>
-
-                    {/* 지우기 버튼 */}
-                    <button
-                      type="button"
-                      onClick={clearCanvas}
-                      style={{ display: "flex", alignItems: "center", gap: "0.2rem", fontSize: "0.75rem", color: "#ef4444", background: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", borderRadius: "4px", padding: "0.2rem 0.5rem", cursor: "pointer", fontWeight: "700" }}
-                    >
-                      <RefreshCw size={12} />
-                      <span>지우기</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 모바일/패드 터치 지원 캔버스 */}
-                <div style={{ border: "2px dashed var(--border-color)", borderRadius: "10px", background: "#ffffff", touchAction: "none" }}>
-                  <canvas
-                    ref={canvasRef}
-                    width={450}
-                    height={160}
-                    onMouseDown={startDrawing}
-                    onMouseMove={draw}
-                    onMouseUp={stopDrawing}
-                    onMouseLeave={stopDrawing}
-                    onTouchStart={startDrawing}
-                    onTouchMove={draw}
-                    onTouchEnd={stopDrawing}
-                    style={{ width: "100%", height: "160px", cursor: "crosshair", borderRadius: "8px" }}
-                  />
-                </div>
-                <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", display: "block", marginTop: "0.4rem", textAlign: "right" }}>
-                  * 화면에 직접 서명하거나 이미지 파일(도장/서명)을 업로드할 수 있습니다.
-                </span>
-              </div>
-
-              {/* 💡 [요구사항 3] 맨 아래에 최종 의결 표결 및 서명 제출 버튼 배치 */}
-              <button
-                type="button"
-                className="btn-primary"
-                onClick={handleSubmitVote}
-                style={{
-                  width: "100%",
-                  padding: "0.95rem",
-                  fontSize: "1.05rem",
-                  fontWeight: "900",
-                  marginTop: "0.5rem",
-                  background: "var(--accent-color)",
-                  color: "#ffffff",
-                  borderRadius: "10px",
-                  boxShadow: "0 6px 20px rgba(59, 130, 246, 0.4)",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "0.5rem"
-                }}
-              >
-                <Send size={20} />
-                <span>최종 의결 표결 및 서명 제출</span>
-              </button>
-
             </div>
           )}
         </div>
+
+        {/* 3. 자필 서명 카드 (1열 독립 블록) */}
+        {!hasSubmitted && (
+          <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
+              <label style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <Lock size={20} style={{ color: "var(--accent-color)" }} />
+                <span>자필 서명 (AES 암호화 보안 저장)</span>
+                <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)", fontWeight: "normal" }}>(모바일/패드 멀티터치 지원)</span>
+              </label>
+
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleSignatureFileUpload}
+                  accept="image/*"
+                  style={{ display: "none" }}
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", color: "var(--accent-color)", background: "rgba(59, 130, 246, 0.1)", border: "1px solid var(--accent-color)", borderRadius: "6px", padding: "0.35rem 0.75rem", cursor: "pointer", fontWeight: "700" }}
+                >
+                  <Upload size={14} />
+                  <span>서명 파일 업로드</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={clearCanvas}
+                  style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", color: "#ef4444", background: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", borderRadius: "6px", padding: "0.35rem 0.75rem", cursor: "pointer", fontWeight: "700" }}
+                >
+                  <RefreshCw size={14} />
+                  <span>지우기</span>
+                </button>
+              </div>
+            </div>
+
+            <div style={{ border: "2px dashed var(--border-color)", borderRadius: "10px", background: "#ffffff", touchAction: "none", marginTop: "0.5rem" }}>
+              <canvas
+                ref={canvasRef}
+                width={700}
+                height={180}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={stopDrawing}
+                onMouseLeave={stopDrawing}
+                onTouchStart={startDrawing}
+                onTouchMove={draw}
+                onTouchEnd={stopDrawing}
+                style={{ width: "100%", height: "180px", cursor: "crosshair", borderRadius: "8px" }}
+              />
+            </div>
+            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", textAlign: "right" }}>
+              * 화면에 직접 서명하거나 이미지 파일(도장/서명)을 업로드할 수 있습니다.
+            </span>
+
+            {/* 4. 맨 아래에 최종 의결 표결 및 서명 제출 버튼 배치 */}
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleSubmitVote}
+              style={{
+                width: "100%",
+                padding: "1.05rem",
+                fontSize: "1.1rem",
+                fontWeight: "900",
+                marginTop: "0.75rem",
+                background: "var(--accent-color)",
+                color: "#ffffff",
+                borderRadius: "10px",
+                boxShadow: "0 6px 20px rgba(59, 130, 246, 0.4)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem"
+              }}
+            >
+              <Send size={22} />
+              <span>최종 의결 표결 및 서명 제출</span>
+            </button>
+          </div>
+        )}
+
       </div>
     </div>
   );

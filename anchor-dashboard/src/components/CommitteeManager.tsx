@@ -1041,9 +1041,15 @@ export default function CommitteeManager({
         document.head.appendChild(script);
       });
 
-      // 3-3. PDF 파일 ArrayBuffer로 읽기 및 문서 로드
+      // 3-3. PDF 파일 ArrayBuffer로 읽기 및 문서 로드 (CMap & StandardFontDataUrl 적용으로 한글/한국어 폰트 파괴 원천 방지)
       const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const loadingTask = pdfjsLib.getDocument({
+        data: arrayBuffer,
+        cMapUrl: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/cmaps/",
+        cMapPacked: true,
+        standardFontDataUrl: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/standard_fonts/"
+      });
+      const pdfDoc = await loadingTask.promise;
       const numPages = pdfDoc.numPages;
 
       // 3-4. 텍스트 가독성을 최대로 보장하기 위해 고해상도 Scale(1.8 ~ 2.0) 및 고품질 Quality(0.85 ~ 0.90) 설정

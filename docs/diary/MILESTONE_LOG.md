@@ -35,9 +35,8 @@
 - **Phase 5 (2026-07-22)**:
   - `src/components/` 내 **전체 26개 TSX 컴포넌트**에 명확한 `interface` / `type` 및 `useState`, `useRef`, `React.ChangeEvent`, `React.FormEvent` 정적 타입 지정 완료 (`any` 사용 최소화).
   - 파운데이션 모듈(`mockWikiData.ts`, `App.tsx`, `main.tsx`) 정적 인터페이스 선언 및 `.ts` 확장자 마이그레이션 완수.
-  - PDF 파일 2MB 초과 업로드 시 **자동 안내 팝업 띄움** 및 **텍스트 뭉개짐 없는 고해상도(Scale 2.0 / High Quality) 2MB 이하 최적화 압축 연동**.
-  - 회의 등록 및 의결 개시 버튼 연속 클릭 시 **회의 중복 생성을 차단하는 Double-submission Guard 로직** 및 비활성화 상태 반영.
+  - PDF CMap 및 폰트 데이터 로딩으로 **한글 PDF 압축 시 텍스트 파괴 방지 원천 복구**.
+  - 외부 위원 투표 UI를 **순차적 1열 구조(상정안건 1열 카드 내 좌/우 2열 배치 ➔ 의결 표결 1열 ➔ 자필서명 1열 ➔ 최하단 최종제출 버튼)**로 개편.
   - 안건 표결(`meeting_agenda_votes`)과 회의 출석 정족수(`attended`) 데이터 동기화, 의안별 찬성 표수(`찬성: 2명`) 정확 집계 및 위원 성명/소속/전자서명 이미지 첨부 시각화 완료.
   - PDF 의결서 봉인 시 하단 **SHA-256 디지털 서명 검증 코드 및 실시간 타임스탬프 인쇄 기능 연동** (위·변조 방지 100% 보장).
-  - 100% 동일한 UI/UX, Tailwind CSS 디자인 체계 및 JSX 노드 레이아웃 보존.
-  - `npm run build` 검증 **495ms / 0 TS Error** 최종 빌드 성공 및 원격 저장소(`main` 브랜치) 자동 Git Push 완수.
+  - `npm run build` 검증 **464ms / 0 TS Error** 최종 빌드 성공 및 원격 저장소(`main` 브랜치) 자동 Git Push 완수.
