@@ -1767,7 +1767,7 @@ export default function CommitteeManager({
 
     setIsSubmittingMeeting(true);
 
-    const generatedPin = meetingForm.access_pin.trim() || Math.floor(100000 + Math.random() * 900000).toString();
+    const generatedPin = meetingForm.access_pin.trim() || "123456";
     
     // 하위 호환 및 DB non-null 제약 해소를 위해 의안 리스트 요약을 agenda 컬럼에 채움
     const summaryAgendaText = meetingForm.agendas.map((a, idx) => `[안건 ${idx + 1}] ${a.title}`).join("\n");
@@ -4420,7 +4420,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   <input
                     type="text"
                     maxLength={10}
-                    placeholder="미지정 시 6자리 랜덤 생성"
+                    placeholder="미지정 시 기본 123456"
                     value={meetingForm.access_pin}
                     onChange={(e) => setMeetingForm({ ...meetingForm, access_pin: e.target.value })}
                     className="form-input"
