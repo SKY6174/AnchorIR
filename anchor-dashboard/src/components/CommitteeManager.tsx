@@ -1910,13 +1910,21 @@ export default function CommitteeManager({
       return `[안건 ${idx + 1}] ${a.title.trim()}${evalTag}${attachTag}`;
     }).join("\n");
 
+    // 💡 모든 안건의 첨부파일명 목록을 콤마(, )로 수합하여 committee_meetings 마스터 테이블에 한눈에 영구 기록
+    const allAttachmentNames = meetingForm.agendas
+      .map(a => a.attachment_name?.trim())
+      .filter((name): name is string => !!name && name.length > 0);
+    const combinedAttachmentName = allAttachmentNames.length > 0
+      ? Array.from(new Set(allAttachmentNames)).join(", ")
+      : (meetingForm.attachment_name || null);
+
     const payload = {
       committee_id: selectedCommittee.id,
       title: meetingForm.title,
       meeting_date: meetingForm.meeting_date,
       meeting_type: meetingForm.meeting_type,
       agenda: summaryAgendaText,
-      attachment_name: meetingForm.attachment_name || meetingForm.agendas.find(a => a.attachment_name)?.attachment_name || null,
+      attachment_name: combinedAttachmentName,
       attachment_data: meetingForm.attachment_data || meetingForm.agendas.find(a => a.attachment_data)?.attachment_data || null,
       access_pin: generatedPin,
       status: "ACTIVE"
