@@ -148,6 +148,23 @@ const parseDecimalFromCommas = (val) => {
  * 프로그램별 PDCA(Plan-Do-Check-Act) 단계 관리, 기획수립(Timeline, 대상, 부서),
  * 다변화 재원(국고, 시비, 외부사업비) 예산/집행 입력 및 A단계 2분할 환류 방안 검증을 담당합니다.
  */
+export interface PDCAManagerProps {
+  projects?: any[];
+  currentRole?: any;
+  onUpdateProgramDetails?: (unitId: string, programId: string, details: any) => void;
+  onAddProgram?: (unitId: string, program: any) => void;
+  selectedYear?: number | string;
+  selectedUnitId?: string;
+  setSelectedUnitId?: (unitId: string) => void;
+  selectedProgId?: string;
+  setSelectedProgId?: (progId: string) => void;
+  viewMode?: string;
+  setViewMode?: (mode: string) => void;
+  currentUser?: any;
+  supabase?: any;
+  darkMode?: boolean;
+}
+
 export default function PDCAManager({
   projects,
   currentRole,
@@ -162,7 +179,7 @@ export default function PDCAManager({
   setViewMode,
   currentUser,
   supabase
-}) {
+}: PDCAManagerProps) {
   const startYrShort = String(2024 + selectedYear).slice(-2);
   const endYrShort = String(2025 + selectedYear).slice(-2);
   const monthsList = [
