@@ -61,7 +61,14 @@ const MOCK_PARTNERS = [
   { name: "WCC협의체", category: "대학", sub_category: "협의체", location: "전국", sectors: ["글로벌", "창업"], contact_person: "김태영 회장", contact_phone: "02-600-2000", remarks: "세계 수준의 전문대학(World Class College) 글로벌 역량 고도화 네트워크 얼라이언스" }
 ];
 
-export default function PartnerManager({ selectedYear }) {
+export interface PartnerManagerProps {
+  selectedYear?: number | string;
+  darkMode?: boolean;
+  currentUser?: any;
+  currentRole?: any;
+}
+
+export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
