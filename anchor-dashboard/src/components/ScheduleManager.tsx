@@ -322,6 +322,24 @@ const COMMITTEES_DATA = [
   }
 ];
 
+export interface ScheduleManagerProps {
+  currentUser?: any;
+  currentRole?: any;
+  selectedYear?: number | string;
+  darkMode?: boolean;
+  subTab?: string;
+  onChangeSubTab?: (subTab: string) => void;
+  monthlySchedules?: any[];
+  setMonthlySchedules?: React.Dispatch<React.SetStateAction<any[]>>;
+  eventSchedules?: any[];
+  setEventSchedules?: React.Dispatch<React.SetStateAction<any[]>>;
+  meetingSchedules?: any[];
+  setMeetingSchedules?: React.Dispatch<React.SetStateAction<any[]>>;
+  pressReleases?: any[];
+  setPressReleases?: React.Dispatch<React.SetStateAction<any[]>>;
+  members?: any[];
+}
+
 export default function ScheduleManager({
   currentUser,
   currentRole,
@@ -338,7 +356,7 @@ export default function ScheduleManager({
   pressReleases = [],
   setPressReleases,
   members = []
-}) {
+}: ScheduleManagerProps) {
   // 선택 연차에 동조하는 회계연도 연도 구하기 (1차년도: 2025, 2차년도: 2026 등)
   const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
 
