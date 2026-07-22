@@ -200,12 +200,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       }
     } catch (e) { }
 
-    // 💡 2. 숫자형 mId인 경우 Supabase DB 쿼리로 동기화 (DB 400 에러 방지 select 처리 및 로컬 바이너리 무손실 합성)
+    // 💡 2. 숫자형 mId인 경우 Supabase DB 쿼리로 동기화 (DB 400 에러 원천 방지 및 로컬 바이너리 무손실 합성)
     if (isNumericId) {
       try {
         const { data: agendas, error: agErr } = await supabase
           .from("meeting_agendas")
-          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name, attachment_data")
+          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
           .eq("meeting_id", mId)
           .order("sort_order", { ascending: true });
 
@@ -218,7 +218,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             return {
               ...ag,
               attachment_name: ag.attachment_name || cached?.attachment_name || null,
-              attachment_data: ag.attachment_data || cached?.attachment_data || null
+              attachment_data: cached?.attachment_data || null
             };
           });
         }
