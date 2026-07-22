@@ -274,7 +274,7 @@ export default function CommitteeManager({
   members: allMembers
 }: CommitteeManagerProps) {
   // 1. 상태(State) 정의
-  const [committees, setCommittees] = useState([]);
+  const [committees, setCommittees] = useState<any[]>([]);
   const [selectedCommittee, setSelectedCommittee] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(() => {
     return localStorage.getItem("anchor_selected_committee_group") || "agency";
@@ -3073,7 +3073,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
   };
 
   // 9. 결과보고 대장 동적 로드용
-  const [reports, setReports] = useState([]);
+  const [reports, setReports] = useState<any[]>([]);
   const [selectedReportId, setSelectedReportId] = useState(null); // 💡 [UI 개편] 선택된 결과보고서의 ID를 보관하는 상태 추가 (한글 주석)
 
   useEffect(() => {
