@@ -532,8 +532,7 @@ export default function CommitteeManager({
 
       if (!agErr && agendas) {
         newAgendas = agendas;
-        const cleanAgendas = agendas.map((a: any) => ({ ...a, attachment_data: null }));
-        localStorage.setItem(`local_meeting_agendas_${meetingId}`, JSON.stringify(cleanAgendas));
+        localStorage.setItem(`local_meeting_agendas_${meetingId}`, JSON.stringify(agendas));
       } else {
         const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
         newAgendas = localAgendas ? JSON.parse(localAgendas) : [];

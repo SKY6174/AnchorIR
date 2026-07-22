@@ -198,19 +198,19 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       }
     } catch (e) { }
 
-    // 💡 2. 숫자형 mId인 경우 Supabase DB 쿼리로 동기화
+    // 💡 2. 숫자형 mId인 경우 Supabase DB 쿼리로 동기화 (attachment_data 필드 100% 수신)
     if (isNumericId) {
       try {
         const { data: agendas, error: agErr } = await supabase
           .from("meeting_agendas")
-          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
+          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name, attachment_data")
           .eq("meeting_id", mId)
           .order("sort_order", { ascending: true });
 
         if (!agErr && agendas && agendas.length > 0) {
           finalAgendas = agendas;
-          const cleanAgendas = agendas.map((a: any) => ({ ...a, attachment_data: null }));
-          localStorage.setItem(`local_meeting_agendas_${mId}`, JSON.stringify(cleanAgendas));
+          // attachment_data 무손실 캐시 저장
+          localStorage.setItem(`local_meeting_agendas_${mId}`, JSON.stringify(agendas));
         }
 
         const { data: votes, error: vtErr } = await supabase
