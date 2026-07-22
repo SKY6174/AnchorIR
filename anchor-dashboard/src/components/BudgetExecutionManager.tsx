@@ -19,7 +19,16 @@ const MONTHS_CONFIG = [
   { label: "27.2월", value: "2027-02" }
 ];
 
-export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear, supabase, darkMode = true }) {
+export interface BudgetExecutionManagerProps {
+  projects?: any[];
+  currentRole?: any;
+  selectedYear?: number | string;
+  supabase?: any;
+  darkMode?: boolean;
+  currentUser?: any;
+}
+
+export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear, supabase, darkMode = true }: BudgetExecutionManagerProps) {
   const selectedYear = Number(rawYear);
   const [activeUploadTab, setActiveUploadTab] = useState("main"); // "main" (본예산 집행 등록) vs "carryover" (이월예산 집행 등록)
   
