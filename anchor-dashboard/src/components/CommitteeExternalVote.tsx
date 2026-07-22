@@ -352,8 +352,13 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         }
 
         if (!attachData) {
-          // 💡 1순위: 최신 회의 마스터 데이터 targetMtg.attachment_data (JSON 배열/URL/바이너리) 1:1 인출
-          if (targetMtg?.attachment_data) {
+          // 💡 1순위: 파일명(attachName)이 존재하는 경우 globalMap 및 Storage URL 최우선 매칭 (예전 C3 단일 바이너리 오할당 원천 차단)
+          if (attachName && globalMap[attachName.trim()]) {
+            attachData = globalMap[attachName.trim()];
+          }
+
+          // 💡 2순위: targetMtg.attachment_data가 JSON 배열인 경우 idx 1:1 파싱
+          if (!attachData && targetMtg?.attachment_data) {
             const rawDataStr = String(targetMtg.attachment_data);
             if (rawDataStr.startsWith("[")) {
               try {
@@ -362,17 +367,16 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                   attachData = parsedArr[idx];
                 }
               } catch (e) { }
-            } else if (idx === 0) {
-              const mName = String(targetMtg.attachment_name || "");
-              if (!attachName || mName.includes(attachName.trim())) {
-                attachData = targetMtg.attachment_data;
-              }
+            } else if (idx === 0 && !rawDataStr.startsWith("data:application/pdf")) {
+              // 단순 URL 주소인 경우만 1번 안건에 할당
+              attachData = targetMtg.attachment_data;
             }
           }
 
-          // 💡 2순위: 최신 회의 레코드에 데이터가 비어있을 때만 오래된 로컬 캐시 폴백
-          if (!attachData && attachName && globalMap[attachName.trim()]) {
-            attachData = globalMap[attachName.trim()];
+          // 💡 3순위: 파일명이 있으나 바이너리가 없으면 Supabase Storage Public Direct URL 자동 생성
+          if (!attachData && attachName && !attachName.includes("|") && !attachName.includes(",")) {
+            const SUPABASE_URL = "https://jsx8L4wndhIHLMBSIAgR.supabase.co";
+            attachData = `${SUPABASE_URL}/storage/v1/object/public/meeting_docs/${encodeURIComponent(attachName.trim())}`;
           }
         }
 
