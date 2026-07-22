@@ -1903,9 +1903,11 @@ export default function CommitteeManager({
 
     const generatedPin = meetingForm.access_pin.trim() || "123456";
 
-    // 하위 호환 및 DB non-null 제약 해소를 위해 깔끔한 안건 요약 텍스트 생성
+    // 하위 호환 및 DB non-null 제약 해소를 위해 각 안건별 제목/평가여부/첨부파일명 보존 텍스트 생성
     const summaryAgendaText = meetingForm.agendas.map((a, idx) => {
-      return `[안건 ${idx + 1}] ${a.title.trim()}`;
+      const attachTag = a.attachment_name ? ` [첨부: ${a.attachment_name.trim()}]` : "";
+      const evalTag = a.is_evaluation ? " (5점척도)" : "";
+      return `[안건 ${idx + 1}] ${a.title.trim()}${evalTag}${attachTag}`;
     }).join("\n");
 
     const payload = {

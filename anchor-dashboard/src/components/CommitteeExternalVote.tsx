@@ -240,12 +240,15 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       }
     }
 
-    // 💡 3. 기본 의안이 비어있는 경우 회의 agenda 텍스트 파싱하여 100% 무손실 복원
+    // 💡 3. 기본 의안이 비어있는 경우 회의 agenda 텍스트 파싱하여 100% 무손실 복원 (각 안건별 [첨부: 파일명] 100% 추출)
     if (finalAgendas.length === 0) {
       if (targetMtg && targetMtg.agenda) {
         const lines = String(targetMtg.agenda).split("\n").map(l => l.trim()).filter(l => l.length > 0);
         finalAgendas = lines.map((l, idx) => {
           const isEval = l.includes("5점") || l.includes("성과") || l.includes("평가") || l.includes("심의");
+          const attachMatch = l.match(/\[첨부:\s*(.*?)\]/i);
+          const parsedAttachName = attachMatch ? attachMatch[1].trim() : null;
+
           const cleaned = l.replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim();
           return {
             id: `ag-${mId}-${idx + 1}`,
@@ -254,7 +257,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             description: `[상정 의안 #${idx + 1}] ${cleaned || "안건 심의 및 의결"}`,
             is_evaluation: isEval,
             sort_order: idx + 1,
-            attachment_name: null,
+            attachment_name: parsedAttachName,
             attachment_data: null
           };
         });
