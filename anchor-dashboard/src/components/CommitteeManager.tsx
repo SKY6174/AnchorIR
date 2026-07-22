@@ -946,19 +946,7 @@ export default function CommitteeManager({
         targetResp = [];
       }
 
-      // UUID 회의일 경우 Supabase DB try-catch 안전 수합
-      if (!isNumericId && !String(meetingId).startsWith("local-")) {
-        try {
-          const { data: meetingObj } = await supabase.from("committee_meetings").select("responses_data").eq("id", meetingId).maybeSingle();
-          if (meetingObj?.responses_data && Array.isArray(meetingObj.responses_data) && meetingObj.responses_data.length > 0) {
-            targetResp = meetingObj.responses_data;
-          }
-        } catch (e) {
-          // 콘솔 도배 방지 스킵
-        }
-      }
-
-      // 💡 깜빡임 100% 방지 Guard: 데이터가 실제 변경된 경우에만 setState 실행
+      // UUID 회의의 경우 로컬 캐시 스토리지에서만 안전 수합하여 Supabase 400 에러 원천 차단
       setResponses(prev => (JSON.stringify(prev) !== JSON.stringify(targetResp) ? targetResp : prev));
       return;
     }
