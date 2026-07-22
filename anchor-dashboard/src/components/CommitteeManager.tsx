@@ -1910,12 +1910,10 @@ export default function CommitteeManager({
       return `[안건 ${idx + 1}] ${a.title.trim()}${evalTag}${attachTag}`;
     }).join("\n");
 
-    // 💡 모든 안건의 첨부파일명 목록을 콤마(, )로 수합하여 committee_meetings 마스터 테이블에 한눈에 영구 기록
-    const allAttachmentNames = meetingForm.agendas
-      .map(a => a.attachment_name?.trim())
-      .filter((name): name is string => !!name && name.length > 0);
-    const combinedAttachmentName = allAttachmentNames.length > 0
-      ? Array.from(new Set(allAttachmentNames)).join(", ")
+    // 💡 모든 안건의 첨부파일명 목록을 순서(0, 1, 2) 그대로 파이프( | )로 수합하여 1:1 위치 매칭 영구 기록
+    const orderedAttachmentNames = meetingForm.agendas.map(a => a.attachment_name?.trim() || "");
+    const combinedAttachmentName = orderedAttachmentNames.some(name => name.length > 0)
+      ? orderedAttachmentNames.join(" | ")
       : (meetingForm.attachment_name || null);
 
     const payload = {
@@ -3475,14 +3473,15 @@ ${selectedMeetingAgendas.map((a, idx) => {
                           const fullMId = String(selectedMeeting.id).trim();
                           const shortMId = fullMId.includes("-") ? fullMId.split("-")[0] : fullMId;
 
-                          // 💡 개별 안건 첨부파일명 인출 (대표 파일명이 콤마로 묶인 경우 해당 idx에 정밀 매칭)
+                          // 💡 개별 안건 첨부파일명 인출 (대표 파일명이 파이프 | 또는 콤마 , 로 묶인 경우 해당 idx에 1:1 정밀 매칭)
                           let agName = ag.attachment_name;
                           if (!agName && selectedMeeting.attachment_name) {
-                            const parts = String(selectedMeeting.attachment_name).split(",").map(p => p.trim()).filter(Boolean);
-                            if (parts[idx]) {
+                            const rawStr = String(selectedMeeting.attachment_name);
+                            const parts = rawStr.includes("|")
+                              ? rawStr.split("|").map(p => p.trim())
+                              : rawStr.split(",").map(p => p.trim());
+                            if (parts[idx] && parts[idx].length > 0) {
                               agName = parts[idx];
-                            } else if (idx === 0) {
-                              agName = parts[0];
                             }
                           }
                           let agData = ag.attachment_data || (idx === 0 ? selectedMeeting.attachment_data : null);

@@ -304,13 +304,14 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           }
         }
 
-        // 4순위: targetMtg 대표 파일 콤마 분리 idx 1:1 매칭 폴백
+        // 4순위: targetMtg 대표 파일 파이프 | 또는 콤마 , 분리 idx 1:1 위치 정밀 매칭 폴백
         if (!attachName && targetMtg?.attachment_name) {
-          const parts = String(targetMtg.attachment_name).split(",").map(p => p.trim()).filter(Boolean);
-          if (parts[idx]) {
+          const rawStr = String(targetMtg.attachment_name);
+          const parts = rawStr.includes("|")
+            ? rawStr.split("|").map(p => p.trim())
+            : rawStr.split(",").map(p => p.trim());
+          if (parts[idx] && parts[idx].length > 0) {
             attachName = parts[idx];
-          } else if (idx === 0) {
-            attachName = parts[0];
           }
         }
         if (!attachData && idx === 0 && targetMtg?.attachment_data) {
