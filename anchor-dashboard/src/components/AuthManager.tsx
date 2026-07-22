@@ -10,7 +10,15 @@ const hashPassword = (password) => {
   return CryptoJS.SHA256(password).toString();
 };
 
-export default function AuthManager({ onLoginSuccess, members = [] }) {
+export interface AuthManagerProps {
+  onLoginSuccess?: (userData: any) => void;
+  members?: any[];
+  darkMode?: boolean;
+  currentUser?: any;
+  currentRole?: any;
+}
+
+export default function AuthManager({ onLoginSuccess, members = [] }: AuthManagerProps) {
   const [userId, setUserId] = useState("");
   const [userPw, setUserPw] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
