@@ -660,33 +660,36 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           console.warn("committee_meetings responses_data 예외:", mErr.message);
         }
 
-        // 2-2. [2순위] meeting_responses 하위 테이블 저장 (UUID / String 유연 대응)
-        try {
-          const respPayload = {
-            meeting_id: meeting.id,
-            member_id: authMember.id || memberId,
-            member_name: authMember.name,
-            attended: true,
-            vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
-            opinion: summaryOpinion,
-            signature: encryptedSignature,
-            encrypted_signature: encryptedSignature,
-            submitted_at: new Date().toISOString()
-          };
+        // 2-2. [2순위] meeting_responses 하위 테이블 저장 (숫자형 meeting.id 일 때만 DB 쿼리 실행)
+        const isNumericMeetingId = !isNaN(Number(meeting.id)) && String(meeting.id).trim() !== "";
+        if (isNumericMeetingId) {
+          try {
+            const respPayload = {
+              meeting_id: Number(meeting.id),
+              member_id: authMember.id || memberId,
+              member_name: authMember.name,
+              attended: true,
+              vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
+              opinion: summaryOpinion,
+              signature: encryptedSignature,
+              encrypted_signature: encryptedSignature,
+              submitted_at: new Date().toISOString()
+            };
 
-          const { error: respErr } = await supabase.from("meeting_responses").insert([respPayload]);
-          if (respErr) {
-            await supabase.from("meeting_responses").upsert([respPayload]);
+            const { error: respErr } = await supabase.from("meeting_responses").insert([respPayload]);
+            if (respErr) {
+              await supabase.from("meeting_responses").upsert([respPayload]);
+            }
+          } catch (dbErr: any) {
+            console.warn("meeting_responses DB 전송 스킵:", dbErr.message);
           }
-        } catch (dbErr: any) {
-          console.warn("meeting_responses DB 전송 경고:", dbErr.message);
-        }
 
-        // 2-3. [3순위] meeting_agenda_votes 의안별 표결 테이블 저장
-        try {
-          await supabase.from("meeting_agenda_votes").insert(votePayloads);
-        } catch (dbErr: any) {
-          console.warn("meeting_agenda_votes DB 전송 경고:", dbErr.message);
+          // 2-3. [3순위] meeting_agenda_votes 의안별 표결 테이블 저장
+          try {
+            await supabase.from("meeting_agenda_votes").insert(votePayloads);
+          } catch (dbErr: any) {
+            console.warn("meeting_agenda_votes DB 전송 스킵:", dbErr.message);
+          }
         }
       }
 
