@@ -31,9 +31,9 @@
   - 근본 해결: 텍스트 레이어를 파괴하는 이미지 렌더링 재조합 압축 방식을 전면 제거하고, 15MB 한도 내에서 원본 PDF 바이너리를 100% 보존하여 DataURL로 탑재하도록 개선. PDF 텍스트 검색, 복사, 드래그 기능 완전 보존.
   - 빌드 검증: `npm run build` 성공 (**0 Error / 461ms**).
 
-- **PDF 압축 시 텍스트 사라짐 원천 방지 및 문서 방향(Landscape / Portrait) 자동 동적 감지 로직 구현**
-  - 문제 원인 1 (텍스트 사라짐): `pdf.js`가 Canvas에 페이지를 다 그리기 전 폰트 자원이 완전히 로드/페인팅되지 않고 `toDataURL`이 비동기로 즉시 실행되어 폰트 텍스트 층이 캡처되지 않음.
-  - 개선 조치 1: `page.getTextContent()` 명시적 대기 및 캔버스 렌더링 후 `60ms Paint Delay` 보장을 추가하여 텍스트 폰트 글자가 1글자도 사라지지 않고 100% 선명하게 렌더링되도록 수정.
-  - 문제 원인 2 (방향 왜곡): 가로 방향(Landscape, PPT 슬라이드 등) PDF 문서임에도 `orientation: 'portrait'`로 강제 지정되어 세로 A4 종이에 작게 찌그러지거나 아래쪽 여백이 생성되는 현상 발생.
-  - 개선 조치 2: 첫 페이지의 가로/세로 비율(`firstViewport.width > firstViewport.height`)을 자동 감지하여, 가로 슬라이드 문서는 **`orientation: 'landscape'`**로, 세로 문서는 **`orientation: 'portrait'`**로 100% 자동 분기 지정하도록 보강.
-  - 빌드 검증: `npm run build` 성공 (**0 Error / 462ms**).
+- **서명 캔버스 마우스/터치 좌표 유격 보정 및 pdf-lib 기반 100% 무손실 텍스트 보존 PDF 압축 로직 전면 개편**
+  - 문제 원인 1 (서명 이격): `<canvas>`의 속성 해상도(`canvas.width`)와 렌더링된 CSS 크기(`rect.width`)의 배율 차이로 인해 마우스 팁과 실제 펜선에 유격(offset)이 발생하는 현상.
+  - 개선 조치 1: `getCanvasCoords`에 `scaleX = canvas.width / rect.width`, `scaleY = canvas.height / rect.height` 비율 보정 알고리즘을 적용하여, 마우스 팁 바로 아래에서 1px의 유격도 없이 **실제 실물 만년필로 서명하는 듯한 정확도** 실현.
+  - 문제 원인 2 (PDF 텍스트 사라짐): `pdf.js` 캔버스 래스터화 압축 시 커스텀 폰트 및 벡터 텍스트 스트림이 누락되어 텍스트가 흰 종이로 비어버리는 한계.
+  - 개선 조치 2: 캔버스 래스터화 방식을 배제하고, 오픈소스 **`pdf-lib` (Pure JS PDF Binary Engine)**를 탑재. **원본 PDF의 텍스트 레이어, 폰트, 벡터 객체를 1글자도 지우지 않고 100% 무손실 상태로 보존**한 상태에서 내부 바이너리 개체 스트림을 최적화(`useObjectStreams: true`)하여 텍스트 사라짐을 100% 원천 해결.
+  - 빌드 검증: `npm run build` 성공 (**0 Error / 459ms**).

@@ -328,7 +328,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     }
   };
 
-  // 💡 [요구사항 3] 터치 및 마우스 반응형 좌표 계산 헬퍼 함수
+  // 💡 [요구사항 3] 터치 및 마우스 반응형 좌표 계산 헬퍼 함수 (scaleX, scaleY 비율 보정으로 마우스/펜 팁 이격 100% 차단)
   const getCanvasCoords = (e: any) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -341,9 +341,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       clientY = e.touches[0].clientY;
     }
 
+    const scaleX = canvas.width / (rect.width || 1);
+    const scaleY = canvas.height / (rect.height || 1);
+
     return {
-      x: clientX - rect.left,
-      y: clientY - rect.top
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
     };
   };
 
