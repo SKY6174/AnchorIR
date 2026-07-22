@@ -116,27 +116,25 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
     let rawStr = String(currentFileData).trim();
 
-    // 💡 0순위: JSON 배열 ["data:...", "data:..."] 통문자열 감지 시 현재 안건 인덱스 단일 데이터 1개만 인출
-    if (rawStr.startsWith("[")) {
+    // 0. 따옴표 및 대괄호 이물질 정밀 제거 및 JSON 배열 인덱스 분리
+    if (rawStr.startsWith('"') || rawStr.startsWith("'") || rawStr.startsWith('[')) {
       try {
-        const parsedArr = JSON.parse(rawStr);
-        const targetIdx = activeAgendaIndex || 0;
-        if (parsedArr[targetIdx] && parsedArr[targetIdx].length > 0) {
-          rawStr = String(parsedArr[targetIdx]).trim();
-        } else if (parsedArr[0]) {
-          rawStr = String(parsedArr[0]).trim();
+        const parsed = JSON.parse(rawStr);
+        if (Array.isArray(parsed)) {
+          const targetIdx = activeAgendaIndex || 0;
+          rawStr = String(parsed[targetIdx] || parsed[0] || "").trim();
+        } else if (typeof parsed === "string") {
+          rawStr = parsed.trim();
         }
-      } catch (e) { }
+      } catch (e) {
+        rawStr = rawStr.replace(/^["'\[]+/, "").replace(/["'\]]+$/, "").trim();
+      }
     }
 
-    // 1. 웹 URL (http, https, blob, supabase storage, 상대 경로, .pdf 확장자)
+    // 1. 순수 웹 URL (http://, https://, blob:) 및 data: 미포함 주소
     if (
-      rawStr.startsWith("http://") ||
-      rawStr.startsWith("https://") ||
-      rawStr.startsWith("blob:") ||
-      rawStr.includes("supabase.co") ||
-      rawStr.includes("meeting_docs/") ||
-      rawStr.toLowerCase().endsWith(".pdf")
+      (rawStr.startsWith("http://") || rawStr.startsWith("https://") || rawStr.startsWith("blob:")) &&
+      !rawStr.includes("data:application/pdf")
     ) {
       try {
         const safeUrl = rawStr.startsWith("http") ? encodeURI(decodeURI(rawStr)) : rawStr;
@@ -147,20 +145,26 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       return;
     }
 
-    // 2. data: 헤더 또는 Base64 바이너리 시 atob 안전 디코딩
-    if (rawStr.startsWith("data:") || /^[A-Za-z0-9+/=]+$/.test(rawStr.replace(/\s/g, "").slice(0, 100))) {
+    // 2. data: 헤더 또는 JVBERi (PDF 헤더 Base64) 감지 시 무조건 100% Blob 변환 (Vercel 414 에러 완전 방지)
+    if (rawStr.includes("data:") || rawStr.includes("JVBERi") || /^[A-Za-z0-9+/=]{50,}/.test(rawStr)) {
       try {
-        let base64Data = rawStr;
+        let base64Content = rawStr;
         let mimeType = "application/pdf";
 
-        if (rawStr.startsWith("data:")) {
-          const parts = rawStr.split(',');
-          mimeType = parts[0].split(':')[1]?.split(';')[0] || "application/pdf";
-          base64Data = parts[1] || "";
+        if (rawStr.includes("data:")) {
+          const dataMatch = rawStr.match(/data:([^;]+);base64,(.*)/s);
+          if (dataMatch) {
+            mimeType = dataMatch[1] || "application/pdf";
+            base64Content = dataMatch[2] || "";
+          } else {
+            base64Content = rawStr.split("base64,")[1] || rawStr;
+          }
         }
 
-        base64Data = base64Data.replace(/\s/g, "");
-        const byteString = atob(base64Data);
+        // 영문 알파벳, 숫자, +, /, = 외 모든 특수문자/공백 완전 제거 정제
+        base64Content = base64Content.replace(/[^A-Za-z0-9+/=]/g, "");
+
+        const byteString = atob(base64Content);
         const ab = new ArrayBuffer(byteString.length);
         const ia = new Uint8Array(ab);
         for (let i = 0; i < byteString.length; i++) {
@@ -174,11 +178,11 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           URL.revokeObjectURL(url);
         };
       } catch (e) {
-        console.warn("❌ PDF Base64 Blob 변환 실패 (URL 폴백 적용):", e);
-        setCurrentBlobUrl(rawStr);
+        console.warn("❌ PDF Base64 Blob 변환 예외 가드:", e);
+        setCurrentBlobUrl(null);
       }
     } else {
-      setCurrentBlobUrl(rawStr);
+      setCurrentBlobUrl(null);
     }
   }, [currentFileData, activeAgendaIndex]);
 
