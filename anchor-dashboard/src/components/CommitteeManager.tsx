@@ -768,28 +768,31 @@ export default function CommitteeManager({
     if (!committeeId) return;
 
     let loadedMeetings: any[] = [];
-    const isNumericCommitteeId = !isNaN(Number(committeeId)) && String(committeeId).trim() !== "";
 
-    // 1. committeeId가 숫자형인 경우에만 Supabase DB 쿼리 발송 (HTTP 400 Bad Request 원천 차단)
-    if (isNumericCommitteeId) {
-      try {
-        const { data, error } = await supabase
-          .from("committee_meetings")
-          .select("*")
-          .eq("committee_id", committeeId)
-          .order("meeting_date", { ascending: false });
+    // 1. [1순위] Supabase DB 쿼리 발송 (ecc <-> ecc_op 유연 매칭)
+    try {
+      let query = supabase.from("committee_meetings").select("*");
 
-        if (!error && data && data.length > 0) {
-          loadedMeetings = data;
-          const cleanMeetings = data.map(m => ({ ...m, attachment_data: null }));
-          localStorage.setItem(`local_committee_meetings_${committeeId}`, JSON.stringify(cleanMeetings));
-        }
-      } catch (err: any) {
-        console.warn("committee_meetings DB 조회 스킵 (로컬 폴백 사용):", err.message);
+      if (committeeId === "ecc" || committeeId === "ecc_op") {
+        query = query.or("committee_id.eq.ecc,committee_id.eq.ecc_op");
+      } else if (committeeId === "planning" || committeeId === "planning_op") {
+        query = query.or("committee_id.eq.planning,committee_id.eq.planning_op");
+      } else if (committeeId !== "all") {
+        query = query.eq("committee_id", committeeId);
       }
+
+      const { data, error } = await query.order("created_at", { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        loadedMeetings = data;
+        const cleanMeetings = data.map(m => ({ ...m, attachment_data: null }));
+        localStorage.setItem(`local_committee_meetings_${committeeId}`, JSON.stringify(cleanMeetings));
+      }
+    } catch (err: any) {
+      console.warn("committee_meetings DB 조회 스킵 (로컬 폴백 사용):", err.message);
     }
 
-    // 2. DB 데이터가 없거나 문자열 committeeId일 경우 로컬 캐시 스토리지에서 복원
+    // 2. DB 데이터가 없거나 에러 발생 시 로컬 캐시 스토리지에서 복원
     if (loadedMeetings.length === 0) {
       try {
         const localData = localStorage.getItem(`local_committee_meetings_${committeeId}`);
@@ -1760,11 +1763,8 @@ export default function CommitteeManager({
     // 하위 호환 및 DB non-null 제약 해소를 위해 의안 리스트 요약을 agenda 컬럼에 채움
     const summaryAgendaText = meetingForm.agendas.map((a, idx) => `[안건 ${idx + 1}] ${a.title}`).join("\n");
 
-    const rawCommitteeId = selectedCommittee.id;
-    const numericCommitteeId = !isNaN(Number(rawCommitteeId)) && String(rawCommitteeId).trim() !== "" ? Number(rawCommitteeId) : 1;
-
     const payload = {
-      committee_id: numericCommitteeId,
+      committee_id: selectedCommittee.id,
       title: meetingForm.title,
       meeting_date: meetingForm.meeting_date,
       meeting_type: meetingForm.meeting_type,
