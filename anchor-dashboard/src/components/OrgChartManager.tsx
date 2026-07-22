@@ -489,9 +489,21 @@ export const universityOrgData = {
   }
 };
 
-export default function OrgChartManager() {
+export interface OrgChartManagerProps {
+  darkMode?: boolean;
+  selectedYear?: number;
+  currentRole?: any;
+  currentUser?: any;
+}
+
+export default function OrgChartManager({
+  darkMode,
+  selectedYear: initialYear = 2026,
+  currentRole,
+  currentUser
+}: OrgChartManagerProps = {}) {
   const [selectedKey, setSelectedKey] = useState("university");
-  const [selectedYear, setSelectedYear] = useState(2026);
+  const [selectedYear, setSelectedYear] = useState(initialYear);
   const [expandedDept, setExpandedDept] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [expandedFaculties, setExpandedFaculties] = useState({});
