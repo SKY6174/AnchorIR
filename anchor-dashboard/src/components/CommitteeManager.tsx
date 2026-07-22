@@ -2007,7 +2007,7 @@ export default function CommitteeManager({
       } else {
         updatedMeetings = [localPayload, ...localMeetings];
       }
-      
+
       // 첨부파일 무손실 저장
       localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(updatedMeetings));
 
@@ -2022,7 +2022,7 @@ export default function CommitteeManager({
         attachment_name: a.attachment_name || null,
         attachment_data: a.attachment_data || null
       }));
-      
+
       localStorage.setItem(`local_meeting_agendas_${targetMeetingId}`, JSON.stringify(localAgendas));
       const shortCode = String(targetMeetingId).includes("-") ? String(targetMeetingId).split("-")[0] : targetMeetingId;
       localStorage.setItem(`local_meeting_agendas_${shortCode}`, JSON.stringify(localAgendas));
@@ -4584,7 +4584,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>📄 심의자료:</label>
                         <input
                           type="file"
-                          accept=".pdf,.hwp,.hwpx,.doc,.docx,.xls,.xlsx,.ppt,.pptx,image/*"
+                          accept=".pdf,application/pdf"
                           onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (!file) return;
