@@ -1831,9 +1831,22 @@ export default function CommitteeManager({
       console.warn("수정 대상 회의 안건 비동기 조회 실패, 기존 상태 참조:", err);
     }
 
-    // sort_order 기준 100% 엄격한 오름차순 정렬 보장
+    // sort_order 기준 100% 엄격한 오름차순 정렬 보장 및 로컬스토리지 백업 바이너리 무손실 합성
+    const fullId = String(meeting.id).trim();
+    const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
+    const localCacheStr = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
+    const localCache = localCacheStr ? JSON.parse(localCacheStr) : [];
+
     if (targetAgendas && targetAgendas.length > 0) {
       targetAgendas.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      targetAgendas = targetAgendas.map((ag: any, idx: number) => {
+        const cached = localCache.find((c: any) => String(c.id) === String(ag.id) || c.sort_order === ag.sort_order || idx === (c.sort_order ? c.sort_order - 1 : idx));
+        return {
+          ...ag,
+          attachment_name: ag.attachment_name || cached?.attachment_name || null,
+          attachment_data: ag.attachment_data || cached?.attachment_data || null
+        };
+      });
     }
 
     // DB/로컬 스토리지에 조회된 의안이 없으면 selectedMeetingAgendas 참조 fallback
@@ -3426,8 +3439,25 @@ ${selectedMeetingAgendas.map((a, idx) => {
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       {selectedMeetingAgendas && selectedMeetingAgendas.length > 0 ? (
                         selectedMeetingAgendas.map((ag, idx) => {
-                          const agName = ag.attachment_name || (idx === 0 ? selectedMeeting.attachment_name : null);
-                          const agData = ag.attachment_data || (idx === 0 ? selectedMeeting.attachment_data : null);
+                          const fullMId = String(selectedMeeting.id).trim();
+                          const shortMId = fullMId.includes("-") ? fullMId.split("-")[0] : fullMId;
+                          let agName = ag.attachment_name || (idx === 0 ? selectedMeeting.attachment_name : null);
+                          let agData = ag.attachment_data || (idx === 0 ? selectedMeeting.attachment_data : null);
+
+                          // 로컬 스토리지 백업에서 2차 무손실 복원
+                          if (!agData || !agName) {
+                            try {
+                              const localAgStr = localStorage.getItem(`local_meeting_agendas_${fullMId}`) || localStorage.getItem(`local_meeting_agendas_${shortMId}`);
+                              if (localAgStr) {
+                                const parsed = JSON.parse(localAgStr);
+                                const found = parsed.find((c: any, cIdx: number) => String(c.id) === String(ag.id) || cIdx === idx);
+                                if (found) {
+                                  if (!agName && found.attachment_name) agName = found.attachment_name;
+                                  if (!agData && found.attachment_data) agData = found.attachment_data;
+                                }
+                              }
+                            } catch (e) { }
+                          }
 
                           return (
                             <div key={ag.id || idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.45rem 0.65rem", background: "rgba(255,255,255,0.03)", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.08)", fontSize: "0.82rem" }}>
@@ -3447,6 +3477,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                                 >
                                   다운로드
                                 </button>
+                              ) : agName ? (
+                                <span style={{ fontSize: "0.75rem", color: "#f59e0b", fontStyle: "italic" }}>재첨부 필요</span>
                               ) : (
                                 <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontStyle: "italic" }}>미첨부</span>
                               )}
