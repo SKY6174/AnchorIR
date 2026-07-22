@@ -114,7 +114,20 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       return;
     }
 
-    const rawStr = String(currentFileData).trim();
+    let rawStr = String(currentFileData).trim();
+
+    // 💡 0순위: JSON 배열 ["data:...", "data:..."] 통문자열 감지 시 현재 안건 인덱스 단일 데이터 1개만 인출
+    if (rawStr.startsWith("[")) {
+      try {
+        const parsedArr = JSON.parse(rawStr);
+        const targetIdx = activeAgendaIndex || 0;
+        if (parsedArr[targetIdx] && parsedArr[targetIdx].length > 0) {
+          rawStr = String(parsedArr[targetIdx]).trim();
+        } else if (parsedArr[0]) {
+          rawStr = String(parsedArr[0]).trim();
+        }
+      } catch (e) { }
+    }
 
     // 1. 웹 URL (http, https, blob, supabase storage, 상대 경로, .pdf 확장자)
     if (
@@ -167,7 +180,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     } else {
       setCurrentBlobUrl(rawStr);
     }
-  }, [currentFileData]);
+  }, [currentFileData, activeAgendaIndex]);
 
   // 이미 제출했는지 확인하는 함수
   const checkAlreadySubmitted = async (mId: string | number, memberId: string | number) => {
