@@ -139,7 +139,7 @@ export default function UnifiedCertificateManager({
   managerType = "all"
 }: UnifiedCertificateManagerProps) {
   // 1. 상태 변수 정의
-  const [activeTab, setActiveTab] = useState<string>(
+  const [_activeTab, _setActiveTab] = useState<string>(
     managerType === "award" ? "award" : managerType === "certificate" ? "certificate" : "all"
   );
   
@@ -147,19 +147,19 @@ export default function UnifiedCertificateManager({
   const [editingId, setEditingId] = useState<number | string | null>(null);
 
   // 폼 입력 상태
-  const [inputDocType, setInputDocType] = useState<string>("certificate");
-  const [inputIssueNumber, setInputIssueNumber] = useState<string>("");
-  const [inputIssueDate, setInputIssueDate] = useState<string>("");
-  const [inputRecipientName, setInputRecipientName] = useState<string>("");
-  const [inputRecipientOrg, setInputRecipientOrg] = useState<string>("울산과학대학교");
-  const [inputRecipientDept, setInputRecipientDept] = useState<string>("");
-  const [inputRecipientBirth, setInputRecipientBirth] = useState<string>("");
-  const [inputTitle, setInputTitle] = useState<string>("");
-  const [inputAwardCategory, setInputAwardCategory] = useState<string>("-");
-  const [inputUnitId, setInputUnitId] = useState<string>("");
-  const [inputProgramName, setInputProgramName] = useState<string>("");
-  const [inputFileName, setInputFileName] = useState<string>("");
-  const [inputFileData, setInputFileData] = useState<string>("");
+  const [_inputDocType, _setInputDocType] = useState<string>("certificate");
+  const [_inputIssueNumber, _setInputIssueNumber] = useState<string>("");
+  const [_inputIssueDate, _setInputIssueDate] = useState<string>("");
+  const [_inputRecipientName, _setInputRecipientName] = useState<string>("");
+  const [_inputRecipientOrg, _setInputRecipientOrg] = useState<string>("울산과학대학교");
+  const [_inputRecipientDept, _setInputRecipientDept] = useState<string>("");
+  const [_inputRecipientBirth, _setInputRecipientBirth] = useState<string>("");
+  const [_inputTitle, _setInputTitle] = useState<string>("");
+  const [_inputAwardCategory, _setInputAwardCategory] = useState<string>("-");
+  const [_inputUnitId, _setInputUnitId] = useState<string>("");
+  const [_inputProgramName, _setInputProgramName] = useState<string>("");
+  const [_inputFileName, _setInputFileName] = useState<string>("");
+  const [_inputFileData, _setInputFileData] = useState<string>("");
   
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [filterYear, setFilterYear] = useState(() => selectedYear ? selectedYear.toString() : "all");
@@ -537,7 +537,7 @@ export default function UnifiedCertificateManager({
     XLSX.writeFile(wb, `${sheetName}.xlsx`);
   };
 
-  const titleText = managerType === "award" ? "상장 관리" : (managerType === "certificate" ? "이수증 관리" : "통합 상장∙이수증 관리");
+  const _titleText = managerType === "award" ? "상장 관리" : (managerType === "certificate" ? "이수증 관리" : "통합 상장∙이수증 관리");
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
