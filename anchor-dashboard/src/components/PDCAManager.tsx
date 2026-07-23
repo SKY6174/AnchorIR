@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
+import type { FormEvent } from "react";
 import { Check, ClipboardList, PenTool, Layers, LayoutList, Info, HelpCircle, FileSpreadsheet, FileText, Download } from "lucide-react";
 import * as XLSX from "xlsx";
+
+type LegacyPdcaRecord = Record<string, any>;
+
+const getErrorDetails = (error: unknown): string => {
+  if (error && typeof error === "object") {
+    const record = error as LegacyPdcaRecord;
+    return record.message || record.details || JSON.stringify(record);
+  }
+  return String(error);
+};
 
 // 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
 const formatAssignee = (assigneeText?: string): string => {
@@ -32,11 +43,11 @@ const parseNumberFromCommas = (value?: number | string | null): number => {
 };
 
 // "YYYY-MM-DD ~ YYYY-MM-DD" 포맷 파서
-const parseTimelineDates = (timelineStr) => {
+const parseTimelineDates = (timelineStr: string) => {
   if (!timelineStr || !timelineStr.includes("~")) return { start: "", end: "" };
-  const parts = timelineStr.split("~").map((p) => p.trim());
+  const parts = timelineStr.split("~").map((p: string) => p.trim());
 
-  const toYYYYMMDD = (str) => {
+  const toYYYYMMDD = (str: string) => {
     if (!str) return "";
     if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
     const dotted = str.replace(/\./g, "-");
@@ -51,14 +62,14 @@ const parseTimelineDates = (timelineStr) => {
   };
 };
 
-const getRequesterRoleName = (user) => {
+const getRequesterRoleName = (user: LegacyPdcaRecord | null | undefined) => {
   if (!user) return "실무자";
   if (typeof user.role === "string") return user.role;
   if (user.role && typeof user.role === "object") {
     return user.role.name || user.role.role || "실무자";
   }
   if (user.role_key) {
-    const roleNames = {
+    const roleNames: Record<string, string> = {
       ADMIN: "최고 관리자",
       G_DIRECTOR: "사업단장",
       HQ_HEAD: "총괄본부장",
@@ -88,16 +99,16 @@ const BUDGET_CATEGORIES_OPTIONS = [
   { value: "간접비", label: "간접비" }
 ];
 
-const parseTimelineToMonths = (timelineStr) => {
+const parseTimelineToMonths = (timelineStr: string) => {
   const defaultValue = Array(12).fill("");
   if (!timelineStr) return defaultValue;
 
   if (timelineStr.includes(",")) {
     const parts = timelineStr.split(",");
     if (parts.length === 12) {
-      return parts.map(p => {
+      return parts.map((p: string) => {
         const trimmed = p.trim().toUpperCase();
-        if (trimmed.split("").some(char => ["P", "D", "C", "A"].includes(char))) {
+        if (trimmed.split("").some((char: string) => ["P", "D", "C", "A"].includes(char))) {
           return trimmed;
         }
         return "";
@@ -111,7 +122,7 @@ const parseTimelineToMonths = (timelineStr) => {
       const startMonth = parseInt(dates.start.split("-")[1], 10);
       const endMonth = parseInt(dates.end.split("-")[1], 10);
 
-      const getMonthIndex = (m) => {
+      const getMonthIndex = (m: number) => {
         if (m >= 3 && m <= 12) return m - 3;
         if (m === 1 || m === 2) return m + 9;
         return -1;
@@ -137,7 +148,7 @@ const parseTimelineToMonths = (timelineStr) => {
   return defaultValue;
 };
 
-const parseDecimalFromCommas = (val) => {
+const parseDecimalFromCommas = (val: number | string | null | undefined) => {
   if (!val) return 0;
   return parseFloat(String(val).replace(/,/g, "")) || 0;
 };
@@ -152,11 +163,11 @@ export interface PDCAManagerProps {
   currentRole?: any;
   onUpdateProgramDetails?: (unitId: string, programId: string, details: any) => void;
   onAddProgram?: (unitId: string, program: any) => void;
-  selectedYear?: number | string;
+  selectedYear?: number;
   selectedUnitId?: string;
   setSelectedUnitId?: (unitId: string) => void;
-  selectedProgId?: string;
-  setSelectedProgId?: (progId: string) => void;
+  selectedProgId?: string | null;
+  setSelectedProgId?: (progId: string | null) => void;
   viewMode?: string;
   setViewMode?: (mode: string) => void;
   currentUser?: any;
@@ -165,22 +176,23 @@ export interface PDCAManagerProps {
 }
 
 export default function PDCAManager({
-  projects,
-  currentRole,
-  onUpdateProgramDetails,
-  onAddProgram,
-  selectedYear,
-  selectedUnitId,
-  setSelectedUnitId,
-  selectedProgId,
-  setSelectedProgId,
+  projects = [],
+  currentRole = {},
+  onUpdateProgramDetails = () => undefined,
+  onAddProgram = () => undefined,
+  selectedYear = 1,
+  selectedUnitId = "",
+  setSelectedUnitId = () => undefined,
+  selectedProgId = "",
+  setSelectedProgId = () => undefined,
   viewMode = "unit",
-  setViewMode,
-  currentUser,
+  setViewMode = () => undefined,
+  currentUser = {},
   supabase
 }: PDCAManagerProps) {
-  const startYrShort = String(2024 + selectedYear).slice(-2);
-  const endYrShort = String(2025 + selectedYear).slice(-2);
+  const yearIndex = Number(selectedYear || 1);
+  const startYrShort = String(2024 + yearIndex).slice(-2);
+  const endYrShort = String(2025 + yearIndex).slice(-2);
   const monthsList = [
     `${startYrShort}.3월`, "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월",
     `${endYrShort}.1월`, "2월"
@@ -191,7 +203,7 @@ export default function PDCAManager({
 
   // 💡 [실시간 엑셀 집행 데이터 동적 연동]
   // localStorage에 적재된 집행 내역을 읽어와 프로그램 ID 및 비목별로 실시간 자동 분류/합계 연산합니다.
-  const cachedExecs = (() => {
+  const cachedExecs: LegacyPdcaRecord[] = (() => {
     try {
       const data = localStorage.getItem(`budget_exec_records_${selectedYear}`);
       return data ? JSON.parse(data) : [];
@@ -201,21 +213,21 @@ export default function PDCAManager({
     }
   })();
 
-  const getExcelSpentAmount = (progId, categoryName, budgetType) => {
+  const getExcelSpentAmount = (progId: string, categoryName: string, budgetType: string) => {
     if (!progId || !categoryName) return 0;
     
     // 점 문자 및 공백 제거로 데이터 인코딩 충돌을 완벽 차단
     const normCategory = categoryName.replace(/\s/g, "").replace(/[·∙•ㆍ]/g, "");
     
     return cachedExecs
-      .filter(r => {
+      .filter((r: LegacyPdcaRecord) => {
         const matchesProg = (r.program_id || "").trim() === progId.trim();
         const normRecordCategory = (r.expense_category || "").replace(/\s/g, "").replace(/[·∙•ㆍ]/g, "");
         const matchesCategory = normRecordCategory === normCategory;
         const matchesType = r.budget_type === budgetType;
         return matchesProg && matchesCategory && matchesType;
       })
-      .reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      .reduce((sum: number, r: LegacyPdcaRecord) => sum + (Number(r.amount) || 0), 0);
   };
 
 
@@ -262,7 +274,7 @@ export default function PDCAManager({
   const [inputAchievements, setInputAchievements] = useState(""); // 신규 성과사항 필드 추가
 
   // D 단계 참여대상별 실제 참석 인원 실적용 상태 (재학생, 성인학습자, 재직자, 기타)
-  const [inputAudienceParticipants, setInputAudienceParticipants] = useState({
+  const [inputAudienceParticipants, setInputAudienceParticipants] = useState<Record<string, string>>({
     "재학생": "",
     "성인학습자": "",
     "재직자": "",
@@ -270,7 +282,7 @@ export default function PDCAManager({
   });
 
   // 참여대상별 인원 기입 시 참석인원 실적 상태에 자동 합산 연동하는 핸들러
-  const handleAudienceParticipantChange = (audienceType, value, activeAudienceList) => {
+  const handleAudienceParticipantChange = (audienceType: string, value: string, activeAudienceList: string[]) => {
     const cleanVal = value.replace(/[^0-9]/g, "");
     const updated = {
       ...inputAudienceParticipants,
@@ -280,7 +292,7 @@ export default function PDCAManager({
 
     let total = 0;
     if (activeAudienceList && activeAudienceList.length > 0) {
-      activeAudienceList.forEach(aud => {
+      activeAudienceList.forEach((aud: string) => {
         const val = parseInt(updated[aud], 10) || 0;
         total += val;
       });
@@ -309,8 +321,8 @@ export default function PDCAManager({
   const [inputTargetEtcName, setInputTargetEtcName] = useState("");
   const [inputKpiTypes, setInputKpiTypes] = useState(["자율"]);
   const [inputKpiLinks, setInputKpiLinks] = useState([""]);
-  const [inputKpiTargets, setInputKpiTargets] = useState({});
-  const [inputKpiActuals, setInputKpiActuals] = useState({});
+  const [inputKpiTargets, setInputKpiTargets] = useState<Record<string, number | string>>({});
+  const [inputKpiActuals, setInputKpiActuals] = useState<Record<string, number | string>>({});
   const [inputActualFrequency, setInputActualFrequency] = useState("");
   const [inputAchieveRate, setInputAchieveRate] = useState("");
 
@@ -328,7 +340,7 @@ export default function PDCAManager({
   }, [activePdcaStage]);
 
   // 프로그램별 변경 버전 차수 리스트 관리 및 선택 상태
-  const [programVersions, setProgramVersions] = useState([]);
+  const [programVersions, setProgramVersions] = useState<LegacyPdcaRecord[]>([]);
   const [selectedVersionId, setSelectedVersionId] = useState("current");
 
   // 활성 프로그램 변경 시 Supabase로부터 변경이력(결재완료/대기 목록) 조회
@@ -339,7 +351,7 @@ export default function PDCAManager({
         .select("*")
         .eq("program_id", activeProg.id)
         .order("requested_at", { ascending: true })
-        .then(({ data, error }) => {
+        .then(({ data, error }: { data: LegacyPdcaRecord[] | null; error: unknown }) => {
           if (data) {
             setProgramVersions(data);
           } else {
@@ -354,14 +366,14 @@ export default function PDCAManager({
   }, [selectedProgId, selectedYear, supabase]);
 
   // 모든 프로그램 수집
-  const allPrograms = [];
-  const allUnits = [];
-  projects.forEach((p) => {
+  const allPrograms: LegacyPdcaRecord[] = [];
+  const allUnits: LegacyPdcaRecord[] = [];
+  projects.forEach((p: LegacyPdcaRecord) => {
     if (p.units && Array.isArray(p.units)) {
-      p.units.forEach((u) => {
+      p.units.forEach((u: LegacyPdcaRecord) => {
         allUnits.push(u);
         if (u.programs && Array.isArray(u.programs)) {
-          u.programs.forEach((prog) => {
+          u.programs.forEach((prog: LegacyPdcaRecord) => {
             allPrograms.push({
               ...prog,
               unitId: u.id,
@@ -422,7 +434,7 @@ export default function PDCAManager({
     // 2. D단계 실제 엑셀 누적 집행 총합 (비목별 spent + spent_carry)
     let totalSpent = 0;
     const rawCategories = py.budget_categories || [];
-    rawCategories.forEach(c => {
+    rawCategories.forEach((c: LegacyPdcaRecord) => {
       if (c.category) {
         const spentMain = getExcelSpentAmount(activeProg.id, c.category, "main");
         const spentCarry = selectedYear === 1 ? 0 : getExcelSpentAmount(activeProg.id, c.category, "carryover");
@@ -459,7 +471,7 @@ export default function PDCAManager({
         setInputEndDate(end);
 
         setInputTargetAudience(dataSrc.targetAudience || "");
-        const coopParts = (dataSrc.coopDept || "").split(",").map(s => s.trim());
+        const coopParts = (dataSrc.coopDept || "").split(",").map((s: string) => s.trim());
         setInputCoopDept1(coopParts[0] || "");
         setInputCoopDept2(coopParts[1] || "");
 
@@ -481,7 +493,7 @@ export default function PDCAManager({
 
         // 비목 예산 및 집행 바인딩 (본예산 + 이월예산 + 집행액, 4칸 구성)
         const rawCategories = py.budget_categories || [];
-        const validCategories = rawCategories.filter((c) => {
+        const validCategories = rawCategories.filter((c: LegacyPdcaRecord) => {
           const b = parseDecimalFromCommas(c.budget);
           const bc = parseDecimalFromCommas(c.budget_carry);
           const s = parseDecimalFromCommas(c.spent);
@@ -494,7 +506,7 @@ export default function PDCAManager({
           return b > 0 || bc > 0 || s > 0 || sc > 0 || realSpentMain > 0 || realSpentCarry > 0;
         });
 
-        const loadedCategories = validCategories.map((c) => {
+        const loadedCategories = validCategories.map((c: LegacyPdcaRecord) => {
           const b = parseDecimalFromCommas(c.budget);
           const bc = parseDecimalFromCommas(c.budget_carry);
           
@@ -525,7 +537,7 @@ export default function PDCAManager({
         setInputMonthlyPDCAActual(parseTimelineToMonths(dataSrc.actual_timeline || ""));
 
         // 💡 [비목별 집행등록 값의 합산으로 재원별 본집행 실적 자동 연산 표시]
-        const totalCategorySpentMain = loadedCategories.reduce((sum, c) => {
+        const totalCategorySpentMain = loadedCategories.reduce((sum: number, c: LegacyPdcaRecord) => {
           return sum + (parseDecimalFromCommas(c.spent) || 0);
         }, 0);
 
@@ -662,7 +674,7 @@ export default function PDCAManager({
   }, [selectedProgId, selectedYear, selectedVersionId, programVersions]);
 
   // 추진일정 변경 이벤트 핸들러 (기존 호환 유지)
-  const handleTimelineChange = (start, end) => {
+  const handleTimelineChange = (start: string, end: string) => {
     setInputStartDate(start);
     setInputEndDate(end);
     if (start && end) {
@@ -677,13 +689,17 @@ export default function PDCAManager({
   };
 
   // 프로그램 선택 시 모든 기획/환류/재원 상태 로드
-  const handleSelectProgram = (prog) => {
+  const handleSelectProgram = (prog: LegacyPdcaRecord) => {
     setSelectedProgId(prog.id);
     setFeedbackMsg("");
   };
 
   // P단계 완료 조건 판정 공통 함수
-  const checkPStageCompletion = (prog, py, draftData = {}) => {
+  const checkPStageCompletion = (
+    prog: LegacyPdcaRecord,
+    py: LegacyPdcaRecord,
+    draftData: LegacyPdcaRecord = {}
+  ) => {
     const sNational = draftData.budget_national !== undefined ? draftData.budget_national : (py.budget_national || 0);
     const sCity = draftData.budget_city !== undefined ? draftData.budget_city : (py.budget_city || 0);
     const sExternal = draftData.budget_external !== undefined ? draftData.budget_external : (py.budget_external || 0);
@@ -697,16 +713,16 @@ export default function PDCAManager({
 
     // 2. 비목별 예산 배정: 하나라도 입력되면 OK (0원 초과)
     const categories = draftData.budget_categories !== undefined ? draftData.budget_categories : (py.budget_categories || []);
-    const hasValidCategory = categories.some(c => c.category && c.category !== "" && c.category !== "선택 안 함" && ((parseFloat(c.budget) || 0) > 0 || (parseFloat(c.budget_carry) || 0) > 0));
+    const hasValidCategory = categories.some((c: LegacyPdcaRecord) => c.category && c.category !== "" && c.category !== "선택 안 함" && ((parseFloat(c.budget) || 0) > 0 || (parseFloat(c.budget_carry) || 0) > 0));
     if (!hasValidCategory) return { ok: false, reason: "비목별 예산 배정이 최소 하나 이상 등록되고 배정 금액이 0원 초과여야 합니다." };
 
     // 3. 월별 추진일정: P, D, C, A가 모두 반영되어야 OK
     const timelineStr = draftData.timeline !== undefined ? draftData.timeline : (prog.timeline || "");
-    const timelineList = timelineStr.split(",").map(t => t.trim().toUpperCase());
-    const hasP = timelineList.some(t => t.includes("P"));
-    const hasD = timelineList.some(t => t.includes("D"));
-    const hasC = timelineList.some(t => t.includes("C"));
-    const hasA = timelineList.some(t => t.includes("A"));
+    const timelineList = timelineStr.split(",").map((t: string) => t.trim().toUpperCase());
+    const hasP = timelineList.some((t: string) => t.includes("P"));
+    const hasD = timelineList.some((t: string) => t.includes("D"));
+    const hasC = timelineList.some((t: string) => t.includes("C"));
+    const hasA = timelineList.some((t: string) => t.includes("A"));
     if (!hasP || !hasD || !hasC || !hasA) {
       return { ok: false, reason: "월별 추진일정에 P(기획), D(수행), C(성과), A(환류)가 각각 최소 1회 이상 모두 반영되어야 합니다." };
     }
@@ -742,21 +758,25 @@ export default function PDCAManager({
   };
 
   // D단계 완료 조건 판정 공통 함수
-  const checkDStageCompletion = (prog, py, draftData = {}) => {
+  const checkDStageCompletion = (
+    prog: LegacyPdcaRecord,
+    py: LegacyPdcaRecord,
+    draftData: LegacyPdcaRecord = {}
+  ) => {
     // 1. 실제 추진일정 검증: P, D, C, A 모든 단계가 최소 한 개 이상 반영되어야 OK
     const actualTimelineStr = draftData.actual_timeline !== undefined ? draftData.actual_timeline : (prog.actual_timeline || "");
-    const actualTimelineList = actualTimelineStr.split(",").map(t => t.trim().toUpperCase());
-    const hasActP = actualTimelineList.some(t => t.includes("P"));
-    const hasActD = actualTimelineList.some(t => t.includes("D"));
-    const hasActC = actualTimelineList.some(t => t.includes("C"));
-    const hasActA = actualTimelineList.some(t => t.includes("A"));
+    const actualTimelineList = actualTimelineStr.split(",").map((t: string) => t.trim().toUpperCase());
+    const hasActP = actualTimelineList.some((t: string) => t.includes("P"));
+    const hasActD = actualTimelineList.some((t: string) => t.includes("D"));
+    const hasActC = actualTimelineList.some((t: string) => t.includes("C"));
+    const hasActA = actualTimelineList.some((t: string) => t.includes("A"));
     if (!hasActP || !hasActD || !hasActC || !hasActA) {
       return { ok: false, reason: "실제 추진일정에 P, D, C, A가 각각 최소 1회 이상 모두 반영되어야 합니다." };
     }
 
     // 2. 비목별 집행 내역 검증: 1개 이상 입력 (spent 또는 spent_carry > 0)
     const categories = draftData.budget_categories !== undefined ? draftData.budget_categories : (py.budget_categories || []);
-    const hasValidSpentCategory = categories.some(c => c.category && c.category !== "" && c.category !== "선택 안 함" && ((parseFloat(c.spent) || 0) > 0 || (parseFloat(c.spent_carry) || 0) > 0));
+    const hasValidSpentCategory = categories.some((c: LegacyPdcaRecord) => c.category && c.category !== "" && c.category !== "선택 안 함" && ((parseFloat(c.spent) || 0) > 0 || (parseFloat(c.spent_carry) || 0) > 0));
     if (!hasValidSpentCategory) {
       return { ok: false, reason: "비목별 집행 내역이 최소 하나 이상 등록되고 집행액이 0원 초과여야 합니다." };
     }
@@ -774,7 +794,11 @@ export default function PDCAManager({
   };
 
   // C단계 완료 조건 판정 공통 함수
-  const checkCStageCompletion = (prog, py, draftData = {}) => {
+  const checkCStageCompletion = (
+    prog: LegacyPdcaRecord,
+    _py: LegacyPdcaRecord,
+    draftData: LegacyPdcaRecord = {}
+  ) => {
     // 1. 이전 단계인 D가 완료여야 함
     const currentDPdca = prog.pdca?.d || "대기";
     if (currentDPdca !== "완료") {
@@ -795,7 +819,11 @@ export default function PDCAManager({
   };
 
   // A단계 완료 조건 판정 공통 함수
-  const checkAStageCompletion = (prog, py, draftData = {}) => {
+  const checkAStageCompletion = (
+    prog: LegacyPdcaRecord,
+    _py: LegacyPdcaRecord,
+    draftData: LegacyPdcaRecord = {}
+  ) => {
     // 1. 이전 단계인 C가 완료여야 함
     const currentCPdca = prog.pdca?.c || "대기";
     if (currentCPdca !== "완료") {
@@ -821,7 +849,7 @@ export default function PDCAManager({
   };
 
   // PDCA 단계 완료 조건 검증 및 강제 롤백 방어
-  const handleUpdatePDCA = (stage, status) => {
+  const handleUpdatePDCA = (stage: string, status: string) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -902,7 +930,7 @@ export default function PDCAManager({
   };
 
   // P 단계 기획 정보 및 세부 재원 예산 등록
-  const handleUpdatePDetails = async (e) => {
+  const handleUpdatePDetails = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
@@ -1150,7 +1178,7 @@ export default function PDCAManager({
 
         // 오직 '승인완료'된 변경이력 중 '차 수정'이 명기된 건만 카운트해서 버전을 누적
         const approvedCount = requestList
-          ? requestList.filter(r => r.status === "승인완료" && (r.version_name || "").includes("차 수정")).length
+          ? requestList.filter((r: LegacyPdcaRecord) => r.status === "승인완료" && (r.version_name || "").includes("차 수정")).length
           : 0;
         const versionName = `${approvedCount + 1}차 수정`;
 
@@ -1207,7 +1235,7 @@ export default function PDCAManager({
         alert(`📝 [${versionName}] 승인 대기 요청이 정상적으로 전송되었습니다!\n사업단 결재권자(심현미, 김현수, 송경영)의 승인이 완료되면 최종 반영됩니다.`);
       } catch (err) {
         console.error("Failed to insert version request:", err);
-        const detailMsg = err.message || err.details || JSON.stringify(err);
+        const detailMsg = getErrorDetails(err);
         alert("승인 요청을 전송하는 도중 에러가 발생했습니다:\n" + detailMsg);
       }
     }
@@ -1216,7 +1244,7 @@ export default function PDCAManager({
 
 
   // D 단계 집행 및 실적 등록 (재원별 집행 및 이수인원 기입)
-  const handleUpdateBudget = (e) => {
+  const handleUpdateBudget = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
@@ -1310,7 +1338,7 @@ export default function PDCAManager({
 
 
   // C 단계 실적 입력 (성과사항 서술 및 만족도 기입)
-  const handleUpdateCDetails = (e) => {
+  const handleUpdateCDetails = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
@@ -1350,7 +1378,7 @@ export default function PDCAManager({
   };
 
   // A 단계 자체 평가 및 환류 2분할 방안 저장
-  const handleUpdateA = (e) => {
+  const handleUpdateA = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
@@ -1478,13 +1506,14 @@ export default function PDCAManager({
   const handleExportProgramPDF = async () => {
     if (!activeProg) return;
     setIsDownloadingPdf(true);
+    const pdfWindow = window as typeof window & { html2pdf?: any };
 
     try {
       await new Promise((resolve, reject) => {
-        if (window.html2pdf) return resolve(window.html2pdf);
+        if (pdfWindow.html2pdf) return resolve(pdfWindow.html2pdf);
         const script = document.createElement("script");
         script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-        script.onload = () => resolve(window.html2pdf);
+        script.onload = () => resolve(pdfWindow.html2pdf);
         script.onerror = reject;
         document.head.appendChild(script);
       });
@@ -1506,7 +1535,7 @@ export default function PDCAManager({
     const totalSpent = (py.spent_main || 0) + (py.spent_carry || 0);
     const totalRate = totalBudget > 0 ? (totalSpent / totalBudget * 100).toFixed(1) : "0.0";
 
-    const kpiLinksHtml = activeProg.kpi_links?.map((kLink, idx) => {
+    const kpiLinksHtml = activeProg.kpi_links?.map((kLink: string, idx: number) => {
       const kType = activeProg.kpi_types?.[idx] || "자율";
       return kLink ? `<li><strong>[${kType}]</strong> ${kLink}</li>` : "";
     }).filter(Boolean).join("") || "<li>연계된 핵심성과지표(KPI)가 없습니다.</li>";
@@ -1526,7 +1555,7 @@ export default function PDCAManager({
     const dMonths = inputMonthlyPDCAActual.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음";
 
     // 💡 [비주얼 타임라인 렌더링 헬퍼 함수]
-    const renderTimelineCell = (val) => {
+    const renderTimelineCell = (val: string) => {
       if (!val) {
         return `<td style="padding: 4px 1px; border-right: 1px solid #e5e7eb; vertical-align: middle;">
           <div style="border: 1px dashed #d1d5db; border-radius: 4px; height: 16px; line-height: 16px; color: #9ca3af; font-size: 8px; font-weight: bold; background: #ffffff;">-</div>
@@ -1816,10 +1845,10 @@ export default function PDCAManager({
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
     };
 
-    const worker = window.html2pdf().from(htmlContent).set(opt);
+    const worker = pdfWindow.html2pdf().from(htmlContent).set(opt);
     worker.save().then(() => {
       setIsDownloadingPdf(false);
-    }).catch((err) => {
+    }).catch((err: unknown) => {
       console.error(err);
       setIsDownloadingPdf(false);
       alert("PDF 변환 중 오류가 발생했습니다.");
@@ -1883,7 +1912,7 @@ ${inputBudgetCategories.filter(c => c.category).map((c, i) =>
   - 개발/개설: ${inputTargetDevelopments || "0"} ${inputTargetDevelopmentsUnit || "건"} (${inputTargetDevelopmentsName || "목표명 없음"})
   - 기타 성과: ${inputTargetEtc || "0"} ${inputTargetEtcUnit || "건"}
 - **연계 핵심 성과 지표(KPI)**:
-  ${activeProg.kpi_links?.map((kLink, idx) => {
+  ${activeProg.kpi_links?.map((kLink: string, idx: number) => {
     const kType = activeProg.kpi_types?.[idx] || "자율";
     return kLink ? `- [${kType}] ${kLink}` : null;
   }).filter(Boolean).join("\n") || "- 연계된 KPI 없음"}
@@ -2443,7 +2472,7 @@ ${inputEvalType === "우수" ? `
                               {monthsList.map((month, idx) => {
                                 const val = inputMonthlyPDCA[idx] || "";
 
-                                const getStatusColor = (v) => {
+                                const getStatusColor = (v: string) => {
                                   if (!v || typeof v !== "string") return "transparent";
                                   if (v.startsWith("P/D")) return "#1e3a8a";
                                   if (v.startsWith("D/C")) return "#064e3b";
@@ -2612,13 +2641,13 @@ ${inputEvalType === "우수" ? `
                                           <option value="" style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>-- 성과지표를 선택해 주세요 --</option>
                                         )}
                                         {(() => {
-                                          const activeUnit = allUnits.find(u => u.programs?.some(p => p.id === activeProg?.id));
+                                          const activeUnit = allUnits.find(u => u.programs?.some((p: LegacyPdcaRecord) => p.id === activeProg?.id));
                                           let filteredKpis = activeUnit?.kpis || [];
                                           if (!Array.isArray(filteredKpis) || filteredKpis.length === 0) {
                                             const kpiMap = new Map();
                                             allUnits.forEach(u => {
                                               if (Array.isArray(u.kpis)) {
-                                                u.kpis.forEach(k => {
+                                                u.kpis.forEach((k: LegacyPdcaRecord) => {
                                                   if (k && k.id) kpiMap.set(k.id, k);
                                                 });
                                               }
@@ -2626,8 +2655,8 @@ ${inputEvalType === "우수" ? `
                                             filteredKpis = Array.from(kpiMap.values());
                                           }
                                           return filteredKpis
-                                            .filter(k => k && k.type === typeVal)
-                                            .map(k => (
+                                            .filter((k: LegacyPdcaRecord) => k && k.type === typeVal)
+                                            .map((k: LegacyPdcaRecord) => (
                                               <option key={k.id} value={k.id} style={{ background: "var(--panel-bg)", color: "var(--text-primary)" }}>
                                                 [{k.id}] {k.name}
                                               </option>
@@ -2644,9 +2673,9 @@ ${inputEvalType === "우수" ? `
                                           setInputKpiTypes([inputKpiTypes[0]]);
                                           // 제거된 지표의 세부목표 삭제
                                           const firstKpi = allUnits.flatMap(u => u.kpis || []).find(k => k && k.id === inputKpiLinks[0]);
-                                          const allowedSubIds = firstKpi?.subItems?.map(s => s.id) || [];
-                                          const cleanTargets = {};
-                                          allowedSubIds.forEach(id => {
+                                          const allowedSubIds = firstKpi?.subItems?.map((s: LegacyPdcaRecord) => s.id) || [];
+                                          const cleanTargets: Record<string, number | string> = {};
+                                          allowedSubIds.forEach((id: string) => {
                                             if (inputKpiTargets[id] !== undefined) {
                                               cleanTargets[id] = inputKpiTargets[id];
                                             }
@@ -2696,7 +2725,7 @@ ${inputEvalType === "우수" ? `
                                       </div>
                                       {kpi.subItems && kpi.subItems.length > 0 ? (
                                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "0.3rem" }}>
-                                          {kpi.subItems.map(sub => (
+                                          {kpi.subItems.map((sub: LegacyPdcaRecord) => (
                                             <div key={sub.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(120, 120, 120, 0.02)", padding: "0.2rem 0.4rem", borderRadius: "0.2rem", border: "1px solid var(--border-color)" }}>
                                               <span style={{ fontSize: "0.58rem", color: "var(--text-secondary)", flex: 1, marginRight: "0.2rem" }}>• {sub.name}</span>
                                               <div style={{ display: "flex", alignItems: "center", gap: "0.15rem" }}>
@@ -2986,7 +3015,7 @@ ${inputEvalType === "우수" ? `
                           {monthsList.map((month, idx) => {
                             const actVal = inputMonthlyPDCAActual[idx] || "";
 
-                            const getActualStatusColor = (v) => {
+                            const getActualStatusColor = (v: string) => {
                               if (!v || typeof v !== "string") return "transparent";
                               if (v.startsWith("P/D")) return "#1e3a8a";
                               if (v.startsWith("D/C")) return "#064e3b";
@@ -3114,7 +3143,7 @@ ${inputEvalType === "우수" ? `
                       {/* 참여대상별 실적 입력 (신설) */}
                       {(() => {
                         const activeAudienceList = activeProg?.targetAudience
-                          ? activeProg.targetAudience.split(",").map(s => s.trim()).filter(Boolean)
+                          ? activeProg.targetAudience.split(",").map((s: string) => s.trim()).filter(Boolean)
                           : [];
                         if (activeAudienceList.length === 0) return null;
 
@@ -3122,7 +3151,7 @@ ${inputEvalType === "우수" ? `
                           <div style={{ background: "rgba(37,99,235,0.02)", padding: "0.5rem", borderRadius: "0.4rem", border: "1px dashed rgba(37,99,235,0.15)", marginTop: "0.2rem", marginBottom: "0.2rem" }}>
                             <span style={{ fontSize: "0.6rem", color: "#3b82f6", fontWeight: "800", display: "inline-block", marginBottom: "0.3rem" }}>● 참여대상별 인원 실적 입력 (참석인원 실적에 자동 합계 연동)</span>
                             <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(activeAudienceList.length, 4)}, 1fr)`, gap: "0.4rem" }}>
-                              {activeAudienceList.map(aud => (
+                              {activeAudienceList.map((aud: string) => (
                                 <div key={aud}>
                                   <span style={{ fontSize: "0.6rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.15rem" }}>{aud} (명)</span>
                                   <input
@@ -3166,7 +3195,7 @@ ${inputEvalType === "우수" ? `
                                       지표: [{kpi.id}] {kpi.name}
                                     </div>
                                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "0.3rem" }}>
-                                      {kpi.subItems.map(sub => {
+                                      {kpi.subItems.map((sub: LegacyPdcaRecord) => {
                                         const targetVal = activeProg.kpi_targets?.[sub.id] || "";
                                         return (
                                           <div key={sub.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(120, 120, 120, 0.02)", padding: "0.2rem 0.4rem", borderRadius: "0.2rem", border: "1px solid var(--border-color)" }}>
