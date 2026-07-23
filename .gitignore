@@ -10,6 +10,7 @@ node_modules/
 dist/
 build/
 .oxlintrc.json
+!anchor-dashboard/.oxlintrc.json
 
 # IDEs and Editors
 .idea/
