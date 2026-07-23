@@ -2,7 +2,6 @@ import React, { useState, useRef } from "react";
 import type { ChangeEvent, CSSProperties, FormEvent } from "react";
 import Sidebar from "./components/Sidebar";
 const CommitteeExternalVote = React.lazy(() => import("./components/CommitteeExternalVote"));
-const ScheduleManager = React.lazy(() => import("./components/ScheduleManager"));
 const AgreementManager = React.lazy(() => import("./components/AgreementManager"));
 const UnifiedCertificateManager = React.lazy(() => import("./components/UnifiedCertificateManager"));
 const ScholarshipManager = React.lazy(() => import("./components/ScholarshipManager"));
@@ -63,6 +62,7 @@ import { useJointProgramDetection, useProjectFetchReset, useProjectNormalization
 import { useEventScheduleAutosave } from "./features/schedule/hooks/use-event-schedule-autosave";
 import { useMeetingScheduleAutosave } from "./features/schedule/hooks/use-meeting-schedule-autosave";
 import { useMonthlyScheduleAutosave } from "./features/schedule/hooks/use-monthly-schedule-autosave";
+import { ScheduleScreen } from "./features/schedule/screens/schedule-screen";
 import { useDashboardCache } from "./shared/hooks/use-dashboard-cache";
 import { useDashboardCacheMaintenance } from "./shared/hooks/use-dashboard-cache-maintenance";
 import { useActiveTabPersistence, useLocalStorageJson, useLocalStorageValue, useOptionalLocalStorageJson, useOptionalLocalStorageValue } from "./shared/hooks/use-local-storage-persistence";
@@ -6932,98 +6932,23 @@ export default function App() {
         )}
 
         {activeTab === "schedule" && (
-          <div className="schedule-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-            {/* 일정 관리 본문 가로 탭바 헤더 */}
-            <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
-              <button
-                onClick={() => setScheduleSubTab("monthly")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "monthly" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: scheduleSubTab === "monthly" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                월간 일정
-              </button>
-              <button
-                onClick={() => setScheduleSubTab("events")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "events" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: scheduleSubTab === "events" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                주요 행사
-              </button>
-              <button
-                onClick={() => setScheduleSubTab("meetings")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "meetings" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: scheduleSubTab === "meetings" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                회의결과 등록
-              </button>
-
-              <button
-                onClick={() => setScheduleSubTab("press")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: scheduleSubTab === "press" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: scheduleSubTab === "press" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                언론보도
-              </button>
-            </div>
-
-            {/* 본문 콘텐츠 */}
-            <React.Suspense fallback={null}>
-              <ScheduleManager
-                key={`schedule-${darkMode}-${selectedYear}`}
-                currentUser={currentUser}
-                currentRole={currentRole}
-                selectedYear={selectedYear}
-                darkMode={darkMode}
-                subTab={scheduleSubTab}
-                onChangeSubTab={setScheduleSubTab}
-                monthlySchedules={monthlySchedules}
-                setMonthlySchedules={setMonthlySchedules}
-                eventSchedules={eventSchedules}
-                setEventSchedules={setEventSchedules}
-                meetingSchedules={meetingSchedules}
-                setMeetingSchedules={setMeetingSchedules}
-                pressReleases={pressReleases}
-                setPressReleases={setPressReleases}
-                members={members as ScheduleCommitteeMember[]}
-              />
-            </React.Suspense>
-          </div>
+          <ScheduleScreen
+            currentUser={currentUser}
+            currentRole={currentRole}
+            selectedYear={selectedYear}
+            darkMode={darkMode}
+            subTab={scheduleSubTab}
+            onChangeSubTab={setScheduleSubTab}
+            monthlySchedules={monthlySchedules}
+            setMonthlySchedules={setMonthlySchedules}
+            eventSchedules={eventSchedules}
+            setEventSchedules={setEventSchedules}
+            meetingSchedules={meetingSchedules}
+            setMeetingSchedules={setMeetingSchedules}
+            pressReleases={pressReleases}
+            setPressReleases={setPressReleases}
+            members={members as ScheduleCommitteeMember[]}
+          />
         )}
 
         {activeTab === "llm_wiki" && (
