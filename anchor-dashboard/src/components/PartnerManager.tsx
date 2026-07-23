@@ -75,7 +75,7 @@ export interface PartnerManagerProps {
 
 export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   const [partners, setPartners] = useState<PartnerRecord[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);

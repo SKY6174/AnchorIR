@@ -51,7 +51,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   const [loading, setLoading] = useState(false);
 
   // 승인권자 여부 판별 헬퍼 (심현미/김현수/송경영 등 관리자 롤 포함)
-  const isApprover = (role: any): boolean => {
+  const _isApprover = (role: any): boolean => {
     if (!role) return false;
     const rid = typeof role === "string" ? role : (role.id || role.role_key || "");
     return ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(rid);
@@ -327,7 +327,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   };
 
   // 승인권자의 일시 변경 모달 기동
-  const handleOpenEditTime = (res: LegacyAssetRecord) => {
+  const _handleOpenEditTime = (res: LegacyAssetRecord) => {
     setEditingRes(res);
     setEditResFormData({
       reserved_date: res.reserved_date,

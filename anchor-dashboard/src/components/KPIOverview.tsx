@@ -102,7 +102,7 @@ export default function KPIOverview({ projects = [], currentRole: _currentRole, 
   const rateCarry = totalBudgetCarry > 0 ? (totalSpentCarry / totalBudgetCarry) * 100 : 0;
 
   const totalBudget = totalBudgetMain + totalBudgetCarry;
-  const totalSpent = totalSpentMain + totalSpentCarry;
+  const _totalSpent = totalSpentMain + totalSpentCarry;
 
   // 외부사업비 합산 추출
   const totalExternalBudget = activeProjects.reduce((sum, p) => {
@@ -204,7 +204,7 @@ export default function KPIOverview({ projects = [], currentRole: _currentRole, 
     }
   });
 
-  const avgCommonKpi = commonKpiCount > 0 ? commonKpiTotal / commonKpiCount : 0;
+  const _avgCommonKpi = commonKpiCount > 0 ? commonKpiTotal / commonKpiCount : 0;
   const avgSelfKpi = selfKpiCount > 0 ? selfKpiTotal / selfKpiCount : 0;
   const avgFocusKpi = focusKpiCount > 0 ? focusKpiTotal / focusKpiCount : 0;
 

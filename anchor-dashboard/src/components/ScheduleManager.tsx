@@ -915,7 +915,7 @@ export default function ScheduleManager({
 
   // 행사 및 회의 월 선택 상태
   const [selectedEventMonth, setSelectedEventMonth] = useState(7); // 7월
-  const [selectedMeetingMonth, setSelectedMeetingMonth] = useState(7); // 7월
+  const [_selectedMeetingMonth, setSelectedMeetingMonth] = useState(7); // 7월
 
   // 언론보도 세부 구분 필터 상태 ("all", "방송", "신문", "기타")
   const [selectedPressType, setSelectedPressType] = useState("all");
@@ -1069,7 +1069,7 @@ export default function ScheduleManager({
   const [aiResultApplied, setAiResultApplied] = useState(false); // [추가] AI 결과 데이터 반영 여부
   const [aiProgress, setAiProgress] = useState(0);
   const [aiStatusText, setAiStatusText] = useState("");
-  const [aiEngine, setAiEngine] = useState("gpt"); // "gemini" or "gpt"
+  const [aiEngine, _setAiEngine] = useState("gpt"); // "gemini" or "gpt"
   const [includeProfessors, setIncludeProfessors] = useState(false); // 팀장교수 포함 여부
   const [selectedDeptFilter, setSelectedDeptFilter] = useState("전체"); // 부서 필터 상태
   const [draggingId, setDraggingId] = useState<number | string | null>(null); // 드래그 중인 일정 ID
@@ -2137,7 +2137,7 @@ Gemini 피드백: \n${geminiCritiqueText}
   // 모의 합의 토론 시뮬레이션 엔진
   const runConsensusSimulation = (analysisType = "plan") => {
     let isMeeting = modalType === "meeting";
-    let logs = [];
+    let _logs = [];
     
     // 타임아웃 큐를 통해 대화형 로그 연출
     setTimeout(() => {
@@ -2468,7 +2468,7 @@ Gemini 피드백: \n${geminiCritiqueText}
       // 한글 깨짐 및 Storage 특수기호 에러(Invalid key) 방지를 위해 물리 파일명은 영문/숫자 고유 ID로 치환
       const storagePath = `meeting_audios/${Date.now()}_${Math.random().toString(36).substring(2, 8)}${fileExt}`;
 
-      const { data, error } = await supabase.storage
+      const { data: _data, error } = await supabase.storage
         .from("minutes")
         .upload(storagePath, file);
 
@@ -2541,7 +2541,7 @@ Gemini 피드백: \n${geminiCritiqueText}
     }
     setIsAnalyzingAI(true);
     setTimeout(() => {
-      const deptName = formData.dept || "사업운영팀";
+      const _deptName = formData.dept || "사업운영팀";
       const meetingTitle = formData.title || "정기 회의";
 
       const aiAgendas = [

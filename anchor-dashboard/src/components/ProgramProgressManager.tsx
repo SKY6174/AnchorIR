@@ -9,7 +9,7 @@ const formatToMillionWon = (value: number | null | undefined): string => {
 };
 
 // 12개월 타임라인 기준 정보 (2026.03 ~ 2027.02)
-const MONTHS_GUIDE = [
+const _MONTHS_GUIDE = [
   { name: "3월", label: "26.3" },
   { name: "4월", label: "26.4" },
   { name: "5월", label: "26.5" },
@@ -95,7 +95,7 @@ const parseTimelineToMonths = (timelineStr: string): string[] => {
 };
 
 // 프로그램 ID 기반 모의 타임라인 범위 산정 헬퍼
-const getProgramTimeline = (progId: string) => {
+const _getProgramTimeline = (progId: string) => {
   // ID 끝자리 숫자를 추출하여 다채로운 타임라인 할당
   const cleanId = progId.replace(/[^0-9]/g, "");
   const num = cleanId ? parseInt(cleanId.slice(-1), 10) : 1;

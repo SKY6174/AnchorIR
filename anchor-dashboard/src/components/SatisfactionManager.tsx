@@ -121,7 +121,7 @@ export interface SatisfactionManagerProps {
 
 export default function SatisfactionManager({ currentRole: _currentRole, currentUser: _currentUser, selectedYear, darkMode: _darkMode }: SatisfactionManagerProps = {}) {
   const [surveys, setSurveys] = useState<SatisfactionSurvey[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [_isLoading, setIsLoading] = useState<boolean>(true);
 
   const [activeSurveyTab, setActiveSurveyTab] = useState<string>("list"); // "list" | "create" | "detail"
   const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
@@ -332,7 +332,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
   }, [selectedYear]);
 
   // 6대 수행부서 그룹 정의 및 필터기
-  const DEPARTMENTS_GROUP = [
+  const _DEPARTMENTS_GROUP = [
     { key: "ECC", name: "지산학교육센터 (ECC)" },
     { key: "ICC", name: "기업협업센터 (ICC)" },
     { key: "RCC", name: "지역협업센터 (RCC)" },
@@ -341,7 +341,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
     { key: "SEVeN", name: "신산업특화센터 (SEVeN)" }
   ];
 
-  const getSurveysByDept = (deptKey: string) => {
+  const _getSurveysByDept = (deptKey: string) => {
     return surveys.filter(s => {
       const d = s.department ? s.department.toUpperCase() : "";
       if (deptKey === "AIDX") {
@@ -577,7 +577,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
   };
 
   // 외부 만족도조사 결과 텍스트 AI 분석 및 데이터 추출기
-  const handleAnalyzeRawText = async () => {
+  const _handleAnalyzeRawText = async () => {
     if (!aiInputRawText.trim()) {
       alert("분석할 외부 만족도 조사 결과 텍스트를 입력해 주세요.");
       return;

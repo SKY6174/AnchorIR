@@ -58,7 +58,7 @@ export interface BudgetExecutionManagerProps {
 
 export default function BudgetExecutionManager({ projects = [], currentRole: _currentRole, selectedYear: rawYear = 2, supabase, darkMode = true }: BudgetExecutionManagerProps) {
   const selectedYear = Number(rawYear);
-  const [activeUploadTab, setActiveUploadTab] = useState<string>("main"); // "main" (본예산 집행 등록) vs "carryover" (이월예산 집행 등록)
+  const [_activeUploadTab, _setActiveUploadTab] = useState<string>("main"); // "main" (본예산 집행 등록) vs "carryover" (이월예산 집행 등록)
   
   // 수집 및 저장된 실 정산 레코드 상태
   const [executionRecords, setExecutionRecords] = useState<ExecutionRecord[]>([]);

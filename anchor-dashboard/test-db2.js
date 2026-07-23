@@ -11,7 +11,7 @@ async function run() {
   await supabase.from('meeting_results').delete().eq('meeting_id', meetingId);
 
   // 2. meeting_results에 결과 보고서 탑재
-  const { data: resData, error: resError } = await supabase
+  const { data: _resData, error: resError } = await supabase
     .from('meeting_results')
     .insert([{
       meeting_id: meetingId,
@@ -29,7 +29,7 @@ async function run() {
   console.log("Upserted meeting results successfully!");
 
   // 2. committee_meetings 상태를 REPORTED로 업데이트
-  const { data: meetData, error: meetError } = await supabase
+  const { data: _meetData, error: meetError } = await supabase
     .from('committee_meetings')
     .update({ status: 'REPORTED' })
     .eq('id', meetingId);

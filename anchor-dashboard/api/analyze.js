@@ -41,19 +41,19 @@ export default async function handler(req, res) {
 
     // 대상 연도 매핑 계산
     const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
-    const defaultDate = `${targetYearNum}-07-15`;
+    const _defaultDate = `${targetYearNum}-07-15`;
 
     let fetchedTitle = "";
     let fetchedAuthor = "";
     let fetchedDate = "";
-    let isYoutube = false;
+    let _isYoutube = false;
     let articleTextContext = "";
 
     // ----------------------------------------------------
     // [1단계: URL 정보 수집]
     // ----------------------------------------------------
     if (url.toLowerCase().includes("youtube.com") || url.toLowerCase().includes("youtu.be")) {
-      isYoutube = true;
+      _isYoutube = true;
       try {
         const ytRes = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
         if (ytRes.ok) {

@@ -527,7 +527,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   // 시스템 안전성을 확보합니다.
   const [pmProfessors, setPmProfessors] = useState<PmProfessor[]>(PM_PROFESSORS);
   const [orderlyCourses, setOrderlyCourses] = useState<OrderlyCourse[]>(ORDERLY_COURSES);
-  const [dbLoading, setDbLoading] = useState(true);
+  const [_dbLoading, setDbLoading] = useState(true);
 
   // 💡 Supabase 데이터 페치 로직
   // 초보 개발자용 설명:
@@ -875,7 +875,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   const [formSeminarCarryCost, setFormSeminarCarryCost] = useState("");
   const [formSeminarSatisfaction, setFormSeminarSatisfaction] = useState("");
   const [formSeminarEtc, setFormSeminarEtc] = useState("");
-  const [debateLogs, setDebateLogs] = useState([]);
+  const [_debateLogs, _setDebateLogs] = useState([]);
   const [aiStatusText, setAiStatusText] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -1015,7 +1015,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   };
 
   // 💡 AI 기반 지산학 세미나 결과보고 자동 생성 및 추가 핸들러
-  const generateAISeminarReport = () => {
+  const _generateAISeminarReport = () => {
     const nextId = seminarList.length + 1;
     
     // 차수에 따른 AI 예측 데이터셋

@@ -170,7 +170,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
 
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [_isDetailOpen, setIsDetailOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // 신규 교강사 등록 폼 상태 (고정 정보)

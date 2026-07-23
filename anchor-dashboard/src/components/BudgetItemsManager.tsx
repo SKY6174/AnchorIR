@@ -298,7 +298,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   };
 
   // 실시간 입력값 상태 동기화 핸들러
-  const handleBudgetChange = (bName: string, field: BudgetField, val: string) => {
+  const _handleBudgetChange = (bName: string, field: BudgetField, val: string) => {
     setEditedBudgets(prev => ({
       ...prev,
       [bName]: { ...prev[bName], [field]: val }
@@ -306,7 +306,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   };
 
   // 포커스 아웃 시 실시간 예산 연동 및 유동성 검사 저장 핸들러
-  const handleInputBlur = (bName: string, field: BudgetField, rawValue: string) => {
+  const _handleInputBlur = (bName: string, field: BudgetField, rawValue: string) => {
     if (!activeUnit) return;
     const valInMillion = parseInt(rawValue || "0", 10);
     if (isNaN(valInMillion) || valInMillion < 0) {
@@ -381,7 +381,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   };
 
   // 예산 배정액 적용 처리 핸들러
-  const handleSaveBudgetDetails = (e: React.FormEvent<HTMLFormElement>) => {
+  const _handleSaveBudgetDetails = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!activeUnit) return;
 
@@ -463,7 +463,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     })
     : [];
 
-  const isEditable = (currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") && selectedUnitId !== "Total";
+  const _isEditable = (currentRole.id === "ADMIN" || currentRole.id === "G_DIRECTOR" || currentRole.id === "HQ_HEAD" || currentRole.id === "MANAGER") && selectedUnitId !== "Total";
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr", gap: "1.5rem" }}>
@@ -740,7 +740,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                       const balanceMain = (yearDet.budget_main || 0) - (yearDet.spent_main || 0);
                       const balanceCarry = (yearDet.budget_carry || 0) - (yearDet.spent_carry || 0);
 
-                      const isEduProg = bName === "교육∙연구 프로그램 개발∙운영비";
+                      const _isEduProg = bName === "교육∙연구 프로그램 개발∙운영비";
 
                       return (
                         <tr key={bName} style={{ color: "var(--text-primary)" }}>
