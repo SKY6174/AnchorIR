@@ -52,7 +52,7 @@ const GOVERNANCE_COMMITTEES_MASTER = [
 ];
 
 // 💡 [거버넌스 소속 위원 명단 리스트 폴백 백업 셋] (요구사항 2 연동)
-const MOCK_COMMITTEE_MEMBERS_FALLBACK = {
+const _MOCK_COMMITTEE_MEMBERS_FALLBACK = {
   total: [
     { id: 101, committee_id: "total", type: "위원장", name: "조홍래", org: "울산과학대학교", dept: "-", rank: "총장", location: "교내", note: "", sort_order: 1 },
     { id: 102, committee_id: "total", type: "위원", name: "김성철", org: "울산과학대학교", dept: "-", rank: "부총장", location: "교내", note: "", sort_order: 2 },
@@ -350,7 +350,7 @@ export default function CommitteeManager({
   const [isSubmittingMeeting, setIsSubmittingMeeting] = useState<boolean>(false);
   const [responses, setResponses] = useState<CommitteeResponse[]>([]);
   const [members, setMembers] = useState<CommitteeMember[]>([]);
-  const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [_allUsers, setAllUsers] = useState<any[]>([]);
 
   // 사용자 권한 가드 상태
   const isManager = ["ADMIN", "G_DIRECTOR", "HQ_HEAD", "MANAGER"].includes(currentUser?.role_key || "");
@@ -434,8 +434,8 @@ export default function CommitteeManager({
   const [agendaInputs, setAgendaInputs] = useState<Record<string | number, { vote?: string; score?: number; opinion?: string }>>({});
 
   // 위원 의사결정 제출 폼 상태
-  const [userVote, setUserVote] = useState<string>("");
-  const [userOpinion, setUserOpinion] = useState<string>("");
+  const [_userVote, setUserVote] = useState<string>("");
+  const [_userOpinion, setUserOpinion] = useState<string>("");
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
 
   // ChatGPT 4o (OpenAI) API 키 관리
@@ -443,7 +443,7 @@ export default function CommitteeManager({
     return (import.meta.env.VITE_OPENAI_API_KEY as string) || localStorage.getItem("user_openai_api_key") || "";
   });
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
-  const [showKeyInput, setShowKeyInput] = useState<boolean>(false);
+  const [_showKeyInput, setShowKeyInput] = useState<boolean>(false);
 
   // 전자서명 패드 Canvas 레퍼런스
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -1176,7 +1176,7 @@ export default function CommitteeManager({
     }
   };
 
-  const handleDeleteCommittee = async (id: any) => {
+  const _handleDeleteCommittee = async (id: any) => {
     if (!window.confirm("위원회를 삭제하시겠습니까? 연결된 위원 매핑과 회의록이 영구 소실됩니다.")) return;
     try {
       const { error } = await supabase
@@ -2190,7 +2190,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
     }
   };
 
-  const handleSaveOpenaiKey = () => {
+  const _handleSaveOpenaiKey = () => {
     localStorage.setItem("user_openai_api_key", openaiKey.trim());
     setShowKeyInput(false);
     alert("OpenAI API Key (ChatGPT 4o)가 안전하게 브라우저 로컬 캐시에 저장되었습니다.");
@@ -2660,7 +2660,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
   // 내 소속 위원회 정보 렌더링용
   const isUserCommitteeMember = selectedCommittee && myMemberships.some(m => m.committee_id === selectedCommittee.id);
-  const myRoleInCommittee = selectedCommittee && myMemberships.find(m => m.committee_id === selectedCommittee.id)?.role;
+  const _myRoleInCommittee = selectedCommittee && myMemberships.find(m => m.committee_id === selectedCommittee.id)?.role;
 
   return (
     <div className="card" style={{ padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--border-color)", background: "var(--card-bg)" }}>
@@ -3494,7 +3494,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         const displayName = r.committee_members?.name || r.member_name || memberObj?.name || "위원회 위원";
                         const displayDept = r.committee_members?.dept || memberObj?.dept || memberObj?.org || "운영위원회";
 
-                        const isApprove = r.vote === "APPROVE" || r.vote === "찬성" || !r.vote || r.vote === "EVALUATION";
+                        const _isApprove = r.vote === "APPROVE" || r.vote === "찬성" || !r.vote || r.vote === "EVALUATION";
                         const isReject = r.vote === "REJECT" || r.vote === "반대";
                         const isAbstain = r.vote === "ABSTAIN" || r.vote === "기권";
                         const voteBadgeText = isReject ? "반대" : isAbstain ? "기권" : (r.vote === "EVALUATION" ? "평가완료" : "찬성");
