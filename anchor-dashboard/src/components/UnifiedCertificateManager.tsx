@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Trash2, Edit, FileText, Upload, X, AlertTriangle, Download } from "lucide-react";
-import * as XLSX from "xlsx";
 
 const formatDateString = (dateStr: unknown): string => {
   if (!dateStr) return "";
@@ -437,8 +436,9 @@ export default function UnifiedCertificateManager({
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = async (evt) => {
       try {
+        const XLSX = await import("xlsx");
         const bstr = evt.target?.result;
         if (!bstr) return;
         const wb = XLSX.read(bstr, { type: "binary" });
@@ -495,7 +495,7 @@ export default function UnifiedCertificateManager({
     e.target.value = "";
   };
 
-  const downloadExcel = () => {
+  const downloadExcel = async () => {
     const headers = [
       "증서번호", "상장/이수증", "상훈", "팀명", "성명", "학번", 
       "생년월일", "휴대폰", "수상일(수료일)", "발급부서", "발급자명의", 
@@ -506,6 +506,7 @@ export default function UnifiedCertificateManager({
       c.birthDate, c.phone, c.issueDate, c.projectGroup, c.issuer, 
       c.content, c.managerDept, c.managerName, c.note
     ]);
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
     
     // Auto width
@@ -518,13 +519,14 @@ export default function UnifiedCertificateManager({
     XLSX.writeFile(wb, `${sheetName}_${selectedYear}년차.xlsx`);
   };
 
-  const downloadExcelTemplate = () => {
+  const downloadExcelTemplate = async () => {
     const headers = [
       "증서번호", "상장/이수증", "상훈", "팀명", "성명", "학번", 
       "생년월일", "휴대폰", "수상일(수료일)", "발급부서", "발급자명의", 
       "시상내용(과정명)", "담당자-소속", "담당자-성명", "비고"
     ];
     const data = [[]]; // 빈 데이터 한 줄
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
     
     // Auto width

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import * as XLSX from "xlsx";
 import { Download, FileSpreadsheet, Check } from "lucide-react";
 
 /**
@@ -52,8 +51,9 @@ export default function ExcelUploader({
     setSuccess(false);
     const reader = new FileReader();
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
+        const XLSX = await import("xlsx");
         if (!e.target?.result) return;
         const data = new Uint8Array(e.target.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
@@ -153,7 +153,8 @@ export default function ExcelUploader({
   };
 
   // 모드별 맞춤형 샘플 데이터 엑셀 생성 및 다운로드 실행
-  const downloadSample = (type: "BUDGET" | "KPI") => {
+  const downloadSample = async (type: "BUDGET" | "KPI") => {
+    const XLSX = await import("xlsx");
     const wb = XLSX.utils.book_new();
     let data: any[] = [];
     let filename = "";

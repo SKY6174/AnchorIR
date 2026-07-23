@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Plus, Edit, Trash, Upload, X, Download, DollarSign } from "lucide-react";
-import * as XLSX from "xlsx";
 import { getAllValidDepartments } from "./OrgChartManager";
 
 const VALID_DEPARTMENTS = getAllValidDepartments();
@@ -279,8 +278,9 @@ export default function ScholarshipManager({
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = async (evt) => {
       try {
+        const XLSX = await import("xlsx");
         const data = evt.target?.result;
         const workbook = XLSX.read(data, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
@@ -323,7 +323,7 @@ export default function ScholarshipManager({
     reader.readAsBinaryString(file);
   };
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     const dataToExport = getSortedItems().map((item, index) => ({
       "순번": index + 1,
       "학부(과)": item.dept || "",
@@ -341,13 +341,14 @@ export default function ScholarshipManager({
       "예금주": item.accountHolder || ""
     }));
 
+    const XLSX = await import("xlsx");
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "장학금 지급 내역");
     XLSX.writeFile(workbook, `장학금_지급_대장_${filterYear === "all" ? "전체" : filterYear + "차년도"}.xlsx`);
   };
 
-  const handleDownloadSample = () => {
+  const handleDownloadSample = async () => {
     const sampleData = [
       {
         "학부(과)": "식품영양학과",
@@ -365,6 +366,7 @@ export default function ScholarshipManager({
         "결재일자": "2025-12-31"
       }
     ];
+    const XLSX = await import("xlsx");
     const worksheet = XLSX.utils.json_to_sheet(sampleData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "서식샘플");

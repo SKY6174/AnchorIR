@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import * as pdfjsLib from "pdfjs-dist";
-import * as XLSX from "xlsx";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 type ScheduleItem = Record<string, any> & {
@@ -688,7 +687,7 @@ export default function ScheduleManager({
   }, [selectedYear]);
 
   // 💡 [교육용 한글 주석] 기존 CSV 서식 양식 다운로드를 호환성이 높은 XLSX 규격으로 개선합니다.
-  const handleDownloadExcelFormat = () => {
+  const handleDownloadExcelFormat = async () => {
     const headers = ["구분", "성명", "소속기관", "부서/학과", "직위", "교내외", "비고"];
     const data = [
       ["위원장", "조홍래", "울산과학대학교", "-", "총장", "교내", "대표"],
@@ -696,6 +695,7 @@ export default function ScheduleManager({
     ];
     
     // SheetJS를 사용하여 worksheet 생성 및 workbook 빌드 후 파일 저장
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, ws, "위원회_위원등록_서식");
@@ -703,7 +703,7 @@ export default function ScheduleManager({
   };
 
   // 💡 [교육용 한글 주석] 기존 CSV 명단 조회를 XLSX 형식으로 추출하도록 업데이트합니다.
-  const handleExcelDownload = () => {
+  const handleExcelDownload = async () => {
     const activeComm = committees.find(c => c.id === selectedCommitteeId) || committees[0];
     if (!activeComm) {
       alert("선택된 위원회가 없습니다.");
@@ -727,6 +727,7 @@ export default function ScheduleManager({
     ]);
 
     // XLSX 통합 워크시트 구성 및 파일 생성
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([headers, ...dataRows]);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, ws, "위원명단");
@@ -741,6 +742,7 @@ export default function ScheduleManager({
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
+        const XLSX = await import("xlsx");
         if (!(evt.target?.result instanceof ArrayBuffer)) return;
         const data = new Uint8Array(evt.target.result);
         const workbook = XLSX.read(data, { type: "array" });

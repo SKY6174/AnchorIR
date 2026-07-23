@@ -10,19 +10,19 @@ const AgreementManager = React.lazy(() => import("./components/AgreementManager"
 const UnifiedCertificateManager = React.lazy(() => import("./components/UnifiedCertificateManager"));
 const ScholarshipManager = React.lazy(() => import("./components/ScholarshipManager"));
 const InstructorPoolManager = React.lazy(() => import("./components/InstructorPoolManager"));
-import PDCAManager from "./components/PDCAManager";
+const PDCAManager = React.lazy(() => import("./components/PDCAManager"));
+const BudgetExecutionManager = React.lazy(() => import("./components/BudgetExecutionManager"));
+const MajorProgramsManager = React.lazy(() => import("./components/MajorProgramsManager"));
+const PartnerManager = React.lazy(() => import("./components/PartnerManager"));
+const AssetManager = React.lazy(() => import("./components/AssetManager"));
 import BudgetItemsManager from "./components/BudgetItemsManager";
-import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
-import MajorProgramsManager from "./components/MajorProgramsManager";
 import SurveyResponder from "./components/SurveyResponder";
 import LLMWiki from "./components/LLMWiki";
 import OrgChartManager from "./components/OrgChartManager";
 import CenterOrgChartManager from "./components/CenterOrgChartManager";
-import PartnerManager from "./components/PartnerManager";
 import PortalConfigManager from "./components/PortalConfigManager";
 import AuthManager from "./components/AuthManager";
-import AssetManager from "./components/AssetManager";
 import CommitteeManager from "./components/CommitteeManager";
 import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
@@ -35,7 +35,6 @@ import type { ScheduleCommitteeMember } from "./components/ScheduleManager";
 import { Sun, Moon, LogOut, HelpCircle, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen, FileSpreadsheet } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import type { Tables, TablesInsert } from "./types/supabase";
-import * as XLSX from "xlsx";
 import "./styles/dashboard.css";
 
 type LegacyAppRecord = Record<string, any>;
@@ -2761,7 +2760,7 @@ export default function App() {
   };
 
   // 💡 [교육용 한글 주석] 구성원 업로드용 엑셀 서식 템플릿 다운로드 핸들러
-  const handleDownloadMemberTemplate = () => {
+  const handleDownloadMemberTemplate = async () => {
     const templateData = [
       {
         "소속 부서": "ECC센터",
@@ -2779,6 +2778,7 @@ export default function App() {
     const fileName = `UC_RISE_구성원_업로드_서식.xlsx`;
 
     try {
+      const XLSX = await import("xlsx");
       const ws = XLSX.utils.json_to_sheet(templateData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "구성원템플릿");
@@ -2798,7 +2798,7 @@ export default function App() {
   };
 
   // 💡 [교육용 한글 주석] 구성원 주소록 엑셀 데이터 파일 다운로드 (내보내기) 핸들러
-  const handleExportMembersExcel = () => {
+  const handleExportMembersExcel = async () => {
     const excelData = members.map((m) => ({
       "소속 부서": m.dept || "-",
       "성명": m.name || "",
@@ -2815,6 +2815,7 @@ export default function App() {
     const fileName = `Anchor_RISE_사업단_구성원_목록.xlsx`;
 
     try {
+      const XLSX = await import("xlsx");
       const worksheet = XLSX.utils.json_to_sheet(excelData);
       worksheet["!cols"] = Array(10).fill({ wch: 20 });
       const workbook = XLSX.utils.book_new();
@@ -2841,6 +2842,7 @@ export default function App() {
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
+        const XLSX = await import("xlsx");
         const binaryStr = evt.target?.result;
         if (!binaryStr) throw new Error("엑셀 파일을 읽을 수 없습니다.");
         const workbook = XLSX.read(binaryStr, { type: "binary" });
@@ -3715,8 +3717,9 @@ export default function App() {
   // ==========================================
   // 단위과제 진행현황 데이터 내보내기 핸들러 (Excel, Markdown, PDF)
   // ==========================================
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     try {
+      const XLSX = await import("xlsx");
       const excelData = [];
       let sumBudgetMain = 0;
       let sumBudgetCarry = 0;
@@ -8679,7 +8682,7 @@ export default function App() {
     });
   };
 
-  const handleDownloadExcel = () => {
+  const handleDownloadExcel = async () => {
     const data: LegacyAppRecord[] = [];
     displayProjects.flatMap((p: LegacyAppRecord) => p.units).forEach((u: LegacyAppRecord) => {
       u.programs.forEach((prog: LegacyAppRecord) => {
@@ -8692,6 +8695,7 @@ export default function App() {
         });
       });
     });
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "프로그램 배정");
@@ -8702,9 +8706,10 @@ export default function App() {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (evt: ProgressEvent<FileReader>) => {
+    reader.onload = async (evt: ProgressEvent<FileReader>) => {
       const bstr = evt.target?.result;
       if (typeof bstr !== "string") return;
+      const XLSX = await import("xlsx");
       const wb = XLSX.read(bstr, { type: "binary" });
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
@@ -9505,22 +9510,24 @@ export default function App() {
 
               {projectsSubTab === "program_mgmt" && (
                 <div id="pdca-manager-section">
-                  <PDCAManager
-                    key={`pdca-${selectedYear}`}
-                    projects={displayProjects}
-                    currentRole={currentRole}
-                    onUpdateProgramDetails={handleUpdateProgramDetails}
-                    onAddProgram={handleAddProgram}
-                    selectedYear={selectedYear}
-                    selectedUnitId={selectedUnitId}
-                    setSelectedUnitId={setSelectedUnitId}
-                    selectedProgId={selectedProgId}
-                    setSelectedProgId={setSelectedProgId}
-                    viewMode={pdcaViewMode}
-                    setViewMode={setPdcaViewMode}
-                    currentUser={currentUser}
-                    supabase={supabase}
-                  />
+                  <React.Suspense fallback={null}>
+                    <PDCAManager
+                      key={`pdca-${selectedYear}`}
+                      projects={displayProjects}
+                      currentRole={currentRole}
+                      onUpdateProgramDetails={handleUpdateProgramDetails}
+                      onAddProgram={handleAddProgram}
+                      selectedYear={selectedYear}
+                      selectedUnitId={selectedUnitId}
+                      setSelectedUnitId={setSelectedUnitId}
+                      selectedProgId={selectedProgId}
+                      setSelectedProgId={setSelectedProgId}
+                      viewMode={pdcaViewMode}
+                      setViewMode={setPdcaViewMode}
+                      currentUser={currentUser}
+                      supabase={supabase}
+                    />
+                  </React.Suspense>
                 </div>
               )}
             </div>
@@ -10725,7 +10732,9 @@ export default function App() {
 
 
               {mgmtSubTab === "partners" && (
-                <PartnerManager key={`partner-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
+                <React.Suspense fallback={null}>
+                  <PartnerManager key={`partner-${darkMode}-${selectedYear}`} selectedYear={selectedYear} />
+                </React.Suspense>
               )}
 
               {mgmtSubTab === "instructor_pool" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
@@ -11736,10 +11745,12 @@ export default function App() {
                 }}
               />
             ) : progressSubTab === "major_programs" ? (
-              <MajorProgramsManager
-                key={`major-prog-${darkMode}-${selectedYear}`}
-                selectedYear={selectedYear}
-              />
+              <React.Suspense fallback={null}>
+                <MajorProgramsManager
+                  key={`major-prog-${darkMode}-${selectedYear}`}
+                  selectedYear={selectedYear}
+                />
+              </React.Suspense>
             ) : (
               <React.Suspense fallback={null}>
                 <SatisfactionManager
@@ -11823,28 +11834,32 @@ export default function App() {
                 selectedYear={selectedYear}
               />
             ) : budgetSubTab === "execution_rate" ? (
-              <BudgetExecutionManager
-                key={`budget-exec-${darkMode}-${selectedYear}`}
-                projects={displayProjects as ProjectData[]}
-                currentRole={currentRole}
-                selectedYear={selectedYear}
-                supabase={supabase}
-                darkMode={darkMode}
-              />
+              <React.Suspense fallback={null}>
+                <BudgetExecutionManager
+                  key={`budget-exec-${darkMode}-${selectedYear}`}
+                  projects={displayProjects as ProjectData[]}
+                  currentRole={currentRole}
+                  selectedYear={selectedYear}
+                  supabase={supabase}
+                  darkMode={darkMode}
+                />
+              </React.Suspense>
             ) : null}
           </div>
         )}
 
         {activeTab === "asset" && (
           <div className="asset-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-            <AssetManager
-              currentRole={currentRole}
-              currentUser={currentUser}
-              activeSubTab={assetSubTab}
-              onChangeSubTab={setAssetSubTab}
-              darkMode={darkMode}
-              selectedYear={selectedYear}
-            />
+            <React.Suspense fallback={null}>
+              <AssetManager
+                currentRole={currentRole}
+                currentUser={currentUser}
+                activeSubTab={assetSubTab}
+                onChangeSubTab={setAssetSubTab}
+                darkMode={darkMode}
+                selectedYear={selectedYear}
+              />
+            </React.Suspense>
           </div>
         )}
 
@@ -14208,7 +14223,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   };
 
   // 엑셀 다운로드 헬퍼
-  const handleDownloadUnifiedExcel = (type: "all" | "five_year" | "annual" = "all") => {
+  const handleDownloadUnifiedExcel = async (type: "all" | "five_year" | "annual" = "all") => {
       // 1. 5개년 총괄 데이터 포맷팅
       const fiveYearRows: Array<Array<string | number>> = [];
       fiveYearRows.push([
@@ -14311,6 +14326,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       annualRows.push(["간접비", annualIndNat, annualIndCity, annualIndExt, annualIndSum, annualIndRatio]);
       annualRows.push(["총사업비 중 운영비", annualOnlyOpNat, annualOnlyOpCity, annualOnlyOpExt, annualOnlyOpSum, annualOnlyOpRatio]);
 
+      const XLSX = await import("xlsx");
       const wb = XLSX.utils.book_new();
 
       if (type === "all" || type === "five_year") {

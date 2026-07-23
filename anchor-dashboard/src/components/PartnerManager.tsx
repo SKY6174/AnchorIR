@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Plus, Trash2, Edit, Search, Download, Upload, X, Globe, ArrowUpDown } from "lucide-react";
-import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient";
 import type { TablesInsert } from "../types/supabase";
 
@@ -264,7 +263,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   };
 
   // 엑셀 다운로드 (XLSX)
-  const handleExcelExport = () => {
+  const handleExcelExport = async () => {
     const dataToExport = filteredPartners.map((p, idx) => ({
       번호: idx + 1,
       기관명: p.name,
@@ -277,6 +276,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
       주요메모: p.remarks || "-"
     }));
 
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.json_to_sheet(dataToExport);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "파트너기관_대장");
@@ -291,7 +291,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   };
 
   // 엑셀 서식 다운로드 (템플릿)
-  const handleDownloadTemplate = () => {
+  const handleDownloadTemplate = async () => {
     const templateData = [
       {
         "기관명": "울산대학교 (예시)",
@@ -305,6 +305,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
       }
     ];
 
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.json_to_sheet(templateData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "파트너적재템플릿");
@@ -329,6 +330,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
+        const XLSX = await import("xlsx");
         const data = evt.target?.result;
         if (!data) return;
         const workbook = XLSX.read(data, { type: "binary" });

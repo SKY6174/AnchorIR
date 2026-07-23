@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { supabase } from "../supabaseClient";
 import { Plus, Trash2, Edit2, Calendar, Search, Check, Clock, TrendingUp, Upload, Download, X } from "lucide-react";
-import * as XLSX from "xlsx";
 
 type LegacyAssetRecord = Record<string, any>;
 
@@ -825,6 +824,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
+        const XLSX = await import("xlsx");
         const bstr = evt.target?.result;
         if (typeof bstr !== "string") throw new Error("파일 내용을 읽을 수 없습니다.");
         const wb = XLSX.read(bstr, { type: "binary" });
@@ -944,7 +944,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   };
 
   // 14개 컬럼 양식 서식 다운로드 헬퍼
-  const handleDownloadEquipTemplate = () => {
+  const handleDownloadEquipTemplate = async () => {
     const headers = [
       "자산번호",
       "분류명",
@@ -980,6 +980,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       }
     ];
 
+    const XLSX = await import("xlsx");
     const worksheet = XLSX.utils.json_to_sheet(sampleData, { header: headers });
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "기자재 양식");
@@ -987,7 +988,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   };
 
   // 💡 [교육용 한글 주석] 전체 기자재대장 목록을 엑셀 파일로 추출(내보내기)하는 핸들러
-  const handleExportEquipExcel = () => {
+  const handleExportEquipExcel = async () => {
     const excelData = equipments.map((eq) => ({
       "자산번호": eq.asset_number || "",
       "분류명": eq.category_name || "",
@@ -1008,6 +1009,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     const fileName = `Anchor_기자재_대장_목록_Year_${selectedYear}.xlsx`;
 
     try {
+      const XLSX = await import("xlsx");
       const worksheet = XLSX.utils.json_to_sheet(excelData);
       worksheet["!cols"] = Array(14).fill({ wch: 18 });
       const workbook = XLSX.utils.book_new();

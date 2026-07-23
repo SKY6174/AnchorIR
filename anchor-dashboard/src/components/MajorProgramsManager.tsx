@@ -4,7 +4,6 @@ import {
   Calendar, Activity, CheckCircle, Search, Plus, Trash2, ArrowRight,
   FileSpreadsheet, Download, Pencil
 } from "lucide-react";
-import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient";
 
 interface PmProfessor {
@@ -888,7 +887,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   };
 
   // 엑셀 결과 템플릿 다운로드 핸들러
-  const downloadResultSample = () => {
+  const downloadResultSample = async () => {
+    const XLSX = await import("xlsx");
     const wb = XLSX.utils.book_new();
     const sampleData = studentMasterList.map(s => ({
       "학번": s.id,
@@ -918,8 +918,9 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = async (evt) => {
       try {
+        const XLSX = await import("xlsx");
         const data = new Uint8Array(evt.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { Check, ClipboardList, PenTool, Layers, LayoutList, FileSpreadsheet, FileText, Download } from "lucide-react";
-import * as XLSX from "xlsx";
 
 type LegacyPdcaRecord = Record<string, any>;
 
@@ -1414,8 +1413,9 @@ export default function PDCAManager({
   };
 
   // 💡 [프로그램 ID별 Excel 내보내기 - 시스템 외형 유지형 리포트 서식 빌드]
-  const handleExportProgramExcel = () => {
+  const handleExportProgramExcel = async () => {
     if (!activeProg) return;
+    const XLSX = await import("xlsx");
     const py = activeProg.years?.[selectedYear] || {};
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
     const fileName = `[${activeProg.id}]${activeProg.title}_PDCA_${dateStr}.xlsx`;

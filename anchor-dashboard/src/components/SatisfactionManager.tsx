@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import * as XLSX from "xlsx";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine 
 } from "recharts";
@@ -872,8 +871,9 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
     // 엑셀 파일일 때 XLSX 연동 파서 구동
     if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
       const reader = new FileReader();
-      reader.onload = (evt) => {
+      reader.onload = async (evt) => {
         try {
+          const XLSX = await import("xlsx");
           const bstr = evt.target?.result;
           if (!bstr) return;
           const workbook = XLSX.read(bstr, { type: "binary" });
@@ -1572,7 +1572,7 @@ ${commentList || "(없음)"}
   };
 
   // 수집 결과 Excel 파일로 내보내기 시뮬레이션 (xlsx 연동 라이브러리)
-  const handleExportToExcel = (survey: SatisfactionSurvey) => {
+  const handleExportToExcel = async (survey: SatisfactionSurvey) => {
     if (!survey.responses || survey.responses.length === 0) {
       alert("수집된 응답 데이터가 없어 엑셀 파일 생성이 불가합니다.");
       return;
@@ -1608,6 +1608,7 @@ ${commentList || "(없음)"}
     ];
 
     // XLSX 생성
+    const XLSX = await import("xlsx");
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(worksheetData);
     

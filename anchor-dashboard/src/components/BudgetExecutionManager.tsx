@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AlertTriangle, CheckCircle2, TrendingUp, DollarSign, Calendar, Download, Trash2, ShieldCheck } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from "recharts";
-import * as XLSX from "xlsx";
 import type { ProjectData } from "../data/mockData";
 
 type BudgetType = "main" | "carryover";
@@ -189,7 +188,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole: _cu
 
   // 💡 [교육용 한글 주석] 첫 번째 그림에 표기된 14개 핵심 헤더를 준수하는 엑셀 양식을 다운로드합니다.
   // monthLabel 인자(예: "26.3월")를 받아 파일명을 "26년3월_예산집행현황_업로드양식.xlsx" 과 같이 동적 지정합니다.
-  const handleDownloadTemplate = (monthLabel?: string) => {
+  const handleDownloadTemplate = async (monthLabel?: string) => {
     // 만약 월 레이블이 없으면 현재 선택한 차년도의 시작월을 기본값으로 사용
     // 1차년도 시작월: "25.3월", 2차년도 시작월: "26.3월"
     const defaultLabel = selectedYear === 1 ? "25.3월" : "26.3월";
@@ -219,6 +218,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole: _cu
       ]
     ];
 
+    const XLSX = await import("xlsx");
     const data = [headers, ...samples];
     const ws = XLSX.utils.aoa_to_sheet(data);
 
@@ -240,8 +240,9 @@ export default function BudgetExecutionManager({ projects = [], currentRole: _cu
   // 💡 [교육용 한글 주석] 파싱된 엑셀 데이터를 무결성 규칙에 맞춰 정제하고 중복을 걸러 저장합니다.
   const processExcelData = (file: File, monthLabel: string, budgetType: BudgetType) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
+        const XLSX = await import("xlsx");
         const data = new Uint8Array(e.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];

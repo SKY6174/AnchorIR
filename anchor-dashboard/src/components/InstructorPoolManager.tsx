@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
 import { Plus, User, Trash2, ShieldAlert, X, Upload, Download, Edit } from "lucide-react";
-import * as XLSX from "xlsx";
 import { academicYears } from "./OrgChartManager";
 import type { Tables } from "../types/supabase";
 
@@ -343,13 +342,14 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
   };
 
   // 💡 [엑셀 서식 다운로드]
-  const handleDownloadTemplate = () => {
+  const handleDownloadTemplate = async () => {
     const headers = [["성명", "성별", "생년월일(YYYY-MM-DD)", "은행명", "계좌번호"]];
     const sampleData = [
       ["홍길동", "남성", "1980-05-15", "신한은행", "110-123-456789"],
       ["신사임당", "여성", "1985-10-23", "KB국민은행", "123-45-678901"]
     ];
     
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([...headers, ...sampleData]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "교강사_업로드서식");
@@ -361,7 +361,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
   };
 
   // 💡 [엑셀 다운로드 (Export)]
-  const handleExcelExport = () => {
+  const handleExcelExport = async () => {
     if (instructors.length === 0) {
       alert("다운로드할 교∙강사 데이터가 없습니다.");
       return;
@@ -375,6 +375,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
       "계좌번호": ins.decrypted_account
     }));
 
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.json_to_sheet(dataToExport);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "교강사_Pool_대장");
@@ -393,6 +394,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
+        const XLSX = await import("xlsx");
         const data = evt.target?.result;
         const workbook = XLSX.read(data, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
@@ -596,13 +598,14 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
   };
 
   // 💡 [활동이력 엑셀 서식 다운로드]
-  const handleDownloadHistoryTemplate = () => {
+  const handleDownloadHistoryTemplate = async () => {
     const headers = [["성명", "생년월일(YYYY-MM-DD)", "사업연도", "교내/교외 구분(교내 또는 교외)", "소속", "직급", "단위과제(예: B2)", "참여 프로그램(예: B2-S1T1-1)", "지급비용(원)"]];
     const sampleData = [
       ["김철수", "1975-04-12", "2026", "교내", "컴퓨터정보과", "교수", "B2", "B2-S1T1-1", "350000"],
       ["이영희", "1982-11-23", "2026", "교외", "간호학협회", "강사", "A1", "A1-S2T1-2", "500000"]
     ];
     
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([...headers, ...sampleData]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "활동이력_업로드서식");
@@ -618,6 +621,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
   // 💡 [활동이력 엑셀 다운로드 (Export)]
   const handleHistoryExcelExport = async () => {
     try {
+      const XLSX = await import("xlsx");
       const { data: allHistories, error: histErr } = await supabase
         .from("instructor_histories")
         .select("*")
@@ -673,6 +677,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
+        const XLSX = await import("xlsx");
         const data = evt.target?.result;
         const workbook = XLSX.read(data, { type: "binary" });
         const sheetName = workbook.SheetNames[0];

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download, FileCheck } from "lucide-react";
-import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient"; // Supabase 클라이언트 연동 추가
 
 const AGREEMENT_CONTENTS_OPTIONS = [
@@ -328,21 +327,24 @@ export default function AgreementManager({
     const sheetName = `${selectedYear}차년도 협약서 목록`;
     const cols = [{ wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 20 }, { wch: 35 }, { wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 35 }];
 
-    try {
-      const worksheet = XLSX.utils.json_to_sheet(excelData);
-      worksheet["!cols"] = cols;
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-      const b64out = XLSX.write(workbook, { bookType: "xlsx", type: "base64" });
-      setExcelDownloadUrl(`data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${b64out}`);
-    } catch (err) {
-      console.error("Excel generation error:", err);
-      setExcelDownloadUrl("");
-    }
+    void (async () => {
+      try {
+        const XLSX = await import("xlsx");
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
+        worksheet["!cols"] = cols;
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+        const b64out = XLSX.write(workbook, { bookType: "xlsx", type: "base64" });
+        setExcelDownloadUrl(`data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${b64out}`);
+      } catch (err) {
+        console.error("Excel generation error:", err);
+        setExcelDownloadUrl("");
+      }
+    })();
   }, [displayAgreements, selectedYear]);
 
   // 엑셀 서식 다운로드 (템플릿)
-  const handleDownloadTemplate = () => {
+  const handleDownloadTemplate = async () => {
     const templateData = [
       {
         "체결일자": "2025-05-15",
@@ -357,6 +359,7 @@ export default function AgreementManager({
     ];
     const fileName = `UC_ANCHOR_협약서_업로드_서식.xlsx`;
 
+    const XLSX = await import("xlsx");
     const ws = XLSX.utils.json_to_sheet(templateData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "업로드템플릿");
@@ -377,8 +380,9 @@ export default function AgreementManager({
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = async (evt) => {
       try {
+        const XLSX = await import("xlsx");
         const binaryStr = evt.target?.result;
         if (!binaryStr) return;
         const workbook = XLSX.read(binaryStr, { type: "binary" });
