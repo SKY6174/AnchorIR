@@ -4,9 +4,7 @@ import Sidebar from "./components/Sidebar";
 const CommitteeExternalVote = React.lazy(() => import("./components/CommitteeExternalVote"));
 const InstructorPoolManager = React.lazy(() => import("./components/InstructorPoolManager"));
 const PDCAManager = React.lazy(() => import("./components/PDCAManager"));
-const BudgetExecutionManager = React.lazy(() => import("./components/BudgetExecutionManager"));
 const PartnerManager = React.lazy(() => import("./components/PartnerManager"));
-import BudgetItemsManager from "./components/BudgetItemsManager";
 import SurveyResponder from "./components/SurveyResponder";
 import OrgChartManager from "./components/OrgChartManager";
 import CenterOrgChartManager from "./components/CenterOrgChartManager";
@@ -36,6 +34,7 @@ import { useAgreementsAutosave } from "./features/agreements/hooks/use-agreement
 import { AgreementsScreen } from "./features/agreements/screens/agreements-screen";
 import { AssetScreen } from "./features/assets/screens/asset-screen";
 import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
+import { BudgetScreen } from "./features/budget/screens/budget-screen";
 import { DashboardScreen } from "./features/dashboard/screens/dashboard-screen";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
 import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
@@ -6709,61 +6708,10 @@ export default function App() {
         )}
 
         {activeTab === "budget" && (
-          <div className="budget-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-            {/* 예산 관리 본문 가로 탭바 헤더 */}
-            <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
-              <button
-                onClick={() => setBudgetSubTab("total_investment")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: budgetSubTab === "total_investment" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: budgetSubTab === "total_investment" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                총괄 투자 계획
-              </button>
-              <button
-                onClick={() => setBudgetSubTab("budget_categories")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: budgetSubTab === "budget_categories" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: budgetSubTab === "budget_categories" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                비목별 관리
-              </button>
-              <button
-                onClick={() => setBudgetSubTab("execution_rate")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: budgetSubTab === "execution_rate" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: budgetSubTab === "execution_rate" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                집행률 관리
-              </button>
-            </div>
-
-            {/* 본문 콘텐츠 스위칭 */}
-            {budgetSubTab === "total_investment" ? (
+          <BudgetScreen
+            subTab={budgetSubTab}
+            onChangeSubTab={setBudgetSubTab}
+            totalInvestmentContent={
               <TotalInvestmentManager
                 investmentSubTab={investmentSubTab}
                 onChangeInvestmentSubTab={setInvestmentSubTab}
@@ -6771,27 +6719,14 @@ export default function App() {
                 selectedYear={selectedYear}
                 darkMode={darkMode}
               />
-            ) : budgetSubTab === "budget_categories" ? (
-              <BudgetItemsManager
-                key={`budget-items-${darkMode}-${selectedYear}`}
-                projects={displayProjects as ProjectData[]}
-                currentRole={currentRole}
-                onUpdateBudgetDetails={handleUpdateBudgetDetails}
-                selectedYear={selectedYear}
-              />
-            ) : budgetSubTab === "execution_rate" ? (
-              <React.Suspense fallback={null}>
-                <BudgetExecutionManager
-                  key={`budget-exec-${darkMode}-${selectedYear}`}
-                  projects={displayProjects as ProjectData[]}
-                  currentRole={currentRole}
-                  selectedYear={selectedYear}
-                  supabase={supabase}
-                  darkMode={darkMode}
-                />
-              </React.Suspense>
-            ) : null}
-          </div>
+            }
+            darkMode={darkMode}
+            selectedYear={selectedYear}
+            projects={displayProjects as ProjectData[]}
+            currentRole={currentRole}
+            onUpdateBudgetDetails={handleUpdateBudgetDetails}
+            supabase={supabase}
+          />
         )}
 
         {activeTab === "asset" && (
