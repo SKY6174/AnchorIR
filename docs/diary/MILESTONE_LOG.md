@@ -63,6 +63,11 @@
   - **역할 매트릭스 9종 검증 (`supabase/tests/committee-role-matrix-verification.sql`)**: 9개 관리자 역할 런타임 허용 및 게스트 차단 검증.
   - **동시성 E2E 및 멱등성 검증 완수 (`anchor-dashboard/scripts/committee-concurrency-e2e.mjs`)**: 외부위원 10명 동시 요청 11건(최초 10건 + 멱등 1건), revision 관리 및 원자적 rollback 검증 완료 후 테스트 데이터 100% 삭제 (`supabase/tests/committee-concurrency-cleanup.sql`).
   - **HMAC PDF 봉인 & 서버 검증 완수**: HMAC 스냅샷 `valid: true`, SHA-256 일치, PDF 출력 정규화 복구 (`098_reconcile_published_committee_report.sql`).
+  - **XLSX 지연 로딩 최적화**: 정적 XLSX import 제거 및 동적 지연 로딩 적용으로 초기 번들 preload 용량 약 436KB(446KB) 획기적 절감 (`e142b85`).
+  - **인증 보강 & Fail-Closed 구축**: `resolveApprovedRiseUser` 공통 승인 프로필 resolver 도입, unknown role `RESEARCHER` fallback 취약성 제거 및 세션 폐기 보안 보강 (`ce81d16`, `fc8ca1b`, `7b7b819`).
+  - **외부위원 로그인 화면 UI/UX 리디자인 (`CommitteeExternalVote.tsx`)**: 기존 서면심의/전자서명 100% 보존, 데스크톱 2열/모바일(390px) 1열 반응형 구조 및 URL 위원회 코드 자동 표시 (`f01428b`).
+  - **종합 품질 & PAdES 전자서명/OTP 기틀 마련**: Rolldown `strictExecutionOrder` 설정, Oxlint 접근성 진단, PAdES Edge Function 및 Migration 100 구축 (`dashboard-quality-auth-signing.report.md`, 설계 일치율 86%).
   - **PDCA 완료 및 문서화**: 갭 분석(`docs/03-analysis/committee-vote-stabilization.analysis.md`) 및 완료 보고서(`docs/04-report/committee-vote-stabilization.report.md`) 작성 완료 (일치율 97%, Complete).
-  - Vercel 프로덕션 배포 완료 (`2f08c79`, `26036e1`, `303eec0`).
+  - Vercel 프로덕션 배포 완료 (`2f08c79`, `26036e1`, `303eec0`, `e142b85`, `f01428b`).
+
 

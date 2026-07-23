@@ -103,3 +103,35 @@
   - 갭 분석 보고서: `docs/03-analysis/committee-vote-stabilization.analysis.md`
   - 최종 완료 보고서: `docs/04-report/committee-vote-stabilization.report.md`
 
+### 📌 5. XLSX 지연 로딩(Dynamic Import) 최적화 & 번들 용량 절감
+- **정적 XLSX import 전면 제거 및 실행 시점 Dynamic Import 적용**
+  - 엑셀 다운로드 및 업로드 실행 시점에만 XLSX 라이브러리를 동적 로드하도록 개선.
+  - 관리 화면 5개 추가 지연 로딩 및 spreadsheet 초기 preload 제거.
+  - 번들 초기 preload 용량 3,674,350B ➔ 3,227,603B로 **약 436KB(446,747B) 획기적 절감**.
+  - TypeScript 오류 0건, 린트 경고 0건, 프로덕션 빌드 및 자산 검사(39/39) 100% 통과 (`e142b85`).
+
+### 📌 6. 인증 보강 & 공통 Approved Resolver 구축 (Fail-Closed 보안 강화)
+- **`resolveApprovedRiseUser` 공통 인증 프로필 Resolver 구현 (`src/services/auth-service.ts`)**
+  - `uuid`, `approved`, 허용된 `role_key`를 단일 시점에 일괄 검증.
+  - 알 수 없는 역할(unknown role)이 `RESEARCHER`로 임의 fallback되던 취약성 전면 제거 (Fail-closed 보안 적용).
+  - 검증 실패 시 local Supabase 세션을 안전 폐기하고 일반화된 보안 에러 메시지 적용.
+  - 갭 분석 완료 (일치율 43% ➔ 48%) (`ce81d16`, `fc8ca1b`, `7b7b819`).
+
+### 📌 7. 외부위원 심의 로그인 화면 UI/UX 리디자인 (CommitteeExternalVote)
+- **외부위원 로그인 뷰 UX/UI 현대화 (`src/components/CommitteeExternalVote.tsx`, `src/styles/dashboard.css`)**
+  - 기존 외부위원 인증, 보안 PIN, 세션 저장, 서면 심의, 의결, 자필 전자서명 기능 100% 유지.
+  - URL 위원회 매핑 코드를 자동 감지하여 전용 필드 표시.
+  - 데스크톱 2열 / 모바일(390px) 1열 반응형 구조 적용으로 가로 넘침(Overflow) 100% 소멸.
+  - 위원회 회귀시험 6/6 통과 및 Vercel 배포 Ready (`f01428b`).
+  - 결과 보고서: `docs/04-report/committee-external-login-redesign.report.md`
+
+### 📌 8. 대시보드 종합 품질 & PAdES 전자서명/인증 안전 기틀 구현
+- **Rolldown `strictExecutionOrder` & Oxlint 접근성 정밀 적용**
+  - Rolldown 번들 실행 순서 보증 및 500KB 번들 경고 해결, Oxlint 접근성 검사 완료.
+  - 위원회/OTP/전자서명 E2E 테스트 18/18 통과.
+- **PAdES 기반 전자서명 & 이메일/SMS OTP 인프라 구축**
+  - `100_create_committee_report_signatures.sql` 마이그레이션 및 PAdES Edge Function (`supabase/functions/committee-report-sign/index.ts`) 선제 구축.
+  - 외부 사업자 연동 전까지 기존 HMAC PDF 서명 기능 유지 및 안전 차단 가드 적용.
+  - 보고서: `docs/04-report/dashboard-quality-auth-signing.report.md` (설계 일치율 86%).
+
+
