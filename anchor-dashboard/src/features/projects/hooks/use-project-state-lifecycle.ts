@@ -47,3 +47,26 @@ export const useProjectFetchReset = (
     fetchedProjectsRef.current = "";
   }, [selectedYear, setIsFetchCompleted, fetchedProjectsRef]);
 };
+
+export const useProjectNormalization = (
+  projects: LegacyAppRecord[],
+  setProjects: Dispatch<SetStateAction<LegacyAppRecord[]>>,
+  normalizeProjects: (
+    projects: LegacyAppRecord[]
+  ) => LegacyAppRecord[]
+) => {
+  useEffect(() => {
+    if (!projects || !Array.isArray(projects) || projects.length === 0) {
+      return;
+    }
+
+    const normalized = normalizeProjects(projects);
+    if (JSON.stringify(projects) !== JSON.stringify(normalized)) {
+      console.log(
+        "♻️ [비즈니스 룰] 프로젝트 예산 다년도 동기화 및 A1나 예외 격리 정규화 규칙을 실행합니다."
+      );
+      setProjects(normalized);
+    }
+  // oxlint-disable-next-line react/exhaustive-deps -- project changes own normalization; render-local normalizer identity must not retrigger the effect.
+  }, [projects]);
+};

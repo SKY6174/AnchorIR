@@ -56,7 +56,7 @@ import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./f
 import { useProjectAutosave } from "./features/projects/hooks/use-project-autosave";
 import { useKpiSelection, useVisibleKpiSubTabGuard } from "./features/projects/hooks/use-kpi-selection-lifecycle";
 import { useProjectLocalBackup } from "./features/projects/hooks/use-project-local-backup";
-import { useJointProgramDetection, useProjectFetchReset } from "./features/projects/hooks/use-project-state-lifecycle";
+import { useJointProgramDetection, useProjectFetchReset, useProjectNormalization } from "./features/projects/hooks/use-project-state-lifecycle";
 import { deleteMonthlySchedulesByIds, deleteMonthlySchedulesByYear, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, fetchStandaloneMonthlyScheduleIds, insertMonthlySchedules, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertMonthlySchedules, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
 import { useDashboardCache } from "./shared/hooks/use-dashboard-cache";
 import { useDashboardCacheMaintenance } from "./shared/hooks/use-dashboard-cache-maintenance";
@@ -2154,15 +2154,12 @@ export default function App() {
     })) as unknown as T;
   };
 
-  // 💡 [정규화 강제화 훅] projects 상태가 갱신되면 비즈니스 정규화 룰 엔진을 통과시켜 3, 4, 5차년도 및 A1나 계획을 강제 교정합니다.
-  useEffect(() => {
-    if (!projects || !Array.isArray(projects) || projects.length === 0) return;
-    const normalized = normalizeProjectsMultiYearData(projects);
-    if (JSON.stringify(projects) !== JSON.stringify(normalized)) {
-      console.log("♻️ [비즈니스 룰] 프로젝트 예산 다년도 동기화 및 A1나 예외 격리 정규화 규칙을 실행합니다.");
-      setProjects(normalized);
-    }
-  }, [projects]);
+  // projects 상태 변경 시 다년도 예산과 종료과제 예외 규칙을 강제 정규화합니다.
+  useProjectNormalization(
+    projects,
+    setProjects,
+    normalizeProjectsMultiYearData
+  );
 
   // 1) 최초 마운트 및 연차 변경 시 DB 데이터 Fetch 연동
   useEffect(() => {
