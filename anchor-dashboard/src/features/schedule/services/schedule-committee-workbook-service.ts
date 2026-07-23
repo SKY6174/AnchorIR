@@ -43,3 +43,51 @@ export const downloadCommitteeMemberList = async (
   XLSX.utils.book_append_sheet(workbook, worksheet, "위원명단");
   XLSX.writeFile(workbook, `${committeeName}_위원명단_목록.xlsx`);
 };
+
+export type CommitteeWorkbookParseResult =
+  | { status: "no-data"; members: [] }
+  | { status: "no-members"; members: [] }
+  | { status: "success"; members: any[] };
+
+export const parseCommitteeMemberWorkbook = async (
+  arrayBuffer: ArrayBuffer,
+  committeeId: string,
+  currentMemberCount: number,
+  selectedYear: number | string | undefined
+): Promise<CommitteeWorkbookParseResult> => {
+  const XLSX = await import("xlsx");
+  const data = new Uint8Array(arrayBuffer);
+  const workbook = XLSX.read(data, { type: "array" });
+  const sheetName = workbook.SheetNames[0];
+  const worksheet = workbook.Sheets[sheetName];
+  const rows = XLSX.utils.sheet_to_json<unknown[]>(worksheet, { header: 1 });
+
+  if (rows.length <= 1) {
+    return { status: "no-data", members: [] };
+  }
+
+  const members: any[] = [];
+  for (let index = 1; index < rows.length; index++) {
+    const row = rows[index];
+    if (!row || row.length < 2 || !row[1]) continue;
+
+    members.push({
+      committee_id: committeeId,
+      type: row[0] || "위원",
+      name: String(row[1]).trim(),
+      org: row[2] || "울산과학대학교",
+      dept: row[3] || "-",
+      rank: row[4] || "",
+      location: row[5] || "교내",
+      year: selectedYear,
+      note: row[6] || "",
+      sort_order: currentMemberCount + index
+    });
+  }
+
+  if (members.length === 0) {
+    return { status: "no-members", members: [] };
+  }
+
+  return { status: "success", members };
+};

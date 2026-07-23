@@ -38,7 +38,8 @@ import {
 import { fetchScheduleCommittees } from "../features/schedule/services/schedule-committee-service";
 import {
   downloadCommitteeMemberList,
-  downloadCommitteeRegistrationTemplate
+  downloadCommitteeRegistrationTemplate,
+  parseCommitteeMemberWorkbook
 } from "../features/schedule/services/schedule-committee-workbook-service";
 import {
   applyMeetingAiDataRules,
@@ -225,19 +226,7 @@ export default function ScheduleManager({
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
-        const XLSX = await import("xlsx");
         if (!(evt.target?.result instanceof ArrayBuffer)) return;
-        const data = new Uint8Array(evt.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-
-        // 2차원 배열 구조로 엑셀 데이터 변환
-        const jsonData = XLSX.utils.sheet_to_json<unknown[]>(worksheet, { header: 1 });
-        if (jsonData.length <= 1) {
-          alert("업로드할 위원 데이터가 존재하지 않습니다.");
-          return;
-        }
 
         const activeComm = committees.find(c => c.id === selectedCommitteeId) || committees[0];
         if (!activeComm) {
@@ -245,32 +234,22 @@ export default function ScheduleManager({
           return;
         }
 
-        const newMembers: any[] = [];
         const currentMembersCount = activeComm.members ? activeComm.members.length : 0;
-
-        // 헤더 다음인 첫 번째 행부터 시작
-        for (let i = 1; i < jsonData.length; i++) {
-          const row = jsonData[i];
-          if (!row || row.length < 2 || !row[1]) continue; // 성명(두 번째 컬럼) 필수
-
-          newMembers.push({
-            committee_id: activeComm.id,
-            type: row[0] || "위원",
-            name: String(row[1]).trim(),
-            org: row[2] || "울산과학대학교",
-            dept: row[3] || "-",
-            rank: row[4] || "",
-            location: row[5] || "교내",
-            year: selectedYear,
-            note: row[6] || "",
-            sort_order: currentMembersCount + i
-          });
+        const parseResult = await parseCommitteeMemberWorkbook(
+          evt.target.result,
+          activeComm.id,
+          currentMembersCount,
+          selectedYear
+        );
+        if (parseResult.status === "no-data") {
+          alert("업로드할 위원 데이터가 존재하지 않습니다.");
+          return;
         }
-
-        if (newMembers.length === 0) {
+        if (parseResult.status === "no-members") {
           alert("파싱된 위원 정보가 없습니다. 서식 양식을 확인해 주세요.");
           return;
         }
+        const newMembers = parseResult.members;
 
         const { error } = await scheduleDb
           .from("committee_members")
