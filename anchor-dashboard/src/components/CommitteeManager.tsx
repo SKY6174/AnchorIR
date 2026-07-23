@@ -36,6 +36,28 @@ const ENABLE_INTERNAL_COMMITTEE_VOTE_FORM = false;
 // to committee-only RPCs and columns already present in the deployed schema.
 const committeeDb = supabase as any;
 
+const generateCommitteeSecurityPin = (): string => {
+  const range = 900_000;
+  const rejectionLimit = Math.floor(0x1_0000_0000 / range) * range;
+  const randomValue = new Uint32Array(1);
+  let pin = "";
+
+  do {
+    do {
+      crypto.getRandomValues(randomValue);
+    } while (randomValue[0] >= rejectionLimit);
+    pin = String(100_000 + (randomValue[0] % range));
+  } while (pin === "123456");
+
+  return pin;
+};
+
+const generateCommitteePublicCode = (): string => {
+  const bytes = new Uint8Array(18);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
+};
+
 // 💡 [두 번째 그림의 공식 11개 거버넌스 위원회 풀 구성] (요구사항 2 반영)
 const GOVERNANCE_COMMITTEES_MASTER = [
   { id: "total", name: "앵커총괄위원회", purpose: "앵커 사업 총괄 / 사업계획서 심의 / 교육환경 및 기자재 구축심의 / 예산변경안 최종승인 등", badge: "최고의사결정", color: "linear-gradient(135deg, #ec4899 0%, #be123c 100%)", constitution: "내부 9인, 외부 2인 등", cycle: "반기별 1회" },
@@ -293,9 +315,20 @@ const isPersistedCommitteeMeeting = (meeting: unknown): meeting is CommitteeMeet
   return id.length > 0 && !id.startsWith("local-meeting-");
 };
 
-const getCommitteeMeetingSaveErrorMessage = (error: unknown): string => {
+type CommitteeMeetingSaveStage = "meeting" | "document" | "agenda" | "credential";
+
+const getCommitteeMeetingSaveErrorMessage = (
+  error: unknown,
+  stage: CommitteeMeetingSaveStage
+): string => {
   const message = getErrorMessage(error).toLowerCase();
 
+  if (stage === "document") {
+    if (message.includes("not_found") || message.includes("non-2xx")) {
+      return "첨부문서 업로드 기능이 운영 서버에 배포되지 않았거나 사용할 수 없습니다. 관리자에게 committee-vote 함수 배포 상태를 확인해 달라고 요청해 주세요.";
+    }
+    return "첨부 PDF를 보안 저장소에 업로드하지 못했습니다. PDF 형식·용량을 확인하고, 관리자에게 보안 저장소 설정을 확인해 달라고 요청해 주세요.";
+  }
   if (message.includes("public_code") && (message.includes("null") || message.includes("not-null"))) {
     return "회의 공개코드 생성 설정이 DB에 적용되지 않았습니다. 관리자에게 DB 마이그레이션 적용을 요청해 주세요.";
   }
@@ -1649,6 +1682,7 @@ export default function CommitteeManager({
       attachment_name: combinedAttachmentName,
       attachment_data: combinedAttachmentData,
       access_pin: generatedPin,
+      public_code: isEditMode ? undefined : generateCommitteePublicCode(),
       status: "ACTIVE"
     };
 
@@ -1675,6 +1709,7 @@ export default function CommitteeManager({
     );
 
     let createdMeeting: CommitteeMeeting | null = null;
+    let saveStage: CommitteeMeetingSaveStage = "meeting";
 
     try {
 
@@ -1703,8 +1738,10 @@ export default function CommitteeManager({
           .eq("meeting_id", String(editingMeetingId));
         if (delErr) throw delErr;
 
+        saveStage = "document";
         const agendaPayloads = await buildAgendaPayloads(editingMeetingId);
 
+        saveStage = "agenda";
         const { error: agendaInsertError } = await committeeDb.from("meeting_agendas").insert(agendaPayloads);
         if (agendaInsertError) throw agendaInsertError;
 
@@ -1725,6 +1762,7 @@ export default function CommitteeManager({
           localStorage.setItem("global_attachment_map", JSON.stringify(globalMap));
         } catch { }
 
+        saveStage = "credential";
         const { error: credentialError } = await committeeDb.rpc("issue_committee_meeting_credentials", {
           p_meeting_id: String(editingMeetingId),
           p_pin: generatedPin,
@@ -1744,8 +1782,10 @@ export default function CommitteeManager({
 
         // 2-B. 신규 의안 데이터 적재
         if (createdMeeting && meetingForm.agendas.length > 0) {
+          saveStage = "document";
           const agendaPayloads = await buildAgendaPayloads(createdMeeting.id);
 
+          saveStage = "agenda";
           const { error: agendaInsertError } = await committeeDb.from("meeting_agendas").insert(agendaPayloads);
           if (agendaInsertError) throw agendaInsertError;
 
@@ -1765,6 +1805,7 @@ export default function CommitteeManager({
           } catch { }
         }
 
+        saveStage = "credential";
         const { error: credentialError } = await committeeDb.rpc("issue_committee_meeting_credentials", {
           p_meeting_id: String(createdMeeting.id),
           p_pin: generatedPin,
@@ -1820,7 +1861,7 @@ export default function CommitteeManager({
         }
       }
 
-      alert(`회의 생성에 실패했습니다.\n\n${getCommitteeMeetingSaveErrorMessage(err)}\n\n로컬 임시 회의와 외부위원 링크는 생성되지 않았습니다.`);
+      alert(`회의 생성에 실패했습니다.\n\n${getCommitteeMeetingSaveErrorMessage(err, saveStage)}\n\n로컬 임시 회의와 외부위원 링크는 생성되지 않았습니다.`);
     } finally {
       setIsSubmittingMeeting(false);
     }
@@ -2829,7 +2870,17 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   회의 의결 목록
                 </span>
                 {isManager && selectedCommittee && (
-                  <button className="btn btn-primary" onClick={() => setIsMeetingModalOpen(true)} style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setMeetingForm(previous => ({
+                        ...previous,
+                        access_pin: generateCommitteeSecurityPin()
+                      }));
+                      setIsMeetingModalOpen(true);
+                    }}
+                    style={{ padding: "0.2rem 0.4rem", fontSize: "0.75rem" }}
+                  >
                     <Plus size={12} /> 회의 생성
                   </button>
                 )}
@@ -4379,7 +4430,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   </small>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label htmlFor="a11y-committee-manager-17" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 보안 PIN코드 (필수)</label>
+                  <label htmlFor="a11y-committee-manager-17" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 보안 PIN코드 (자동 생성)</label>
                   <input id="a11y-committee-manager-17"
                     type="text"
                     inputMode="numeric"
@@ -4387,12 +4438,12 @@ ${selectedMeetingAgendas.map((a, idx) => {
                     maxLength={6}
                     placeholder="123456을 제외한 6자리 숫자"
                     value={meetingForm.access_pin}
-                    onChange={(e) => setMeetingForm({ ...meetingForm, access_pin: e.target.value })}
+                    onChange={(e) => setMeetingForm({ ...meetingForm, access_pin: e.target.value.replace(/\D/g, "").slice(0, 6) })}
                     className="form-input"
                     style={{ width: "100%", padding: "0.5rem", borderRadius: "6px" }}
                   />
                   <small style={{ color: "#f59e0b", fontSize: "0.7rem", marginTop: "0.25rem", display: "block" }}>
-                    * 보안상 123456은 사용할 수 없습니다.
+                    * 회의 생성 시 안전한 6자리 숫자가 자동 입력됩니다. 123456은 생성되지 않습니다.
                   </small>
                 </div>
               </div>

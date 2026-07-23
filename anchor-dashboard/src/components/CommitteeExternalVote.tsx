@@ -10,6 +10,29 @@ import {
 import { CommitteeVoteContext } from "../types/committee-vote";
 import { buildValidatedVoteItems, createIdempotencyKey } from "../utils/committee-vote-validation";
 
+const COMMITTEE_DISPLAY_NAMES: Record<string, string> = {
+  total: "앵커총괄위원회",
+  planning: "앵커기획위원회",
+  planning_op: "앵커기획위원회",
+  budget: "앵커사업비관리위원회",
+  evaluation: "앵커사업자체평가위원회",
+  advisory: "앵커사업자문회의",
+  ecc: "ECC센터운영위원회",
+  ecc_op: "ECC센터운영위원회",
+  icc: "ICC센터운영위원회",
+  icc_op: "ICC센터운영위원회",
+  rcc: "RCC센터운영위원회",
+  rcc_op: "RCC센터운영위원회",
+  aidx_op: "AID-X지원센터운영위원회",
+  neulbom_op: "울산늘봄누리센터운영위원회",
+  newind_op: "신산업특화센터운영위원회"
+};
+
+const getCommitteeSystemName = (committeeId: unknown): string => {
+  const committeeName = COMMITTEE_DISPLAY_NAMES[String(committeeId || "").toLowerCase()] || "위원회";
+  return `앵커사업단 ${committeeName} 시스템`;
+};
+
 // 💡 [안건 제목 완벽 정제 헬퍼]: 파일 확장자(.pdf, .hwp 등), 서술형 파일명, [RISE사업...], (5점척도) 지문 완전 제거
 const cleanAgendaTitle = (raw: string) => {
   if (!raw) return "";
@@ -266,7 +289,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginForm.name || !loginForm.pin) {
-      alert("성명과 보안 PIN(6자리)을 입력해 주세요.");
+      alert("위원 성명과 안내받은 6자리 보안코드를 입력해 주세요.");
       return;
     }
 
@@ -455,15 +478,19 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   if (!isAuthorized) {
     const queryParams = new URLSearchParams(window.location.search);
     const accessCode = meetingId || queryParams.get("v") || queryParams.get("meetingId") || queryParams.get("meeting") || queryParams.get("id") || "";
+    const committeeSystemName = getCommitteeSystemName(meeting?.committee_id);
 
     return (
       <main className="committee-login-page">
         <section className="committee-login-hero" aria-label="위원회 보안 안내">
           <div className="committee-login-brand">
             <span className="committee-login-brand-mark">UC</span>
-            <span className="committee-login-brand-copy">
+            <span
+              className="committee-login-brand-copy"
+              aria-label={`울산과학대학교 ${committeeSystemName}`}
+            >
               <strong>울산과학대학교</strong>
-              <small>산학협력단 위원회 시스템</small>
+              <small>{committeeSystemName}</small>
             </span>
           </div>
 
@@ -497,7 +524,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             <span className="committee-login-access-label">MEMBER ACCESS</span>
             <h2>위원 로그인</h2>
             <p className="committee-login-access-description">
-              간사에게 전달받은 위원회 코드와 개인 보안코드를 입력해 주세요.
+              해당 위원회의 위원 성명과 안내받은 6자리 보안코드를 입력해 주세요.
             </p>
 
             <form className="committee-login-form" onSubmit={handleAuthSubmit}>
@@ -511,25 +538,28 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                 className="form-input committee-login-input committee-login-input-readonly"
               />
 
-              <label htmlFor="committee-member-code">위원 코드</label>
+              <label htmlFor="committee-member-code">위원 성명</label>
               <input
                 id="committee-member-code"
                 type="text"
                 value={loginForm.name}
                 onChange={(e) => setLoginForm({ ...loginForm, name: e.target.value })}
-                placeholder="위원 코드를 입력해 주세요."
-                autoComplete="username"
+                placeholder="해당 위원회 위원만 가능합니다."
+                autoComplete="name"
                 className="form-input committee-login-input"
               />
 
-              <label htmlFor="committee-security-code">개인 보안코드</label>
+              <label htmlFor="committee-security-code">보안코드</label>
               <input
                 id="committee-security-code"
                 type="password"
                 value={loginForm.pin}
                 onChange={(e) => setLoginForm({ ...loginForm, pin: e.target.value })}
-                placeholder="개인 보안코드를 입력해 주세요."
-                autoComplete="current-password"
+                placeholder="안내받은 6자리 숫자를 입력해 주세요."
+                inputMode="numeric"
+                pattern="[0-9]{6}"
+                maxLength={6}
+                autoComplete="off"
                 className="form-input committee-login-input"
               />
 
