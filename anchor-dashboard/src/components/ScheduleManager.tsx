@@ -31,6 +31,7 @@ import {
   getStartDayOfWeek,
   getYoutubeEmbedUrl
 } from "../features/schedule/utils/schedule-display-utils";
+import { convertRawTextToMarkdown } from "../features/schedule/services/schedule-ai-document-service";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 const scheduleDb = supabase as any;
@@ -652,58 +653,6 @@ export default function ScheduleManager({
 4. 행사 결과 및 주요 성과
 학생 창업동아리 8개 팀이 참가하여 12시간 동안 집중 비즈니스 모델 빌드업을 거쳤으며, 최종 최우수상 1개 팀(팀명: 울산로컬히어로 - '친환경 수소 자전거 스테이션 인프라 공유 모델')을 선정하여 특허 출원 멘토링 연계를 확정함. 울산 매일 및 지역 언론 보도자료 2건 송출 완료.
     `.trim());
-  };
-
-  // 💡 [교육용 한글 주석] PDF 날것의 텍스트를 요약 없이 마크다운 문서 포맷으로 가꾸어주는 GPT-4o 헬퍼 함수입니다.
-  const convertRawTextToMarkdown = async (rawText: string): Promise<string> => {
-    let apiKey = import.meta.env.VITE_OPENAI_API_KEY || "";
-    if (!apiKey || apiKey.startsWith("sk-") === false) {
-      apiKey = localStorage.getItem("user_openai_api_key") || "";
-    }
-    if (!apiKey) {
-      return rawText;
-    }
-
-    try {
-      const prompt = `
-너는 대학교 RISE 사업단의 서류 정돈 전문가이다.
-제공된 원본 텍스트는 PDF 문서에서 가공 없이 추출된 날것의 줄글 텍스트이다.
-이 텍스트의 내용을 절대로 요약하거나 임의로 축소, 생략하지 말고 모든 세부 안건, 보고사항, 수치, 애로사항, 그리고 참석자 명단 및 서명록 이름들을 그대로 온전히 수용하여 가독성 높고 구조화된 마크다운(Markdown) 문서로 변환해라.
-특히 본문에 기재된 모든 사람의 이름(참석 위원, 서명한 인원 등)은 한 명도 생략하지 말고 그대로 보존해라.
-다른 군더더기 설명 없이 오직 마크다운 내용만을 텍스트로 즉시 반환해라.
-
-원본 텍스트:
-${rawText}
-      `.trim();
-
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [{ role: "user", content: prompt }],
-          temperature: 0.1
-        })
-      });
-
-      if (!response.ok) return rawText;
-
-      const resData = await response.json();
-      let mdText = resData?.choices?.[0]?.message?.content || rawText;
-
-      const mdMatch = mdText.match(/```markdown\s*([\s\S]*?)\s*```/) || mdText.match(/```\s*([\s\S]*?)\s*```/);
-      if (mdMatch && mdMatch[1]) {
-        mdText = mdMatch[1];
-      }
-
-      return mdText.trim();
-    } catch (err) {
-      console.error("Markdown 변환 실패:", err);
-      return rawText;
-    }
   };
 
   // 실제 파일 선택 핸들러
