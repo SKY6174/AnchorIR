@@ -32,6 +32,10 @@ import {
   getYoutubeEmbedUrl
 } from "../features/schedule/utils/schedule-display-utils";
 import { convertRawTextToMarkdown } from "../features/schedule/services/schedule-ai-document-service";
+import {
+  applyMeetingAiDataRules,
+  buildOperatingAgendaDistribution
+} from "../features/schedule/utils/schedule-ai-form-utils";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 const scheduleDb = supabase as any;
@@ -736,131 +740,15 @@ export default function ScheduleManager({
     }
   };
 
-    // AI 분석 결과 폼 자동 보정 및 지능형 매핑 헬퍼 함수
-  const applyMeetingAiDataRules = (
-    aiData: ScheduleFormData,
-    prevFormData: ScheduleFormData
-  ): ScheduleFormData => {
-    const title = aiData.title || prevFormData.title;
-    const location = aiData.location || prevFormData.location;
-
-    // 1) 앵커기획위원회나 ~위원회 명칭인 경우 각종분류를 '각종 위원회' (committee) 로 자동 분류 및 세부 위원회명 추출
-    let category = prevFormData.category || "operating";
-    let committeeType = prevFormData.committeeType || "agency";
-    let dept = prevFormData.dept || "사업운영팀";
-
-    const isCommitteeTitle = title && (title.includes("위원회") || title.includes("자문회의") || title.includes("협의회"));
-    if (isCommitteeTitle) {
-      category = "committee";
-
-      // 1-1) 사업단 위원회 매칭 검사 (agency)
-      const agencyList = [
-        "앵커총괄위원회", "앵커기획위원회", "앵커사업비관리위원회",
-        "앵커사업자체평가위원회", "앵커사업자문회의"
-      ];
-      // 띄어쓰기 무관하게 매칭 검사
-      const titleCleaned = title.replace(/\s+/g, "");
-      let foundAgency = agencyList.find(name => {
-        const nameCleaned = name.replace(/\s+/g, "");
-        const shortNameCleaned = nameCleaned.replace("앵커", "");
-        return titleCleaned.includes(nameCleaned) || titleCleaned.includes(shortNameCleaned);
-      });
-
-      if (foundAgency) {
-        committeeType = "agency";
-        dept = foundAgency;
-      } else {
-        // 1-2) 센터 위원회 매칭 검사 (center)
-        const centerList = [
-          { key: "ECC센터", match: ["ECC", "ecc"] },
-          { key: "ICC센터", match: ["ICC", "icc"] },
-          { key: "RCC센터", match: ["RCC", "rcc"] },
-          { key: "AID-X지원센터", match: ["AID-X", "aidx", "AID"] },
-          { key: "울산늘봄누리센터", match: ["늘봄", "늘봄누리"] },
-          { key: "신산업특화센터", match: ["신산업", "특화센터"] }
-        ];
-
-        let foundCenter = centerList.find(c => c.match.some(m => title.toLowerCase().includes(m.toLowerCase())));
-        if (foundCenter) {
-          committeeType = "center";
-          dept = foundCenter.key;
-        }
-      }
-    }
-
-    // 2) 서면부의인 경우(또는 시작/종료 시간이 빈 문자열이거나 명시되지 않은 경우) 전일 체크 및 시간 필드 비우기
-    const isWrittenQuery = location && (location.includes("서면부의") || location.includes("서면 회의") || location.includes("이메일"));
-    const isTimeOmitted = !aiData.meetingStartTime || !aiData.meetingEndTime || aiData.meetingStartTime === "00:00" || aiData.meetingStartTime === "";
-
-    const shouldBeAllDay = isWrittenQuery || isTimeOmitted;
-
-    return {
-      ...prevFormData,
-      title: title,
-      location: location,
-      category: category,
-      committeeType: category === "committee" ? committeeType : prevFormData.committeeType,
-      dept: category === "committee" ? dept : prevFormData.dept,
-      meetingDate: aiData.meetingDate || prevFormData.meetingDate,
-      noTime: shouldBeAllDay,
-      meetingStartTime: shouldBeAllDay ? "" : (aiData.meetingStartTime || prevFormData.meetingStartTime || "10:00"),
-      meetingEndTime: shouldBeAllDay ? "" : (aiData.meetingEndTime || prevFormData.meetingEndTime || "11:00"),
-      attendees: aiData.attendees || prevFormData.attendees
-    };
-  };
-
-  // 💡 [교육용 한글 주석] 회의록 분석 결과인 의제/결과 리스트를 8대 부서에 지능적으로 자동 분배하여 입력 폼에 기입합니다.
   const distributeOperatingAgendas = (
     agendaResultPairs: AgendaResultPair[],
     currentCategory: string
-  ): ScheduleFormData => {
-    const isOperating = currentCategory === "operating" || formData.category === "operating";
-    if (!isOperating || !agendaResultPairs || agendaResultPairs.length === 0) {
-      return {};
-    }
-
-    const depts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
-    const newAgendas: Record<string, string> = {};
-    const newResults: Record<string, string> = {};
-
-    depts.forEach(d => {
-      newAgendas[d] = "";
-      newResults[d] = "";
-    });
-
-    agendaResultPairs.forEach(pair => {
-      const text = pair.agenda || "";
-      const resultText = pair.result || "";
-
-      // 한글 명칭 매칭 검사 (가장 근접한 부서 찾기)
-      let matchedDept = depts.find(d => {
-        const cleanD = d.replace("센터", "").replace("지원센터", "").replace("팀", "");
-        return text.includes(cleanD) || resultText.includes(cleanD) ||
-               (d === "사업운영팀" && (text.includes("사업단") || resultText.includes("사업단")));
-      });
-
-      // 영어 약어 등 매칭 예외 보완
-      if (!matchedDept) {
-        if (text.toLowerCase().includes("ecc") || resultText.toLowerCase().includes("ecc")) matchedDept = "ECC센터";
-        else if (text.toLowerCase().includes("icc") || resultText.toLowerCase().includes("icc")) matchedDept = "ICC센터";
-        else if (text.toLowerCase().includes("rcc") || resultText.toLowerCase().includes("rcc")) matchedDept = "RCC센터";
-        else if (text.toLowerCase().includes("aid") || resultText.toLowerCase().includes("aid")) matchedDept = "AID-X지원센터";
-        else if (text.toLowerCase().includes("늘봄") || resultText.toLowerCase().includes("늘봄")) matchedDept = "울산늘봄누리센터";
-        else if (text.toLowerCase().includes("신산업") || resultText.toLowerCase().includes("신산업")) matchedDept = "신산업특화센터";
-        else matchedDept = "사업운영팀"; // 매칭 실패 시 기본으로 '사업운영팀'에 기입
-      }
-
-      if (matchedDept) {
-        newAgendas[matchedDept] = (newAgendas[matchedDept] ? newAgendas[matchedDept] + "\n" : "") + text;
-        newResults[matchedDept] = (newResults[matchedDept] ? newResults[matchedDept] + "\n" : "") + resultText;
-      }
-    });
-
-    return {
-      operatingAgendas: newAgendas,
-      operatingResults: newResults
-    };
-  };
+  ): ScheduleFormData =>
+    buildOperatingAgendaDistribution(
+      agendaResultPairs,
+      currentCategory,
+      formData.category
+    );
 
   // 회의록 분석 전용 모의 폴백 함수
   const runMeetingSimulationFallback = () => {
