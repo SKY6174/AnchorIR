@@ -5792,6 +5792,7 @@ export default function App() {
       }
     }, 150);
     return () => clearTimeout(timer);
+  // oxlint-disable-next-line react/exhaustive-deps -- certificate changes and load guards own synchronization; year and auth restoration must not trigger delete-and-reinsert writes.
   }, [unifiedCertificates, isDbLoaded, isFetchCompleted, isUnifiedCertificatesLoaded]);
 
   // 3-3) Scholarships 자동 저장 디바운스 훅
@@ -5856,6 +5857,7 @@ export default function App() {
       }
     }, 150);
     return () => clearTimeout(timer);
+  // oxlint-disable-next-line react/exhaustive-deps -- scholarship changes and load guards own synchronization; year and auth restoration must not trigger delete-and-reinsert writes.
   }, [scholarships, isDbLoaded, isFetchCompleted, isScholarshipsLoaded]);
 
   // 4) Procurement Env 자동 저장 디바운스 훅
@@ -5969,6 +5971,7 @@ export default function App() {
       }
     }, 150);
     return () => clearTimeout(timer);
+  // oxlint-disable-next-line react/exhaustive-deps -- environment data, year, and load guards own synchronization; auth restoration is a permission check, not a write trigger.
   }, [envData, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 5) Procurement Equipment 자동 저장 디바운스 훅
@@ -6086,6 +6089,7 @@ export default function App() {
       }
     }, 150);
     return () => clearTimeout(timer);
+  // oxlint-disable-next-line react/exhaustive-deps -- equipment data, year, and load guards own synchronization; auth restoration is a permission check, not a write trigger.
   }, [equipData, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 6) Procurement Services 자동 저장 디바운스 훅
