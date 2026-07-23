@@ -31,6 +31,8 @@ BEGIN
      OR EXISTS (SELECT 1 FROM public.meeting_agendas WHERE meeting_id = test_meeting_id)
      OR EXISTS (SELECT 1 FROM public.meeting_responses WHERE meeting_id = test_meeting_id)
      OR EXISTS (SELECT 1 FROM public.meeting_agenda_votes WHERE meeting_id = test_meeting_id)
+     OR EXISTS (SELECT 1 FROM public.meeting_results WHERE meeting_id = test_meeting_id)
+     OR EXISTS (SELECT 1 FROM public.committee_report_snapshots WHERE meeting_id = test_meeting_id)
      OR EXISTS (SELECT 1 FROM public.committee_vote_audit_log WHERE meeting_id = test_meeting_id) THEN
     RAISE EXCEPTION 'TEST_FIXTURE_CLEANUP_INCOMPLETE';
   END IF;
