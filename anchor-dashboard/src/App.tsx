@@ -34,12 +34,12 @@ import type { ProcurementItem } from "./components/ProcurementManager";
 import type { ScheduleCommitteeMember } from "./components/ScheduleManager";
 import { Sun, Moon, LogOut, HelpCircle, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen, FileSpreadsheet } from "lucide-react";
 import { supabase } from "./supabaseClient";
-import { resolveApprovedRiseUser } from "./services/auth-service";
 import { parseCommitteeVotePath } from "./utils/committee-short-link";
 import type { AssetReservation, Html2PdfFactory, LegacyAppRecord, LegacyYearRecord, ProgramVersionRequest, RiseMemberInsert, ScheduleEventInsert, ScheduleMeetingInsert, ScheduleMonthlyInsert } from "./app/app-types";
 import { INITIAL_AGREEMENTS, INITIAL_MEMBERS } from "./app/app-seed-data";
 import { formatAssignee, formatDataToMultiYear, formatToMillionWon, getCalculatedYearFromDate, getCleanProjectsForStorage, getErrorMessage, getNormalizedKpi, getRealUnitId, mergeProjectsWithInitial, migrateProgramIds, recalculateCarryOver } from "./app/app-data-utils";
 import { deleteAgreementsByYear, insertAgreements } from "./features/agreements/services/agreement-service";
+import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchPendingVersionRequests, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
 import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
 import { deleteScholarshipsByYear, deleteUnifiedCertificatesByYear, insertScholarships, insertUnifiedCertificates } from "./features/management/services/management-record-service";
@@ -5049,48 +5049,7 @@ export default function App() {
   }, [activeTab, projectsSubTab, mgmtSubTab, kpiSubTab, selectedProgId, committeeSubTab]);
 
   // Supabase Auth 세션을 기준으로 rise_users 업무 프로필을 복원합니다.
-  useEffect(() => {
-    let active = true;
-
-    const restoreRiseUser = async (session: any) => {
-      if (!session?.user) {
-        if (active) setCurrentUser(null);
-        localStorage.removeItem("anchor_logged_in_user");
-        return;
-      }
-
-      try {
-        const restoredUser = await resolveApprovedRiseUser(session.user);
-        localStorage.setItem("anchor_logged_in_user", JSON.stringify(restoredUser));
-        if (active) setCurrentUser(restoredUser);
-      } catch {
-        localStorage.removeItem("anchor_logged_in_user");
-        if (active) setCurrentUser(null);
-      }
-    };
-
-    supabase.auth.getSession().then(({ data, error }) => {
-      if (error) {
-        console.error("Supabase session restore failed:", error);
-        return;
-      }
-      restoreRiseUser(data.session);
-    });
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event: string, session: any) => {
-      if (event === "SIGNED_OUT") {
-        localStorage.removeItem("anchor_logged_in_user");
-        if (active) setCurrentUser(null);
-      } else if (event === "USER_UPDATED") {
-        restoreRiseUser(session);
-      }
-    });
-
-    return () => {
-      active = false;
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
+  useApprovedAuthSession({ setCurrentUser });
 
   // 다크모드 바인딩
   useEffect(() => {
