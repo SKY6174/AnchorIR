@@ -52,7 +52,8 @@ import { useApprovalDataRefresh, useRegisteredUsersRefresh } from "./features/ma
 import { usePortalMenuVisibility } from "./features/management/hooks/use-portal-menu-visibility";
 import { useEnvironmentAutosave } from "./features/procurement/hooks/use-environment-autosave";
 import { useEquipmentAutosave } from "./features/procurement/hooks/use-equipment-autosave";
-import { deleteServiceRecordsByYear, insertServiceRecords, probeProcurementAdvancedColumns } from "./features/procurement/services/procurement-data-service";
+import { useServiceAutosave } from "./features/procurement/hooks/use-service-autosave";
+import { probeProcurementAdvancedColumns } from "./features/procurement/services/procurement-data-service";
 import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
 import { useProjectAutosave } from "./features/projects/hooks/use-project-autosave";
@@ -3414,111 +3415,16 @@ export default function App() {
   });
 
   // 6) Procurement Services 자동 저장 디바운스 훅
-  useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
-    if (!currentUser || currentRole?.id === "GUEST") return;
-
-    // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
-    if (!serviceData || serviceData.length === 0) return;
-
-    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
-    const currentCleanStr = JSON.stringify(serviceData);
-    if (!fetchedServiceDataRef.current || fetchedServiceDataRef.current === currentCleanStr) {
-      safeSetLocalStorage(`anchor_cache_serv_y${selectedYear}`, currentCleanStr, selectedYear);
-      return;
-    }
-
-    safeSetLocalStorage(`anchor_cache_serv_y${selectedYear}`, currentCleanStr, selectedYear);
-    setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
-      try {
-        await deleteServiceRecordsByYear(selectedYear);
-        if (serviceData.length > 0) {
-          const insertPayload = serviceData.map(s => ({
-            year: selectedYear,
-            unit: s.unit || "A1",
-            program_id: s.programId || "",
-            program_name: s.programName || "",
-            dept_name: s.deptName || "",
-            division_name: s.divisionName || "",
-            password: s.password || "1234",
-            related_docs: s.relatedDocs || "",
-            title: s.title,
-            purpose: s.purpose,
-            provider_qual: s.providerQual,
-            step: s.step || 1,
-            budget_plan: s.budgetPlan,
-            budget_spent: s.budgetSpent,
-            op_result: s.opResult,
-            // 7대 절차 날짜
-            date_pp: s.datePp || null,
-            date_rfo: s.dateRfo || null,
-            date_b: s.dateB || null,
-            date_es: s.dateEs || null,
-            date_c: s.dateC || null,
-            date_e: s.dateE || null,
-            date_i: s.dateI || null,
-            // 3종 관련 문서 및 AI 데이터
-            doc_plan: s.docPlan || "",
-            doc_purchase: s.docPurchase || "",
-            doc_bid: s.doc_bid || s.docBid || "",
-            doc_plan_file_name: s.docPlanFileName || "",
-            doc_purchase_file_name: s.docPurchaseFileName || "",
-            doc_bid_file_name: s.docBidFileName || "",
-            doc_plan_file_size: Number(s.docPlanFileSize) || 0,
-            doc_purchase_file_size: Number(s.docPurchaseFileSize) || 0,
-            doc_bid_file_size: Number(s.docBidFileSize) || 0,
-            doc_plan_file_url: s.docPlanFileUrl || "",
-            doc_purchase_file_url: s.docPurchaseFileUrl || "",
-            doc_bid_file_url: s.docBidFileUrl || "",
-            ai_proposal_data: s.aiProposalData || null,
-            ai_purchase_data: s.aiPurchaseData || null,
-            ai_bid_data: s.aiBidData || null
-          }));
-
-          let error = null;
-
-          if (window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__) {
-            const safePayload = insertPayload.map(item => ({
-              year: item.year,
-              title: item.title,
-              step: item.step,
-              budget_plan: item.budget_plan,
-              budget_spent: item.budget_spent,
-              op_result: item.op_result
-            }));
-            const { error: retryErr } = await insertServiceRecords(safePayload);
-            error = retryErr;
-          } else {
-            const { error: firstErr } = await insertServiceRecords(insertPayload);
-            error = firstErr;
-
-            if (error) {
-              console.warn("DB에 procurement_services 고도화 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
-              window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = true;
-              const safePayload = insertPayload.map(item => ({
-                year: item.year,
-                title: item.title,
-                step: item.step,
-                budget_plan: item.budget_plan,
-                budget_spent: item.budget_spent,
-                op_result: item.op_result
-              }));
-              const { error: retryErr } = await insertServiceRecords(safePayload);
-              error = retryErr;
-            }
-          }
-
-          if (error) throw error;
-        }
-        setSyncStatus("synced");
-      } catch {
-        setSyncStatus("error");
-      }
-    }, 150);
-    return () => clearTimeout(timer);
-  // oxlint-disable-next-line react/exhaustive-deps -- service data, year, and load guards own synchronization; auth restoration is a permission check, not a write trigger.
-  }, [serviceData, selectedYear, isDbLoaded, isFetchCompleted]);
+  useServiceAutosave({
+    serviceData,
+    selectedYear,
+    isDbLoaded,
+    isFetchCompleted,
+    canWrite: Boolean(currentUser && currentRole?.id !== "GUEST"),
+    fetchedServiceDataRef,
+    safeSetLocalStorage,
+    setSyncStatus
+  });
 
   // 최신 monthlySchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
   const latestMonthlySchedulesRef = useRef<LegacyAppRecord[] | null>(null);
