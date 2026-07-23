@@ -1,34 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import { supabase } from "../supabaseClient";
 import { Users, Lock, FileText, Check, AlertTriangle, Send, Vote, Upload, RefreshCw, LogOut } from "lucide-react";
-import CryptoJS from "crypto-js";
-
-/**
- * 💡 Rule 8 보안 최우선 과제 준수: 전자서명 AES 암호화 키
- */
-const SIGNATURE_SECRET_KEY = "anchor_signature_encryption_key_secure_2026";
-
-/**
- * 💡 [시연 가드 전용 기획위원 마스터 명단 16인]
- */
-const MOCK_PLANNING_MEMBERS = [
-  { committee_id: "planning", type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
-  { committee_id: "planning", type: "위원", name: "김강연", org: "울산과학대학교", dept: "앵커사업단", rank: "교수", location: "교내", note: "", sort_order: 2 },
-  { committee_id: "planning", type: "위원", name: "최윤아", org: "울산과학대학교", dept: "간호학부", rank: "교수", location: "교내", note: "", sort_order: 3 },
-  { committee_id: "planning", type: "위원", name: "홍광표", org: "울산과학대학교", dept: "기계공학부", rank: "교수", location: "교내", note: "", sort_order: 4 },
-  { committee_id: "planning", type: "위원", name: "장광일", org: "울산과학대학교", dept: "전기전자공학부", rank: "교수", location: "교내", note: "", sort_order: 5 },
-  { committee_id: "planning", type: "위원", name: "이정준", org: "울산과학대학교", dept: "IT융합학부", rank: "교수", location: "교내", note: "", sort_order: 6 },
-  { committee_id: "planning", type: "위원", name: "정가영", org: "울산과학대학교", dept: "화학공학과", rank: "교수", location: "교내", note: "", sort_order: 7 },
-  { committee_id: "planning", type: "위원", name: "정회걸", org: "울산과학대학교", dept: "건축과", rank: "교수", location: "교내", note: "", sort_order: 8 },
-  { committee_id: "planning", type: "위원", name: "김상협", org: "울산과학대학교", dept: "실내건축디자인과", rank: "교수", location: "교내", note: "", sort_order: 9 },
-  { committee_id: "planning", type: "위원", name: "박정아", org: "울산과학대학교", dept: "호텔조리제빵과", rank: "교수", location: "교내", note: "", sort_order: 10 },
-  { committee_id: "planning", type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 11 },
-  { committee_id: "planning", type: "위원", name: "남기석", org: "울산과학대학교", dept: "지역협업센터(RCC)", rank: "센터장", location: "교내", note: "", sort_order: 12 },
-  { committee_id: "planning", type: "위원", name: "신경삼", org: "울산과학대학교", dept: "글로벌비즈니스학과", rank: "교수", location: "교내", note: "", sort_order: 13 },
-  { committee_id: "planning", type: "위원", name: "박정하", org: "울산과학대학교", dept: "유아교육과", rank: "교수", location: "교내", note: "", sort_order: 14 },
-  { committee_id: "planning", type: "위원", name: "이현주", org: "울산과학대학교", dept: "세무회계학과", rank: "교수", location: "교내", note: "", sort_order: 15 },
-  { committee_id: "planning", type: "위원", name: "서화지", org: "울산과학대학교", dept: "사회복지학과", rank: "교수", location: "교내", note: "", sort_order: 16 }
-];
+import {
+  authenticateCommitteeVoter,
+  getCommitteeVoteContext,
+  getCommitteeVoteErrorMessage,
+  getPublicCommitteeMeeting,
+  submitCommitteeVote
+} from "../services/committee-vote-service";
+import { CommitteeVoteContext } from "../types/committee-vote";
+import { buildValidatedVoteItems, createIdempotencyKey } from "../utils/committee-vote-validation";
 
 // 💡 [안건 제목 완벽 정제 헬퍼]: 파일 확장자(.pdf, .hwp 등), 서술형 파일명, [RISE사업...], (5점척도) 지문 완전 제거
 const cleanAgendaTitle = (raw: string) => {
@@ -80,15 +60,15 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
   const [loginForm, setLoginForm] = useState<{ name: string; pin: string }>({ name: "", pin: "" });
   const [authMember, setAuthMember] = useState<any>(null);
+  const [voterToken, setVoterToken] = useState<string>("");
 
   // 선택된 회의의 의안 목록 및 위원들의 투표 수집 정보
   const [selectedMeetingAgendas, setSelectedMeetingAgendas] = useState<any[]>([]);
-  const [selectedMeetingAgendaVotes, setSelectedMeetingAgendaVotes] = useState<any[]>([]);
   const [activeAgendaId, setActiveAgendaId] = useState<string | number | null>(null);
   const [activeAttachmentData, setActiveAttachmentData] = useState<any>(null);
   const [activeAttachmentLoading, setActiveAttachmentLoading] = useState<boolean>(false);
 
-  // 외부 위원이 개별 의안에 대해 채우는 폼 상태 (기본값: APPROVE=동의)
+  // 원본 상태에는 사용자가 실제로 선택한 값만 기록합니다. 화면의 기존 기본 표시는 그대로 유지합니다.
   const [agendaInputs, setAgendaInputs] = useState<Record<string | number, { vote: string; score: number; opinion: string }>>({});
 
   // 전체 제출 상태
@@ -210,240 +190,33 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     }
   }, [currentFileData, activeAgendaIndex]);
 
-  // 이미 제출했는지 확인하는 함수
-  const checkAlreadySubmitted = async (mId: string | number, memberId: string | number) => {
-    if (!mId) return;
-    const isNumericId = !isNaN(Number(mId)) && String(mId).trim() !== "";
+  const applyVoteContext = (context: CommitteeVoteContext) => {
+    setMeeting(context.meeting);
+    setAuthMember(context.member);
+    setSelectedMeetingAgendas(context.agendas);
+    setHasSubmitted(context.has_submitted);
+    if (context.agendas.length > 0) setActiveAgendaId(context.agendas[0].id);
 
-    try {
-      // 1. 로컬 캐시 수합
-      const localData = localStorage.getItem(`local_meeting_responses_${mId}`);
-      if (localData) {
-        const parsed = JSON.parse(localData);
-        const myResp = parsed.find((r: any) => String(r.member_id) === String(memberId) || (r.member_name || "").trim() === String(memberId).trim());
-        if (myResp && myResp.submitted_at) {
-          setHasSubmitted(true);
-          return;
-        }
-      }
-
-      // 2. DB 수합 (숫자형 mId일 때만 DB 쿼리 실행)
-      if (isNumericId) {
-        const { data } = await supabase
-          .from("meeting_responses")
-          .select("*")
-          .eq("meeting_id", mId)
-          .eq("member_id", memberId)
-          .maybeSingle();
-
-        if (data && data.submitted_at) {
-          setHasSubmitted(true);
-        }
-      }
-    } catch (e: any) {
-      console.warn("제출 내역 조회 스킵:", e.message);
-    }
-  };
-
-  const fetchMeetingAgendasAndVotes = async (mId: string | number, currentMtg?: any) => {
-    if (!mId) return;
-    const isNumericId = !isNaN(Number(mId)) && String(mId).trim() !== "";
-    const targetMtg = currentMtg || meeting;
-
-    let finalAgendas: any[] = [];
-    let finalVotes: any[] = [];
-
-    // 💡 1. 로컬 스토리지 캐시 및 회의 개체 내 안건 복원 (전수 키 탐색)
-    try {
-      let fullAgendas = localStorage.getItem(`local_meeting_agendas_${mId}`);
-      if (!fullAgendas) {
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k && k.startsWith("local_meeting_agendas_")) {
-            const val = localStorage.getItem(k);
-            if (val) {
-              fullAgendas = val;
-              break;
-            }
-          }
-        }
-      }
-
-      if (fullAgendas) {
-        finalAgendas = JSON.parse(fullAgendas);
-      } else if (targetMtg && Array.isArray(targetMtg.agendas) && targetMtg.agendas.length > 0) {
-        finalAgendas = targetMtg.agendas;
-      }
-    } catch (e) { }
-
-    try {
-      const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${mId}`);
-      if (localVotes) {
-        finalVotes = JSON.parse(localVotes);
-      }
-    } catch (e) { }
-
-    // 💡 2. 숫자형 mId인 경우 Supabase DB 쿼리로 동기화 (DB 400 에러 원천 방지 및 로컬 바이너리 무손실 합성)
-    if (isNumericId) {
-      try {
-        const { data: agendas, error: agErr } = await supabase
-          .from("meeting_agendas")
-          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
-          .eq("meeting_id", mId)
-          .order("sort_order", { ascending: true });
-
-        if (!agErr && agendas && agendas.length > 0) {
-          const localAgendasStr = localStorage.getItem(`local_meeting_agendas_${mId}`);
-          const localCache = localAgendasStr ? JSON.parse(localAgendasStr) : [];
-
-          finalAgendas = agendas.map((ag: any, idx: number) => {
-            const cached = localCache.find((c: any) => String(c.id) === String(ag.id) || c.sort_order === ag.sort_order || idx === (c.sort_order ? c.sort_order - 1 : idx));
-            return {
-              ...ag,
-              attachment_name: ag.attachment_name || cached?.attachment_name || null,
-              attachment_data: cached?.attachment_data || null
-            };
-          });
-        }
-      } catch (err: any) {
-        console.warn("DB 의안 조회 스킵 (로컬 폴백 사용):", err.message);
-      }
+    if (context.existing_votes?.length) {
+      const restoredInputs = Object.fromEntries(context.existing_votes.map(item => [item.agenda_id, {
+        vote: item.vote || "",
+        score: item.score || 0,
+        opinion: item.opinion || ""
+      }]));
+      setAgendaInputs(restoredInputs);
+      return;
     }
 
-    // 💡 3. 기본 의안이 비어있는 경우 회의 agenda 텍스트 파싱하여 100% 무손실 복원 (각 안건별 [첨부: 파일명] 100% 추출)
-    if (finalAgendas.length === 0) {
-      if (targetMtg && targetMtg.agenda) {
-        const lines = String(targetMtg.agenda).split("\n").map((l: string) => l.trim()).filter((l: string) => l.length > 0);
-        finalAgendas = lines.map((l: string, idx: number) => {
-          const isEval = l.includes("5점") || l.includes("성과") || l.includes("평가") || l.includes("심의");
-          const attachMatch = l.match(/\[첨부:\s*(.*?)\]/i);
-          const parsedAttachName = attachMatch ? attachMatch[1].trim() : null;
-
-          const cleaned = l.replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim();
-          return {
-            id: `ag-${mId}-${idx + 1}`,
-            meeting_id: mId,
-            title: cleaned || `제${idx + 1}호 안건`,
-            description: `[상정 의안 #${idx + 1}] ${cleaned || "안건 심의 및 의결"}`,
-            is_evaluation: isEval,
-            sort_order: idx + 1,
-            attachment_name: parsedAttachName,
-            attachment_data: null
-          };
-        });
-      }
-    }
-
-    // 💡 4. title 정제 및 global_attachment_map 파일 데이터 100% 무손실 4중 매칭
-    if (finalAgendas && finalAgendas.length > 0) {
-      let globalMap: any = {};
-      let globalMapKeys: string[] = [];
-      try {
-        const globalMapStr = localStorage.getItem("global_attachment_map") || "{}";
-        globalMap = JSON.parse(globalMapStr);
-        globalMapKeys = Object.keys(globalMap);
-      } catch (e) { }
-
-      let localCache: any[] = [];
-      try {
-        const localAgendasStr = localStorage.getItem(`local_meeting_agendas_${mId}`);
-        if (localAgendasStr) localCache = JSON.parse(localAgendasStr);
-      } catch (e) { }
-
-      finalAgendas = finalAgendas.map((ag: any, idx: number) => {
-        const isEval = ag.is_evaluation || ag.title?.includes("성과") || ag.title?.includes("평가") || ag.title?.includes("5점");
-        const cleaned = ag.title ? ag.title.replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim() : ag.title;
-
-        // 1순위: 개체 내 기존 필드
-        let attachName = ag.attachment_name;
-        let attachData = ag.attachment_data;
-
-        // 2순위: localCache 내 순서/ID 일치 개체
-        const cachedItem = localCache.find((c: any, cIdx: number) => String(c.id) === String(ag.id) || cIdx === idx);
-        if (cachedItem) {
-          if (!attachName && cachedItem.attachment_name) attachName = cachedItem.attachment_name;
-          if (!attachData && cachedItem.attachment_data) attachData = cachedItem.attachment_data;
-        }
-
-        // 3순위: targetMtg 회의 개체 내 agendas 배열
-        if (targetMtg && Array.isArray(targetMtg.agendas)) {
-          const matchedTargetAg = targetMtg.agendas.find((ta: any, tIdx: number) => String(ta.id) === String(ag.id) || tIdx === idx);
-          if (matchedTargetAg) {
-            if (!attachName && matchedTargetAg.attachment_name) attachName = matchedTargetAg.attachment_name;
-            if (!attachData && matchedTargetAg.attachment_data) attachData = matchedTargetAg.attachment_data;
-          }
-        }
-
-        // 4순위: targetMtg 대표 파일 파이프 | 또는 콤마 , 분리 idx 1:1 위치 정밀 매칭 폴백
-        if (!attachName && targetMtg?.attachment_name) {
-          const rawStr = String(targetMtg.attachment_name);
-          const parts = rawStr.includes("|")
-            ? rawStr.split("|").map(p => p.trim())
-            : rawStr.split(",").map(p => p.trim());
-          if (parts[idx] && parts[idx].length > 0) {
-            attachName = parts[idx];
-          } else if (parts[0]) {
-            attachName = parts[0];
-          }
-        }
-
-        // 5순위: 글로벌 바이너리 맵 순서(idx) 또는 파일명으로 바이너리/URL 무손실 복원
-        if (!attachName && globalMapKeys[idx]) {
-          attachName = globalMapKeys[idx];
-        }
-
-        if (!attachData) {
-          // 💡 1순위: 파일명(attachName)이 존재하는 경우 globalMap 및 Storage URL 최우선 매칭 (예전 C3 단일 바이너리 오할당 원천 차단)
-          if (attachName && globalMap[attachName.trim()]) {
-            attachData = globalMap[attachName.trim()];
-          }
-
-          // 💡 2순위: targetMtg.attachment_data가 JSON 배열인 경우 idx 1:1 파싱
-          if (!attachData && targetMtg?.attachment_data) {
-            const rawDataStr = String(targetMtg.attachment_data);
-            if (rawDataStr.startsWith("[")) {
-              try {
-                const parsedArr = JSON.parse(rawDataStr);
-                if (parsedArr[idx] && parsedArr[idx].length > 0) {
-                  attachData = parsedArr[idx];
-                }
-              } catch (e) { }
-            } else if (idx === 0 && !rawDataStr.startsWith("data:application/pdf")) {
-              // 단순 URL 주소인 경우만 1번 안건에 할당
-              attachData = targetMtg.attachment_data;
-            }
-          }
-
-          // 💡 3순위: 파일명이 있으나 바이너리가 없으면 Supabase Storage Public Direct URL 자동 생성
-          if (!attachData && attachName && !attachName.includes("|") && !attachName.includes(",")) {
-            const SUPABASE_URL = "https://jsx8L4wndhIHLMBSIAgR.supabase.co";
-            attachData = `${SUPABASE_URL}/storage/v1/object/public/meeting_docs/${encodeURIComponent(attachName.trim())}`;
-          }
-        }
-
-        return {
-          ...ag,
-          title: cleaned,
-          is_evaluation: isEval,
-          attachment_name: attachName || null,
-          attachment_data: attachData || null
-        };
-      });
-    }
-
-    setSelectedMeetingAgendas(finalAgendas);
-    if (finalAgendas.length > 0) {
-      setActiveAgendaId(finalAgendas[0].id);
-    }
-    setSelectedMeetingAgendaVotes(finalVotes);
+    const draftKey = `local_meeting_draft_${context.meeting.id}_${context.member.name}`;
+    const savedDraft = localStorage.getItem(draftKey);
+    if (savedDraft) setAgendaInputs(JSON.parse(savedDraft));
   };
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
-    let shortCode = queryParams.get("v");
-    let targetMeetingId = meetingId || queryParams.get("meetingId") || queryParams.get("meeting") || queryParams.get("id") || shortCode || undefined;
+    const accessCode = meetingId || queryParams.get("v") || queryParams.get("meetingId") || queryParams.get("meeting") || queryParams.get("id") || "";
 
-    if (!targetMeetingId && !shortCode) {
+    if (!accessCode) {
       setErrorMsg("유효한 회의 접근 링크가 아닙니다.");
       setLoading(false);
       return;
@@ -452,107 +225,28 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     const fetchMeeting = async () => {
       try {
         setLoading(true);
-        let foundMeeting: any = null;
+        setErrorMsg("");
+        const publicMeeting = await getPublicCommitteeMeeting(accessCode);
+        setMeeting(publicMeeting);
 
-        // 1. [1순위] 단축코드 v(UUID 8자)로 접속 시 Supabase DB 유연 매칭
-        if (shortCode) {
-          try {
-            const { data: dbList } = await supabase
-              .from("committee_meetings")
-              .select("*");
-            if (dbList && dbList.length > 0) {
-              const match = dbList.find((m: any) => String(m.id).startsWith(shortCode!));
-              if (match) {
-                foundMeeting = match;
-                targetMeetingId = match.id;
-              }
-            }
-          } catch (e) {}
-        }
-
-        // 2. [2순위] ID 단일 매칭
-        if (!foundMeeting && targetMeetingId) {
-          try {
-            const { data, error } = await supabase
-              .from("committee_meetings")
-              .select("*")
-              .eq("id", targetMeetingId)
-              .maybeSingle();
-
-            if (!error && data) {
-              foundMeeting = data;
-            }
-          } catch (dbErr) {
-            console.warn("DB 회의 조회 스킵:", dbErr);
+        const sessionKey = `committee_auth_session_${accessCode}`;
+        const savedSession = sessionStorage.getItem(sessionKey);
+        if (savedSession) {
+          const parsedSession = JSON.parse(savedSession);
+          if (parsedSession.token) {
+            const context = await getCommitteeVoteContext(parsedSession.token);
+            setVoterToken(parsedSession.token);
+            setIsAuthorized(true);
+            applyVoteContext(context);
           }
-        }
-
-        // 2. [2순위] 로컬 캐시 스토리지에서 수합 복원
-        if (!foundMeeting) {
-          try {
-            const localMeetings = localStorage.getItem("local_committee_meetings");
-            if (localMeetings) {
-              const parsed = JSON.parse(localMeetings);
-              if (Array.isArray(parsed)) {
-                foundMeeting = parsed.find((m: any) => String(m.id) === String(targetMeetingId));
-              }
-            }
-
-            if (!foundMeeting) {
-              // 전체 키 검색
-              const allLocalKeys = Object.keys(localStorage).filter(k => k.startsWith("local_committee_meetings"));
-              for (const k of allLocalKeys) {
-                const item = localStorage.getItem(k);
-                if (item) {
-                  const parsed = JSON.parse(item);
-                  if (Array.isArray(parsed)) {
-                    const match = parsed.find((m: any) => String(m.id) === String(targetMeetingId));
-                    if (match) { foundMeeting = match; break; }
-                  }
-                }
-              }
-            }
-          } catch (e) {}
-        }
-
-        if (foundMeeting) {
-          setMeeting(foundMeeting);
-          await fetchMeetingAgendasAndVotes(targetMeetingId, foundMeeting);
-        } else {
-          // 모의 임시 회의 셋업으로 폼 차단 방지
-          const tempMeeting = {
-            id: targetMeetingId,
-            title: "제1차 사업단 위원회 서면 의결",
-            committee_id: "ecc",
-            access_pin: "123456"
-          };
-          setMeeting(tempMeeting);
-          await fetchMeetingAgendasAndVotes(targetMeetingId, tempMeeting);
         }
       } catch (e: any) {
         console.error("회의 조회 에러:", e);
+        sessionStorage.removeItem(`committee_auth_session_${accessCode}`);
+        setErrorMsg(getCommitteeVoteErrorMessage(e));
       } finally {
         setLoading(false);
       }
-
-      // 💡 [세션 지속 보존] 새로고침(Cmd+Shift+R) 시에도 로그아웃 전까지 위원 인증 세션 100% 보존
-      try {
-        const targetMId = meetingId || targetMeetingId;
-        const savedAuthSession = sessionStorage.getItem(`committee_auth_session_${targetMId}`);
-        if (savedAuthSession) {
-          const parsedAuth = JSON.parse(savedAuthSession);
-          setAuthMember(parsedAuth);
-          setIsAuthorized(true);
-          if (targetMId && parsedAuth) {
-            checkAlreadySubmitted(targetMId, parsedAuth.id || parsedAuth.name);
-            const memName = parsedAuth.name || "guest";
-            const savedDraft = localStorage.getItem(`local_meeting_draft_${targetMId}_${memName}`);
-            if (savedDraft) {
-              setAgendaInputs(JSON.parse(savedDraft));
-            }
-          }
-        }
-      } catch (e) { }
     };
 
     fetchMeeting();
@@ -561,106 +255,10 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   // 💡 선택된 활성 의안(activeAgendaItem)의 개별 첨부파일 비동기/동기 로더 (의안 전환 시 100% 동기화)
   useEffect(() => {
     if (!activeAgendaId || !meeting?.id) return;
-    const fullId = String(meeting.id).trim();
-    const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
-
     const activeAgendaIndex = selectedMeetingAgendas.findIndex(a => String(a.id) === String(activeAgendaId));
     const activeAgendaItem = selectedMeetingAgendas[activeAgendaIndex] || selectedMeetingAgendas.find(a => String(a.id) === String(activeAgendaId));
-
-    // 이전 활성 파일 데이터 즉시 클리어
-    setActiveAttachmentData(null);
-
-    // 1. [1순위] 선택된 의안 개체에 개별 첨부파일 데이터가 있으면 즉시 활성화!
-    if (activeAgendaItem && activeAgendaItem.attachment_data) {
-      setActiveAttachmentData(activeAgendaItem.attachment_data);
-      setActiveAttachmentLoading(false);
-      return;
-    }
-
-    // 2. [2순위] 로컬 스토리지 무손실 백업에서 해당 의안의 attachment_data 조회 (전수 키 수색)
-    try {
-      let localAgendasStr = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
-      if (!localAgendasStr) {
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (k && k.startsWith("local_meeting_agendas_")) {
-            const val = localStorage.getItem(k);
-            if (val) {
-              localAgendasStr = val;
-              break;
-            }
-          }
-        }
-      }
-
-      if (localAgendasStr) {
-        const parsed = JSON.parse(localAgendasStr);
-        const found = parsed.find((a: any, idx: number) => String(a.id) === String(activeAgendaId) || idx === activeAgendaIndex);
-        if (found && found.attachment_data) {
-          setActiveAttachmentData(found.attachment_data);
-          setActiveAttachmentLoading(false);
-          return;
-        }
-      }
-    } catch (e) { }
-
-    // 3. [3순위] DB 및 캐시 조합 안전 조회 (400 Bad Request 에러 원천 차단)
-    const fetchAttachmentData = async () => {
-      setActiveAttachmentLoading(true);
-      try {
-        let foundData = null;
-
-        // DB 쿼리는 activeAgendaId가 순수 숫자형일 때만 안전 쿼리 (문자열 ID bigint 불일치 400 에러 원천 방지)
-        const isNumericAgendaId = !isNaN(Number(activeAgendaId)) && String(activeAgendaId).trim() !== "";
-        if (isNumericAgendaId) {
-          await supabase
-            .from("meeting_agendas")
-            .select("id, attachment_name")
-            .eq("id", activeAgendaId)
-            .maybeSingle();
-        }
-
-        // 캐시 및 회의 개체 2차 수합
-        const localAgendasStr = localStorage.getItem(`local_meeting_agendas_${fullId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
-        if (localAgendasStr) {
-          const parsed = JSON.parse(localAgendasStr);
-          const found = parsed.find((a: any, idx: number) => String(a.id) === String(activeAgendaId) || idx === activeAgendaIndex);
-          if (found && found.attachment_data) {
-            foundData = found.attachment_data;
-          }
-        }
-
-        // 파일명 기준 글로벌 바이너리 맵 3차 영구 복원 (currentFileName 및 activeAgendaItem 백업 수합)
-        const targetFileName = activeAgendaItem?.attachment_name || currentFileName;
-        if (!foundData && targetFileName) {
-          try {
-            const globalMapStr = localStorage.getItem("global_attachment_map") || "{}";
-            const globalMap = JSON.parse(globalMapStr);
-            if (globalMap[targetFileName.trim()]) {
-              foundData = globalMap[targetFileName.trim()];
-            }
-          } catch (e) { }
-        }
-
-        if (foundData) {
-          setActiveAttachmentData(foundData);
-        } else if (activeAgendaIndex === 0 && meeting?.attachment_data) {
-          setActiveAttachmentData(meeting.attachment_data);
-        } else {
-          setActiveAttachmentData(null);
-        }
-      } catch (err: any) {
-        if (activeAgendaIndex === 0 && meeting?.attachment_data) {
-          setActiveAttachmentData(meeting.attachment_data);
-        } else {
-          setActiveAttachmentData(null);
-        }
-      } finally {
-        setActiveAttachmentLoading(false);
-      }
-    };
-
-    fetchAttachmentData();
+    setActiveAttachmentData(activeAgendaItem?.attachment_data || null);
+    setActiveAttachmentLoading(false);
   }, [activeAgendaId, meeting?.id, selectedMeetingAgendas]);
 
   // 위원 성명/PIN 인증 핸들러
@@ -672,115 +270,37 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     }
 
     try {
-      const inputName = loginForm.name.trim();
-      const inputPin = loginForm.pin.trim();
+      const queryParams = new URLSearchParams(window.location.search);
+      const accessCode = meetingId || queryParams.get("v") || queryParams.get("meetingId") || queryParams.get("meeting") || queryParams.get("id") || "";
+      const authentication = await authenticateCommitteeVoter(accessCode, loginForm.name, loginForm.pin);
+      const context = await getCommitteeVoteContext(authentication.token);
 
-      // 회의 개설 시 지정된 PIN과 일치하거나, 기본 테스트 PIN("123456" / "1234")인 경우 PIN 검증 성공
-      const targetMeetingPin = (meeting?.access_pin || "123456").trim();
-      const isPinValid = inputPin === targetMeetingPin || inputPin === "123456" || inputPin === "1234";
-
-      if (!isPinValid) {
-        alert(`보안 PIN(6자리)이 일치하지 않습니다. (해당 회의 PIN: ${targetMeetingPin})`);
-        return;
-      }
-
-      let memberMatch: any = null;
-      const committeeIdStr = String(meeting?.committee_id || "ecc");
-      const isNumericCommitteeId = !isNaN(Number(committeeIdStr)) && committeeIdStr.trim() !== "";
-
-      // 1. [1순위] DB 위원 목록 조회
-      if (isNumericCommitteeId) {
-        try {
-          const { data: dbMembers } = await supabase
-            .from("committee_members")
-            .select("*")
-            .eq("committee_id", committeeIdStr);
-
-          if (dbMembers && dbMembers.length > 0) {
-            memberMatch = dbMembers.find((m: any) => (m.name || "").trim() === inputName);
-          }
-        } catch (e) { }
-      }
-
-      // 2. [2순위] 로컬 캐시 위원 목록 조회
-      if (!memberMatch) {
-        try {
-          const localData = localStorage.getItem(`local_committee_members_${committeeIdStr}`);
-          if (localData) {
-            const parsed = JSON.parse(localData);
-            if (Array.isArray(parsed)) {
-              memberMatch = parsed.find((m: any) => (m.name || "").trim() === inputName);
-            }
-          }
-        } catch (e) { }
-      }
-
-      // 3. [3순위] 마스터 위원 폴백 데이터에서 유연 매칭 (변홍석, 이동은, 정윤호, 이은주 등)
-      if (!memberMatch) {
-        const fallbackList: any[] = [
-          { id: "mem-1", name: "변홍석", type: "위원장", org: "울산과학대학교", dept: "교무처" },
-          { id: "mem-2", name: "이동은", type: "위원", org: "울산과학대학교", dept: "지산학교육센터(ECC)" },
-          { id: "mem-3", name: "정윤호", type: "위원", org: "정네트 -", dept: "외부위원" },
-          { id: "mem-4", name: "이은주", type: "간사", org: "울산과학대학교", dept: "지산학교육센터(ECC)" },
-          { id: "mem-5", name: "송경영", type: "위원장", org: "울산과학대학교", dept: "산학협력단(앵커)" }
-        ];
-
-        memberMatch = fallbackList.find(m => m.name.trim() === inputName);
-
-        // 만약 이름 일치가 없을 경우 성함 부분 매칭 시도
-        if (!memberMatch) {
-          memberMatch = fallbackList.find(m => inputName.includes(m.name) || m.name.includes(inputName));
-        }
-
-        // 그래도 없으면 임시 위원 객체로 동적 생성하여 입장 보장!
-        if (!memberMatch) {
-          memberMatch = {
-            id: `temp-${Date.now()}`,
-            name: inputName,
-            type: "외부위원",
-            org: "참여기관",
-            dept: "위원"
-          };
-        }
-      }
-
-      if (memberMatch) {
-        setAuthMember(memberMatch);
-        setIsAuthorized(true);
-
-        const targetMId = meetingId || meeting?.id;
-        if (targetMId) {
-          sessionStorage.setItem(`committee_auth_session_${targetMId}`, JSON.stringify(memberMatch));
-        }
-
-        try {
-          if (targetMId) {
-            await checkAlreadySubmitted(targetMId, memberMatch.id || memberMatch.name);
-          }
-        } catch (e) {
-          console.warn("제출 여부 확인 예외 스킵:", e);
-        }
-      } else {
-        alert("입력하신 위원 성명을 확인해 주세요.");
-      }
+      setVoterToken(authentication.token);
+      setIsAuthorized(true);
+      applyVoteContext(context);
+      sessionStorage.setItem(`committee_auth_session_${accessCode}`, JSON.stringify({
+        token: authentication.token,
+        expires_at: authentication.expires_at
+      }));
     } catch (e: any) {
       console.error("인증 처리 예외:", e);
-      // 안전 입장 허용
-      setIsAuthorized(true);
+      setIsAuthorized(false);
+      setVoterToken("");
+      alert(getCommitteeVoteErrorMessage(e));
     }
   };
 
   const handleLogout = () => {
     if (window.confirm("인증 해제하고 로그아웃하시겠습니까?")) {
-      const targetMId = meetingId || meeting?.id;
-      if (targetMId) {
-        sessionStorage.removeItem(`committee_auth_session_${targetMId}`);
-      }
+      const queryParams = new URLSearchParams(window.location.search);
+      const accessCode = meetingId || queryParams.get("v") || queryParams.get("meetingId") || queryParams.get("meeting") || queryParams.get("id") || "";
+      sessionStorage.removeItem(`committee_auth_session_${accessCode}`);
       setIsAuthorized(false);
       setAuthMember(null);
+      setVoterToken("");
       setLoginForm({ name: "", pin: "" });
       setHasSubmitted(false);
-      setSignatureImage("");
+      clearCanvas();
     }
   };
 
@@ -877,147 +397,40 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   const handleSubmitVote = async () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const signatureData = canvas.toDataURL("image/png");
+    const pixels = canvas.getContext("2d")?.getImageData(0, 0, canvas.width, canvas.height).data;
+    const hasSignature = pixels ? Array.from({ length: Math.floor(pixels.length / 4) }, (_, index) => index * 4)
+      .some(index => pixels[index + 3] > 0 && (pixels[index] < 245 || pixels[index + 1] < 245 || pixels[index + 2] < 245)) : false;
 
-    if (signatureData.length < 1000) {
+    if (!hasSignature) {
       alert("서명란에 자필 서명을 하거나 서명 도장 이미지를 업로드해 주세요.");
       return;
     }
 
-    // AES 대칭키 규칙 8 보안 암호화
-    const encryptedSignature = CryptoJS.AES.encrypt(signatureData, SIGNATURE_SECRET_KEY).toString();
+    const validation = buildValidatedVoteItems(selectedMeetingAgendas, agendaInputs);
+    if (!validation.valid) {
+      if (validation.firstInvalidAgendaId) setActiveAgendaId(validation.firstInvalidAgendaId);
+      alert("모든 안건의 표결 또는 평가 점수를 직접 선택해 주세요.");
+      return;
+    }
+
+    if (!voterToken) {
+      alert("인증 세션이 만료되었습니다. 다시 인증해 주세요.");
+      setIsAuthorized(false);
+      return;
+    }
 
     try {
-      const memberId = authMember.id || authMember.name;
-
-      const votePayloads = selectedMeetingAgendas.map(a => ({
-        meeting_id: meeting.id,
-        agenda_id: a.id,
-        member_id: memberId,
-        member_name: authMember.name,
-        vote: agendaInputs[a.id]?.vote || "APPROVE",
-        score: a.is_evaluation ? (agendaInputs[a.id]?.score || 5) : null,
-        opinion: agendaInputs[a.id]?.opinion || "",
-        submitted_at: new Date().toISOString()
-      }));
-
-      const summaryOpinion = selectedMeetingAgendas.map((a, idx) => {
-        const inp = agendaInputs[a.id] || {};
-        const vText = inp.vote === "REJECT" ? "부동의" : (inp.vote === "ABSTAIN" ? "기권" : "동의");
-        return `[의안 #${idx + 1}: ${a.title}] 표결: ${vText}${a.is_evaluation ? ` (점수: ${inp.score || 5}점)` : ""}${inp.opinion ? ` - 의견: ${inp.opinion}` : ""}`;
-      }).join("\n");
-
-      // 💡 [듀얼 지속성 보장] 1. 로컬 스토리지에 무조건 캐시 기록
-      const localVotesKey = `local_meeting_agenda_votes_${meeting.id}`;
-      const currentVotes = JSON.parse(localStorage.getItem(localVotesKey) || "[]");
-      const filteredVotes = currentVotes.filter((v: any) =>
-        String(v.member_id).trim() !== String(memberId).trim() &&
-        String(v.member_name || "").trim() !== String(authMember.name).trim()
-      );
-      const updatedVotes = [...filteredVotes, ...votePayloads];
-      localStorage.setItem(localVotesKey, JSON.stringify(updatedVotes));
-
-      const fullMeetingId = String(meeting.id);
-      const shortMeetingId = fullMeetingId.includes("-") ? fullMeetingId.split("-")[0] : fullMeetingId;
-
-      const localRespKey = `local_meeting_responses_${fullMeetingId}`;
-      const currentResp = JSON.parse(localStorage.getItem(localRespKey) || "[]");
-      const filteredResp = currentResp.filter((r: any) =>
-        String(r.member_id).trim() !== String(memberId).trim() &&
-        String(r.member_name || "").trim() !== String(authMember.name).trim()
-      );
-      const newRespItem = {
-        meeting_id: meeting.id,
-        member_id: memberId,
-        member_name: authMember.name,
-        attended: true,
-        vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
-        opinion: summaryOpinion,
-        signature: encryptedSignature,
-        encrypted_signature: encryptedSignature,
-        submitted_at: new Date().toISOString(),
-        committee_members: {
-          name: authMember.name,
-          type: authMember.type || "위원",
-          org: authMember.org || "",
-          dept: authMember.dept || ""
-        }
-      };
-      const updatedResp = [...filteredResp, newRespItem];
-      localStorage.setItem(`local_meeting_responses_${fullMeetingId}`, JSON.stringify(updatedResp));
-      localStorage.setItem(`local_meeting_responses_${shortMeetingId}`, JSON.stringify(updatedResp));
-
-      // 💡 2. Supabase DB에 100% 무결성 실시간 반영
-      if (!String(meeting.id).startsWith("local-")) {
-        // 2-1. [1순위] committee_meetings 메인 테이블의 responses_data JSONB 컬럼에 서명 및 표결 결과 최우선 보장 업데이트
-        try {
-          const { data: meetingData } = await supabase
-            .from("committee_meetings")
-            .select("responses_data")
-            .eq("id", meeting.id)
-            .maybeSingle();
-
-          const existingResponsesData = meetingData?.responses_data || [];
-          const filteredResponsesData = Array.isArray(existingResponsesData)
-            ? existingResponsesData.filter((r: any) =>
-              String(r.member_name || "").trim() !== String(authMember.name).trim() &&
-              String(r.member_id || "").trim() !== String(memberId).trim()
-            )
-            : [];
-          const newResponsesData = [...filteredResponsesData, newRespItem];
-
-          const { error: updateErr } = await supabase
-            .from("committee_meetings")
-            .update({ responses_data: newResponsesData })
-            .eq("id", meeting.id);
-
-          if (updateErr) {
-            console.warn("committee_meetings responses_data 업데이트 경고:", updateErr.message);
-          } else {
-            console.log("✅ DB committee_meetings responses_data 100% 저장 성공!");
-          }
-        } catch (mErr: any) {
-          console.warn("committee_meetings responses_data 예외:", mErr.message);
-        }
-
-        // 2-2. [2순위] meeting_responses 하위 테이블 저장 (숫자형 meeting.id 일 때만 DB 쿼리 실행)
-        const isNumericMeetingId = !isNaN(Number(meeting.id)) && String(meeting.id).trim() !== "";
-        if (isNumericMeetingId) {
-          try {
-            const respPayload = {
-              meeting_id: Number(meeting.id),
-              member_id: authMember.id || memberId,
-              member_name: authMember.name,
-              attended: true,
-              vote: agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "APPROVE",
-              opinion: summaryOpinion,
-              signature: encryptedSignature,
-              encrypted_signature: encryptedSignature,
-              submitted_at: new Date().toISOString()
-            };
-
-            const { error: respErr } = await supabase.from("meeting_responses").insert([respPayload]);
-            if (respErr) {
-              await supabase.from("meeting_responses").upsert([respPayload]);
-            }
-          } catch (dbErr: any) {
-            console.warn("meeting_responses DB 전송 스킵:", dbErr.message);
-          }
-
-          // 2-3. [3순위] meeting_agenda_votes 의안별 표결 테이블 저장
-          try {
-            await supabase.from("meeting_agenda_votes").insert(votePayloads);
-          } catch (dbErr: any) {
-            console.warn("meeting_agenda_votes DB 전송 스킵:", dbErr.message);
-          }
-        }
-      }
-
+      await submitCommitteeVote(voterToken, {
+        idempotency_key: createIdempotencyKey(),
+        signature_data_url: canvas.toDataURL("image/png"),
+        votes: validation.items
+      });
+      localStorage.removeItem(`local_meeting_draft_${meeting.id}_${authMember.name}`);
       setHasSubmitted(true);
       alert("전자서명 및 의결 표결이 최종 제출되었습니다.");
     } catch (e: any) {
       console.error(e);
-      alert("제출 중 오류가 발생했습니다.");
+      alert(getCommitteeVoteErrorMessage(e));
     }
   };
 
@@ -1081,8 +494,6 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       </div>
     );
   }
-
-  const currentAgendaInput = agendaInputs[activeAgendaId || ""] || { vote: "APPROVE", score: 5, opinion: "" };
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "1.5rem" }}>

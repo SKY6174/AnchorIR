@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "rootDir": "src",
+    "outDir": ".committee-test-dist",
+    "noEmit": false,
+    "verbatimModuleSyntax": false
+  },
+  "include": [
+    "src/types/committee.ts",
+    "src/types/committee-vote.ts",
+    "src/utils/committee-vote-validation.ts",
+    "src/utils/committee-vote-validation.test.ts",
+    "src/utils/quorumEvaluator.ts",
+    "src/utils/quorumEvaluator.test.ts"
+  ]
+}

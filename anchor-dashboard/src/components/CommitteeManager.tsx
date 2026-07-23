@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
 import ScheduleManager from "./ScheduleManager";
+import { createCommitteeReportSnapshot, submitAuthenticatedCommitteeVote, uploadCommitteeDocument } from "../services/committee-vote-service";
+import { buildValidatedVoteItems, createIdempotencyKey } from "../utils/committee-vote-validation";
 import {
   Users,
   ClipboardList,
@@ -25,7 +27,6 @@ import {
 } from "lucide-react";
 
 // 💡 [Rule 8] 개인정보 및 서명 데이터 암복호화용 대칭키 정의
-const SECRET_KEY = "anchor_instructor_secure_encryption_key_2026";
 const SIGNATURE_SECRET_KEY = "anchor_signature_encryption_key_secure_2026";
 
 // 💡 [두 번째 그림의 공식 11개 거버넌스 위원회 풀 구성] (요구사항 2 반영)
@@ -196,6 +197,7 @@ export interface CommitteeAgendaVote {
 export interface CommitteeMeeting {
   agendas: any;
   id?: number | string;
+  public_code?: string;
   committee_id?: string;
   title: string;
   meeting_date: string;
@@ -321,6 +323,7 @@ export default function CommitteeManager({
   }));
 
   const [meetingResult, setMeetingResult] = useState<MeetingResult | null>(null);
+  const [authoritativeMeetingResult, setAuthoritativeMeetingResult] = useState<any>(null);
   const [isEditingReport, setIsEditingReport] = useState<boolean>(false);
   const [editedReportText, setEditedReportText] = useState<string>("");
 
@@ -472,107 +475,33 @@ export default function CommitteeManager({
 
   const fetchMeetingAgendasAndVotes = async (meetingId: number | string) => {
     if (!meetingId) return;
-
-    const isNumericId = !isNaN(Number(meetingId)) && String(meetingId).trim() !== "";
-    const fullId = String(meetingId).trim();
-    const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
-
-    let newAgendas: any[] = [];
-    let newVotes: any[] = [];
-
-    // 💡 로컬 회의(local-로 시작하는 ID) 또는 비숫자형 UUID 회의의 경우 로컬 스토리지 무손실 조회
-    if (String(meetingId).startsWith("local-") || !isNumericId) {
-      try {
-        const fullAgendas = localStorage.getItem(`local_meeting_agendas_${fullId}`);
-        const shortAgendas = localStorage.getItem(`local_meeting_agendas_${shortId}`);
-        newAgendas = fullAgendas ? JSON.parse(fullAgendas) : (shortAgendas ? JSON.parse(shortAgendas) : []);
-      } catch (e) { newAgendas = []; }
-
-      // 💡 [Super Agenda Parser] 회의 요약 텍스트 및 selectedMeeting 개체에서 안건 무손실 자동 생성
-      if (!newAgendas || newAgendas.length === 0) {
-        if (selectedMeeting && Array.isArray(selectedMeeting.agendas) && selectedMeeting.agendas.length > 0) {
-          newAgendas = selectedMeeting.agendas;
-        } else if (selectedMeeting && selectedMeeting.agenda) {
-          const lines = String(selectedMeeting.agenda).split("\n").map(l => l.trim()).filter(l => l.length > 0);
-          newAgendas = lines.map((l, idx) => {
-            const cleanTitle = l.replace(/^\[안건\s*\d+\]\s*/, "").replace(/^\[의안\s*\d+\]\s*/, "").replace(/^\d+[\.\)]\s*/, "").trim();
-            return {
-              id: `ag-${fullId}-${idx + 1}`,
-              meeting_id: fullId,
-              title: cleanTitle || `제${idx + 1}호 안건`,
-              description: `[상정 의안 #${idx + 1}] ${cleanTitle || "안건 심의 및 의결"}`,
-              is_evaluation: false,
-              sort_order: idx + 1,
-              attachment_name: idx === 0 ? (selectedMeeting.attachment_name || null) : null,
-              attachment_data: idx === 0 ? (selectedMeeting.attachment_data || null) : null
-            };
-          });
-        }
-      }
-
-      try {
-        const fullVotes = localStorage.getItem(`local_meeting_agenda_votes_${fullId}`);
-        const shortVotes = localStorage.getItem(`local_meeting_agenda_votes_${shortId}`);
-        newVotes = fullVotes ? JSON.parse(fullVotes) : (shortVotes ? JSON.parse(shortVotes) : []);
-      } catch (e) { newVotes = []; }
-
-      // 💡 깜빡임 방지: 기존 state와 새로 수합된 데이터의 JSON 비교 후 실제로 변경된 경우만 setState 실행
-      if (newAgendas && newAgendas.length > 0) {
-        setSelectedMeetingAgendas(newAgendas);
-      }
-      setSelectedMeetingAgendaVotes(prev => (JSON.stringify(prev) !== JSON.stringify(newVotes) ? newVotes : prev));
+    if (String(meetingId).startsWith("local-")) {
+      setSelectedMeetingAgendas(Array.isArray(selectedMeeting?.agendas) ? selectedMeeting.agendas : []);
+      setSelectedMeetingAgendaVotes([]);
       return;
     }
 
     try {
-      // 1. 의안 목록 안전 조회
-      const { data: agendas, error: agErr } = await supabase
-        .from("meeting_agendas")
-        .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
-        .eq("meeting_id", meetingId)
-        .order("sort_order", { ascending: true });
-
-      if (!agErr && agendas && agendas.length > 0) {
-        // DB 데이터에 attachment_data가 없더라도 로컬 스토리지 첨부파일 데이터와 100% 무손실 병합
-        const localCacheStr = localStorage.getItem(`local_meeting_agendas_${meetingId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
-        const localCache = localCacheStr ? JSON.parse(localCacheStr) : [];
-
-        newAgendas = agendas.map((dbAg: any, idx: number) => {
-          const cached = localCache.find((c: any) => String(c.id) === String(dbAg.id) || c.sort_order === dbAg.sort_order || idx === (c.sort_order ? c.sort_order - 1 : idx));
-          return {
-            ...dbAg,
-            attachment_name: dbAg.attachment_name || cached?.attachment_name || null,
-            attachment_data: dbAg.attachment_data || cached?.attachment_data || null
-          };
-        });
-      } else {
-        const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`) || localStorage.getItem(`local_meeting_agendas_${shortId}`);
-        newAgendas = localAgendas ? JSON.parse(localAgendas) : [];
-      }
-
-      // 2. 의안별 개별 투표 목록 안전 조회
-      const { data: votes, error: vtErr } = await supabase
-        .from("meeting_agenda_votes")
-        .select("*")
-        .eq("meeting_id", meetingId);
-
-      if (!vtErr && votes) {
-        newVotes = votes;
-        localStorage.setItem(`local_meeting_agenda_votes_${meetingId}`, JSON.stringify(votes));
-      } else {
-        const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
-        newVotes = localVotes ? JSON.parse(localVotes) : [];
-      }
+      const [agendaResult, voteResult] = await Promise.all([
+        supabase.from("meeting_agendas")
+          .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name, attachment_path")
+          .eq("meeting_id", meetingId)
+          .order("sort_order", { ascending: true }),
+        supabase.from("meeting_agenda_votes")
+          .select("id, meeting_id, agenda_id, member_id, vote, score, opinion, submitted_at")
+          .eq("meeting_id", meetingId)
+      ]);
+      if (agendaResult.error) throw agendaResult.error;
+      if (voteResult.error) throw voteResult.error;
+      const newAgendas = agendaResult.data || [];
+      const newVotes = (voteResult.data || []).map(vote => ({ ...vote, vote_decision: vote.vote }));
+      setSelectedMeetingAgendas(newAgendas);
+      setSelectedMeetingAgendaVotes(prev => (JSON.stringify(prev) !== JSON.stringify(newVotes) ? newVotes : prev));
     } catch (err: any) {
-      const localAgendas = localStorage.getItem(`local_meeting_agendas_${meetingId}`);
-      newAgendas = localAgendas ? JSON.parse(localAgendas) : [];
-
-      const localVotes = localStorage.getItem(`local_meeting_agenda_votes_${meetingId}`);
-      newVotes = localVotes ? JSON.parse(localVotes) : [];
+      console.error("공식 회의 안건·표결 조회 실패:", err.message);
+      setSelectedMeetingAgendas([]);
+      setSelectedMeetingAgendaVotes([]);
     }
-
-    setSelectedMeetingAgendas(newAgendas);
-    setSelectedMeetingAgendaVotes(prev => (JSON.stringify(prev) !== JSON.stringify(newVotes) ? newVotes : prev));
   };
 
   // 💡 [의안 개조] 위원 로그인 후 각 의안별 선택한 의결/의견 맵 상태 ({ [agendaId]: { vote, score, opinion } }) 초기화
@@ -601,7 +530,7 @@ export default function CommitteeManager({
   // 💡 [의안 개조] 의안별 투표/평가 통계 산출 헬퍼 함수
   const getAgendaVoteStats = (agendaId: number | string, isEvaluation?: boolean) => {
     const votes = selectedMeetingAgendaVotes.filter(v => String(v.agenda_id) === String(agendaId));
-    let totalVotes = votes.length;
+    const totalVotes = votes.length;
 
     if (isEvaluation) {
       const scores = votes.map(v => v.score).filter((s): s is number => typeof s === "number" && s >= 1 && s <= 5);
@@ -630,34 +559,23 @@ export default function CommitteeManager({
       let reject = votes.filter(v => isRejectVote(v.vote_decision || (v as any).vote)).length;
       let abstain = votes.filter(v => isAbstainVote(v.vote_decision || (v as any).vote)).length;
 
-      // 💡 [Fallback & Integration Aggregation] votes에 찬성표 집계가 부족하거나 responses에 찬성 기록이 있을 때 상호 통합 수합
-      if ((totalVotes === 0 || (approve === 0 && reject === 0)) && responses.length > 0) {
-        const submittedResponses = responses.filter(r => r.submitted_at || r.vote || r.opinion);
-        totalVotes = Math.max(totalVotes, submittedResponses.length);
-        approve = 0;
-        reject = 0;
-        abstain = 0;
-        submittedResponses.forEach(r => {
-          if (isRejectVote(r.vote)) reject++;
-          else if (isAbstainVote(r.vote)) abstain++;
-          else approve++;
-        });
-      }
-
       return { totalVotes, approve, reject, abstain };
     }
   };
 
   useEffect(() => {
     if (selectedMeeting && selectedMeeting.id) {
+      setAuthoritativeMeetingResult(null);
       fetchResponses(selectedMeeting.id);
       fetchMeetingAgendasAndVotes(selectedMeeting.id);
       fetchMeetingResult(selectedMeeting.id);
+      fetchAuthoritativeMeetingResult(selectedMeeting.id);
 
       const interval = setInterval(() => {
         if (selectedMeeting.id) {
           fetchResponses(selectedMeeting.id);
           fetchMeetingAgendasAndVotes(selectedMeeting.id);
+          fetchAuthoritativeMeetingResult(selectedMeeting.id);
         }
       }, 3000);
 
@@ -665,10 +583,23 @@ export default function CommitteeManager({
     } else {
       setResponses([]);
       setMeetingResult(null);
+      setAuthoritativeMeetingResult(null);
       setIsEditingReport(false);
       setEditedReportText("");
     }
   }, [selectedMeeting]);
+
+  const fetchAuthoritativeMeetingResult = async (meetingId: number | string) => {
+    if (!meetingId || String(meetingId).startsWith("local-")) return;
+    try {
+      const { data, error } = await supabase.rpc("get_committee_meeting_result", { p_meeting_id: meetingId });
+      if (error) throw error;
+      setAuthoritativeMeetingResult(data || null);
+    } catch (err: any) {
+      console.warn("공식 정족수 결과 조회 실패:", err.message);
+      setAuthoritativeMeetingResult(null);
+    }
+  };
 
   const fetchMeetingResult = async (meetingId: number | string) => {
     if (!meetingId || String(meetingId).startsWith("local-")) return;
@@ -868,22 +799,7 @@ export default function CommitteeManager({
     if (loadedMeetings.length > 0) {
       const firstMeeting = loadedMeetings[0];
       setSelectedMeeting(firstMeeting);
-
-      // 💡 selectedMeeting에 포함된 responses_data가 존재하면 즉시 responses 상태로 복원하여 0명 표출 방지!
-      if (firstMeeting.responses_data && Array.isArray(firstMeeting.responses_data) && firstMeeting.responses_data.length > 0) {
-        setResponses(firstMeeting.responses_data);
-      } else {
-        // 해당 meetingId에 연결된 local_meeting_responses_${meetingId} 캐시 수합
-        try {
-          const respData = localStorage.getItem(`local_meeting_responses_${firstMeeting.id}`);
-          if (respData) {
-            const parsedResp = JSON.parse(respData);
-            if (Array.isArray(parsedResp) && parsedResp.length > 0) {
-              setResponses(parsedResp);
-            }
-          }
-        } catch (e) { }
-      }
+      setResponses([]);
     } else {
       setSelectedMeeting(null);
       setResponses([]);
@@ -961,258 +877,31 @@ export default function CommitteeManager({
 
   const fetchResponses = async (meetingId: number | string) => {
     if (!meetingId) return;
-
-    const isNumericId = !isNaN(Number(meetingId)) && String(meetingId).trim() !== "";
-
-    let targetResp: any[] = [];
-    const fullId = String(meetingId).trim();
-    const shortId = fullId.includes("-") ? fullId.split("-")[0] : fullId;
-
-    // 💡 [Super-Restore Fallback] 로컬 회의/UUID 회의/단축 ID 모든 키 전수 무손실 수합
-    if (String(meetingId).startsWith("local-") || !isNumericId) {
-      try {
-        // 1. 직접 키 탐색
-        const keysToCheck = [
-          `local_meeting_responses_${fullId}`,
-          `local_meeting_responses_${shortId}`,
-          `local_responses_${fullId}`,
-          `local_responses_${shortId}`
-        ];
-        for (const k of keysToCheck) {
-          const raw = localStorage.getItem(k);
-          if (raw) {
-            const arr = JSON.parse(raw);
-            if (Array.isArray(arr) && arr.length > 0) {
-              targetResp = arr;
-              break;
-            }
-          }
-        }
-
-        // 2. localStorage 내 모든 meeting_responses / responses 키 전수 스캔
-        if (targetResp.length === 0) {
-          const allKeys = Object.keys(localStorage).filter(k => k.includes("responses"));
-          for (const k of allKeys) {
-            const raw = localStorage.getItem(k);
-            if (raw) {
-              try {
-                const arr = JSON.parse(raw);
-                if (Array.isArray(arr) && arr.length > 0) {
-                  const matched = arr.filter((r: any) =>
-                    String(r.meeting_id) === fullId ||
-                    String(r.meeting_id).startsWith(shortId) ||
-                    fullId.startsWith(String(r.meeting_id))
-                  );
-                  if (matched.length > 0) {
-                    targetResp = matched;
-                    break;
-                  }
-                }
-              } catch (e) { }
-            }
-          }
-        }
-
-        // 3. selectedMeeting.responses_data 필드
-        if (targetResp.length === 0 && selectedMeeting && Array.isArray(selectedMeeting.responses_data) && selectedMeeting.responses_data.length > 0) {
-          targetResp = selectedMeeting.responses_data;
-        }
-
-        // 4. local_committee_meetings 내의 모든 회의 목록 전수 스캔
-        if (targetResp.length === 0) {
-          const meetingKeys = Object.keys(localStorage).filter(k => k.includes("committee_meetings") || k.includes("meetings"));
-          for (const k of meetingKeys) {
-            const raw = localStorage.getItem(k);
-            if (raw) {
-              try {
-                const list = JSON.parse(raw);
-                if (Array.isArray(list)) {
-                  const found = list.find((m: any) =>
-                    String(m.id) === fullId ||
-                    String(m.id).startsWith(shortId) ||
-                    fullId.startsWith(String(m.id))
-                  );
-                  if (found && Array.isArray(found.responses_data) && found.responses_data.length > 0) {
-                    targetResp = found.responses_data;
-                    break;
-                  }
-                }
-              } catch (e) { }
-            }
-          }
-        }
-
-        // 5. 그래도 비어있으면 localStorage의 최신 제출 서명 response 항목들 전체 폴백 복원
-        if (targetResp.length === 0) {
-          const fallbackRespList: any[] = [];
-          const allKeys = Object.keys(localStorage);
-          for (const k of allKeys) {
-            if (k.startsWith("local_meeting_responses_")) {
-              const raw = localStorage.getItem(k);
-              if (raw) {
-                try {
-                  const arr = JSON.parse(raw);
-                  if (Array.isArray(arr) && arr.length > 0) {
-                    fallbackRespList.push(...arr);
-                  }
-                } catch (e) { }
-              }
-            }
-          }
-          if (fallbackRespList.length > 0) {
-            // 중복 member_id 제거 후 복원
-            const uniqueMap = new Map();
-            fallbackRespList.forEach(item => {
-              if (item.member_name || item.member_id) {
-                uniqueMap.set(item.member_name || item.member_id, item);
-              }
-            });
-            targetResp = Array.from(uniqueMap.values());
-          }
-        }
-      } catch (err) {
-        console.warn("로컬 수합 스캔 예외:", err);
-      }
-
-      setResponses(targetResp);
+    if (String(meetingId).startsWith("local-")) {
+      setResponses([]);
+      setHasSubmitted(false);
       return;
     }
 
     let combinedResponses: any[] = [];
-
-    if (isNumericId) {
-      // 1. [1순위] committee_meetings 테이블의 responses_data 수합 (DB 실시간 수합 보장 메인 소스)
-      try {
-        const { data: meetingObj } = await supabase
-          .from("committee_meetings")
-          .select("responses_data")
-          .eq("id", meetingId)
-          .maybeSingle();
-
-        if (meetingObj?.responses_data && Array.isArray(meetingObj.responses_data)) {
-          combinedResponses = [...meetingObj.responses_data];
-        }
-      } catch (err: any) {
-        console.warn("committee_meetings responses_data 조회 스킵:", err.message);
-      }
-
-      // 2. [2순위] meeting_responses DB 하위 테이블 수합
-      try {
-        const { data } = await supabase
-          .from("meeting_responses")
-          .select(`
-            id, meeting_id, member_id, member_name, attended, vote, opinion, encrypted_signature, signature, submitted_at,
-            committee_members ( name, type, org, dept )
-          `)
-          .eq("meeting_id", meetingId);
-
-        if (data && data.length > 0) {
-          data.forEach(r => {
-            const rName = (r.member_name || (r.committee_members as any)?.name || "").trim();
-            const rId = String(r.member_id || "").trim();
-            const exists = combinedResponses.some(cr => {
-              const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
-              const crId = String(cr.member_id || "").trim();
-              return (rId && crId && rId === crId) || (rName && crName && rName === crName);
-            });
-            if (!exists) {
-              combinedResponses.push(r);
-            }
-          });
-        }
-      } catch (err: any) {
-        console.warn("meeting_responses DB 조회 스킵:", err.message);
-      }
-    }
-
-    // 3. 로컬 캐시 스토리지 수합
     try {
-      const localData = localStorage.getItem(`local_meeting_responses_${meetingId}`);
-      const parsed = localData ? JSON.parse(localData) : [];
-      if (Array.isArray(parsed)) {
-        parsed.forEach(r => {
-          const rName = (r.member_name || r.name || "").trim();
-          const rId = String(r.member_id || "").trim();
-          const exists = combinedResponses.some(cr => {
-            const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
-            const crId = String(cr.member_id || "").trim();
-            return (rId && crId && rId === crId) || (rName && crName && rName === crName);
-          });
-          if (!exists) {
-            combinedResponses.push(r);
-          }
-        });
-      }
-    } catch (err) {
-      console.warn("로컬 캐시 수합 스킵:", err.message);
+      const { data, error } = await supabase
+        .from("meeting_responses")
+        .select(`
+          id, meeting_id, member_id, attended, vote, opinion, encrypted_signature,
+          signature_object_path, signature_sha256, revision, submitted_at,
+          committee_members ( id, name, type, role_code, org, dept, rank )
+        `)
+        .eq("meeting_id", meetingId);
+      if (error) throw error;
+      combinedResponses = data || [];
+    } catch (err: any) {
+      console.error("공식 회의 응답 조회 실패:", err.message);
+      setResponses([]);
+      return;
     }
 
-    // 4. 💡 [안건별 표결 통합 수합] meeting_agenda_votes에 표결한 위원 데이터 수합하여 0명 표출 문제 원천 방지
-    if (isNumericId) {
-      try {
-        const { data: voteRows } = await supabase
-          .from("meeting_agenda_votes")
-          .select("*")
-          .eq("meeting_id", meetingId);
-
-        if (voteRows && voteRows.length > 0) {
-          const memberVotesMap: Record<string, any> = {};
-          voteRows.forEach((v: any) => {
-            const key = v.member_id ? String(v.member_id).trim() : (v.member_name || v.voter_name || "").trim();
-            if (!key) return;
-            if (!memberVotesMap[key]) {
-              memberVotesMap[key] = {
-                member_id: v.member_id,
-                member_name: (v.member_name || v.voter_name || "").trim(),
-                vote: v.vote_decision || "APPROVE",
-                opinion: v.opinion || "",
-                signature: v.signature,
-                encrypted_signature: v.encrypted_signature,
-                submitted_at: v.created_at || new Date().toISOString(),
-                attended: true
-              };
-            } else {
-              if (v.opinion) {
-                memberVotesMap[key].opinion = memberVotesMap[key].opinion
-                  ? `${memberVotesMap[key].opinion} / ${v.opinion}`
-                  : v.opinion;
-              }
-            }
-          });
-
-          Object.values(memberVotesMap).forEach(r => {
-            const rName = (r.member_name || "").trim();
-            const rId = String(r.member_id || "").trim();
-            const exists = combinedResponses.some(cr => {
-              const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
-              const crId = String(cr.member_id || "").trim();
-              return (rId && crId && rId === crId) || (rName && crName && rName === crName);
-            });
-            if (!exists) {
-              combinedResponses.push(r);
-            } else {
-              const target = combinedResponses.find(cr => {
-                const crName = (cr.member_name || cr.name || cr.committee_members?.name || "").trim();
-                const crId = String(cr.member_id || "").trim();
-                return (rId && crId && rId === crId) || (rName && crName && rName === crName);
-              });
-              if (target) {
-                if (!target.vote) target.vote = r.vote;
-                if (!target.opinion && r.opinion) target.opinion = r.opinion;
-                if (!target.submitted_at) target.submitted_at = r.submitted_at;
-                target.attended = true;
-              }
-            }
-          });
-        }
-      } catch (err: any) {
-        console.warn("meeting_agenda_votes 기반 위원 수합 스킵:", err.message);
-      }
-    }
-
-    // 💡 깜빡임 100% 방지 Guard: 이전 상태값과 데이터 비교 후 차이가 있을 때만 Re-render 유도!
     setResponses(prev => (JSON.stringify(prev) !== JSON.stringify(combinedResponses) ? combinedResponses : prev));
-    localStorage.setItem(`local_meeting_responses_${meetingId}`, JSON.stringify(combinedResponses));
 
     // 내가 이미 제출했는지 검증
     if (currentUser && members.length > 0) {
@@ -1700,98 +1389,33 @@ export default function CommitteeManager({
       return;
     }
 
-    // 💡 [Rule 8] 서명 이미지 Base64 데이터를 대칭키 AES로 암호화하여 보안 전송
-    const encryptedSig = CryptoJS.AES.encrypt(signatureDataUrl, SECRET_KEY).toString();
-
-    // 2. 의안별 개별 투표 레코드 리스트 생성
-    const votePayloads = selectedMeetingAgendas.map(a => ({
-      meeting_id: selectedMeeting.id,
-      agenda_id: a.id,
-      member_id: myMemberObj.id,
-      vote: a.is_evaluation ? null : agendaInputs[a.id]?.vote || null,
-      score: a.is_evaluation ? Number(agendaInputs[a.id]?.score) || null : null,
-      opinion: agendaInputs[a.id]?.opinion || ""
-    }));
-
-    // 3. 하위 호환용 종합 의견 및 대표 찬반값 셋업
-    const summaryOpinion = selectedMeetingAgendas.map((a, idx) => {
-      const detail = agendaInputs[a.id] || { vote: "", score: 0, opinion: "" };
-      const choiceStr = a.is_evaluation ? `${detail.score}점` : (detail.vote === "APPROVE" ? "찬성" : detail.vote === "REJECT" ? "반대" : "기권");
-      return `[안건 ${idx + 1}] ${choiceStr}: ${detail.opinion}`;
-    }).join("\n");
-
-    const representativeVote = selectedMeetingAgendas[0]?.is_evaluation
-      ? "EVALUATION"
-      : (agendaInputs[selectedMeetingAgendas[0]?.id]?.vote || "ABSTAIN");
-
-    const responsePayload = {
-      meeting_id: selectedMeeting.id,
-      member_id: myMemberObj.id,
-      attended: true,
-      vote: representativeVote,
-      opinion: summaryOpinion,
-      encrypted_signature: encryptedSig,
-      submitted_at: new Date().toISOString()
-    };
+    const validation = buildValidatedVoteItems(selectedMeetingAgendas.map(agenda => ({
+      id: String(agenda.id),
+      meeting_id: String(selectedMeeting.id),
+      title: agenda.title,
+      description: agenda.description,
+      is_evaluation: Boolean(agenda.is_evaluation),
+      sort_order: agenda.item_order || 0
+    })), agendaInputs);
+    if (!validation.valid) {
+      alert("모든 안건의 표결 또는 평가 점수를 직접 선택해 주세요.");
+      return;
+    }
 
     try {
-      // 3.1 의안별 개별 투표 테이블 업서트
-      const { error: vtErr } = await supabase
-        .from("meeting_agenda_votes")
-        .upsert(votePayloads, { onConflict: "agenda_id, member_id" });
-      if (vtErr) throw vtErr;
+      await submitAuthenticatedCommitteeVote(String(selectedMeeting.id), {
+        idempotency_key: createIdempotencyKey(),
+        signature_data_url: signatureDataUrl,
+        votes: validation.items
+      });
 
-      // 3.2 기존 부모 테이블 업서트
-      const { error: respErr } = await supabase
-        .from("meeting_responses")
-        .upsert([responsePayload], { onConflict: "meeting_id, member_id" });
-      if (respErr) throw respErr;
-
-      alert("의사결정서 및 안건별 서명이 안전하게 암호화되어 제출되었습니다.");
+      alert("의사결정서 및 안건별 서명이 안전하게 제출되었습니다.");
       setHasSubmitted(true);
       await fetchMeetingAgendasAndVotes(selectedMeeting.id);
       await fetchResponses(selectedMeeting.id);
     } catch (err) {
-      console.warn("DB 의결 제출 실패, 로컬 스토리지에 모의 기록합니다:", err.message);
-
-      // 로컬 스토리지 모의 기록 연동
-      const localVotes = JSON.parse(localStorage.getItem(`local_meeting_agenda_votes_${selectedMeeting.id}`) || "[]");
-      const updatedVotes = [...localVotes];
-      votePayloads.forEach(payload => {
-        const idx = updatedVotes.findIndex(v => v.agenda_id === payload.agenda_id && v.member_id === payload.member_id);
-        if (idx > -1) {
-          updatedVotes[idx] = { ...payload, id: `local-vote-${Date.now()}-${payload.agenda_id}` };
-        } else {
-          updatedVotes.push({ ...payload, id: `local-vote-${Date.now()}-${payload.agenda_id}` });
-        }
-      });
-      localStorage.setItem(`local_meeting_agenda_votes_${selectedMeeting.id}`, JSON.stringify(updatedVotes));
-      setSelectedMeetingAgendaVotes(updatedVotes);
-
-      const localResponses = JSON.parse(localStorage.getItem(`local_meeting_responses_${selectedMeeting.id}`) || "[]");
-      const localPayload = {
-        ...responsePayload,
-        id: `local-response-${Date.now()}`,
-        committee_members: {
-          name: myMemberObj.name,
-          type: myMemberObj.type,
-          org: myMemberObj.org,
-          dept: myMemberObj.dept
-        }
-      };
-
-      const idx = localResponses.findIndex(r => r.member_id === myMemberObj.id);
-      let updated;
-      if (idx > -1) {
-        updated = [...localResponses];
-        updated[idx] = localPayload;
-      } else {
-        updated = [...localResponses, localPayload];
-      }
-      localStorage.setItem(`local_meeting_responses_${selectedMeeting.id}`, JSON.stringify(updated));
-      setResponses(updated);
-      setHasSubmitted(true);
-      alert("의결서가 제출되었습니다. (오프라인 캐시 모드)");
+      console.error("DB 의결 제출 실패:", err);
+      alert("의결서 제출에 실패했습니다. 저장되지 않았으므로 잠시 후 다시 시도해 주세요.");
     }
   };
 
@@ -1930,9 +1554,13 @@ export default function CommitteeManager({
       return;
     }
 
-    setIsSubmittingMeeting(true);
+    const generatedPin = meetingForm.access_pin.trim();
+    if (!/^\d{6}$/.test(generatedPin) || generatedPin === "123456") {
+      alert("보안 PIN은 123456을 제외한 6자리 숫자로 직접 지정해 주세요.");
+      return;
+    }
 
-    const generatedPin = meetingForm.access_pin.trim() || "123456";
+    setIsSubmittingMeeting(true);
 
     // 하위 호환 및 DB non-null 제약 해소를 위해 각 안건별 제목/평가여부/첨부파일명 보존 텍스트 생성
     const summaryAgendaText = meetingForm.agendas.map((a, idx) => {
@@ -1966,6 +1594,28 @@ export default function CommitteeManager({
       status: "ACTIVE"
     };
 
+    const buildAgendaPayloads = async (targetMeetingId: string | number) => Promise.all(
+      meetingForm.agendas.map(async (a, idx) => {
+        let attachmentPath = (a as any).attachment_path || null;
+        if (a.attachment_data?.startsWith("data:application/pdf;base64,") && a.attachment_name) {
+          const uploaded = await uploadCommitteeDocument(
+            String(targetMeetingId), a.attachment_name, a.attachment_data
+          );
+          attachmentPath = uploaded.attachment_path;
+        }
+        return {
+          meeting_id: targetMeetingId,
+          title: a.title.trim(),
+          description: a.description || null,
+          is_evaluation: !!a.is_evaluation,
+          sort_order: idx + 1,
+          attachment_name: a.attachment_name || null,
+          attachment_path: attachmentPath,
+          attachment_data: attachmentPath ? null : (a.attachment_data || null)
+        };
+      })
+    );
+
     try {
       let createdMeeting = null;
 
@@ -1994,21 +1644,10 @@ export default function CommitteeManager({
           .eq("meeting_id", editingMeetingId);
         if (delErr) throw delErr;
 
-        const agendaPayloads = meetingForm.agendas.map((a, idx) => ({
-          meeting_id: editingMeetingId,
-          title: a.title.trim(),
-          description: a.description || null,
-          is_evaluation: !!a.is_evaluation,
-          sort_order: idx + 1,
-          attachment_name: a.attachment_name || null,
-          attachment_data: a.attachment_data || null
-        }));
+        const agendaPayloads = await buildAgendaPayloads(editingMeetingId);
 
-        try {
-          await supabase.from("meeting_agendas").insert(agendaPayloads);
-        } catch (agDbErr) {
-          console.warn("DB meeting_agendas insert 경고 (로컬 백업 보관 처리):", agDbErr);
-        }
+        const { error: agendaInsertError } = await supabase.from("meeting_agendas").insert(agendaPayloads);
+        if (agendaInsertError) throw agendaInsertError;
 
         // 💡 DB 스키마 무관 100% 보장: 로컬 스토리지에 첨부자료 무손실 보류 적재
         localStorage.setItem(`local_meeting_agendas_${editingMeetingId}`, JSON.stringify(agendaPayloads));
@@ -2027,6 +1666,13 @@ export default function CommitteeManager({
           localStorage.setItem("global_attachment_map", JSON.stringify(globalMap));
         } catch (e) { }
 
+        const { error: credentialError } = await supabase.rpc("issue_committee_meeting_credentials", {
+          p_meeting_id: editingMeetingId,
+          p_pin: generatedPin,
+          p_expires_at: null
+        });
+        if (credentialError) throw credentialError;
+
         alert("회의 정보 및 심의 안건이 성공적으로 수정되었습니다.");
       } else {
         // 1-B. 회의 기본 신규 등록
@@ -2039,21 +1685,10 @@ export default function CommitteeManager({
 
         // 2-B. 신규 의안 데이터 적재
         if (createdMeeting && meetingForm.agendas.length > 0) {
-          const agendaPayloads = meetingForm.agendas.map((a, idx) => ({
-            meeting_id: createdMeeting.id,
-            title: a.title.trim(),
-            description: a.description || null,
-            is_evaluation: !!a.is_evaluation,
-            sort_order: idx + 1,
-            attachment_name: a.attachment_name || null,
-            attachment_data: a.attachment_data || null
-          }));
+          const agendaPayloads = await buildAgendaPayloads(createdMeeting.id);
 
-          try {
-            await supabase.from("meeting_agendas").insert(agendaPayloads);
-          } catch (agDbErr) {
-            console.warn("DB meeting_agendas insert 경고:", agDbErr);
-          }
+          const { error: agendaInsertError } = await supabase.from("meeting_agendas").insert(agendaPayloads);
+          if (agendaInsertError) throw agendaInsertError;
 
           localStorage.setItem(`local_meeting_agendas_${createdMeeting.id}`, JSON.stringify(agendaPayloads));
           const shortCode = String(createdMeeting.id).includes("-") ? String(createdMeeting.id).split("-")[0] : createdMeeting.id;
@@ -2070,6 +1705,13 @@ export default function CommitteeManager({
             localStorage.setItem("global_attachment_map", JSON.stringify(globalMap));
           } catch (e) { }
         }
+
+        const { error: credentialError } = await supabase.rpc("issue_committee_meeting_credentials", {
+          p_meeting_id: createdMeeting.id,
+          p_pin: generatedPin,
+          p_expires_at: null
+        });
+        if (credentialError) throw credentialError;
 
         alert(`위원회 회의 일정이 등록되었습니다.\n[외부 위원용 보안 PIN]: ${generatedPin}`);
       }
@@ -2294,89 +1936,20 @@ export default function CommitteeManager({
 
   // 7. 정족수 실시간 계산 유틸리티 연동 (간사는 소속/재적 위원 및 정족수 산정에서 전면 제외)
   const calculateQuorum = () => {
-    if (!selectedCommittee || !selectedMeeting) return null;
-
-    // 💡 [간사 의결권 제외 규칙 적용] 간사는 의결 권한이 없는 행정 실무 진행자이므로 재적 위원 수 및 의결정족수 산정에서 전면 제외합니다.
-    const votingMembers = members.filter(m => !m.type?.includes("간사"));
-    // 재적 위원 수: 소속 위원 중 간사를 제외한 순수 의결 위원 수 (예: 4명 중 간사 1명 제외 3명)
-    const total = votingMembers.length;
-
-    // 💡 [출석/참여 유니크 위원 집계] responses 제출자 + selectedMeetingAgendaVotes 안건 표결 참여 위원 유합(Union)
-    const attendedMemberKeys = new Set<string>();
-
-    responses.forEach(r => {
-      const memberObj = members.find(m => String(m.id) === String(r.member_id) || (r.member_name && m.name === r.member_name));
-      const isSecretary = memberObj ? memberObj.type?.includes("간사") : (r.member_name && r.member_name.includes("간사"));
-      if (!isSecretary && (r.attended || r.submitted_at || r.vote || r.opinion)) {
-        const key = memberObj ? String(memberObj.id) : (r.member_name || String(r.member_id));
-        if (key) attendedMemberKeys.add(key);
-      }
-    });
-
-    selectedMeetingAgendaVotes.forEach(v => {
-      const voterName = v.member_name || (v as any).voter_name || "";
-      const memberObj = members.find(m => String(m.id) === String(v.member_id) || (voterName && m.name === voterName));
-      const isSecretary = memberObj ? memberObj.type?.includes("간사") : voterName.includes("간사");
-      if (!isSecretary && (v.vote_decision || v.opinion || v.score)) {
-        const key = memberObj ? String(memberObj.id) : (voterName || String(v.member_id));
-        if (key) attendedMemberKeys.add(key);
-      }
-    });
-
-    const attended = attendedMemberKeys.size || responses.filter(r => {
-      const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
-      return memberObj ? !memberObj.type?.includes("간사") : true;
-    }).filter(r => r.attended || r.submitted_at || r.vote).length;
-
-    // 의사정족수 (성원 요건): 간사를 제외한 재적 위원 수(N명)의 과반수 (N=3이면 Math.floor(3/2) + 1 = 2명 이상 출석 시 성원 완료!)
-    const majorityLimit = Math.floor(total / 2) + 1;
-    const isEstablished = attended >= majorityLimit;
-
-    // 의결정족수 (가결 요건): 찬성/반대/기권표 산출
-    let approveCount = responses.filter(r => {
-      const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
-      return (memberObj ? !memberObj.type?.includes("간사") : true) && r.vote === "APPROVE";
-    }).length;
-
-    let rejectCount = responses.filter(r => {
-      const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
-      return (memberObj ? !memberObj.type?.includes("간사") : true) && r.vote === "REJECT";
-    }).length;
-
-    let abstainCount = responses.filter(r => {
-      const memberObj = members.find(m => String(m.id) === String(r.member_id) || m.name === r.member_name);
-      return (memberObj ? !memberObj.type?.includes("간사") : true) && r.vote === "ABSTAIN";
-    }).length;
-
-    // responses에 표결이 부족할 경우 selectedMeetingAgendaVotes 안건 표결 합산
-    if (approveCount === 0 && rejectCount === 0 && abstainCount === 0 && selectedMeetingAgendaVotes.length > 0) {
-      selectedMeetingAgendaVotes.forEach(v => {
-        const voterName = v.member_name || (v as any).voter_name || "";
-        const memberObj = members.find(m => String(m.id) === String(v.member_id) || (voterName && m.name === voterName));
-        const isSecretary = memberObj ? memberObj.type?.includes("간사") : voterName.includes("간사");
-        if (!isSecretary) {
-          if (v.vote_decision === "REJECT") rejectCount++;
-          else if (v.vote_decision === "ABSTAIN") abstainCount++;
-          else if (v.vote_decision === "APPROVE") approveCount++;
-        }
-      });
-    }
-
-    // 💡 [가결 기준] 회의 성원 시, 실제 출석(참여)한 위원 수(M명)의 과반수(Math.floor(M/2) + 1 명) 이상 찬성 시 의결(가결)
-    const reqApprove = Math.floor(attended / 2) + 1;
-    const isApproved = isEstablished && (approveCount >= reqApprove);
-    const ruleText = `성원 시 참여자 과반 찬성 (참여 ${attended}명 중 필요: ${reqApprove}표 / 현재 찬성: ${approveCount}표)`;
+    if (!selectedCommittee || !selectedMeeting || !authoritativeMeetingResult) return null;
+    const primaryAgenda = authoritativeMeetingResult.agendas?.find((agenda: any) => !agenda.is_evaluation)
+      || authoritativeMeetingResult.agendas?.[0] || {};
 
     return {
-      total,
-      attended,
-      majorityLimit,
-      isEstablished,
-      approveCount,
-      rejectCount,
-      abstainCount,
-      isApproved,
-      ruleText
+      total: authoritativeMeetingResult.total || 0,
+      attended: authoritativeMeetingResult.attended || 0,
+      majorityLimit: authoritativeMeetingResult.required_attendance || 0,
+      isEstablished: Boolean(authoritativeMeetingResult.is_established),
+      approveCount: primaryAgenda.approve_count || 0,
+      rejectCount: primaryAgenda.reject_count || 0,
+      abstainCount: primaryAgenda.abstain_count || 0,
+      isApproved: authoritativeMeetingResult.decision_status === "APPROVED",
+      ruleText: `성원 시 참여자 과반 찬성 (참여 ${authoritativeMeetingResult.attended || 0}명 중 필요: ${authoritativeMeetingResult.required_approval || 0}표 / 현재 찬성: ${primaryAgenda.approve_count || 0}표)`
     };
   };
 
@@ -2614,118 +2187,26 @@ ${selectedMeetingAgendas.map((a, idx) => {
       setIsDownloadingPdf(rep.id);
 
       let agendas: any[] = [];
-      let votes: any[] = [];
       let responses: any[] = [];
-
-      const isNumericMeetingId = !isNaN(Number(rep.meeting_id)) && String(rep.meeting_id).trim() !== "";
-
-      // 1. 숫자형 회의 ID 일 때만 DB 상세 의결 데이터 쿼리발송 (UUID 400 Bad Request 원천 차단)
-      if (isNumericMeetingId) {
-        try {
-          const [agendasRes, votesRes, responsesRes] = await Promise.all([
-            supabase
-              .from("meeting_agendas")
-              .select("id, meeting_id, title, description, is_evaluation, sort_order, attachment_name")
-              .eq("meeting_id", rep.meeting_id)
-              .order("sort_order", { ascending: true }),
-            supabase
-              .from("meeting_agenda_votes")
-              .select(`
-                id,
-                vote,
-                score,
-                opinion,
-                agenda_id,
-                member_id,
-                committee_members ( id, name, type )
-              `)
-              .eq("meeting_id", rep.meeting_id),
-            supabase
-              .from("meeting_responses")
-              .select(`
-                id,
-                attended,
-                vote,
-                opinion,
-                encrypted_signature,
-                submitted_at,
-                committee_members ( id, name, type, role, position, org, dept )
-              `)
-              .eq("meeting_id", rep.meeting_id)
-          ]);
-
-          agendas = agendasRes.data || [];
-          votes = votesRes.data || [];
-          responses = responsesRes.data || [];
-        } catch (dbErr) {
-          console.warn("DB PDF 정보 조회 스킵:", dbErr);
+      const snapshot = await createCommitteeReportSnapshot(String(rep.meeting_id));
+      const officialResult = snapshot.payload.result;
+      agendas = snapshot.payload.agendas;
+      responses = snapshot.payload.responses.map(response => ({
+        ...response,
+        encrypted_signature: snapshot.signature_urls[String(response.id)] ? null : response.encrypted_signature,
+        signature: snapshot.signature_urls[String(response.id)] || null
+      }));
+      rep = {
+        ...rep,
+        decision_status: officialResult.decision_status,
+        committee_meetings: {
+          ...snapshot.payload.meeting,
+          committees: snapshot.payload.committee
         }
-      }
+      };
 
-      // 💡 [Zero Agenda Miss Guard] agendas가 비어있는 경우 4중 복원 체계 연동 (PDF 1번 2번 테이블 100% 보장)
-      if (!agendas || agendas.length === 0) {
-        if (selectedMeetingAgendas && selectedMeetingAgendas.length > 0) {
-          agendas = selectedMeetingAgendas;
-        } else {
-          try {
-            const cachedAgendas = localStorage.getItem(`local_meeting_agendas_${rep.meeting_id}`);
-            if (cachedAgendas) agendas = JSON.parse(cachedAgendas);
-          } catch (e) { }
-        }
-
-        if ((!agendas || agendas.length === 0) && (selectedMeeting?.agenda || rep.committee_meetings?.agenda)) {
-          const agendaText = selectedMeeting?.agenda || rep.committee_meetings?.agenda || "";
-          const lines = agendaText.split("\n").filter((l: string) => l.trim().length > 0);
-          agendas = lines.map((l: string, idx: number) => ({
-            id: `ag-${idx + 1}`,
-            meeting_id: rep.meeting_id,
-            title: l.replace(/\[안건 \d+\]\s*/, "").trim() || `의안 ${idx + 1}`,
-            description: "",
-            is_evaluation: false,
-            sort_order: idx + 1
-          }));
-        }
-
-        if (!agendas || agendas.length === 0) {
-          agendas = [
-            {
-              id: "ag-default-1",
-              meeting_id: rep.meeting_id,
-              title: "제1호 상정 안건 심의 및 의결의 건",
-              description: "상정 회의 안건 심의 및 의결",
-              is_evaluation: false,
-              sort_order: 1
-            }
-          ];
-        }
-      }
-
-      // 💡 [Zero Signature Miss Guard] DB 응답 결과가 비어있는 경우 로컬 캐시 스토리지에서 자동 폴백 로드
-      if (!responses || responses.length === 0) {
-        try {
-          const cached = localStorage.getItem(`local_meeting_responses_${rep.meeting_id}`);
-          if (cached) responses = JSON.parse(cached);
-          if ((!responses || responses.length === 0) && selectedMeeting && selectedMeeting.responses_data) {
-            responses = selectedMeeting.responses_data;
-          }
-        } catch (cErr) {
-          console.warn("로컬 캐시 응답 수집 실패:", cErr);
-        }
-      }
-
-      // committee_members 개체 누락 보완 매핑
-      if (responses && responses.length > 0 && selectedCommittee?.members) {
-        responses = responses.map(r => {
-          if (!r.committee_members && r.member_id) {
-            const matched = selectedCommittee.members.find((m: { id: any; }) => m.id === r.member_id);
-            if (matched) return { ...r, committee_members: matched };
-          }
-          return r;
-        });
-      }
-
-      // 💡 [참석자 인원수 정밀 계산] r.attended 컬럼 기반 참석 인원 정밀 집계
-      const attendedCount = responses.filter(r => r.attended !== false && r.attended !== "false" && r.attended !== 0).length || responses.length;
+      if (agendas.length === 0) throw new Error("확정된 회의 안건이 없어 결과보고서를 생성할 수 없습니다.");
+      const attendedCount = officialResult.attended || 0;
 
       // 💡 [PDF 전용 마크다운 HTML 파서 헬퍼] ###, ####, **bold**, - list 해석
       const convertMarkdownToPdfHtml = (text) => {
@@ -2807,7 +2288,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
               <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 18%;">의결형태</td>
               <td style="border: 1px solid #000; padding: 6px 12px; width: 32%;">${rep.committee_meetings?.meeting_type === "ONLINE_WRITTEN" ? "서면 의결 (비대면)" : "대면 회의 (시스템 서명)"}</td>
               <td style="border: 1px solid #000; padding: 6px 12px; font-weight: bold; background: #f3f4f6; width: 18%;">성원현황</td>
-              <td style="border: 1px solid #000; padding: 6px 12px; width: 32%;">참석 ${attendedCount}명 (의결 성원 충족)</td>
+              <td style="border: 1px solid #000; padding: 6px 12px; width: 32%;">참석 ${attendedCount}명 (${officialResult.is_established ? "의결 성원 충족" : "의결 성원 미달"})</td>
             </tr>
           </table>
         </div>
@@ -2861,54 +2342,21 @@ ${selectedMeetingAgendas.map((a, idx) => {
       `;
 
       agendas.forEach((ag, idx) => {
-        let approves = 0;
-        let rejects = 0;
-        let abstains = 0;
-
-        // 1. votes 배열에서 매칭
-        const agendaVotes = votes.filter(v => String(v.agenda_id) === String(ag.id) || (v.agenda_title && String(v.agenda_title).trim() === String(ag.title).trim()));
-        agendaVotes.forEach(v => {
-          const voteVal = String(v.vote || v.decision || "").toUpperCase();
-          if (voteVal === "APPROVE" || voteVal === "AGREE" || voteVal === "찬성" || voteVal === "동의") approves++;
-          else if (voteVal === "REJECT" || voteVal === "DISAGREE" || voteVal === "반대" || voteVal === "부동의") rejects++;
-          else if (voteVal === "ABSTAIN" || voteVal === "기권") abstains++;
-        });
-
-        // 2. 만약 votes에서 카운팅되지 않은 경우, 제출된 responses의 agenda_votes에서 2차 수합
-        if (approves === 0 && rejects === 0 && abstains === 0 && responses && responses.length > 0) {
-          responses.forEach(r => {
-            if (r.agenda_votes && Array.isArray(r.agenda_votes) && r.agenda_votes.length > 0) {
-              const myAgVote = r.agenda_votes.find((av: any) => String(av.agenda_id) === String(ag.id) || (av.agenda_title && String(av.agenda_title).trim() === String(ag.title).trim()) || av.agenda_index === idx);
-              if (myAgVote) {
-                const voteVal = String(myAgVote.vote || myAgVote.decision || "").toUpperCase();
-                if (voteVal === "APPROVE" || voteVal === "AGREE" || voteVal === "찬성" || voteVal === "동의") approves++;
-                else if (voteVal === "REJECT" || voteVal === "DISAGREE" || voteVal === "반대" || voteVal === "부동의") rejects++;
-                else if (voteVal === "ABSTAIN" || voteVal === "기권") abstains++;
-              } else {
-                approves++;
-              }
-            } else {
-              // 개별 안건 표결 데이터가 전체 찬성이면 동의로 집계
-              approves++;
-            }
-          });
-        }
-
-        // 3. 서명 제출 인원이 존재하고 가결 상태이면 기본 동의 수 보장
-        if (approves === 0 && rejects === 0 && abstains === 0 && responses && responses.length > 0) {
-          approves = responses.length;
-        }
+        const agendaResult = officialResult.agendas?.find((item: any) => String(item.agenda_id) === String(ag.id)) || {};
+        const approves = agendaResult.approve_count || 0;
+        const rejects = agendaResult.reject_count || 0;
+        const abstains = agendaResult.abstain_count || 0;
 
         let resultSummary = "-";
 
         if (ag.is_evaluation) {
-          const validScores = agendaVotes.filter(v => v.score !== null && v.score !== undefined);
-          const avgScore = validScores.length > 0
-            ? (validScores.reduce((acc, curr) => acc + curr.score, 0) / validScores.length).toFixed(2)
-            : "0.00";
-          resultSummary = `자체평가 평균 점수: <strong>${avgScore}점</strong> / 5.00점 만점 (${validScores.length}명 참여)`;
+          const avgScore = agendaResult.average_score === null || agendaResult.average_score === undefined
+            ? "0.00" : Number(agendaResult.average_score).toFixed(2);
+          resultSummary = `자체평가 평균 점수: <strong>${avgScore}점</strong> / 5.00점 만점 (${agendaResult.response_count || 0}명 참여)`;
         } else {
-          resultSummary = `동의: ${approves}명 | 부동의: ${rejects}명 | 기권: ${abstains}명 (최종 ${rep.decision_status === "APPROVED" || approves > rejects ? "가결" : "부결"})`;
+          const decisionText = agendaResult.decision_status === "APPROVED" ? "가결"
+            : agendaResult.decision_status === "CANCELLED_NO_QUORUM" ? "미성원" : "부결";
+          resultSummary = `동의: ${approves}명 | 부동의: ${rejects}명 | 기권: ${abstains}명 (최종 ${decisionText})`;
         }
 
         const cleanTitleStr = String(ag.title || "")
@@ -2965,26 +2413,11 @@ ${selectedMeetingAgendas.map((a, idx) => {
         return (orderMap[roleA] || 99) - (orderMap[roleB] || 99);
       });
 
-      // 💡 [디지털 서명 검증 코드 생성 (SHA-256 해시 토큰)]
-      const sealTimestampStr = new Date().toLocaleString("ko-KR", {
+      const sealTimestampStr = new Date(snapshot.finalized_at).toLocaleString("ko-KR", {
         year: "numeric", month: "2-digit", day: "2-digit",
         hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
       });
-
-      const generateSealHash = (meetingId: string | number, dateStr: string, list: any[]) => {
-        const rawString = `${meetingId}_${dateStr}_${list.map(r => r.submitted_at || r.id || r.member_id).join('_')}_ANCHOR_SEAL_SECRET`;
-        let hash = 0;
-        for (let i = 0; i < rawString.length; i++) {
-          const char = rawString.charCodeAt(i);
-          hash = ((hash << 5) - hash) + char;
-          hash |= 0;
-        }
-        const positiveHash = Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
-        const secondaryHash = Math.abs((hash ^ 0x5F3759DF)).toString(16).toUpperCase().padStart(8, '0');
-        return `${positiveHash.slice(0, 4)}${secondaryHash.slice(0, 4)}-${positiveHash.slice(4, 8)}${secondaryHash.slice(4, 8)}`;
-      };
-
-      const sealHash = generateSealHash(rep.committee_meetings?.id || "MTG", sealTimestampStr, sortedResponses);
+      const sealHash = snapshot.verification_code;
 
       sortedResponses.forEach((resp) => {
         const decryptedSig = (resp.encrypted_signature ? decryptSignature(resp.encrypted_signature) : null) || resp.signature || (resp as any).signature_data;
@@ -3029,14 +2462,14 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
         <div style="margin-top: 3.5rem; text-align: center; font-size: 11px; color: #334155; border: 1.5px solid #0284c7; padding: 14px; border-radius: 8px; background: #f0f9ff; page-break-inside: avoid; break-inside: avoid;">
           <div style="font-size: 13px; font-weight: 800; color: #0369a1; margin-bottom: 0.35rem;">
-            🛡️ 울산과학대학교 앵커사업단 공동인증 디지털 서명 적용 필함
+            🛡️ 울산과학대학교 앵커사업단 디지털 기록 봉인 적용
           </div>
           <div style="font-size: 11.5px; font-weight: 800; color: #047857; font-family: 'Courier New', monospace; background: #e0f2fe; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-bottom: 0.4rem; border: 1px solid #bae6fd; letter-spacing: 0.5px;">
             [디지털 서명 검증 코드: ${sealHash} (${sealTimestampStr})]
           </div>
           <div style="font-size: 10.5px; color: #475569; line-height: 1.5;">
-            본 문서는 울산과학대학교 앵커사업단 디지털 서명키(Ulsan College Anchor Portal CA / SHA-256)를 활용하여 암호학적으로 봉인되었습니다.<br/>
-            서명 제출 시각 및 고유 검증 코드를 통해 문서의 위·변조 방지 및 의결 무결성이 100% 보장됨을 공식 증명합니다.
+            본 문서는 확정 데이터 스냅샷의 SHA-256(${snapshot.payload_sha256})과 서버 HMAC 검증값으로 봉인되었습니다.<br/>
+            스냅샷 ID ${snapshot.snapshot_id}와 검증 코드를 통해 저장 기록의 일치 여부를 확인할 수 있습니다.
           </div>
         </div>
       `;
@@ -3663,7 +3096,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
                   {/* 💡 [외부 위원 전용 접속 링크 및 보안 PIN 배너 - 구글 폼 스타일 단축 URL 적용] */}
                   {(() => {
-                    const shortMeetingCode = String(selectedMeeting.id).includes("-") ? String(selectedMeeting.id).split("-")[0] : selectedMeeting.id;
+                    const shortMeetingCode = selectedMeeting.public_code || selectedMeeting.id;
                     const shortVoteUrl = `${window.location.origin}${window.location.pathname}?v=${shortMeetingCode}`;
 
                     return (

@@ -8,7 +8,7 @@
  * 3. 의결정족수(가결): 성원 시 출석(참여)한 의결 위원 수(M명)의 과반수(Math.floor(M / 2) + 1) 이상 찬성 시 안건 최종 가결.
  */
 
-import { Committee, CommitteeMember, MeetingResponse, EvaluationResult } from '../types/committee';
+import { Committee, CommitteeMember, MeetingResponse, EvaluationResult } from '../types/committee.js';
 
 /**
  * 위원회의 실시간 참석 및 표결 데이터를 바탕으로 성원 여부와 안건 가부 판정을 수행하는 함수입니다.
@@ -23,19 +23,33 @@ export function evaluateMeetingStatus(
   members: CommitteeMember[],
   responses: MeetingResponse[]
 ): EvaluationResult {
-  // 1. 간사(SECRETARY) 위원 ID 목록 추출
-  const secretaryMemberIds = new Set(
-    members.filter(m => m.role === 'SECRETARY').map(m => m.id)
-  );
+  const resolveRole = (member: CommitteeMember): string => {
+    const rawRole = member.role || (member as CommitteeMember & { role_code?: string; type?: string }).role_code
+      || (member as CommitteeMember & { type?: string }).type || 'MEMBER';
+    return rawRole === 'SECRETARY' || rawRole.includes('간사') ? 'SECRETARY' : rawRole;
+  };
 
-  // 2. 간사를 제외한 순수 의결 위원 명단 및 재적 수 산정
-  const pureVotingMembers = members.filter(m => m.role !== 'SECRETARY');
+  // ID는 DB의 BIGINT와 화면 문자열이 섞일 수 있으므로 비교 전에 문자열로 정규화합니다.
+  const memberById = new Map(members.map(member => [String(member.id), member]));
+  const pureVotingMembers = members.filter(member => resolveRole(member) !== 'SECRETARY');
+  const eligibleMemberIds = new Set(pureVotingMembers.map(member => String(member.id)));
   const pureTotalQuorum = pureVotingMembers.length > 0 ? pureVotingMembers.length : (committee.total_quorum || 0);
 
-  // 3. 간사를 제외한 실제 출석 의결 위원 수 계산
-  const attendedVotingResponses = responses.filter(
-    r => r.attended && !secretaryMemberIds.has(r.member_id)
-  );
+  // 알 수 없는 위원과 중복 응답은 정족수에 포함하지 않고, 위원별 최신 제출 한 건만 사용합니다.
+  const latestResponseByMember = new Map<string, MeetingResponse>();
+  for (const response of responses) {
+    const memberId = String(response.member_id);
+    const member = memberById.get(memberId);
+    if (members.length > 0 && (!member || !eligibleMemberIds.has(memberId))) continue;
+    if (member && resolveRole(member) === 'SECRETARY') continue;
+
+    const previous = latestResponseByMember.get(memberId);
+    const previousTime = previous?.submitted_at ? Date.parse(previous.submitted_at) : 0;
+    const responseTime = response.submitted_at ? Date.parse(response.submitted_at) : 0;
+    if (!previous || responseTime >= previousTime) latestResponseByMember.set(memberId, response);
+  }
+
+  const attendedVotingResponses = Array.from(latestResponseByMember.values()).filter(response => response.attended);
   const attendedCount = attendedVotingResponses.length;
 
   // 4. 의사정족수 (성원 요건) 판정: 간사 제외 재적 위원 수의 과반수 이상 출석

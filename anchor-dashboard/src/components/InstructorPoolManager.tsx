@@ -461,23 +461,15 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
   // 4. 교∙강사 삭제
   // 💡 [사용자 비밀번호 검증 헬퍼]
   const verifyCurrentUserPassword = async (inputPw) => {
-    if (currentUser && currentUser.password) {
-      return currentUser.password === inputPw;
-    }
-    
-    if (currentUser && currentUser.id) {
+    if (currentUser?.email && currentUser?.uuid) {
       try {
-        const hashed = CryptoJS.SHA256(inputPw).toString();
-        const { data, error } = await supabase
-          .from("rise_users")
-          .select("id")
-          .eq("id", currentUser.id)
-          .eq("pw", hashed)
-          .maybeSingle();
-          
-        if (!error && data) return true;
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: currentUser.email,
+          password: inputPw
+        });
+        return !error && data.user?.id === currentUser.uuid;
       } catch (err) {
-        console.error("비밀번호 DB 검증 오류:", err);
+        console.error("Supabase Auth 재인증 오류:", err);
       }
     }
     return false;

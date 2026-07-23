@@ -28,7 +28,6 @@ import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen, FileSpreadsheet } from "lucide-react";
 import { supabase } from "./supabaseClient";
-import CryptoJS from "crypto-js";
 import * as XLSX from "xlsx";
 import "./styles/dashboard.css";
 
@@ -2208,20 +2207,7 @@ export default function App() {
 
   const [isScrollRestored, setIsScrollRestored] = useState(false);
 
-  const [currentUser, setCurrentUser] = useState(() => {
-    const sessionUser = localStorage.getItem("anchor_logged_in_user");
-    if (sessionUser) {
-      try {
-        const parsed = JSON.parse(sessionUser);
-        if (parsed && parsed.role && typeof parsed.role === "object" && parsed.role.id) {
-          return parsed;
-        }
-      } catch (e) {
-        return null;
-      }
-    }
-    return null;
-  });
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   const currentRole = currentUser ? currentUser.role : null;
 
@@ -3291,44 +3277,22 @@ export default function App() {
     }
 
     try {
-      const hashedCurrent = CryptoJS.SHA256(currentPw).toString();
+      const { data: reauthData, error: reauthError } = await supabase.auth.signInWithPassword({
+        email: currentUser.email,
+        password: currentPw
+      });
 
-      // 1. Supabase에서 현재 사용자의 비밀번호 조회 및 검증
-      const { data: user, error: fetchError } = await supabase
-        .from("rise_users")
-        .select("pw")
-        .eq("id", currentUser.id)
-        .single();
-
-      if (fetchError || !user) {
-        alert("사용자 정보를 조회할 수 없습니다.");
-        return;
-      }
-
-      if (user.pw !== hashedCurrent) {
+      if (reauthError || reauthData.user?.id !== currentUser.uuid) {
         alert("현재 비밀번호가 일치하지 않습니다.");
         return;
       }
 
-      // 2. Supabase Auth의 비밀번호도 동시에 업데이트 진행!
       const { error: authUpdateError } = await supabase.auth.updateUser({
         password: newPw
       });
 
       if (authUpdateError) {
         alert(`인증 비밀번호 변경 실패: ${authUpdateError.message}`);
-        return;
-      }
-
-      // 3. 로컬 DB(rise_users) 비밀번호 필드도 동기화 업데이트
-      const hashedNew = CryptoJS.SHA256(newPw).toString();
-      const { error: updateError } = await supabase
-        .from("rise_users")
-        .update({ pw: hashedNew })
-        .eq("id", currentUser.id);
-
-      if (updateError) {
-        alert("로컬 회원 DB 비밀번호 변경 처리 중 오류가 발생했습니다. (인증 비밀번호는 정상 변경됨)");
         return;
       }
 
@@ -7225,32 +7189,64 @@ export default function App() {
     }
   }, [activeTab, projectsSubTab, mgmtSubTab, kpiSubTab, selectedProgId, committeeSubTab]);
 
-  // 로컬스토리지에서 세션 확인 및 테마 설정
+  // Supabase Auth 세션을 기준으로 rise_users 업무 프로필을 복원합니다.
   useEffect(() => {
-    const sessionUser = localStorage.getItem("anchor_logged_in_user");
-    if (sessionUser) {
-      try {
-        const parsed = JSON.parse(sessionUser);
-        if (parsed && parsed.role && typeof parsed.role === "object" && parsed.role.id) {
-          setCurrentUser(parsed);
-          // 💡 [RLS 권한 완전 동기화] 새로고침 시에도 세션 토큰을 전역 Supabase 클라이언트에 주입하여 API 401 권한거부를 예방합니다.
-          if (parsed.access_token && parsed.refresh_token) {
-            supabase.auth.setSession({
-              access_token: parsed.access_token,
-              refresh_token: parsed.refresh_token
-            });
-          }
-        } else {
-          console.warn("Invalid session role structure detected. Clearing session to prevent crash.");
-          localStorage.removeItem("anchor_logged_in_user");
-          setCurrentUser(null);
-        }
-      } catch (e) {
-        console.error("Failed to parse logged in user session:", e);
+    let active = true;
+
+    const restoreRiseUser = async (session: any) => {
+      if (!session?.user) {
+        if (active) setCurrentUser(null);
         localStorage.removeItem("anchor_logged_in_user");
-        setCurrentUser(null);
+        return;
       }
-    }
+
+      const { data: profile, error } = await supabase
+        .from("rise_users")
+        .select("id, name, role_key, approved, uuid, email")
+        .eq("uuid", session.user.id)
+        .maybeSingle();
+
+      if (error || !profile || !profile.approved || profile.uuid !== session.user.id) {
+        localStorage.removeItem("anchor_logged_in_user");
+        if (active) setCurrentUser(null);
+        await supabase.auth.signOut({ scope: "local" });
+        return;
+      }
+
+      const restoredUser = {
+        id: profile.id,
+        loginId: profile.email || session.user.email || profile.id,
+        name: profile.name,
+        role: userRoles[profile.role_key] || userRoles.RESEARCHER,
+        role_key: profile.role_key,
+        uuid: profile.uuid,
+        email: profile.email || session.user.email
+      };
+      localStorage.setItem("anchor_logged_in_user", JSON.stringify(restoredUser));
+      if (active) setCurrentUser(restoredUser);
+    };
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (error) {
+        console.error("Supabase session restore failed:", error);
+        return;
+      }
+      restoreRiseUser(data.session);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event: string, session: any) => {
+      if (event === "SIGNED_OUT") {
+        localStorage.removeItem("anchor_logged_in_user");
+        if (active) setCurrentUser(null);
+      } else if (event === "USER_UPDATED") {
+        restoreRiseUser(session);
+      }
+    });
+
+    return () => {
+      active = false;
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   // 다크모드 바인딩
@@ -7323,16 +7319,11 @@ export default function App() {
   const handleLoginSuccess = async (user) => {
     setCurrentUser(user);
     localStorage.setItem("anchor_logged_in_user", JSON.stringify(user));
-    if (user.access_token && user.refresh_token) {
-      await supabase.auth.setSession({
-        access_token: user.access_token,
-        refresh_token: user.refresh_token
-      });
-    }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log(">>> [보안 캐시 완전 소멸 로그아웃 수행] 로컬 스토리지를 비우고 타임스탬프 핫 부트 리로드합니다. <<<");
+    await supabase.auth.signOut({ scope: "local" });
     localStorage.clear();
     sessionStorage.clear();
     window.location.href = window.location.origin + window.location.pathname + "?cb=" + Date.now();
@@ -14355,4 +14346,3 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     </div>
   );
 }
-

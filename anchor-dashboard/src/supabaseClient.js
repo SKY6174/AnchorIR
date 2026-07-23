@@ -35,6 +35,7 @@ const createDummyClient = (initError) => {
       getSession: () => Promise.resolve({ data: { session: null }, error: null }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
       signInWithPassword: () => Promise.resolve({ data: { user: null, session: null }, error: initError }),
+      updateUser: () => Promise.resolve({ data: { user: null }, error: initError }),
       signOut: () => Promise.resolve({ error: null })
     }
   };
@@ -46,9 +47,9 @@ try {
   if (supabaseUrl && supabaseAnonKey) {
     supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
-        persistSession: false,     // 💡 브라우저 로컬스토리지에 로그인 세션을 보관하지 않음
-        autoRefreshToken: false,   // 💡 만료된 토큰의 백그라운드 자동 리프레시를 차단하여 콘솔 400 에러 원천 방어
-        detectSessionInUrl: false  // 💡 URL 내 세션 해시 감지 방지
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false
       }
     });
   } else {
@@ -61,4 +62,3 @@ try {
 }
 
 export const supabase = supabaseInstance;
-
