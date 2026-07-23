@@ -39,6 +39,7 @@ interface AiDebateLog {
 }
 
 const scheduleDb = supabase as any;
+const ENABLE_AI_PRESS_RELEASE_GENERATION = false;
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
 
@@ -6875,7 +6876,7 @@ Gemini 피드백: \n${geminiCritiqueText}
               </button>
 
               {/* 임시 비활성화 처리 (개별 URL 자동 입력 기능 우선 제공을 위해 숨김) */}
-              {false && currentRole.id !== "GUEST" && (
+              {ENABLE_AI_PRESS_RELEASE_GENERATION && currentRole.id !== "GUEST" && (
                 <button
                   type="button"
                   onClick={handleGenerateAiPressReleases}
