@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import type { ChangeEvent, CSSProperties, FormEvent } from "react";
 import Sidebar from "./components/Sidebar";
 import KPIOverview from "./components/KPIOverview";
 import ExcelUploader from "./components/ExcelUploader";
@@ -28,8 +29,16 @@ import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen, FileSpreadsheet } from "lucide-react";
 import { supabase } from "./supabaseClient";
+import type { TablesInsert } from "./types/supabase";
 import * as XLSX from "xlsx";
 import "./styles/dashboard.css";
+
+type LegacyAppRecord = Record<string, any>;
+type LegacyYearRecord = Record<number, LegacyAppRecord>;
+type RiseMemberInsert = TablesInsert<"rise_members">;
+
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 // 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
 const formatAssignee = (assigneeText?: string): string => {
@@ -121,7 +130,7 @@ const INITIAL_AGREEMENTS = [
 ];
 
 // 1차년도 화면 노출 ID에서 원본 내부 ID로 역매핑을 위한 전역 맵
-const REVERSE_UNIT_MAPPING_Y1 = {
+const REVERSE_UNIT_MAPPING_Y1: Record<string, string> = {
   "A1": "A1가",
   "A2": "A2",
   "D4": "A3",
@@ -136,7 +145,7 @@ const REVERSE_UNIT_MAPPING_Y1 = {
   "D3": "D3"
 };
 
-const PROGRAM_ID_MIGRATION_MAP = {
+const PROGRAM_ID_MIGRATION_MAP: Record<string, Record<string, string>> = {
   "A1가": {
     // 1차 마이그레이션 (원본 ID ➡️ 신규 41개 프로그램 ID)
     "A1가-01": "A1가-S1T1-1", "A1가-02": "A1가-S1T2-1", "A1가-03": "A1가-S1T2-2", "A1가-04": "A1가-S1T2-3", "A1가-05": "A1가-S1T2-4",
@@ -207,7 +216,7 @@ const PROGRAM_ID_MIGRATION_MAP = {
   }
 };
 
-const NEW_A1GA_SPEC_TITLES = {
+const NEW_A1GA_SPEC_TITLES: Record<string, string> = {
   "A1가-S1T1-1": "UC-HYPER 교수법 개발(공학/비공학)",
   "A1가-S1T2-1": "주문식 교육과정 운영",
   "A1가-S1T2-2": "주문식(지역맞춤형) 교육과정 개발 및 개편 보고서",
@@ -251,7 +260,7 @@ const NEW_A1GA_SPEC_TITLES = {
   "A1가-S5T15-2": "장학금 지급"
 };
 
-const migrateProgramIds = (data) => {
+const migrateProgramIds = <T extends LegacyAppRecord[] | null | undefined,>(data: T): T => {
   if (!data || !Array.isArray(data)) return data;
   for (const strategy of data) {
     if (strategy.units && Array.isArray(strategy.units)) {
@@ -274,7 +283,7 @@ const migrateProgramIds = (data) => {
   return data;
 };
 
-const getCalculatedYearFromDate = (dateStr, fallbackYear) => {
+const getCalculatedYearFromDate = (dateStr: string | null | undefined, fallbackYear: number): number => {
   if (!dateStr) return fallbackYear;
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return fallbackYear;
@@ -295,12 +304,12 @@ const getCalculatedYearFromDate = (dateStr, fallbackYear) => {
   return fallbackYear;
 };
 
-const getRealUnitId = (unitId, yr) => {
+const getRealUnitId = (unitId: string, yr: number): string => {
   return yr === 1 ? (REVERSE_UNIT_MAPPING_Y1[unitId] || unitId) : unitId;
 };
 
 // 앵커 사업단 초기 구성원 주소록 명단 데이터셋
-const INITIAL_MEMBERS = [
+const INITIAL_MEMBERS: LegacyAppRecord[] = [
   // 교수 및 리더진
   { id: "m-01", name: "송경영", role: "사업단장", grade: "정교수", dept: "-", phoneOffice: "052-279-3154", phoneMobile: "010-7627-7123", email: "kysong@uc.ac.kr", room: "교수연구실/E1-307", hireDate: "2026-03-01" },
   { id: "m-02", name: "김현수", role: "총괄본부장", grade: "정교수", dept: "운영본부", phoneOffice: "052-279-3122", phoneMobile: "010-4628-7963", email: "hskim3@uc.ac.kr", room: "교수연구실/E2-414", hireDate: "2026-03-01" },
@@ -354,11 +363,11 @@ const INITIAL_MEMBERS = [
 ];
 
 // LaTeX 수식 파서 및 HTML 렌더러 컴포넌트
-const RenderLatexFormula = ({ formula }) => {
+const RenderLatexFormula = ({ formula }: { formula?: string }) => {
   if (!formula) return null;
 
   // 전체 컨테이너 스타일
-  const containerStyle = {
+  const containerStyle: CSSProperties = {
     display: "inline-flex",
     flexWrap: "wrap",
     alignItems: "center",
@@ -375,7 +384,7 @@ const RenderLatexFormula = ({ formula }) => {
   };
 
   // 1단계: LaTeX 문자열에서 오염된 text{...} 구조와 제어문자들을 완전히 평문화
-  const purifyLatexString = (str) => {
+  const purifyLatexString = (str: string) => {
     if (!str) return "";
     return str
       // \text{...} 또는 [Tab]ext{...} 구조 매칭하여 중괄호 안의 글자만 추출
@@ -479,13 +488,13 @@ const RenderLatexFormula = ({ formula }) => {
 };
 
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
-const formatToMillionWon = (value) => {
+const formatToMillionWon = (value?: number | null) => {
   if (value === undefined || value === null || isNaN(value)) return "0.0";
   return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 };
 
 // 5개년 연쇄 잔액 이월(Carry Over) 계산 함수
-function recalculateCarryOver(years) {
+function recalculateCarryOver(years: LegacyYearRecord | null | undefined) {
   if (!years) return;
 
   // 1차년도 잔액 -> 2차년도 이월 (현재 차년도이므로 반영)
@@ -502,11 +511,11 @@ function recalculateCarryOver(years) {
 }
 
 // 다년도 예산/집행 구조 동적 변환기 (1~5차년도)
-function formatDataToMultiYear(data) {
+function formatDataToMultiYear(data: LegacyAppRecord[]) {
   return data.map((p) => {
     const newUnits = p.units.map((u) => {
       // 1. 단위과제 예산 다년도 맵핑
-      const unitYears = {};
+      const unitYears: LegacyYearRecord = {};
       const isA1Na = u.id === "A1나";
 
       [1, 2, 3, 4, 5].forEach((yr) => {
@@ -575,7 +584,7 @@ function formatDataToMultiYear(data) {
         const spent_national = Math.round(spentMain * nationalRatio);
         const spent_city = spentMain - spent_national;
 
-        const progYears = {
+        const progYears: LegacyYearRecord = {
           1: {
             budget_main: budgetMain,
             spent_main: spentMain,
@@ -620,7 +629,7 @@ function formatDataToMultiYear(data) {
 
       // 2~5차년도용 프로그램 다년도 매핑 (1차년도는 제외)
       const y2Progs = u.programs.map((prog) => {
-        const progYears = {};
+        const progYears: LegacyYearRecord = {};
         [2, 3, 4, 5].forEach((yr) => {
           let budgetMain = 0;
           let spentMain = 0;
@@ -843,7 +852,7 @@ function formatDataToMultiYear(data) {
       });
 
       // 💡 [중복 ID 방지 및 병합 가드] 1차년도(y1Progs)와 2~5차년도(y2Progs) 세부 프로그램의 중복 ID를 제거하고 years를 병합합니다.
-      const uniquePrograms = [];
+      const uniquePrograms: LegacyAppRecord[] = [];
       const seenIds = new Set();
       [...y1Progs, ...y2Progs].forEach((prog) => {
         if (prog && prog.id) {
@@ -873,7 +882,7 @@ function formatDataToMultiYear(data) {
       const newPrograms = uniquePrograms;
 
       // 3. 비목별 예산 다년도 맵핑
-      const newBudgetDetails = {};
+      const newBudgetDetails: Record<string, LegacyAppRecord> = {};
       Object.keys(u.budgetDetails || {}).forEach((key) => {
         const b = u.budgetDetails[key];
 
@@ -891,7 +900,7 @@ function formatDataToMultiYear(data) {
           b.spent_2025_carry = Math.round(b.spent_2025_carry / 1000);
         }
 
-        const detailYears = {};
+        const detailYears: LegacyYearRecord = {};
         [1, 2, 3, 4, 5].forEach((yr) => {
           if (yr === 2) {
             detailYears[yr] = {
@@ -927,7 +936,7 @@ function formatDataToMultiYear(data) {
 
       // 3.5. 세부 프로그램(newPrograms)의 비목별 배정 계획을 단위과제 10대 비목(newBudgetDetails)에 쪼개서 강제 롤업 연동
       [1, 2, 3, 4, 5].forEach((yr) => {
-        const categorySums = {
+        const categorySums: Record<string, LegacyAppRecord> = {
           "인건비": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
           "장학금": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
           "교육∙연구 프로그램 개발∙운영비": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
@@ -1034,9 +1043,12 @@ function formatDataToMultiYear(data) {
   });
 }
 
-function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
+function mergeProjectsWithInitial(
+  loadedData: LegacyAppRecord[] | null | undefined,
+  multiYearInitialData: LegacyAppRecord[]
+) {
   if (!loadedData) return multiYearInitialData;
-  const updated = JSON.parse(JSON.stringify(loadedData));
+  const updated = JSON.parse(JSON.stringify(loadedData)) as LegacyAppRecord[];
 
   // 💡 [Self-healing 누락 복원 가드] 최신 기획 템플릿(multiYearInitialData)에는 있으나
   // DB에서 읽어온 데이터(updated)에 누락된 신규 전략(Strategy) 및 단위과제(Unit)가 있다면 
@@ -1275,8 +1287,8 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
             }
           });
           // 💡 [중복 ID 방지 가드] 1차년도와 다년도 프로그램 목록 병합 시 발생할 수 있는 동일 ID 프로그램 중복 노출을 차단합니다.
-          const uniquePrograms = [];
-          const seenIds = new Set();
+          const uniquePrograms: LegacyAppRecord[] = [];
+          const seenIds = new Set<string>();
           mergedPrograms.forEach((prog) => {
             if (prog && prog.id) {
               if (!seenIds.has(prog.id)) {
@@ -1308,7 +1320,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
           // 💡 [단위과제 비목 및 예산 실시간 롤업 재집계]
           // 세부 프로그램들의 기획 예산(budget_main) 및 비목별 배정(budget_categories)을 기반으로
           // 단위과제의 budgetDetails와 years를 실시간으로 재집계(롤업)하여 정합성을 완벽하게 보장합니다.
-          const categorySums = {
+          const categorySums: Record<string, LegacyYearRecord> = {
             "인건비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
             "장학금": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
             "교육∙연구 프로그램 개발∙운영비": { 1: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 2: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 3: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 4: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }, 5: { main: 0, carry: 0, spent_main: 0, spent_carry: 0 } },
@@ -1537,7 +1549,7 @@ function mergeProjectsWithInitial(loadedData, multiYearInitialData) {
   return updated;
 }
 
-const getNormalizedKpi = (k, selectedYear) => {
+const getNormalizedKpi = (k: LegacyAppRecord, selectedYear: number) => {
   if (!k) return null;
   if (selectedYear !== 1) return k;
 
@@ -2458,7 +2470,7 @@ export default function App() {
     }
   }, [currentUser]);
 
-  const [projects, setProjects] = useState(() => {
+  const [projects, setProjects] = useState<LegacyAppRecord[]>(() => {
     // 💡 [깜빡임 방지 최우선 처리] 현재 로컬 선택 연도별 캐시 데이터를 최우선적으로 선제 로드하여 0초 반응을 제공합니다.
     const savedYear = localStorage.getItem("anchor_selected_year") || "2";
     const cached = localStorage.getItem(`anchor_cache_proj_y${savedYear}_v56`) || localStorage.getItem("anchor_projects_data_v56");
@@ -2531,7 +2543,7 @@ export default function App() {
   }, [approvalsTab]);
 
   // 💡 [교육용 한글 주석] 직책에 따라 테두리선(line), 배경색, 글자색이 가미된 선명하고 세련된 뱃지를 렌더링하는 공용 헬퍼 함수입니다.
-  const renderRoleBadge = (role, isRetired) => {
+  const renderRoleBadge = (role: string, isRetired: boolean) => {
     if (isRetired) {
       return (
         <span className="badge badge-gray" style={{ fontSize: "0.65rem", background: "rgba(255, 255, 255, 0.08)", color: "var(--text-secondary)" }}>
@@ -2585,9 +2597,9 @@ export default function App() {
   };
 
   // 사업단 구성원 관리 및 서브탭 상태 (첫 기동 시 즉각 화면 출력을 보장하기 위해 로컬 캐시를 초기값으로 지탱)
-  const [members, setMembers] = useState(() => {
+  const [members, setMembers] = useState<LegacyAppRecord[]>(() => {
     const saved = localStorage.getItem("anchor_members");
-    const initialList = INITIAL_MEMBERS.map((m) => ({
+    const initialList: LegacyAppRecord[] = INITIAL_MEMBERS.map((m) => ({
       ...m,
       startDate: m.startDate || m.hireDate || "2026-03-01",
       endDate: m.endDate || "",
@@ -2596,7 +2608,7 @@ export default function App() {
 
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
+        const parsed = JSON.parse(saved) as LegacyAppRecord[];
 
         // 💡 [구버전 캐시 강제 무력화 가드]
         // 로컬 스토리지에 옛날 더미 전화번호(010-1234-5678 등)가 남아있는 경우,
@@ -2666,7 +2678,7 @@ export default function App() {
   });
 
   // 선택된 연차(selectedYear) 및 계약 기간(startDate/endDate)을 고려한 실시간 참여 상태 계산 함수
-  const getMemberStatusForYear = (m, year) => {
+  const getMemberStatusForYear = (m: LegacyAppRecord, year: number) => {
     if (!m) return "미참여";
     const sDate = m.startDate || m.hireDate || "2026-03-01";
     const eDate = m.endDate || "";
@@ -2702,7 +2714,7 @@ export default function App() {
 
   // Supabase DB 저장 스키마 필드 전용 객체 정제(Sanitize) 함수
   // (PostgreSQL 테이블에 부재하는 'hireDate' 등의 컬럼이 전송되면 구문 오류가 나는 현상을 원천 방지)
-  const sanitizeMemberForDb = (m) => {
+  const sanitizeMemberForDb = (m: LegacyAppRecord | null | undefined): RiseMemberInsert | null => {
     if (!m) return null;
     return {
       id: m.id,
@@ -2753,7 +2765,7 @@ export default function App() {
       document.body.removeChild(a);
     } catch (err) {
       console.error("Member template export error:", err);
-      alert("템플릿 생성 중 오류가 발생했습니다: " + err.message);
+      alert("템플릿 생성 중 오류가 발생했습니다: " + getErrorMessage(err));
     }
   };
 
@@ -2789,23 +2801,24 @@ export default function App() {
       document.body.removeChild(a);
     } catch (err) {
       console.error("Members Excel export error:", err);
-      alert("엑셀 내보내기 중 오류가 발생했습니다: " + err.message);
+      alert("엑셀 내보내기 중 오류가 발생했습니다: " + getErrorMessage(err));
     }
   };
 
   // 💡 [교육용 한글 주석] 엑셀 파일로부터 구성원 데이터들을 파싱하여 Supabase DB에 일괄 저장(가져오기)하는 핸들러
-  const handleMemberExcelImport = (e) => {
-    const file = e.target.files[0];
+  const handleMemberExcelImport = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
-        const binaryStr = evt.target.result;
+        const binaryStr = evt.target?.result;
+        if (!binaryStr) throw new Error("엑셀 파일을 읽을 수 없습니다.");
         const workbook = XLSX.read(binaryStr, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
         const ws = workbook.Sheets[sheetName];
-        const rawRows = XLSX.utils.sheet_to_json(ws);
+        const rawRows = XLSX.utils.sheet_to_json<LegacyAppRecord>(ws);
 
         if (rawRows.length === 0) {
           alert("엑셀 파일에 데이터가 존재하지 않습니다.");
@@ -2813,7 +2826,7 @@ export default function App() {
         }
 
         let importedCount = 0;
-        const uploadPayloads = [];
+        const uploadPayloads: LegacyAppRecord[] = [];
 
         rawRows.forEach((row, index) => {
           const deptVal = row["소속 부서"];
@@ -2857,7 +2870,9 @@ export default function App() {
         }
 
         // Supabase DB에 일괄 Upsert 처리
-        const sanitizedList = uploadPayloads.map(p => sanitizeMemberForDb(p));
+        const sanitizedList = uploadPayloads
+          .map(p => sanitizeMemberForDb(p))
+          .filter((p): p is RiseMemberInsert => p !== null);
         const { error } = await supabase
           .from("rise_members")
           .upsert(sanitizedList);
@@ -2881,7 +2896,7 @@ export default function App() {
         alert(`총 ${importedCount}명의 구성원 데이터를 성공적으로 업로드 및 동기화했습니다!`);
       } catch (err) {
         console.error("Excel import error:", err);
-        alert(`엑셀 파일 처리 및 DB 업로드 중 오류가 발생했습니다: ${err.message || err}`);
+        alert(`엑셀 파일 처리 및 DB 업로드 중 오류가 발생했습니다: ${getErrorMessage(err)}`);
       }
     };
     reader.readAsBinaryString(file);
@@ -2914,12 +2929,14 @@ export default function App() {
         } else {
           // DB 테이블은 존재하나 데이터가 비어있을 시 최초 시드 업서트 기동
           console.log("Supabase members empty. Seeding initial data...");
-          const cleanedSeed = INITIAL_MEMBERS.map((m) => sanitizeMemberForDb({
-            ...m,
-            startDate: m.startDate || m.hireDate || "2026-03-01",
-            endDate: m.endDate || "",
-            status: m.status || "참여중"
-          }));
+          const cleanedSeed = INITIAL_MEMBERS
+            .map((m) => sanitizeMemberForDb({
+              ...m,
+              startDate: m.startDate || m.hireDate || "2026-03-01",
+              endDate: m.endDate || "",
+              status: m.status || "참여중"
+            }))
+            .filter((m): m is RiseMemberInsert => m !== null);
 
           // 💡 [RLS 보안 가드] 현재 브라우저의 JWT 토큰 세션이 있는지 검사하여, 인증된 사용자일 때만 DB 시딩 시도
           const runSeeding = async () => {
@@ -2946,9 +2963,10 @@ export default function App() {
         console.error("Supabase rise_members table sync failed, fallback to localStorage cache:", err);
 
         // 💡 [인증/세션 만료 예방 안전장치] rise_members 테이블 조회 및 업서트 중 401/403/42501(RLS) 에러 감지 시 자동 로그아웃 유도
-        const status = err?.status;
-        const code = String(err?.code || "");
-        const msg = String(err?.message || "");
+        const errorRecord = err as LegacyAppRecord;
+        const status = errorRecord?.status;
+        const code = String(errorRecord?.code || "");
+        const msg = String(errorRecord?.message || "");
         if (
           status === 401 ||
           status === 403 ||
@@ -2986,7 +3004,7 @@ export default function App() {
   }, [members]);
 
   // 협약서 관리 상태 선언 및 로컬스토리지 영속 저장 연동
-  const [agreements, setAgreements] = useState(() => {
+  const [agreements, setAgreements] = useState<LegacyAppRecord[]>(() => {
     const cached = localStorage.getItem("anchor_agreements_data_v1");
     if (cached) {
       try {
@@ -3027,7 +3045,7 @@ export default function App() {
   const [isUnifiedCertificatesLoaded, setIsUnifiedCertificatesLoaded] = useState(false);
   const [isScholarshipsLoaded, setIsScholarshipsLoaded] = useState(false);
 
-  const [unifiedCertificates, setUnifiedCertificates] = useState(() => {
+  const [unifiedCertificates, setUnifiedCertificates] = useState<LegacyAppRecord[]>(() => {
     const cached = localStorage.getItem("anchor_unified_certificates_data_v1");
     if (cached) {
       try {
@@ -3039,7 +3057,7 @@ export default function App() {
     return [];
   });
 
-  const [scholarships, setScholarships] = useState(() => {
+  const [scholarships, setScholarships] = useState<LegacyAppRecord[]>(() => {
     const cached = localStorage.getItem("anchor_cache_scholarships_all");
     if (cached) {
       try {
@@ -3087,9 +3105,9 @@ export default function App() {
     localStorage.setItem("anchor_mgmt_sub_tab", mgmtSubTab);
   }, [mgmtSubTab]);
   const [memberFilter, setMemberFilter] = useState("all"); // "all", "active", "retired"
-  const [memberSortConfig, setMemberSortConfig] = useState({ key: null, direction: "asc" });
+  const [memberSortConfig, setMemberSortConfig] = useState<{ key: string | null; direction: string }>({ key: null, direction: "asc" });
 
-  const requestMemberSort = (key) => {
+  const requestMemberSort = (key: string) => {
     let direction = "asc";
     if (memberSortConfig.key === key && memberSortConfig.direction === "asc") {
       direction = "desc";
@@ -3110,7 +3128,7 @@ export default function App() {
     if (!memberSortConfig.key) {
       // 기본 정렬: 리더십 순서 -> 센터 부서 가중치 -> 연구원 가중치 -> ID 오름차순
       return sorted.sort((a, b) => {
-        const roleRanks = {
+        const roleRanks: Record<string, number> = {
           "사업단장": 1,
           "본부장": 2,
           "센터장": 3,
@@ -3125,7 +3143,7 @@ export default function App() {
         }
 
         if (a.role === "센터장" && b.role === "센터장") {
-          const centerOrder = {
+          const centerOrder: Record<string, number> = {
             "ECC센터": 1,
             "ICC센터": 2,
             "RCC센터": 3,
@@ -3141,7 +3159,7 @@ export default function App() {
         if (a.role !== "운영팀장" && b.role === "운영팀장") return 1;
 
         if (a.role === "연구원" && b.role === "연구원") {
-          const deptOrder = {
+          const deptOrder: Record<string, number> = {
             "ECC센터": 1,
             "ICC센터": 2,
             "RCC센터": 3,
@@ -3155,7 +3173,7 @@ export default function App() {
             return deptValA - deptValB;
           }
 
-          const gradeOrder = {
+          const gradeOrder: Record<string, number> = {
             "책임연구원": 1,
             "선임연구원": 2,
             "연구원": 3
@@ -3172,8 +3190,8 @@ export default function App() {
     }
 
     return sorted.sort((a, b) => {
-      let valA = a[memberSortConfig.key] || "";
-      let valB = b[memberSortConfig.key] || "";
+      let valA = a[memberSortConfig.key!] || "";
+      let valB = b[memberSortConfig.key!] || "";
 
       if (memberSortConfig.key === "startDate") {
         valA = a.startDate || a.hireDate || "";
@@ -3241,7 +3259,7 @@ export default function App() {
     return localStorage.getItem("anchor_committee_sub_tab") || "committees";
   }); // "committees" (위원회 명단 관리), "committee_meeting" (회의 운영 및 의결) 또는 "committee_report" (위원회 결과보고 대장)
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState(null); // 추가/수정용 임시 객체
+  const [editingMember, setEditingMember] = useState<LegacyAppRecord | null>(null); // 추가/수정용 임시 객체
 
   // 개인정보 관리 (비밀번호 변경) 상태 및 핸들러
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -3249,7 +3267,7 @@ export default function App() {
   const [newPw, setNewPw] = useState("");
   const [confirmNewPw, setConfirmNewPw] = useState("");
 
-  const handlePasswordChange = async (e) => {
+  const handlePasswordChange = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     // 💡 [삼중 보안 가드] 게스트(GUEST) 사용자는 어떠한 상황에서도 비밀번호 변경이 불가능합니다.
@@ -3308,7 +3326,7 @@ export default function App() {
   };
 
   // Supabase 회원현황 목록 상태
-  const [registeredUsers, setRegisteredUsers] = useState([]);
+  const [registeredUsers, setRegisteredUsers] = useState<LegacyAppRecord[]>([]);
 
   // 회원현황 목록 로드 함수
   const fetchRegisteredUsers = async () => {
@@ -3326,7 +3344,7 @@ export default function App() {
         .from("rise_users")
         .select("id, name, role_key, created_at");
       const dbUsers = data || [];
-      const dbMap = new Map(dbUsers.map(u => [u.id.trim().toLowerCase(), u]));
+      const dbMap = new Map<string, LegacyAppRecord>(dbUsers.map(u => [u.id.trim().toLowerCase(), u]));
 
       // 3. 주소록(members)에서 참여중인 멤버들 로드 및 매핑 (이메일 및 임시 비밀번호 매핑 가이드라인 연동)
       const activeMembers = (members || [])
@@ -3369,7 +3387,7 @@ export default function App() {
         });
 
       // 4. 데모 계정 + 주소록 액티브 계정 + DB 계정 우선순위 병합
-      const finalUsersMap = new Map();
+      const finalUsersMap = new Map<string, LegacyAppRecord>();
 
       // 데모 계정 주입
       demoUsers.forEach(u => finalUsersMap.set(u.id.toLowerCase(), u));
@@ -3393,7 +3411,7 @@ export default function App() {
       });
 
       // 직책별 가중치 순서 정의 (0순위 관리자 ~ 5순위 실무 연구원)
-      const roleRanks = {
+      const roleRanks: Record<string, number> = {
         ADMIN: 0,
         G_DIRECTOR: 1,
         HQ_HEAD: 2,
@@ -3420,7 +3438,7 @@ export default function App() {
         const isCenterA = a.role_key.startsWith("CENTER_");
         const isCenterB = b.role_key.startsWith("CENTER_");
         if (isCenterA && isCenterB) {
-          const centerOrder = {
+          const centerOrder: Record<string, number> = {
             CENTER_ECC: 1,
             CENTER_ICC: 2,
             CENTER_RCC: 3,
@@ -3449,7 +3467,7 @@ export default function App() {
 
           if (memberA && memberB) {
             // 1. 소속부서 정렬 순서 (ECC, ICC, RCC, AID-X, 늘봄누리, 신산업)
-            const deptOrder = {
+            const deptOrder: Record<string, number> = {
               "ECC센터": 1,
               "ICC센터": 2,
               "RCC센터": 3,
@@ -3464,7 +3482,7 @@ export default function App() {
             }
 
             // 2. 직급/직위 정렬 순서 (책임연구원, 선임연구원, 연구원)
-            const gradeOrder = {
+            const gradeOrder: Record<string, number> = {
               "책임연구원": 1,
               "선임연구원": 2,
               "연구원": 3
@@ -3489,7 +3507,7 @@ export default function App() {
   };
 
   // 회원현황에서 사용자 계정 삭제 실행 함수
-  const handleDeleteUser = async (userId) => {
+  const handleDeleteUser = async (userId: string) => {
     const demoIds = ["admin", "g_director", "hq_head", "center_director", "leader", "team_leader", "researcher"];
     if (demoIds.includes(userId.toLowerCase())) {
       alert("시스템 기본 데모 계정은 삭제할 수 없습니다.");
@@ -3526,7 +3544,7 @@ export default function App() {
   }, [activeTab, currentUser, members]);
 
   // 성과지표 상세 조회용 상태 및 다년도 성과관리 연도 선택 상태
-  const [selectedKpi, setSelectedKpi] = useState(() => {
+  const [selectedKpi, setSelectedKpi] = useState<LegacyAppRecord | null>(() => {
     const saved = localStorage.getItem("anchor_selected_kpi");
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { return null; }
@@ -3537,15 +3555,15 @@ export default function App() {
     const saved = localStorage.getItem("anchor_selected_year");
     return saved ? parseInt(saved, 10) : 2;
   });
-  const [isDownloadingPdf, setIsDownloadingPdf] = useState(null);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState<string | null>(null);
 
   // 2인 공동배정 여부 로컬 상태 (프로그램 ID별 true/false)
-  const [jointPrograms, setJointPrograms] = useState({});
+  const [jointPrograms, setJointPrograms] = useState<Record<string, boolean>>({});
 
   // projects 데이터 로딩 시 2명 이상으로 배정된 과제를 자동 스캔하여 체크 상태 설정
   useEffect(() => {
     if (!projects || !Array.isArray(projects)) return;
-    const initialJoint = {};
+    const initialJoint: Record<string, boolean> = {};
     projects.forEach((p) => {
       if (p.units && Array.isArray(p.units)) {
         p.units.forEach((u) => {
