@@ -55,6 +55,7 @@ import { useProjectLocalBackup } from "./features/projects/hooks/use-project-loc
 import { deleteMonthlySchedulesByIds, deleteMonthlySchedulesByYear, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, fetchStandaloneMonthlyScheduleIds, insertMonthlySchedules, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertMonthlySchedules, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
 import { useDashboardCache } from "./shared/hooks/use-dashboard-cache";
 import { useDashboardCacheMaintenance } from "./shared/hooks/use-dashboard-cache-maintenance";
+import { useActiveTabPersistence, useLocalStorageJson, useLocalStorageValue, useOptionalLocalStorageJson, useOptionalLocalStorageValue } from "./shared/hooks/use-local-storage-persistence";
 import { useSyncBeforeUnload } from "./shared/hooks/use-sync-before-unload";
 import "./styles/dashboard.css";
 
@@ -466,16 +467,10 @@ export default function App() {
     return saved !== null ? JSON.parse(saved) : true;
   });
 
-  useEffect(() => {
-    // 💡 [교육용 한글 주석] survey_respond 탭은 모바일 임시 설문조사용 화면이므로 로컬 스토리지에 저장하여 탭 상태가 오염되지 않도록 제외합니다.
-    if (activeTab !== "survey_respond") {
-      localStorage.setItem("anchor_active_tab", activeTab);
-    }
-  }, [activeTab]);
+  // survey_respond 탭은 임시 설문 화면이므로 마지막 일반 탭 상태를 유지합니다.
+  useActiveTabPersistence(activeTab);
 
-  useEffect(() => {
-    localStorage.setItem("anchor_approvals_tab", approvalsTab);
-  }, [approvalsTab]);
+  useLocalStorageValue("anchor_approvals_tab", approvalsTab);
 
   // 💡 [교육용 한글 주석] 직책에 따라 테두리선(line), 배경색, 글자색이 가미된 선명하고 세련된 뱃지를 렌더링하는 공용 헬퍼 함수입니다.
   const renderRoleBadge = (role: string, isRetired: boolean) => {
@@ -930,9 +925,7 @@ export default function App() {
   }, [currentUser]);
 
   // members 로컬 상태 갱신 시 로컬스토리지 보조 백업 (네트워크 지연 시 즉시 피드백 및 영속성 보장)
-  useEffect(() => {
-    localStorage.setItem("anchor_members", JSON.stringify(members));
-  }, [members]);
+  useLocalStorageJson("anchor_members", members);
 
   // 협약서 관리 상태 선언 및 로컬스토리지 영속 저장 연동
   const [agreements, setAgreements] = useState<LegacyAppRecord[]>(() => {
@@ -968,9 +961,7 @@ export default function App() {
     return localStorage.getItem("anchor_agreements_sub_tab") || "agreements";
   });
 
-  useEffect(() => {
-    localStorage.setItem("anchor_agreements_sub_tab", agreementsSubTab);
-  }, [agreementsSubTab]);
+  useLocalStorageValue("anchor_agreements_sub_tab", agreementsSubTab);
 
   // 💡 [안전 가드 퓨즈] Supabase DB 패치가 100% 정상 완료되었는지 추적하여, 401 권한에러 등으로 빈 배열 상태가 된 경우 원격 DB를 덮어써 삭제하는 사고를 방어합니다.
   const [isAgreementsLoaded, setIsAgreementsLoaded] = useState(false);
@@ -1035,9 +1026,7 @@ export default function App() {
   const [mgmtSubTab, setMgmtSubTab] = useState(() => {
     return localStorage.getItem("anchor_mgmt_sub_tab") || "approvals";
   }); // "approvals", "members", "programs", "users"
-  useEffect(() => {
-    localStorage.setItem("anchor_mgmt_sub_tab", mgmtSubTab);
-  }, [mgmtSubTab]);
+  useLocalStorageValue("anchor_mgmt_sub_tab", mgmtSubTab);
   const [memberFilter, setMemberFilter] = useState("all"); // "all", "active", "retired"
   const [memberSortConfig, setMemberSortConfig] = useState<{ key: string | null; direction: string }>({ key: null, direction: "asc" });
 
@@ -1542,73 +1531,25 @@ export default function App() {
 
 
 
-  useEffect(() => {
-    if (selectedKpi) {
-      localStorage.setItem("anchor_selected_kpi", JSON.stringify(selectedKpi));
-    } else {
-      localStorage.removeItem("anchor_selected_kpi");
-    }
-  }, [selectedKpi]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_selected_year", String(selectedYear));
-  }, [selectedYear]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_kpi_sub_tab", kpiSubTab);
-  }, [kpiSubTab]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_projects_sub_tab", projectsSubTab);
-  }, [projectsSubTab]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_committee_sub_tab", committeeSubTab);
-  }, [committeeSubTab]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_progress_sub_tab", progressSubTab);
-  }, [progressSubTab]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_budget_sub_tab", budgetSubTab);
-  }, [budgetSubTab]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_investment_sub_tab", investmentSubTab);
-  }, [investmentSubTab]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_procurement_sub_tab", procurementSubTab);
-  }, [procurementSubTab]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_schedule_sub_tab", scheduleSubTab);
-  }, [scheduleSubTab]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_asset_sub_tab", assetSubTab);
-  }, [assetSubTab]);
-
-  useEffect(() => {
-    localStorage.setItem("anchor_selected_unit_id", selectedUnitId);
-  }, [selectedUnitId]);
-
-  useEffect(() => {
-    if (selectedProgId) {
-      localStorage.setItem("anchor_selected_prog_id", selectedProgId);
-    } else {
-      localStorage.removeItem("anchor_selected_prog_id");
-    }
-  }, [selectedProgId]);
+  useOptionalLocalStorageJson("anchor_selected_kpi", selectedKpi);
+  useLocalStorageValue("anchor_selected_year", selectedYear);
+  useLocalStorageValue("anchor_kpi_sub_tab", kpiSubTab);
+  useLocalStorageValue("anchor_projects_sub_tab", projectsSubTab);
+  useLocalStorageValue("anchor_committee_sub_tab", committeeSubTab);
+  useLocalStorageValue("anchor_progress_sub_tab", progressSubTab);
+  useLocalStorageValue("anchor_budget_sub_tab", budgetSubTab);
+  useLocalStorageValue("anchor_investment_sub_tab", investmentSubTab);
+  useLocalStorageValue("anchor_procurement_sub_tab", procurementSubTab);
+  useLocalStorageValue("anchor_schedule_sub_tab", scheduleSubTab);
+  useLocalStorageValue("anchor_asset_sub_tab", assetSubTab);
+  useLocalStorageValue("anchor_selected_unit_id", selectedUnitId);
+  useOptionalLocalStorageValue("anchor_selected_prog_id", selectedProgId);
 
   const [pdcaViewMode, setPdcaViewMode] = useState(() => {
     return localStorage.getItem("anchor_pdca_view_mode") || "unit";
   });
 
-  useEffect(() => {
-    localStorage.setItem("anchor_pdca_view_mode", pdcaViewMode);
-  }, [pdcaViewMode]);
+  useLocalStorageValue("anchor_pdca_view_mode", pdcaViewMode);
 
   // ==========================================
   // 단위과제 진행현황 데이터 내보내기 핸들러 (Excel, Markdown, PDF)
