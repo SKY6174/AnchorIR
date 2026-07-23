@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Info, Layout, GitFork, ArrowRight } from "lucide-react";
 import STRATEGY_TASK_MAPPING_Y1 from "../data/extracted_1st_year.json";
 import {
@@ -1120,11 +1120,11 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
   const [selectedUnitId, setSelectedUnitId] = useState<string>(defaultUnitId);
 
   // 선택한 단위과제 소속 전략 정보 로드
-  const selectedUnitData = currentStrategyMapping[selectedUnitId] || {
+  const selectedUnitData = useMemo(() => currentStrategyMapping[selectedUnitId] || {
     strategies: [],
     tasks: [],
     programs: []
-  };
+  }, [currentStrategyMapping, selectedUnitId]);
 
   // 선택한 추진전략(S)의 ID 상태
   const defaultStratId = selectedUnitData.strategies.length > 0 ? selectedUnitData.strategies[0].id : "";
@@ -1134,7 +1134,10 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
   const [selectedTaskId, setSelectedTaskId] = useState("");
 
   // 선택된 추진전략에 부속되는 전략과제(T) 필터링
-  const filteredTasks = selectedUnitData.tasks ? selectedUnitData.tasks.filter(t => t.strat === selectedStratId) : [];
+  const filteredTasks = useMemo(
+    () => selectedUnitData.tasks ? selectedUnitData.tasks.filter(t => t.strat === selectedStratId) : [],
+    [selectedUnitData.tasks, selectedStratId]
+  );
 
   // 연도(selectedYear)나 프로젝트가 변경될 때 현재 유닛 목록의 유효성 검사 및 리셋 처리
   useEffect(() => {
@@ -1147,7 +1150,7 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
     } else {
       setSelectedUnitId("");
     }
-  }, [selectedYear, selectedProjectId, currentProjectsData]);
+  }, [selectedYear, selectedProjectId, currentProjectsData, selectedUnitId]);
 
   // 단위과제 변경 시 추진전략 드롭다운도 첫 번째로 자동 연동
   useEffect(() => {
