@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/v/:code",
+      "destination": "/index.html"
+    },
+    {
       "source": "/sv/:id",
       "destination": "/index.html"
     },

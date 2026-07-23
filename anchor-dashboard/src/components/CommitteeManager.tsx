@@ -16,6 +16,7 @@ import {
 } from "../services/committee-vote-service";
 import { CommitteeVoteApiError } from "../types/committee-vote";
 import { buildValidatedVoteItems, createIdempotencyKey } from "../utils/committee-vote-validation";
+import { buildCommitteeVotePath } from "../utils/committee-short-link";
 import {
   Users,
   ClipboardList,
@@ -3219,9 +3220,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   {/* 💡 [외부 위원 전용 접속 링크 및 보안 PIN 배너 - 구글 폼 스타일 단축 URL 적용] */}
                   {(() => {
                     const shortMeetingCode = selectedMeeting.public_code?.trim();
-                    const shortVoteUrl = shortMeetingCode
-                      ? `${window.location.origin}${window.location.pathname}?v=${shortMeetingCode}`
-                      : "";
+                    const shortVotePath = shortMeetingCode ? buildCommitteeVotePath(shortMeetingCode) : "";
+                    const shortVoteUrl = shortVotePath ? `${window.location.origin}${shortVotePath}` : "";
 
                     if (!shortVoteUrl) {
                       return (

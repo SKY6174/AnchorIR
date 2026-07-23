@@ -36,6 +36,7 @@ import { Sun, Moon, LogOut, HelpCircle, Lock as LockIcon, Info, Clock, Edit2, Fi
 import { supabase } from "./supabaseClient";
 import type { Tables, TablesInsert } from "./types/supabase";
 import { resolveApprovedRiseUser } from "./services/auth-service";
+import { parseCommitteeVotePath } from "./utils/committee-short-link";
 import "./styles/dashboard.css";
 
 type LegacyAppRecord = Record<string, any>;
@@ -8833,9 +8834,9 @@ export default function App() {
   };
 
   // 💡 참여자 전용 설문조사 모바일 입력 폼 (로그인 우회)
-  // 💡 [외부 위원 전용 심의 의결 채널 라우팅 인터셉터] (단축링크 ?v= 지원)
+  // 💡 [외부 위원 전용 심의 의결 채널 라우팅 인터셉터] (/v/ 단축경로와 기존 ?v= 지원)
   const params = new URLSearchParams(window.location.search);
-  const shortVoteCode = params.get("v");
+  const shortVoteCode = parseCommitteeVotePath(window.location.pathname) || params.get("v");
   const isVoteMode = params.get("mode") === "vote" || !!shortVoteCode;
   const voteMeetingId = params.get("meetingId") || shortVoteCode || undefined;
 

@@ -91,7 +91,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   const [activeAttachmentData, setActiveAttachmentData] = useState<any>(null);
   const [activeAttachmentLoading, setActiveAttachmentLoading] = useState<boolean>(false);
 
-  // 원본 상태에는 사용자가 실제로 선택한 값만 기록합니다. 화면의 기존 기본 표시는 그대로 유지합니다.
+  // 사용자가 실제로 선택한 값만 기록하며, 미선택 상태를 표결 완료처럼 표시하지 않습니다.
   const [agendaInputs, setAgendaInputs] = useState<Record<string | number, { vote: string; score: number; opinion: string }>>({});
 
   // 전체 제출 상태
@@ -778,7 +778,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
               {selectedMeetingAgendas.map((agenda, index) => {
-                const currentInp = agendaInputs[agenda.id] || { vote: "APPROVE", score: 5, opinion: "" };
+                const currentInp = agendaInputs[agenda.id] || { vote: "", score: 0, opinion: "" };
                 const isCurrentActive = String(agenda.id) === String(activeAgendaId);
 
                 return (
@@ -808,14 +808,14 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                     {agenda.is_evaluation ? (
                       <div style={{ marginBottom: "0.85rem" }}>
                         <div style={{ fontSize: "0.82rem", color: "#3b82f6", fontWeight: "bold", marginBottom: "0.5rem" }}>
-                          ★ 5점 척도 평점 선택 (현재 평가: {currentInp.score || 5}점)
+                          ★ 5점 척도 평점 선택 (현재 평가: {currentInp.score ? `${currentInp.score}점` : "미선택"})
                         </div>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.4rem" }}>
                           {[1, 2, 3, 4, 5].map(scoreVal => (
                             <button
                               key={scoreVal}
                               type="button"
-                              className={`committee-score-button${(currentInp.score || 5) === scoreVal ? " is-selected" : ""}`}
+                              className={`committee-score-button${currentInp.score === scoreVal ? " is-selected" : ""}`}
                               onClick={() => setAgendaInputs({
                                 ...agendaInputs,
                                 [agenda.id]: {
@@ -828,12 +828,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                                 padding: "0.65rem 0.25rem",
                                 fontSize: "0.8rem",
                                 borderRadius: "6px",
-                                border: (currentInp.score || 5) === scoreVal ? "2px solid #3b82f6" : "1px solid var(--border-color)",
-                                background: (currentInp.score || 5) === scoreVal ? "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)" : "rgba(255,255,255,0.05)",
-                                color: (currentInp.score || 5) === scoreVal ? "#ffffff" : "var(--text-secondary)",
+                                border: currentInp.score === scoreVal ? "2px solid #3b82f6" : "1px solid var(--border-color)",
+                                background: currentInp.score === scoreVal ? "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)" : "rgba(255,255,255,0.05)",
+                                color: currentInp.score === scoreVal ? "#ffffff" : "var(--text-secondary)",
                                 fontWeight: "bold",
                                 cursor: "pointer",
-                                boxShadow: (currentInp.score || 5) === scoreVal ? "0 4px 10px rgba(59, 130, 246, 0.3)" : "none"
+                                boxShadow: currentInp.score === scoreVal ? "0 4px 10px rgba(59, 130, 246, 0.3)" : "none"
                               }}
                             >
                               {scoreVal}점
