@@ -1,13 +1,13 @@
 # Gap Analysis: dashboard-quality-auth-signing
 
 > Date: 2026-07-23 | Design: `docs/02-design/features/dashboard-quality-auth-signing.design.md`
-> Implementation baseline: `anchor-dashboard` commit `e142b85`
+> Implementation baseline: `anchor-dashboard` commit `fc8ca1b` | Iteration: 2
 
 ---
 
-## Match Rate: 43%
+## Match Rate: 48%
 
-총 42개 검증 항목 중 18개가 구현·검증되었다. TypeScript, 일반 lint, 위원회 회귀시험과 초기 번들 개선은 완료됐다. 반면 JSX 접근성 공식 검사, 공통 승인 프로필 resolver, 이메일·SMS OTP, PAdES 서명 스키마·서버 경계·검증은 구현되지 않았다.
+총 42개 검증 항목 중 20개가 구현·검증되었다. TypeScript, 일반 lint, 위원회 회귀시험, 초기 번들 개선과 공통 승인 프로필 resolver가 완료됐다. 반면 JSX 접근성 공식 검사, 이메일·SMS OTP, PAdES 서명 스키마·서버 경계·검증은 구현되지 않았다.
 
 외부 사업자와 인증서가 필요한 항목은 임의 구현하지 않은 것이 설계와 일치하지만, provider 미설정 상태를 안전하게 표현하는 서버 adapter와 데이터 경계까지 아직 없으므로 구현 완료로 계산하지 않았다.
 
@@ -16,7 +16,7 @@
 - 설계의 Workstream A~E와 Test/Operations 요구를 42개 독립 항목으로 분해했다.
 - 구현 코드, 설정, migration, Edge Function, 테스트 파일이 존재하고 현재 검사로 확인된 항목만 완료로 계산했다.
 - 일부 구현 또는 수동 확인만 있는 항목은 완료 점수에 포함하지 않았다.
-- 계산식: `18 / 42 × 100 = 42.86%`, 반올림하여 43%.
+- 계산식: `20 / 42 × 100 = 47.62%`, 반올림하여 48%.
 
 ## Workstream Results
 
@@ -25,10 +25,10 @@
 | A. TypeScript | 5 | 5 | 100% | Match |
 | B. Lint and accessibility | 2 | 5 | 40% | Partial |
 | C. Bundle and performance | 6 | 7 | 86% | Partial |
-| D. Supabase OTP | 2 | 10 | 20% | Missing |
+| D. Supabase OTP | 4 | 10 | 40% | Partial |
 | E. Certificate PDF signature | 1 | 10 | 10% | Missing |
 | Tests and operations | 2 | 5 | 40% | Partial |
-| **Total** | **18** | **42** | **43%** | **Act required** |
+| **Total** | **20** | **42** | **48%** | **Act required** |
 
 ## Implemented Items
 
@@ -71,12 +71,12 @@ Measured evidence:
 - spreadsheet chunk는 production HTML preload 목록에서 제거됐다.
 - 최대 생성 chunk는 약 425KB로 500KB 미만이다.
 
-### D. Supabase OTP — 2/10
+### D. Supabase OTP — 4/10
 
 - [x] 기존 Supabase 비밀번호 로그인과 세션 복원은 유지된다.
 - [x] 로그인과 복원 경로에 `rise_users.uuid`, `approved` 확인이 존재한다.
-- [ ] `resolveApprovedRiseUser` 공통 adapter가 없다.
-- [ ] 알 수 없는 `role_key`를 거부하지 않고 `RESEARCHER`로 fallback한다.
+- [x] 로그인과 세션 복원이 공통 `resolveApprovedRiseUser` adapter를 사용한다.
+- [x] 알 수 없는 `role_key`는 local 세션 폐기와 일반화된 인증 실패로 처리한다.
 - [ ] `signInWithOtp` 이메일 요청 adapter가 없다.
 - [ ] `verifyOtp` 이메일 검증 adapter가 없다.
 - [ ] E.164 정규화와 SMS OTP 요청 adapter가 없다.
@@ -87,8 +87,8 @@ Measured evidence:
 Evidence:
 
 - `anchor-dashboard/src/components/AuthManager.tsx`는 `signInWithPassword`만 사용한다.
-- 별도 auth service 또는 OTP 관련 소스 파일이 없다.
-- `AuthManager.tsx`와 `App.tsx`가 승인 프로필 조회·mapping 로직을 중복 보유한다.
+- `src/services/auth-service.ts`가 UUID, 승인 여부와 허용 역할을 한 경계에서 검사한다.
+- `AuthManager.tsx`와 `App.tsx`가 동일 resolver를 사용하며 unknown role fallback이 제거됐다.
 - migration 096은 Auth와 `rise_users`의 DB 계약을 강화했지만 OTP 요청·검증 기능은 제공하지 않는다.
 
 ### E. Certificate PDF signature — 1/10
@@ -129,27 +129,24 @@ Evidence:
 
 | Priority | Gap | Risk |
 |---|---|---|
-| P0 | 알 수 없는 `role_key`의 `RESEARCHER` fallback | 승인 계약에 없는 역할이 로그인 세션으로 복원될 수 있음 |
 | P0 | PAdES schema·RLS·서버 경계 부재 | 공인 서명 기능을 안전하게 추가할 기반이 없음 |
-| P1 | 공통 approved-profile resolver 부재 | 로그인과 세션 복원의 정책이 서로 달라질 수 있음 |
 | P1 | JSX 접근성 gate 미구성 | 접근성 0건이라는 품질 지표가 실제 범위를 반영하지 않음 |
 | P1 | OTP abuse control·feature flag 부재 | provider 연결 시 사용자 열거, 비용·재전송 남용 위험 |
 | P2 | 자동 시각 회귀 부재 | UI 완전 보존을 정적 diff와 수동 확인에 의존 |
 
 ## Recommendations
 
-1. 공통 `resolveApprovedRiseUser`를 먼저 만들고 unknown role을 일반화된 인증 실패로 거부한다.
-2. JSX 접근성 플러그인을 공식 lint에 추가하고 UI 변경 없는 attribute/handler 수정만 적용한다.
-3. 이메일 OTP adapter와 disabled-by-default feature flag를 구현한 뒤 custom SMTP 환경에서 E2E한다.
-4. SMS adapter는 E.164 parser와 provider preflight까지만 구현하고 provider 결정 전 flag를 끈다.
-5. additive migration으로 signature audit schema, private bucket, RLS를 먼저 배포한다.
-6. provider-neutral signing Edge Function에 `provider_not_configured` 실패 경로를 구현한다.
-7. 기관 인증서/HSM/TSA 결정 후 PAdES-B-T 통합과 독립 validator 검증을 수행한다.
-8. 로그인, 주요 lazy 탭, 위원회 외부표결, 결과보고서 PDF에 시각 회귀 기준을 추가한다.
+1. JSX 접근성 플러그인을 공식 lint에 추가하고 UI 변경 없는 attribute/handler 수정만 적용한다.
+2. 이메일 OTP adapter와 disabled-by-default feature flag를 구현한 뒤 custom SMTP 환경에서 E2E한다.
+3. SMS adapter는 E.164 parser와 provider preflight까지만 구현하고 provider 결정 전 flag를 끈다.
+4. additive migration으로 signature audit schema, private bucket, RLS를 먼저 배포한다.
+5. provider-neutral signing Edge Function에 `provider_not_configured` 실패 경로를 구현한다.
+6. 기관 인증서/HSM/TSA 결정 후 PAdES-B-T 통합과 독립 validator 검증을 수행한다.
+7. 로그인, 주요 lazy 탭, 위원회 외부표결, 결과보고서 PDF에 시각 회귀 기준을 추가한다.
 
 ## Next Steps
 
-- [ ] Act 1: 승인 프로필 resolver 통합과 unknown role fail-closed
+- [x] Act 1: 승인 프로필 resolver 통합과 unknown role fail-closed
 - [ ] Act 2: JSX 접근성 검사 gate 정상화
 - [ ] Act 3: 이메일 OTP adapter·feature flag·시험
 - [ ] Act 4: SMS OTP adapter·provider preflight·시험
