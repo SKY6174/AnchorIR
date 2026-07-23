@@ -135,7 +135,7 @@ export default function SurveyResponder(_props: SurveyResponderProps = {}) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minHeight: "100vh", background: "#090d16", color: "white", padding: "1.5rem 1rem", fontFamily: "sans-serif" }}>
-      
+
       {/* 모바일 최적화 헤더 */}
       <header style={{ width: "100%", maxWidth: "480px", textAlign: "center", paddingBottom: "1.2rem", borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: "1.5rem" }}>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.4rem", color: "var(--accent-color)", marginBottom: "0.3rem" }}>
@@ -171,8 +171,8 @@ export default function SurveyResponder(_props: SurveyResponderProps = {}) {
 
             {/* 응답자명 작성 (익명 허용) */}
             <div className="glass-card" style={{ padding: "1.2rem", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", fontWeight: "700" }}>응답자 소속/이름 (미입력 시 '익명 참가자'로 제출)</label>
-              <input
+              <label htmlFor="a11y-survey-responder-1" style={{ fontSize: "0.78rem", color: "var(--text-secondary)", fontWeight: "700" }}>응답자 소속/이름 (미입력 시 '익명 참가자'로 제출)</label>
+              <input id="a11y-survey-responder-1"
                 type="text"
                 placeholder="예) 재학생 홍길동 / 기업 관계자"
                 value={responderName}
@@ -195,15 +195,15 @@ export default function SurveyResponder(_props: SurveyResponderProps = {}) {
                   {ratingOptions.map((opt) => {
                     const isChecked = scores[qIdx] === opt.score;
                     return (
-                      <label 
-                        key={opt.score} 
-                        style={{ 
-                          display: "flex", 
-                          alignItems: "center", 
-                          gap: "0.6rem", 
-                          fontSize: "0.78rem", 
-                          padding: "0.5rem 0.8rem", 
-                          borderRadius: "0.35rem", 
+                      <label htmlFor="a11y-survey-responder-2"
+                        key={opt.score}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.6rem",
+                          fontSize: "0.78rem",
+                          padding: "0.5rem 0.8rem",
+                          borderRadius: "0.35rem",
                           background: isChecked ? "rgba(59, 130, 246, 0.08)" : "rgba(255,255,255,0.01)",
                           border: isChecked ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(255,255,255,0.04)",
                           color: isChecked ? "white" : "var(--text-secondary)",
@@ -229,8 +229,8 @@ export default function SurveyResponder(_props: SurveyResponderProps = {}) {
 
             {/* 서술형 피드백 의견 */}
             <div className="glass-card" style={{ padding: "1.2rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", fontWeight: "700" }}>기타 건의사항 및 주관식 피드백 (선택사항)</label>
-              <textarea
+              <label htmlFor="a11y-survey-responder-2" style={{ fontSize: "0.78rem", color: "var(--text-secondary)", fontWeight: "700" }}>기타 건의사항 및 주관식 피드백 (선택사항)</label>
+              <textarea id="a11y-survey-responder-2"
                 placeholder="프로그램 참여 중 좋았던 점이나 건의하고 싶으신 의견을 자유롭게 적어주세요."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}

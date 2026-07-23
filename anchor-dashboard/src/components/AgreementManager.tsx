@@ -187,9 +187,9 @@ export default function AgreementManager({
   // 💡 날짜 문자열 안전 정화기 (PostgreSQL DATE 타입 호환 보장 및 오입력 데이터 정제)
   const sanitizeDateStr = (dateStr: unknown, fallbackYear: number | string | undefined): string => {
     if (!dateStr) return `${fallbackYear === 1 ? 2025 : 2026}-05-15`;
-    
+
     let clean = String(dateStr).trim().replace(/[^0-9-]/g, ""); // 숫자와 대시만 필터링
-    
+
     // 만약 YYYY-MM-DD 정밀 규격이면 그대로 통과
     if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
       return clean;
@@ -654,7 +654,7 @@ export default function AgreementManager({
     if (successItems.length === 0) return;
 
     let appliedCount = 0;
-    
+
     // 업로드 시각 피드백 알림
     const isConfirmed = window.confirm(`매칭 성공된 ${successItems.length}개의 파일을 Supabase Storage 저장소에 순서대로 업로드하고 동기화할까요?`);
     if (!isConfirmed) return;
@@ -663,12 +663,12 @@ export default function AgreementManager({
     setUploadStatusText(`업로드 대기 중... (0 / ${successItems.length})`);
 
     const uploadResults = [];
-    
+
     // 병목 및 타임아웃을 예방하기 위해 1건씩 안전하게 순차적으로 업로드합니다.
     for (let i = 0; i < successItems.length; i++) {
       const res = successItems[i];
       setUploadStatusText(`파일 전송 중... (${i + 1} / ${successItems.length})\n[${res.fileName}]`);
-      
+
       try {
         const targetFile = res.file;
         if (!targetFile) continue;
@@ -697,7 +697,7 @@ export default function AgreementManager({
       } catch (err) {
         console.error("Storage upload failed for file:", res.fileName, err);
       }
-      
+
       // 서버 과부하를 막기 위한 미세한 시간 지연
       await new Promise(resolve => setTimeout(resolve, 50));
     }
@@ -801,7 +801,7 @@ export default function AgreementManager({
         alert("⚠️ 등록된 사본 파일 데이터(URL)가 존재하지 않습니다. 사본 일괄 매핑 등을 통해 파일을 먼저 등록해 주세요.");
         return;
       }
-      
+
       // 만약 저장된 데이터가 웹 URL 주소 형태라면 바로 새창으로 엽니다.
       if (fileData.startsWith("http://") || fileData.startsWith("https://")) {
         window.open(fileData, "_blank");
@@ -938,7 +938,7 @@ export default function AgreementManager({
             </button>
 
             {/* 엑셀 업로드 */}
-            <label
+            <label htmlFor="a11y-agreement-manager-1"
               className="action-btn upload-btn"
               style={{
                 cursor: "pointer"
@@ -954,7 +954,7 @@ export default function AgreementManager({
             </label>
 
             {/* 사본 일괄 매핑 */}
-            <label
+            <label htmlFor="a11y-agreement-manager-4"
               className="action-btn"
               style={{
                 background: !isLight ? "rgba(16, 185, 129, 0.15)" : "#ecfdf5",
@@ -964,7 +964,7 @@ export default function AgreementManager({
               }}
             >
               <FileCheck size={16} /> 사본 일괄 매핑
-              <input
+              <input id="a11y-agreement-manager-4"
                 type="file"
                 multiple
                 accept=".pdf, .hwp, .hwpx, .jpg, .jpeg, .png"
@@ -994,16 +994,16 @@ export default function AgreementManager({
 
             {/* 신규 추가 (모양은 캡슐 형태를 유지하고 크기는 엑셀 버튼과 통일) */}
             {currentRole.id !== "GUEST" && (
-              <button 
-                onClick={() => { resetForm(); setIsModalOpen(true); }} 
+              <button
+                onClick={() => { resetForm(); setIsModalOpen(true); }}
                 className="action-btn"
-                style={{ 
-                  borderRadius: "9999px", 
-                  background: "var(--accent-color)", 
-                  border: "none", 
-                  color: "white", 
-                  fontWeight: "700", 
-                  padding: "0.5rem 1.2rem" 
+                style={{
+                  borderRadius: "9999px",
+                  background: "var(--accent-color)",
+                  border: "none",
+                  color: "white",
+                  fontWeight: "700",
+                  padding: "0.5rem 1.2rem"
                 }}
               >
                 <Plus size={16} /> 신규 등록
@@ -1138,25 +1138,25 @@ export default function AgreementManager({
                     <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.05)" : "transparent" }}>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>{agr.date}</td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
-                        <span style={{ 
-                          background: isLight ? "#eff6ff" : "rgba(96,165,250,0.1)", 
-                          color: isLight ? "#1e40af" : "#60a5fa", 
+                        <span style={{
+                          background: isLight ? "#eff6ff" : "rgba(96,165,250,0.1)",
+                          color: isLight ? "#1e40af" : "#60a5fa",
                           border: isLight ? "1px solid #bfdbfe" : "1px solid rgba(96,165,250,0.2)",
-                          padding: "0.15rem 0.4rem", 
-                          borderRadius: "0.25rem", 
-                          fontSize: "0.65rem", 
-                          fontWeight: "700" 
+                          padding: "0.15rem 0.4rem",
+                          borderRadius: "0.25rem",
+                          fontSize: "0.65rem",
+                          fontWeight: "700"
                         }}>{agr.center}</span>
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         {Array.isArray(agr.organizations) ? (
                           agr.organizations.map((org, i) => (
-                            <span key={i} style={{ 
-                              background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)", 
+                            <span key={i} style={{
+                              background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)",
                               border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.15)",
-                              padding: "0.15rem 0.4rem", 
-                              borderRadius: "0.25rem", 
-                              color: isLight ? "#334155" : "#e2e8f0", 
+                              padding: "0.15rem 0.4rem",
+                              borderRadius: "0.25rem",
+                              color: isLight ? "#334155" : "#e2e8f0",
                               fontWeight: "700",
                               marginRight: "0.2rem",
                               display: "inline-block"
@@ -1165,11 +1165,11 @@ export default function AgreementManager({
                             </span>
                           ))
                         ) : (
-                          <span style={{ 
-                            background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)", 
+                          <span style={{
+                            background: isLight ? "#f1f5f9" : "rgba(255, 255, 255, 0.06)",
                             border: isLight ? "1px solid #cbd5e1" : "1px solid rgba(255, 255, 255, 0.15)",
-                            padding: "0.15rem 0.4rem", 
-                            borderRadius: "0.25rem", 
+                            padding: "0.15rem 0.4rem",
+                            borderRadius: "0.25rem",
                             color: isLight ? "#334155" : "#e2e8f0",
                             fontWeight: "700"
                           }}>{agr.organizations}</span>
@@ -1197,15 +1197,15 @@ export default function AgreementManager({
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         {Array.isArray(agr.contents) && agr.contents.map((c, i) => (
-                          <span key={i} style={{ 
-                            background: isLight ? "#ecfdf5" : "rgba(52,211,153,0.1)", 
-                            color: isLight ? "#059669" : "#34d399", 
+                          <span key={i} style={{
+                            background: isLight ? "#ecfdf5" : "rgba(52,211,153,0.1)",
+                            color: isLight ? "#059669" : "#34d399",
                             border: isLight ? "1px solid #a7f3d0" : "1px solid rgba(52,211,153,0.2)",
-                            padding: "0.1rem 0.3rem", 
-                            borderRadius: "0.2rem", 
-                            fontSize: "0.65rem", 
+                            padding: "0.1rem 0.3rem",
+                            borderRadius: "0.2rem",
+                            fontSize: "0.65rem",
                             fontWeight: "700",
-                            marginRight: "0.2rem" 
+                            marginRight: "0.2rem"
                           }}>{c}</span>
                         ))}
                       </td>
@@ -1283,12 +1283,12 @@ export default function AgreementManager({
             <form onSubmit={handleSubmit} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>협약 체결일자</label>
-                  <input type="date" value={inputDate} onChange={(e) => setInputDate(e.target.value)} className="form-input" style={{ fontSize: "0.78rem" }} />
+                  <label htmlFor="a11y-agreement-manager-5" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>협약 체결일자</label>
+                  <input id="a11y-agreement-manager-1" type="date" value={inputDate} onChange={(e) => setInputDate(e.target.value)} className="form-input" style={{ fontSize: "0.78rem" }} />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>관련 센터</label>
-                  <select value={inputCenter} onChange={(e) => setInputCenter(e.target.value)} className="form-select" style={{ fontSize: "0.78rem" }}>
+                  <label htmlFor="a11y-agreement-manager-2" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>관련 센터</label>
+                  <select id="a11y-agreement-manager-2" value={inputCenter} onChange={(e) => setInputCenter(e.target.value)} className="form-select" style={{ fontSize: "0.78rem" }}>
                     {CENTERS_LIST.map((c) => (
                       <option key={c} value={c} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{c}</option>
                     ))}
@@ -1297,7 +1297,7 @@ export default function AgreementManager({
               </div>
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600" }}>협약 대상기관 및 기관 측 협약주체 목록</label>
+                  <label htmlFor="a11y-agreement-manager-3" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600" }}>협약 대상기관 및 기관 측 협약주체 목록</label>
                   <button type="button" onClick={handleAddOrgField} style={{ background: "none", border: "none", color: "#60a5fa", cursor: "pointer", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.1rem", fontWeight: "600" }}>
                     <Plus size={12} /> 기관 추가
                   </button>
@@ -1305,7 +1305,7 @@ export default function AgreementManager({
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.40rem" }}>
                   {inputOrganizations.map((org, index) => (
                     <div key={index} style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
-                      <input type="text" placeholder={`협약 대상기관 ${index + 1}`} value={org.name || ""} onChange={(e) => handleOrgChange(index, "name", e.target.value)} className="form-input" style={{ flex: 1.3, fontSize: "0.78rem" }} />
+                      <input id="a11y-agreement-manager-5" type="text" placeholder={`협약 대상기관 ${index + 1}`} value={org.name || ""} onChange={(e) => handleOrgChange(index, "name", e.target.value)} className="form-input" style={{ flex: 1.3, fontSize: "0.78rem" }} />
                       <input type="text" placeholder="직위/성명 (예: 총장 오연천)" value={org.subject || ""} onChange={(e) => handleOrgChange(index, "subject", e.target.value)} className="form-input" style={{ flex: 1, fontSize: "0.78rem" }} />
                       {inputOrganizations.length > 1 && (
                         <button type="button" onClick={() => handleRemoveOrgField(index)} style={{ background: "#3f3f46", border: "none", color: "#ef4444", borderRadius: "0.25rem", padding: "0.25rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", minHeight: "30px", minWidth: "30px" }}>
@@ -1317,7 +1317,7 @@ export default function AgreementManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "600" }}>대학 측 협약주체 (UC)</label>
+                <label htmlFor="a11y-agreement-manager-6" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "600" }}>대학 측 협약주체 (UC)</label>
                 <div style={{ display: "flex", gap: "0.4rem", marginBottom: univSubjectType === "기타" ? "0.4rem" : "0" }}>
                   {["총장", "단장", "센터장", "기타"].map((t) => {
                     const isSelected = univSubjectType === t;
@@ -1354,7 +1354,7 @@ export default function AgreementManager({
                 </div>
                 {univSubjectType === "기타" && (
                   <div style={{ display: "flex", gap: "0.35rem" }}>
-                    <input
+                    <input id="a11y-agreement-manager-6"
                       type="text"
                       placeholder="학과 입력 (예: 기계공학과)"
                       value={inputSubjectUnivDept}
@@ -1374,8 +1374,8 @@ export default function AgreementManager({
                 )}
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>관련 단위과제</label>
-                <select value={inputUnitId} onChange={(e) => setInputUnitId(e.target.value)} className="form-select" style={{ fontSize: "0.78rem" }}>
+                <label htmlFor="a11y-agreement-manager-7" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>관련 단위과제</label>
+                <select id="a11y-agreement-manager-3" value={inputUnitId} onChange={(e) => setInputUnitId(e.target.value)} className="form-select" style={{ fontSize: "0.78rem" }}>
                   <option value="" style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>-- 관련 단위과제 선택 --</option>
                   {availableUnits.map((u) => (
                     <option key={u.id} value={u.id} style={{ background: "var(--modal-bg)", color: "var(--text-primary)" }}>{u.id}. {u.title}</option>
@@ -1383,7 +1383,7 @@ export default function AgreementManager({
                 </select>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "600" }}>협약유형</label>
+                <span style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "600" }}>협약유형</span>
                 <div style={{ display: "flex", gap: "0.4rem" }}>
                   {["프리미엄", "무료", "-"].map((t) => {
                     const isSelected = inputAgreementType === t;
@@ -1413,22 +1413,22 @@ export default function AgreementManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "600" }}>협약 내용 범주 (다중 선택)</label>
+                <span style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "600" }}>협약 내용 범주 (다중 선택)</span>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
                   {AGREEMENT_CONTENTS_OPTIONS.map((c) => {
                     const isSelected = inputContents.includes(c);
                     return (
-                      <button 
-                        key={c} 
-                        type="button" 
-                        onClick={() => handleToggleContent(c)} 
-                        style={{ 
-                          padding: "0.3rem 0.65rem", 
-                          fontSize: "0.6rem", 
-                          borderRadius: "2rem", 
-                          border: isSelected ? "1.5px solid #34d399" : "1.5px solid var(--border-color)", 
-                          background: isSelected ? "rgba(52,211,153,0.15)" : "var(--input-bg)", 
-                          color: isSelected ? "#34d399" : "var(--text-secondary)", 
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => handleToggleContent(c)}
+                        style={{
+                          padding: "0.3rem 0.65rem",
+                          fontSize: "0.6rem",
+                          borderRadius: "2rem",
+                          border: isSelected ? "1.5px solid #34d399" : "1.5px solid var(--border-color)",
+                          background: isSelected ? "rgba(52,211,153,0.15)" : "var(--input-bg)",
+                          color: isSelected ? "#34d399" : "var(--text-secondary)",
                           cursor: "pointer",
                           transition: "all 0.15s ease"
                         }}
@@ -1440,11 +1440,11 @@ export default function AgreementManager({
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>협약서 사본 업로드</label>
+                <span style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>협약서 사본 업로드</span>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <label style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 0.75rem", fontSize: "0.65rem", background: "var(--input-bg)", color: "var(--text-primary)", borderRadius: "6px", cursor: "pointer", border: "1.5px solid var(--border-color)", transition: "all 0.2s ease", fontWeight: "700" }}>
+                  <label htmlFor="a11y-agreement-manager-7" style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.4rem 0.75rem", fontSize: "0.65rem", background: "var(--input-bg)", color: "var(--text-primary)", borderRadius: "6px", cursor: "pointer", border: "1.5px solid var(--border-color)", transition: "all 0.2s ease", fontWeight: "700" }}>
                     <Upload size={14} /> 파일 선택
-                    <input type="file" onChange={(e) => handleFileChange(e, "agreement")} style={{ display: "none" }} accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+                    <input id="a11y-agreement-manager-7" type="file" onChange={(e) => handleFileChange(e, "agreement")} style={{ display: "none" }} accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
                   </label>
                   <span style={{ fontSize: "0.6rem", color: "var(--text-secondary)" }}>{inputFileName ? `📁 ${inputFileName}` : "선택된 파일 없음"}</span>
                 </div>

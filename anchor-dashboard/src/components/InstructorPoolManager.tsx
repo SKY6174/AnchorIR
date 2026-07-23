@@ -51,13 +51,13 @@ const encryptData = (text: string) => {
 const decryptData = (ciphertext: string) => {
   if (!ciphertext) return "";
   const trimmed = ciphertext.trim();
-  
+
   // 💡 [초강력 복호화 예외 차단]
   // 평문 데이터(예: 생년월일 YYYY-MM-DD, 대시 포함 계좌번호 등)인 경우
   // 복호화 시도 시 CryptoJS 에러로 인해 데이터 로드가 중단되는 현상을 방지하기 위해 조기 반환 처리합니다.
   if (
-    trimmed.includes("-") || 
-    /^\d+$/.test(trimmed) || 
+    trimmed.includes("-") ||
+    /^\d+$/.test(trimmed) ||
     trimmed.length < 20
   ) {
     return trimmed;
@@ -95,7 +95,7 @@ export const getDepartmentListByYear = (yearStr: number | string = 2026): string
   const numericYear = typeof yearStr === "number" ? yearStr : (parseInt(yearStr) || 2026);
   const yearData = (academicYears as any)[numericYear];
   if (!yearData || !yearData.departments) return [];
-  
+
   const names: string[] = [];
   yearData.departments.forEach((group: any) => {
     if (group.subTeams) {
@@ -129,7 +129,7 @@ const getDeptsByYear = (yearStr: number | string): string[] => {
   const numericYear = typeof yearStr === "number" ? yearStr : (parseInt(yearStr, 10) || 2026);
   const yearData = academicYears[numericYear];
   if (!yearData || !yearData.departments) return [];
-  
+
   const names: string[] = [];
   yearData.departments.forEach(group => {
     if (group.subTeams) {
@@ -155,14 +155,14 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
   const [histories, setHistories] = useState<InstructorHistory[]>([]); // 💡 변동 정보 이력 상태값으로 통합 관리
-  
+
   // 💡 서브서브탭 제어 상태 ('master': 교∙강사 마스터 대장, 'history': 교∙강사 활동이력)
   const [activeSubTab, setActiveSubTab] = useState<string>("master");
   // 💡 활동이력 등록 전용 모달 제어 상태
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
   // 💡 좌측 교강사 검색용 텍스트 필터 상태
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   // 💡 수정 대상 상태 제어 변수 추가
   const [editingInstructor, setEditingInstructor] = useState<Instructor | null>(null);
   const [editingHistory, setEditingHistory] = useState<InstructorHistory | null>(null);
@@ -244,7 +244,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
   const handleSelectInstructor = async (ins: Instructor) => {
     setSelectedInstructor(ins);
     setIsDetailOpen(true);
-    
+
     try {
       const { data: historyData, error: historyErr } = await supabase
         .from("instructor_histories")
@@ -348,15 +348,15 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
       ["홍길동", "남성", "1980-05-15", "신한은행", "110-123-456789"],
       ["신사임당", "여성", "1985-10-23", "KB국민은행", "123-45-678901"]
     ];
-    
+
     const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([...headers, ...sampleData]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "교강사_업로드서식");
-    
+
     // 열 너비 조절
     ws["!cols"] = [{ wch: 15 }, { wch: 10 }, { wch: 22 }, { wch: 18 }, { wch: 22 }];
-    
+
     XLSX.writeFile(wb, "UC_ANCHOR_교강사_업로드_서식.xlsx");
   };
 
@@ -545,7 +545,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
   const handleAddHistory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedInstructor || !newHistoryForm.amount) return;
-    
+
     try {
       if (editingHistory) {
         // 수정 모드
@@ -604,17 +604,17 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
       ["김철수", "1975-04-12", "2026", "교내", "컴퓨터정보과", "교수", "B2", "B2-S1T1-1", "350000"],
       ["이영희", "1982-11-23", "2026", "교외", "간호학협회", "강사", "A1", "A1-S2T1-2", "500000"]
     ];
-    
+
     const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([...headers, ...sampleData]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "활동이력_업로드서식");
-    
+
     ws["!cols"] = [
-      { wch: 15 }, { wch: 22 }, { wch: 12 }, { wch: 25 }, 
+      { wch: 15 }, { wch: 22 }, { wch: 12 }, { wch: 25 },
       { wch: 18 }, { wch: 15 }, { wch: 15 }, { wch: 22 }, { wch: 18 }
     ];
-    
+
     XLSX.writeFile(wb, "UC_ANCHOR_교강사_활동이력_업로드_서식.xlsx");
   };
 
@@ -626,9 +626,9 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
         .from("instructor_histories")
         .select("*")
         .order("year", { ascending: false });
-        
+
       if (histErr) throw histErr;
-      
+
       if (!allHistories || allHistories.length === 0) {
         alert("다운로드할 활동이력 데이터가 존재하지 않습니다.");
         return;
@@ -659,7 +659,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
       XLSX.utils.book_append_sheet(wb, ws, "교강사_활동이력_대장");
 
       ws["!cols"] = [
-        { wch: 15 }, { wch: 20 }, { wch: 12 }, { wch: 18 }, 
+        { wch: 15 }, { wch: 20 }, { wch: 12 }, { wch: 18 },
         { wch: 18 }, { wch: 15 }, { wch: 12 }, { wch: 22 }, { wch: 18 }
       ];
 
@@ -746,7 +746,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
         if (error) throw error;
 
         alert(`활동이력 일괄 업로드가 성공적으로 완료되었습니다.\n- 등록 성공: ${newHistList.length}건\n- 누락/대장미등록 스킵: ${skippedCount + notFoundCount}건`);
-        
+
         if (selectedInstructor) {
           handleSelectInstructor(selectedInstructor);
         } else {
@@ -846,7 +846,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
               >
                 <Download size={16} /> 엑셀 서식
               </button>
-              <label
+              <label htmlFor="a11y-instructor-pool-manager-1"
                 className="action-btn"
                 style={{
                   display: "flex",
@@ -934,15 +934,15 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                 </thead>
                 <tbody>
                   {instructors.map((ins) => (
-                    <tr 
-                      key={ins.id} 
+                    <tr
+                      key={ins.id}
                       onClick={() => {
                         handleSelectInstructor(ins);
                         setActiveSubTab("history");
                       }}
                       title="클릭하여 활동이력 확인 및 신규 이력 등록"
-                      style={{ 
-                        borderBottom: "1px solid var(--border-color)", 
+                      style={{
+                        borderBottom: "1px solid var(--border-color)",
                         cursor: "pointer",
                         background: selectedInstructor?.id === ins.id ? "rgba(59,130,246,0.06)" : "transparent",
                         transition: "all 0.15s ease"
@@ -1068,7 +1068,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                   </span>
                 )}
               </div>
-              
+
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <button
                   onClick={handleDownloadHistoryTemplate}
@@ -1090,7 +1090,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                 >
                   <Download size={16} /> 엑셀 서식
                 </button>
-                <label
+                <label htmlFor="a11y-instructor-pool-manager-10"
                   className="action-btn"
                   style={{
                     display: "flex",
@@ -1109,7 +1109,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                   }}
                 >
                   <Upload size={16} /> 엑셀 업로드
-                  <input
+                  <input id="a11y-instructor-pool-manager-10"
                     type="file"
                     accept=".xlsx, .xls"
                     onChange={handleHistoryExcelImport}
@@ -1290,8 +1290,8 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
               {/* 사업연도 및 교내/교외 구분 */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                 <div>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>사업연도</label>
-                  <select
+                  <label htmlFor="a11y-instructor-pool-manager-11" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>사업연도</label>
+                  <select id="a11y-instructor-pool-manager-1"
                     value={newHistoryForm.year}
                     onChange={(e) => setNewHistoryForm(prev => ({ ...prev, year: parseInt(e.target.value) }))}
                     style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.375rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", outline: "none" }}
@@ -1303,17 +1303,17 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                   </select>
                 </div>
                 <div>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>교내/교외 구분</label>
+                  <label htmlFor="a11y-instructor-pool-manager-2" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>교내/교외 구분</label>
                   <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
                     <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
-                      <input
+                      <input id="a11y-instructor-pool-manager-11"
                         type="radio"
                         checked={newHistoryForm.is_internal === true}
                         onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: true }))}
                       /> 교내
                     </label>
-                    <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
-                      <input
+                    <label htmlFor="a11y-instructor-pool-manager-12" style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                      <input id="a11y-instructor-pool-manager-12"
                         type="radio"
                         checked={newHistoryForm.is_internal === false}
                         onChange={() => setNewHistoryForm(prev => ({ ...prev, is_internal: false }))}
@@ -1326,9 +1326,9 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
               {/* 소속 및 직급 */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                 <div>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>소속</label>
+                  <label htmlFor="a11y-instructor-pool-manager-13" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>소속</label>
                   {newHistoryForm.is_internal ? (
-                    <select
+                    <select id="a11y-instructor-pool-manager-13"
                       value={newHistoryForm.department}
                       onChange={(e) => setNewHistoryForm(prev => ({ ...prev, department: e.target.value }))}
                       style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.375rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", outline: "none" }}
@@ -1349,8 +1349,8 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                   )}
                 </div>
                 <div>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>직급</label>
-                  <input
+                  <label htmlFor="a11y-instructor-pool-manager-14" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>직급</label>
+                  <input id="a11y-instructor-pool-manager-2"
                     type="text"
                     placeholder="예: 교수, 처장 등"
                     required
@@ -1364,8 +1364,8 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
               {/* 단위과제 및 참여 프로그램 */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                 <div>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>단위과제</label>
-                  <select
+                  <label htmlFor="a11y-instructor-pool-manager-3" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>단위과제</label>
+                  <select id="a11y-instructor-pool-manager-3"
                     value={newHistoryForm.unit_id}
                     onChange={(e) => {
                       const uId = e.target.value;
@@ -1381,8 +1381,8 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                   </select>
                 </div>
                 <div>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>참여 프로그램</label>
-                  <select
+                  <label htmlFor="a11y-instructor-pool-manager-4" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>참여 프로그램</label>
+                  <select id="a11y-instructor-pool-manager-4"
                     value={newHistoryForm.program_id}
                     onChange={(e) => setNewHistoryForm(prev => ({ ...prev, program_id: e.target.value }))}
                     style={{ width: "100%", padding: "0.4rem", fontSize: "0.8rem", borderRadius: "0.375rem", background: "var(--card-bg)", color: "var(--text-color)", border: "1px solid var(--border-color)", outline: "none" }}
@@ -1394,8 +1394,8 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
 
               {/* 지급비용 */}
               <div>
-                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>지급비용 (원)</label>
-                <input
+                <label htmlFor="a11y-instructor-pool-manager-5" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "600", display: "block", marginBottom: "0.25rem" }}>지급비용 (원)</label>
+                <input id="a11y-instructor-pool-manager-5"
                   type="number"
                   placeholder="예: 500000"
                   required
@@ -1478,8 +1478,8 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>성명</label>
-                <input
+                <label htmlFor="a11y-instructor-pool-manager-6" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>성명</label>
+                <input id="a11y-instructor-pool-manager-6"
                   type="text"
                   required
                   value={newForm.name}
@@ -1489,18 +1489,18 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>성별</label>
+                <label htmlFor="a11y-instructor-pool-manager-7" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>성별</label>
                 <div style={{ display: "flex", gap: "1rem", marginTop: "0.25rem" }}>
                   <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
-                    <input
+                    <input id="a11y-instructor-pool-manager-14"
                       type="radio"
                       name="gender"
                       checked={newForm.gender === "남성"}
                       onChange={() => setNewForm(prev => ({ ...prev, gender: "남성" }))}
                     /> 남성
                   </label>
-                  <label style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
-                    <input
+                  <label htmlFor="a11y-instructor-pool-manager-15" style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                    <input id="a11y-instructor-pool-manager-15"
                       type="radio"
                       name="gender"
                       checked={newForm.gender === "여성"}
@@ -1511,8 +1511,8 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>생년월일 (YYYY-MM-DD)</label>
-                <input
+                <label htmlFor="a11y-instructor-pool-manager-7" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>생년월일 (YYYY-MM-DD)</label>
+                <input id="a11y-instructor-pool-manager-7"
                   type="date"
                   required
                   value={newForm.birth_date}
@@ -1523,8 +1523,8 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
 
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>은행명</label>
-                  <select
+                  <label htmlFor="a11y-instructor-pool-manager-8" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>은행명</label>
+                  <select id="a11y-instructor-pool-manager-8"
                     required
                     value={newForm.bank_name}
                     onChange={(e) => setNewForm(prev => ({ ...prev, bank_name: e.target.value }))}
@@ -1547,8 +1547,8 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                   </select>
                 </div>
                 <div style={{ flex: 1.8 }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>계좌번호</label>
-                  <input
+                  <label htmlFor="a11y-instructor-pool-manager-9" style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600", display: "block" }}>계좌번호</label>
+                  <input id="a11y-instructor-pool-manager-9"
                     type="text"
                     required
                     placeholder="예: 110-123-45678"

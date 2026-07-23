@@ -548,8 +548,8 @@ export default function ScholarshipManager({
 
             <form onSubmit={handleSubmit} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
               <div>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>학과</label>
-                <select
+                <label htmlFor="a11y-scholarship-manager-1" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>학과</label>
+                <select id="a11y-scholarship-manager-1"
                   value={dept}
                   onChange={(e) => setDept(e.target.value)}
                   style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border-color)", background: "var(--input-bg)", color: "var(--text-primary)", fontSize: "0.85rem" }}
@@ -560,8 +560,8 @@ export default function ScholarshipManager({
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>과정</label>
-                <select
+                <label htmlFor="a11y-scholarship-manager-2" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>과정</label>
+                <select id="a11y-scholarship-manager-2"
                   value={course}
                   onChange={(e) => setCourse(e.target.value)}
                   style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border-color)", background: "var(--input-bg)", color: "var(--text-primary)", fontSize: "0.85rem" }}
@@ -572,8 +572,8 @@ export default function ScholarshipManager({
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>학번 *</label>
-                <input
+                <label htmlFor="a11y-scholarship-manager-3" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>학번 *</label>
+                <input id="a11y-scholarship-manager-3"
                   type="text"
                   value={studentId}
                   onChange={(e) => setStudentId(e.target.value)}
@@ -584,8 +584,8 @@ export default function ScholarshipManager({
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>이름 *</label>
-                <input
+                <label htmlFor="a11y-scholarship-manager-4" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>이름 *</label>
+                <input id="a11y-scholarship-manager-4"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -596,8 +596,8 @@ export default function ScholarshipManager({
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>생년월일</label>
-                <input
+                <label htmlFor="a11y-scholarship-manager-5" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>생년월일</label>
+                <input id="a11y-scholarship-manager-5"
                   type="text"
                   value={residentId}
                   onChange={(e) => setResidentId(e.target.value)}
@@ -607,8 +607,8 @@ export default function ScholarshipManager({
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>학년</label>
-                <input
+                <label htmlFor="a11y-scholarship-manager-6" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>학년</label>
+                <input id="a11y-scholarship-manager-6"
                   type="text"
                   value={grade}
                   onChange={(e) => setGrade(e.target.value)}
@@ -618,8 +618,8 @@ export default function ScholarshipManager({
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>학적</label>
-                <input
+                <label htmlFor="a11y-scholarship-manager-7" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>학적</label>
+                <input id="a11y-scholarship-manager-7"
                   type="text"
                   value={enrollStatus}
                   onChange={(e) => setEnrollStatus(e.target.value)}
@@ -629,8 +629,8 @@ export default function ScholarshipManager({
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>등록여부</label>
-                <input
+                <label htmlFor="a11y-scholarship-manager-8" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>등록여부</label>
+                <input id="a11y-scholarship-manager-8"
                   type="text"
                   value={regStatus}
                   onChange={(e) => setRegStatus(e.target.value)}
@@ -640,8 +640,8 @@ export default function ScholarshipManager({
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>지급금액(원) *</label>
-                <input
+                <label htmlFor="a11y-scholarship-manager-9" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>지급금액(원) *</label>
+                <input id="a11y-scholarship-manager-9"
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
@@ -652,8 +652,8 @@ export default function ScholarshipManager({
               </div>
 
               <div>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>은행명</label>
-                <select
+                <label htmlFor="a11y-scholarship-manager-10" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>은행명</label>
+                <select id="a11y-scholarship-manager-10"
                   value={bankName}
                   onChange={(e) => setBankName(e.target.value)}
                   style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", border: "1px solid var(--border-color)", background: "var(--input-bg)", color: "var(--text-primary)", fontSize: "0.85rem" }}
@@ -664,8 +664,8 @@ export default function ScholarshipManager({
               </div>
 
               <div style={{ gridColumn: "span 2" }}>
-                <label style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>계좌번호</label>
-                <input
+                <label htmlFor="a11y-scholarship-manager-11" style={{ fontSize: "0.8rem", fontWeight: "700", display: "block", marginBottom: "0.2rem" }}>계좌번호</label>
+                <input id="a11y-scholarship-manager-11"
                   type="text"
                   value={accountNum}
                   onChange={(e) => setAccountNum(e.target.value)}

@@ -60,11 +60,11 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   const hasReservationApprovalPower = (spaceName: string): boolean => {
     if (!currentUser) return false;
     const userName = currentUser.name || "";
-    
+
     // 1. 디폴트 결재선 (송경영, 김현수, 심현미)
     const DEFAULT_APPROVERS = ["송경영", "김현수", "심현미"];
     if (DEFAULT_APPROVERS.some(appr => userName.includes(appr))) return true;
-    
+
     // 2. 공간별 특화 승인선
     const SPACE_SPECIFIC_APPROVERS: Record<string, string[]> = {
       "AI∙DX다목적강의실": ["이규상", "임은애"],
@@ -73,13 +73,13 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       "울산늘봄누리센터": ["황수진", "최주명"],
       "앵커사업단회의실": ["이규상"]
     };
-    
+
     const allowedList = SPACE_SPECIFIC_APPROVERS[spaceName];
     if (allowedList && allowedList.some(appr => userName.includes(appr))) return true;
-    
+
     // 3. 최상위 시스템 관리자(ADMIN) 허용 가드
     if (currentRole && currentRole.id === "ADMIN") return true;
-    
+
     return false;
   };
 
@@ -106,7 +106,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   const [selectedSpace, setSelectedSpace] = useState(SPACES[0]);
   const [reservations, setReservations] = useState<LegacyAssetRecord[]>([]);
   const [isResModalOpen, setIsResModalOpen] = useState(false);
-  
+
   // 예약 신청 시 사용되는 폼 상태
   const [resFormData, setResFormData] = useState({
     space_name: SPACES[0],
@@ -491,7 +491,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     semester: "2026학년도 1학기",
     usage_details: ""
   });
-  
+
   // 자산 바코드 실시간 스캔을 위한 추가 상태
   const [scanInput, setScanInput] = useState("");
   const [scannedAsset, setScannedAsset] = useState<LegacyAssetRecord | null>(null);
@@ -590,7 +590,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
         }]);
 
       if (error) throw error;
-      
+
       setUtilFormData(prev => ({ ...prev, usage_details: "" }));
       fetchUtilizationRecords(selectedUtilEquip.id);
     } catch (err) {
@@ -869,7 +869,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
           } else {
             // 값이 없는 경우 기존처럼 분류명 규칙 적용 (분류명에 AI 또는 DX가 포함되면 특화자산으로 지정)
             category = (categoryName.toUpperCase().includes("AI") || categoryName.toUpperCase().includes("DX"))
-              ? "ai_dx" 
+              ? "ai_dx"
               : "other";
           }
 
@@ -1057,7 +1057,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem", color: "var(--text-primary)" }}>
-      
+
       {/* [A] 자산 관리 대분류 서브메뉴 가로 탭바 (첫번째 예산 탭바와 디자인 100% 동기화) */}
       <div style={{
         display: "flex",
@@ -1169,7 +1169,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       {/* ============================================================================ */}
       {activeSubTab === "education_env" && (
         <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "1.25rem", alignItems: "start" }}>
-          
+
           {/* 🏫 좌측: 시설 리스트 (세로 배열) */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "0.75rem" }}>
             <h3 style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.25rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
@@ -1178,14 +1178,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
             {SPACES.map((space) => {
               const count = reservations.filter(r => r.space_name === space && r.status === "승인대기").length;
               const isSelected = selectedSpace === space;
-              
+
               // 💡 [교육용 한글 주석] 라이트 모드와 다크 모드에 맞는 대기 뱃지의 오렌지색 선명도 및 배경색을 설정합니다.
-              const badgeBg = count > 0 
-                ? (darkMode ? "rgba(249, 115, 22, 0.2)" : "rgba(234, 88, 12, 0.15)") 
+              const badgeBg = count > 0
+                ? (darkMode ? "rgba(249, 115, 22, 0.2)" : "rgba(234, 88, 12, 0.15)")
                 : (darkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)");
-              
-              const badgeColor = count > 0 
-                ? (darkMode ? "#FB923C" : "#C2410C") 
+
+              const badgeColor = count > 0
+                ? (darkMode ? "#FB923C" : "#C2410C")
                 : (darkMode ? "#94A3B8" : "#64748B");
 
               return (
@@ -1228,14 +1228,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
           {/* 📅 우측: 달력(Calendar) 및 예약 세부 현황 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            
+
             {/* 1. 월간 캘린더 판넬 */}
             <div style={{ background: "var(--panel-bg)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.85rem" }}>
                 <h3 style={{ fontSize: "1.0rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.3rem" }}>
                   <Calendar size={18} /> 📅 {selectedSpace}{SPACE_ROOMS[selectedSpace] ? ` (${SPACE_ROOMS[selectedSpace]})` : ""} 예약 월간 현황
                 </h3>
-                
+
                 {/* 년/월 제어 바 */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <button
@@ -1295,7 +1295,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                   const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
                   const numDays = new Date(currentYear, currentMonth + 1, 0).getDate();
                   const totalSlots = [];
-                  
+
                   // 이전달 빈칸
                   for (let i = 0; i < firstDayIndex; i++) {
                     totalSlots.push(null);
@@ -1328,11 +1328,11 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                     const isSaturday = idx % 7 === 6;
 
                     // 💡 [교육용 한글 주석] 라이트/다크 모드별 대기 뱃지의 오렌지색 선명도 및 배경색 설정
-                    const pendingBadgeBg = pendingCount > 0 
-                      ? (darkMode ? "rgba(249, 115, 22, 0.2)" : "rgba(234, 88, 12, 0.15)") 
+                    const pendingBadgeBg = pendingCount > 0
+                      ? (darkMode ? "rgba(249, 115, 22, 0.2)" : "rgba(234, 88, 12, 0.15)")
                       : "transparent";
-                    const pendingBadgeColor = pendingCount > 0 
-                      ? (darkMode ? "#FB923C" : "#C2410C") 
+                    const pendingBadgeColor = pendingCount > 0
+                      ? (darkMode ? "#FB923C" : "#C2410C")
                       : "transparent";
 
                     return (
@@ -1342,8 +1342,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                         style={{
                           minHeight: "52px",
                           padding: "0.3rem",
-                          background: isSelected 
-                            ? (darkMode ? "rgba(139, 92, 246, 0.2)" : "rgba(139, 92, 246, 0.08)") 
+                          background: isSelected
+                            ? (darkMode ? "rgba(139, 92, 246, 0.2)" : "rgba(139, 92, 246, 0.08)")
                             : (darkMode ? "var(--panel-bg)" : "#ffffff"),
                           border: isSelected ? "1.5px solid var(--accent-color)" : "none",
                           cursor: "pointer",
@@ -1600,11 +1600,11 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                     }}
                   />
                 </div>
-                
+
                 {/* 📋 전체 기자재대장용 엑셀 업로드/다운로드 추가 */}
                 {selectedCategory === "all" && (
                   <div style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
-                    
+
                     {/* 필드 가시성 설정 드롭다운 */}
                     <div style={{ position: "relative" }}>
                       <button
@@ -1626,7 +1626,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                       >
                         ⚙️ 필드 선택
                       </button>
-                      
+
                       {isColMenuOpen && (
                         <div style={{
                           position: "absolute",
@@ -1666,7 +1666,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                             }[colKey];
 
                             return (
-                              <label key={colKey} style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.65rem", color: "var(--text-primary)", cursor: "pointer" }}>
+                              <label htmlFor="a11y-asset-manager-1" key={colKey} style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.65rem", color: "var(--text-primary)", cursor: "pointer" }}>
                                 <input
                                   type="checkbox"
                                   checked={visibleColumns[colKey]}
@@ -1698,7 +1698,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                     </button>
 
                     {/* 엑셀 업로드 (첫번째 그림의 스타일과 동기화) */}
-                    <label
+                    <label htmlFor="a11y-asset-manager-23"
                       className="action-btn upload-btn"
                       style={{
                         cursor: "pointer"
@@ -1706,7 +1706,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                       title="엑셀 파일을 통한 자산 대량 업로드 등록"
                     >
                       <Upload size={16} /> 엑셀 업로드
-                      <input
+                      <input id="a11y-asset-manager-23"
                         type="file"
                         accept=".xlsx, .xls"
                         onChange={handleExcelImportEquipment}
@@ -1865,7 +1865,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                     .filter((e) => {
                       if (!equipSearchQuery.trim()) return true;
                       const query = equipSearchQuery.toLowerCase();
-                      
+
                       let memoObj: LegacyAssetRecord = {};
                       try {
                         if (e.memo && e.memo.trim().startsWith("{")) {
@@ -1899,10 +1899,10 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
                   const sortedData = [...filtered].sort((a, b) => {
                     if (!sortKey) return 0;
-                    
+
                     let valA = "";
                     let valB = "";
-                    
+
                     let metaA: LegacyAssetRecord = {};
                     let metaB: LegacyAssetRecord = {};
                     try {
@@ -1992,7 +1992,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                     if (typeof valA === "number" && typeof valB === "number") {
                       return sortDirection === "asc" ? valA - valB : valB - valA;
                     }
-                    
+
                     valA = String(valA);
                     valB = String(valB);
                     return sortDirection === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
@@ -2214,8 +2214,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
             <form onSubmit={handleAddReservation} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>예약 대상 공간</label>
-                <select
+                <label htmlFor="a11y-asset-manager-1" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>예약 대상 공간</label>
+                <select id="a11y-asset-manager-1"
                   value={resFormData.space_name}
                   onChange={(e) => setResFormData(prev => ({ ...prev, space_name: e.target.value }))}
                   className="form-select"
@@ -2225,8 +2225,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>예약일자</label>
-                <input
+                <label htmlFor="a11y-asset-manager-2" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>예약일자</label>
+                <input id="a11y-asset-manager-2"
                   type="date"
                   value={resFormData.reserved_date}
                   onChange={(e) => setResFormData(prev => ({ ...prev, reserved_date: e.target.value }))}
@@ -2237,8 +2237,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>시작 시간</label>
-                  <input
+                  <label htmlFor="a11y-asset-manager-3" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>시작 시간</label>
+                  <input id="a11y-asset-manager-3"
                     type="time"
                     value={resFormData.start_time}
                     onChange={(e) => setResFormData(prev => ({ ...prev, start_time: e.target.value }))}
@@ -2247,8 +2247,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                   />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>종료 시간</label>
-                  <input
+                  <label htmlFor="a11y-asset-manager-4" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>종료 시간</label>
+                  <input id="a11y-asset-manager-4"
                     type="time"
                     value={resFormData.end_time}
                     onChange={(e) => setResFormData(prev => ({ ...prev, end_time: e.target.value }))}
@@ -2259,8 +2259,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>신청부서</label>
-                <select
+                <label htmlFor="a11y-asset-manager-5" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>신청부서</label>
+                <select id="a11y-asset-manager-5"
                   value={resFormData.dept}
                   onChange={(e) => setResFormData(prev => ({ ...prev, dept: e.target.value }))}
                   className="form-select"
@@ -2273,8 +2273,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
               {resFormData.dept === "직접입력" && (
                 <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>신청부서 (직접 입력)</label>
-                  <input
+                  <label htmlFor="a11y-asset-manager-6" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>신청부서 (직접 입력)</label>
+                  <input id="a11y-asset-manager-6"
                     type="text"
                     placeholder="예: 울산대학교 행정처, OO협회"
                     value={resFormData.custom_dept}
@@ -2286,10 +2286,10 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               )}
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>
+                <label htmlFor="a11y-asset-manager-7" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>
                   {resFormData.dept === "직접입력" ? "예약대행자 (사업단 구성원)" : "신청자 (사업단 구성원)"}
                 </label>
-                <input
+                <input id="a11y-asset-manager-7"
                   type="text"
                   placeholder="사업단 소속 구성원 이름 입력"
                   value={resFormData.reserver_name}
@@ -2301,8 +2301,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
               {resFormData.dept === "직접입력" && (
                 <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>실제 이용자명 (외부 담당자)</label>
-                  <input
+                  <label htmlFor="a11y-asset-manager-8" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>실제 이용자명 (외부 담당자)</label>
+                  <input id="a11y-asset-manager-8"
                     type="text"
                     placeholder="공간을 이용할 실제 외부 담당자명"
                     value={resFormData.actual_user_name}
@@ -2314,8 +2314,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               )}
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>사용 목적</label>
-                <input
+                <label htmlFor="a11y-asset-manager-9" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>사용 목적</label>
+                <input id="a11y-asset-manager-9"
                   type="text"
                   placeholder="예: 지산학 워크숍 개최 등"
                   value={resFormData.purpose}
@@ -2382,8 +2382,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
             <form onSubmit={handleSaveEditedTime} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               <div>
-                <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>예약일자</label>
-                <input
+                <label htmlFor="a11y-asset-manager-10" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>예약일자</label>
+                <input id="a11y-asset-manager-10"
                   type="date"
                   value={editResFormData.reserved_date}
                   onChange={(e) => setEditResFormData(prev => ({ ...prev, reserved_date: e.target.value }))}
@@ -2394,8 +2394,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>시작 시간</label>
-                  <input
+                  <label htmlFor="a11y-asset-manager-11" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>시작 시간</label>
+                  <input id="a11y-asset-manager-11"
                     type="time"
                     value={editResFormData.start_time}
                     onChange={(e) => setEditResFormData(prev => ({ ...prev, start_time: e.target.value }))}
@@ -2404,8 +2404,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                   />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>종료 시간</label>
-                  <input
+                  <label htmlFor="a11y-asset-manager-12" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>종료 시간</label>
+                  <input id="a11y-asset-manager-12"
                     type="time"
                     value={editResFormData.end_time}
                     onChange={(e) => setEditResFormData(prev => ({ ...prev, end_time: e.target.value }))}
@@ -2481,10 +2481,10 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
             <form onSubmit={handleSaveEquipment} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               {!editingEquipId && (
                 <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>
+                  <label htmlFor="a11y-asset-manager-13" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>
                     📥 구매 완료 기자재 선택 (불러오기)
                   </label>
-                  <select
+                  <select id="a11y-asset-manager-13"
                     onChange={(e) => {
                       const selectedId = e.target.value;
                       if (!selectedId) return;
@@ -2517,8 +2517,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               )}
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>기자재 품명</label>
-                <input
+                <label htmlFor="a11y-asset-manager-14" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>기자재 품명</label>
+                <input id="a11y-asset-manager-14"
                   type="text"
                   placeholder="위 드롭다운에서 기자재를 선택하세요"
                   value={equipFormData.item_name}
@@ -2531,8 +2531,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>물품(기자재)번호</label>
-                <input
+                <label htmlFor="a11y-asset-manager-15" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>물품(기자재)번호</label>
+                <input id="a11y-asset-manager-15"
                   type="text"
                   placeholder="기자재 선택 시 자동 입력됩니다"
                   value={equipFormData.asset_number}
@@ -2545,8 +2545,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>바코드</label>
-                <input
+                <label htmlFor="a11y-asset-manager-16" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>바코드</label>
+                <input id="a11y-asset-manager-16"
                   type="text"
                   placeholder="예: 8809123456789"
                   value={equipFormData.barcode_id || ""}
@@ -2557,8 +2557,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>재고(보관) 위치</label>
-                <input
+                <label htmlFor="a11y-asset-manager-17" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>재고(보관) 위치</label>
+                <input id="a11y-asset-manager-17"
                   type="text"
                   placeholder="예: 동부캠퍼스 1공학관 204호 AIDX 교육실"
                   value={equipFormData.stock_location}
@@ -2569,8 +2569,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>자산 구분</label>
-                <select
+                <label htmlFor="a11y-asset-manager-18" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>자산 구분</label>
+                <select id="a11y-asset-manager-18"
                   value={equipFormData.category}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, category: e.target.value }))}
                   className="form-select"
@@ -2581,8 +2581,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>사용 분야(목적)</label>
-                <select
+                <label htmlFor="a11y-asset-manager-19" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>사용 분야(목적)</label>
+                <select id="a11y-asset-manager-19"
                   value={equipFormData.usage_type}
                   onChange={(e) => setEquipFormData(prev => ({ ...prev, usage_type: e.target.value }))}
                   className="form-select"
@@ -2592,8 +2592,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>비고 및 특이사항</label>
-                <input
+                <label htmlFor="a11y-asset-manager-20" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", fontWeight: "600" }}>비고 및 특이사항</label>
+                <input id="a11y-asset-manager-20"
                   type="text"
                   placeholder="예: 2026 라이즈 특화 1차 도입분"
                   value={equipFormData.memo}
@@ -2722,11 +2722,11 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
               {/* 실적 등록 폼 */}
               <form onSubmit={handleSaveUtilization} style={{ padding: "0.8rem", border: "1px solid rgba(16, 185, 129, 0.2)", background: "rgba(16, 185, 129, 0.02)", borderRadius: "8px", display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                 <h4 style={{ fontSize: "0.75rem", fontWeight: "700", color: "#34D399", margin: 0 }}>➕ 신규 실적 추가</h4>
-                
+
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <div style={{ width: "160px" }}>
-                    <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>학기 선택</label>
-                    <select
+                    <label htmlFor="a11y-asset-manager-21" style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>학기 선택</label>
+                    <select id="a11y-asset-manager-21"
                       value={utilFormData.semester}
                       onChange={(e) => setUtilFormData(prev => ({ ...prev, semester: e.target.value }))}
                       style={{ width: "100%", padding: "0.4rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-primary)", fontSize: "0.7rem" }}
@@ -2741,10 +2741,10 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                       <option value="2027학년도 2학기">2027학년도 2학기</option>
                     </select>
                   </div>
-                  
+
                   <div style={{ flex: 1 }}>
-                    <label style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>실적 세부사항</label>
-                    <input
+                    <label htmlFor="a11y-asset-manager-22" style={{ display: "block", fontSize: "0.65rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>실적 세부사항</label>
+                    <input id="a11y-asset-manager-22"
                       type="text"
                       placeholder="예: 정규교과 AI 기초실습 45명 이수 및 기자재 100% 활용"
                       value={utilFormData.usage_details}

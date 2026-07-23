@@ -113,8 +113,8 @@ const runAiMockAnalysis = (
 
   // [AI 실물 문서 요약 추출 자동 연동 분기]
   // 1) 20DoF 로봇 핸드 문서 감지
-  if (fName.includes("로봇") || fName.includes("robot") || fName.includes("hand") || 
-      bodyText.includes("로봇") || bodyText.includes("robot") || bodyText.includes("hand") || 
+  if (fName.includes("로봇") || fName.includes("robot") || fName.includes("hand") ||
+      bodyText.includes("로봇") || bodyText.includes("robot") || bodyText.includes("hand") ||
       iName.includes("로봇") || iName.includes("robot") || iName.includes("hand")) {
     if (docType === "proposal") {
       return {
@@ -202,8 +202,8 @@ const runAiMockAnalysis = (
   }
 
   // 2) A6000 워크스테이션 문서 감지
-  if (fName.includes("a6000") || fName.includes("워크스테이션") || fName.includes("workstation") || 
-      bodyText.includes("a6000") || bodyText.includes("워크스테이션") || bodyText.includes("workstation") || 
+  if (fName.includes("a6000") || fName.includes("워크스테이션") || fName.includes("workstation") ||
+      bodyText.includes("a6000") || bodyText.includes("워크스테이션") || bodyText.includes("workstation") ||
       iName.includes("a6000") || iName.includes("워크스테이션") || iName.includes("workstation")) {
     if (docType === "proposal") {
       return {
@@ -250,8 +250,8 @@ const runAiMockAnalysis = (
   }
 
   // 3) Physical AIoT 교육기자재 문서 감지
-  if (fName.includes("aiot") || fName.includes("교육기자재") || 
-      bodyText.includes("aiot") || bodyText.includes("교육기자재") || 
+  if (fName.includes("aiot") || fName.includes("교육기자재") ||
+      bodyText.includes("aiot") || bodyText.includes("교육기자재") ||
       iName.includes("aiot") || iName.includes("교육기자재")) {
     if (docType === "proposal") {
       return {
@@ -298,8 +298,8 @@ const runAiMockAnalysis = (
   }
 
   // 4) Physical AI 실습장비 문서 감지
-  if (fName.includes("mfec") || fName.includes("실습장비") || 
-      bodyText.includes("mfec") || bodyText.includes("실습장비") || 
+  if (fName.includes("mfec") || fName.includes("실습장비") ||
+      bodyText.includes("mfec") || bodyText.includes("실습장비") ||
       iName.includes("mfec") || iName.includes("실습장비")) {
     if (docType === "proposal") {
       return {
@@ -708,7 +708,7 @@ const callDebateAiAnalysis = async (
     console.log("GPT-4o 초안 완성:", gptDraft);
 
     console.log("🤖 [AI Debate] 2단계: Google Gemini 검토 및 피드백 개입...");
-    const geminiPrompt = `당신은 대학 조달/기획 전문가(Google Gemini)입니다. 
+    const geminiPrompt = `당신은 대학 조달/기획 전문가(Google Gemini)입니다.
     다음은 파트너 모델(GPT-4o)이 분석해낸 조달문서 1차 요약 초안입니다:
     ${JSON.stringify(gptDraft, null, 2)}
 
@@ -768,10 +768,10 @@ const callDebateAiAnalysis = async (
     console.log("🤖 [AI Debate] 3단계: 두 에이전트 간 합의 최종 조율...");
     const consensusPrompt = `당신은 최종 조율 위원장 AI입니다.
     GPT-4o의 초안 요약과 Google Gemini의 보완 검토안을 상호 비교하여, 행정 문서로서 가장 정교하고 빈틈없는 최종 조달 보고서 JSON을 만드십시오.
-    
+
     - GPT-4o 초안: ${JSON.stringify(gptDraft)}
     - Gemini 검토안: ${JSON.stringify(geminiResponse)}
-    
+
     두 모델의 장점을 융합하고 오류를 배제한 최종 JSON 요약본을 출력해주십시오. 사설을 생략하고 순수 JSON 객체만 리턴하십시오.`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -794,7 +794,7 @@ const callDebateAiAnalysis = async (
     const finalResult = JSON.parse(resData.choices[0].message.content);
     console.log("🤖 [AI Debate] 최종 합의 요약본:", finalResult);
     return finalResult;
-    
+
   } catch (error) {
     console.error("❌ AI Debate 과정 중 에러 발생, 모의 디베이트로 복구 진행:", error);
     return runAiDebateMock(docType, fileName, textContent, itemName, deptName, totalPrice);
@@ -808,7 +808,7 @@ const uploadFileToSupabase = async (
   onProgress?: (progress: number) => void
 ) => {
   if (!file) return null;
-  
+
   // 1단계: 파일 정보 보안 검토 및 암호화 필터 (Rule 8)
   // 학생 정보나 개인정보 관련 민감 키워드가 파일명에 담겨 있을 경우 보안 경고
   if (file.name.includes("개인정보") || file.name.includes("주민") || file.name.includes("비밀번호")) {
@@ -859,7 +859,7 @@ const uploadFileToSupabase = async (
     };
   } catch {
     console.warn("⚠️ 실제 Supabase Storage 업로드에 실패했습니다. 로컬 mock 업로드로 가상 대체합니다.");
-    
+
     // 모의 업로드 결과 반환 (Supabase Storage 버킷이 아직 세팅되지 않은 경우 원활한 실연을 지원)
     await new Promise(resolve => setTimeout(resolve, 400));
     if (onProgress) onProgress(100);
@@ -951,18 +951,18 @@ const convertMillionWonToThousandWon = (budgetStr?: string | null): string => {
 const getMilestonesFromDates = (item: ProcurementItem, activeYear: number | string): MilestoneMap => {
   const milestones: MilestoneMap = { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] };
   const baseYear = 2024 + Number(activeYear || 1); // 1차년도: 2025, 2차년도: 2026
-  
+
   const checkAndAdd = (dateStr: string | undefined, phaseCode: string) => {
     if (!dateStr) return;
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return;
-    
+
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
-    
+
     const isCurrentYearPart = (month >= 3 && month <= 12 && year === baseYear);
     const isNextYearPart = ((month === 1 || month === 2) && year === baseYear + 1);
-    
+
     if (isCurrentYearPart || isNextYearPart) {
       const monthKey = String(month);
       if (milestones[monthKey] && !milestones[monthKey].includes(phaseCode)) {
@@ -970,13 +970,13 @@ const getMilestonesFromDates = (item: ProcurementItem, activeYear: number | stri
       }
     }
   };
-  
+
   checkAndAdd(item.dateP, "P");
   checkAndAdd(item.dateA, "A");
   checkAndAdd(item.dateB, "B");
   checkAndAdd(item.datePr, "Pr");
   checkAndAdd(item.dateI, "I");
-  
+
   return milestones;
 };
 
@@ -984,18 +984,18 @@ const getMilestonesFromDates = (item: ProcurementItem, activeYear: number | stri
 const _getMilestonesFromDatesEquip = (item: ProcurementItem, activeYear: number | string): MilestoneMap => {
   const milestones: MilestoneMap = { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] };
   const baseYear = 2024 + Number(activeYear || 1); // 1차년도: 2025, 2차년도: 2026
-  
+
   const checkAndAdd = (dateStr: string | undefined, phaseCode: string) => {
     if (!dateStr) return;
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return;
-    
+
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
-    
+
     const isCurrentYearPart = (month >= 3 && month <= 12 && year === baseYear);
     const isNextYearPart = ((month === 1 || month === 2) && year === baseYear + 1);
-    
+
     if (isCurrentYearPart || isNextYearPart) {
       const monthKey = String(month);
       if (milestones[monthKey] && !milestones[monthKey].includes(phaseCode)) {
@@ -1003,12 +1003,12 @@ const _getMilestonesFromDatesEquip = (item: ProcurementItem, activeYear: number 
       }
     }
   };
-  
+
   checkAndAdd(item.dateP, "PA");  // 기획∙승인(PA) 시작
   checkAndAdd(item.datePr, "Pr"); // 구매신청(Pr)
   checkAndAdd(item.dateB, "BC");  // 입찰∙계약(BC)
   checkAndAdd(item.dateI, "I");   // 검수(I)
-  
+
   return milestones;
 };
 
@@ -1022,7 +1022,7 @@ const validateDatesChronological = (
   dateI: string
 ) => {
   const targetYear = Number(yearVal) || 1; // 1차년도 또는 2차년도
-  
+
   // 1) 사업연차별 유효기간 논리 범위 정의
   // 1차년도: '25.3월 ~ '26.2월 -> 2025-03-01 ~ 2026-02-29
   // 2차년도: '26.3월 ~ '27.2월 -> 2026-03-01 ~ 2027-02-28
@@ -1072,7 +1072,7 @@ const validateDatesChronologicalEquip = (
   dateI: string
 ) => {
   const targetYear = Number(yearVal) || 1; // 1차년도 또는 2차년도
-  
+
   // 1) 사업연차별 유효기간 논리 범위 정의
   const baseStart = targetYear === 1 ? new Date("2025-03-01") : new Date("2026-03-01");
   const baseEnd = targetYear === 1 ? new Date("2026-02-29") : new Date("2027-02-28");
@@ -1213,7 +1213,7 @@ const getMilestoneArray = (val: string | string[] | null | undefined): string[] 
 };
 
 // 12개월 일정 마일스톤 가중치 공용 맵 선언 (ReferenceError 방어)
-const phaseWeight = { 
+const phaseWeight = {
   "P": 1, "A": 2, "B": 3, "Pr": 4, "I": 5,
   "Rq": 1, "DR": 2, "PDR": 2, "DL": 3, "BC": 4, "CS": 5
 };
@@ -1281,7 +1281,7 @@ export default function ProcurementManager({
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("env"); // "env", "equip", "service"
-  
+
   // 수정 모드 상태 추가 (2번 요건 대응)
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingItemId, setEditingItemId] = useState<number | string | null>(null);
@@ -1309,7 +1309,7 @@ export default function ProcurementManager({
       setSortDirection("asc");
     }
   };
-  
+
   // 환경개선 상세 팝업 상태
   const [_selectedEnvItem, _setSelectedEnvItem] = useState<ProcurementItem | null>(null);
 
@@ -1450,7 +1450,7 @@ export default function ProcurementManager({
     if (!docNo) return;
     const uniqueDocs = getUniqueProposalDocs();
     const matched = uniqueDocs.find(d => d.docNo === docNo);
-    
+
     if (matched) {
       setFormData(prev => {
         const legacyItem = {
@@ -1624,12 +1624,12 @@ export default function ProcurementManager({
 
     if (listKey && fileId) {
       const fileItem = (formData[listKey] || []).find((item: any) => item.id === fileId);
-      
+
       if (!fileItem) {
         alert("⚠️ 분석할 대상 파일을 찾을 수 없습니다.");
         return;
       }
-      
+
       if (fileItem.aiData) {
         alert("💡 이미 AI 분석이 완료된 파일입니다.");
         return;
@@ -1694,7 +1694,7 @@ export default function ProcurementManager({
         let aiResult;
         const currentEngine = aiEngine || "debate";
         const totalPrice = (Number(formData.unitPrice) * Number(formData.quantity) * 1000);
-        
+
         if (currentEngine === "gemini") {
           aiResult = await callGeminiSingleAnalysis(
             docType,
@@ -1727,11 +1727,11 @@ export default function ProcurementManager({
         setFormData(prev => {
           const list = (prev[listKey] || []).map((item: any) => {
             if (item.id === fileId) {
-              return { 
-                ...item, 
-                aiData: aiResult, 
+              return {
+                ...item,
+                aiData: aiResult,
                 url: uploadedFileMeta.url,
-                isAnalyzing: false 
+                isAnalyzing: false
               };
             }
             return item;
@@ -1749,7 +1749,7 @@ export default function ProcurementManager({
 
           // [AI 자동채우기 핵심 로직 - AI 문서 기반 원클릭 행정 자동화 고도화]
           // 이전 입력 정보가 있더라도 AI가 분석한 업데이트된 핵심 명세 정보를 우선적으로 덮어씁니다.
-          
+
           // 0. 관리번호(asset_number) 매핑 (1번 요건: 기획/구매가 아닌 검수문서 check 분석 시에만 mgmtNo 연동)
           if (docType === "check" && aiResult.mgmtNo) {
             nextData.asset_number = aiResult.mgmtNo;
@@ -1762,12 +1762,12 @@ export default function ProcurementManager({
             const parsedBudget = parseBudgetStringToMillions(aiResult.budget);
             if (parsedBudget) {
               if (modalType === "service") {
-                nextData.budgetPlan = Math.round(parsedBudget * 1000); 
+                nextData.budgetPlan = Math.round(parsedBudget * 1000);
               } else if (modalType === "env") {
                 nextData.unitPrice = parsedBudget;
                 nextData.budgetPlan = parsedBudget;
               } else {
-                nextData.unitPrice = parsedBudget; 
+                nextData.unitPrice = parsedBudget;
               }
             }
           }
@@ -1787,7 +1787,7 @@ export default function ProcurementManager({
             if (unitMatch) {
               const unitCode = unitMatch[0]; // 예: "B2", "C2" 등
               nextData.unit = unitCode;
-              
+
               // 연계 프로그램 세팅
               const progs = getDynamicPrograms(unitCode);
               if (progs.length > 0) {
@@ -1808,7 +1808,7 @@ export default function ProcurementManager({
           const rawDept = aiResult.dept || aiResult.fromDept;
           if (rawDept) {
             const cleanDept = rawDept.replace(/\s*\(.*?\)\s*/g, "").trim();
-            
+
             const validDepts = [
               "기계공학부", "기계시스템전공", "기계설비전공", "전기전자공학부", "전기전공", "스마트전자전공",
               "조선해양시스템공학과", "컴퓨터공학과", "화학공학과", "게임영상학과", "실내건축디자인과",
@@ -1817,7 +1817,7 @@ export default function ProcurementManager({
               "반려동물보건과", "사회복지학과", "유아교육과", "세무회계학과", "사회복지상담학과", "국제학부",
               "미래모빌리티제조학과", "바이오화학생산기술학과", "인공지능기반텔레헬스학과"
             ];
-            
+
             const matchedDept = validDepts.find(d => cleanDept.includes(d) || d.includes(cleanDept));
             if (matchedDept) {
               nextData.deptName = matchedDept;
@@ -1872,7 +1872,7 @@ export default function ProcurementManager({
 
           // 7. 기획 목적 및 활용계획 자동 추출 바인딩 (구입목적, 활용계획)
           const strategicGoals = aiResult.goals ? aiResult.goals.join(", ") : "RISE 사업 전략 과제 추진";
-          
+
           if (modalType === "service") {
             if (aiResult.descriptionPurpose) {
               nextData.purpose = aiResult.descriptionPurpose;
@@ -1881,7 +1881,7 @@ export default function ProcurementManager({
             }
             nextData.providerQual = nextData.providerQual || "관련 부문 인가 인증 보유 법인 및 대학용역 유사 실적 우수 사업자";
             nextData.opResult = nextData.opResult || "용역 일정 내 성과품 납품 완료 및 만족도 평가 결과 우수 등급 달성";
-            
+
             // 용역(service) 날짜 기입 분기
             if (docType === "proposal" && aiResult.draftDate) {
               nextData.datePp = aiResult.draftDate;
@@ -1900,7 +1900,7 @@ export default function ProcurementManager({
             } else if (!nextData.utilization) {
               nextData.utilization = "학부생 공통 개방형 메이커 스페이스 및 교육 실습 공간으로 상시 개방 운영 예정";
             }
-            
+
             // 환경개선(env) 날짜 기입 분기
             if (docType === "proposal") {
               if (aiResult.draftDate) nextData.dateP = aiResult.draftDate;
@@ -1924,7 +1924,7 @@ export default function ProcurementManager({
             } else if (!nextData.descriptionPlan) {
               nextData.descriptionPlan = "도입 완료 후 시뮬레이션 고도화 전공 교과목 실습 기자재로 100% 매칭 활용하며, 연간 120명 이상의 전문 인력 실습 활용 기대.";
             }
-            
+
             // 기자재(equip) 날짜 기입 분기 (기획문서는 PA에, 구매문서는 Pr에 각각 매핑)
             if (docType === "proposal") {
               if (aiResult.approveDate) {
@@ -1995,7 +1995,7 @@ export default function ProcurementManager({
         // 선택한 AI 엔진별로 분석 진행 (Gemini 단독 / GPT-4o 단독 / 2개 모델 교차 토론)
         let aiResult;
         const currentEngine = aiEngine || "debate";
-        
+
         if (currentEngine === "gemini") {
           aiResult = await callGeminiSingleAnalysis(
             docType,
@@ -2034,13 +2034,13 @@ export default function ProcurementManager({
             aiBidData: aiResult,
             docBid: aiResult.docNo
           };
-          
+
           // 예산액 파싱 및 반영
           const parsedSpent = parseBudgetStringToMillions(aiResult.budget);
           if (parsedSpent) {
             nextData.budgetSpent = parsedSpent;
           }
-          
+
           // 입찰 마감일 또는 입찰 공고일 분석 결과를 "입찰(B) 일자" 필드에 매핑
           if (aiResult.deadline) {
             const dateMatch = aiResult.deadline.match(/\d{4}-\d{2}-\d{2}/);
@@ -2048,7 +2048,7 @@ export default function ProcurementManager({
               nextData.dateB = dateMatch[0];
             }
           }
-          
+
           return nextData;
         });
 
@@ -2120,14 +2120,14 @@ export default function ProcurementManager({
       if (e.id === equipId) {
         const currentMilestones = e.milestones || {};
         const currentList = getMilestoneArray(currentMilestones[month]);
-        
+
         let nextList;
         if (currentList.includes(stepName)) {
           nextList = currentList.filter(s => s !== stepName);
         } else {
           nextList = [...currentList, stepName];
         }
-        
+
         return {
           ...e,
           milestones: {
@@ -2144,7 +2144,7 @@ export default function ProcurementManager({
   // 월별 PDCA 1줄 Gantt의 색상 및 텍스트를 다중 선택 상태에 맞춰 반환해 주는 헬퍼 스타일 함수
   const _getMilestoneStyle = (stepList: string | string[], monthNum: string) => {
     const list = getMilestoneArray(stepList);
-    
+
     // 0개 선택
     if (list.length === 0) {
       return {
@@ -2155,7 +2155,7 @@ export default function ProcurementManager({
         shadow: "none"
       };
     }
-    
+
     // 각 단계별 텍스트 및 색상 매핑 (기획 P, 승인 A, 입찰 B, 구매 Pr, 검수 I 및 영문 약어 호환)
     const stepMeta: Record<string, { text: string; color: string }> = {
       "기획": { text: "P", color: "#f59e0b" },
@@ -2169,7 +2169,7 @@ export default function ProcurementManager({
       "Pr": { text: "Pr", color: "#a78bfa" },
       "I": { text: "I", color: "#10b981" }
     };
-    
+
     // 1개 선택 시
     if (list.length === 1) {
       const meta = stepMeta[list[0]] || { text: "?", color: "#6b7280" };
@@ -2181,7 +2181,7 @@ export default function ProcurementManager({
         shadow: `0 0 5px ${meta.color}80`
       };
     }
-    
+
     // 2개 선택 시 (대각선 분할 그라데이션 적용)
     if (list.length === 2) {
       const meta1 = stepMeta[list[0]] || { text: "?", color: "#6b7280" };
@@ -2194,7 +2194,7 @@ export default function ProcurementManager({
         shadow: `0 0 6px rgba(255, 255, 255, 0.3)`
       };
     }
-    
+
     // 3개 이상 선택 시
     const firstMeta = stepMeta[list[0]] || { text: "?", color: "#6b7280" };
     return {
@@ -2311,7 +2311,7 @@ export default function ProcurementManager({
               progress: formData.progress || "-",
               birdseyeView: formData.birdseyeView || "-",
               blueprints: formData.blueprints || "-",
-              
+
               relatedDocs: [
                 formData.aiProposalData?.docNo || formData.docPlan,
                 formData.aiPurchaseData?.docNo || formData.docPurchase
@@ -2327,7 +2327,7 @@ export default function ProcurementManager({
               aiBidData: null,
               docPlanFileList: formData.docPlanFileList || [],
               docPurchaseFileList: formData.docPurchaseFileList || [],
-              
+
               docPlanFileName: formData.docPlanFileName || "",
               docPurchaseFileName: formData.docPurchaseFileName || "",
               docBidFileName: "",
@@ -2337,7 +2337,7 @@ export default function ProcurementManager({
               docPlanFileUrl: formData.docPlanFileUrl || "",
               docPurchaseFileUrl: formData.docPurchaseFileUrl || "",
               docBidFileUrl: "",
-              
+
               dateP: formData.dateP || "",
               dateA: formData.dateA || "",
               dateB: formData.dateB || "",
@@ -2376,7 +2376,7 @@ export default function ProcurementManager({
           progress: formData.progress || "-",
           birdseyeView: formData.birdseyeView || "-",
           blueprints: formData.blueprints || "-",
-          
+
           relatedDocs: [
             formData.aiProposalData?.docNo || formData.docPlan,
             formData.aiPurchaseData?.docNo || formData.docPurchase
@@ -2392,7 +2392,7 @@ export default function ProcurementManager({
           aiBidData: null,
           docPlanFileList: formData.docPlanFileList || [],
           docPurchaseFileList: formData.docPurchaseFileList || [],
-          
+
           docPlanFileName: formData.docPlanFileName || "",
           docPurchaseFileName: formData.docPurchaseFileName || "",
           docBidFileName: "",
@@ -2402,7 +2402,7 @@ export default function ProcurementManager({
           docPlanFileUrl: formData.docPlanFileUrl || "",
           docPurchaseFileUrl: formData.docPurchaseFileUrl || "",
           docBidFileUrl: "",
-          
+
           dateP: formData.dateP || "",
           dateA: formData.dateA || "",
           dateB: formData.dateB || "",
@@ -2491,7 +2491,7 @@ export default function ProcurementManager({
         setIsAddModalOpen(false);
         setIsEditMode(false);
         setEditingItemId(null);
-        
+
         // 요건 6: 화면 연차 자동 전환
         if (setSelectedYear) {
           setSelectedYear(targetYear);
@@ -2553,7 +2553,7 @@ export default function ProcurementManager({
         };
         setEquipData([...activeEquipList, newItem]);
         setIsAddModalOpen(false);
-        
+
         // 요건 6: 화면 연차 자동 전환
         if (setSelectedYear) {
           setSelectedYear(targetYear);
@@ -2608,7 +2608,7 @@ export default function ProcurementManager({
               budgetSpent: Math.round(parseFloat(formData.budgetSpent || 0) * 1000),
               opResult: formData.opResult || "-",
               password: formData.password || "1234",
-              
+
               // 7대 행정 절차 날짜 매핑
               datePp: formData.datePp || "",
               dateRfo: formData.dateRfo || "",
@@ -2631,7 +2631,7 @@ export default function ProcurementManager({
               aiBidData: formData.aiBidData || null,
               docPlanFileList: formData.docPlanFileList || [],
               docPurchaseFileList: formData.docPurchaseFileList || [],
-              
+
               // 파일 업로드 관련 메타데이터
               docPlanFileName: formData.docPlanFileName || "",
               docPurchaseFileName: formData.docPurchaseFileName || "",
@@ -2665,7 +2665,7 @@ export default function ProcurementManager({
           budgetSpent: Math.round(parseFloat(formData.budgetSpent || 0) * 1000),
           opResult: formData.opResult || "-",
           password: formData.password || "1234",
-          
+
           // 7대 행정 절차 날짜 매핑
           datePp: formData.datePp || "",
           dateRfo: formData.dateRfo || "",
@@ -2688,7 +2688,7 @@ export default function ProcurementManager({
           aiBidData: formData.aiBidData || null,
           docPlanFileList: formData.docPlanFileList || [],
           docPurchaseFileList: formData.docPurchaseFileList || [],
-          
+
           // 파일 업로드 관련 메타데이터
           docPlanFileName: formData.docPlanFileName || "",
           docPurchaseFileName: formData.docPurchaseFileName || "",
@@ -2806,7 +2806,7 @@ export default function ProcurementManager({
       docCheckFileUrl: "",
       providerQual: "",
       opResult: "",
-      
+
       // 주요 용역 전용 필드들 추가
       programId: "",
       programName: "",
@@ -2921,7 +2921,7 @@ export default function ProcurementManager({
       docPurchaseFileUrl: equip.docPurchaseFileUrl || "",
       docBidFileUrl: equip.docBidFileUrl || "",
       docCheckFileUrl: equip.docCheckFileUrl || "",
-      
+
       // 기존 기자재 5대 날짜
       dateP: equip.dateP || "",
       dateA: equip.dateA || "",
@@ -2952,7 +2952,7 @@ export default function ProcurementManager({
         .milestone-tooltip-container {
           position: relative;
         }
-        
+
         .milestone-tooltip {
           position: absolute;
           bottom: 135%;
@@ -2973,7 +2973,7 @@ export default function ProcurementManager({
           z-index: 999;
           pointer-events: none;
         }
-        
+
         .milestone-tooltip::after {
           content: "";
           position: absolute;
@@ -2983,7 +2983,7 @@ export default function ProcurementManager({
           border: 5px solid transparent;
           border-top-color: rgba(15, 23, 42, 0.96);
         }
-        
+
         .milestone-tooltip-container:hover .milestone-tooltip {
           opacity: 1;
           visibility: visible;
@@ -3028,11 +3028,11 @@ export default function ProcurementManager({
           }
         }
       `}</style>
-      
+
       {/* 1. 환경개선 탭 본문 */}
       {subTab === "env_improvement" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
+
           {/* 환경개선 상단 필터 카드 */}
           <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
@@ -3043,7 +3043,7 @@ export default function ProcurementManager({
                 앵커사업을 통한 대학 특화 공간 및 스마트 첨단 강의실 구축 진행 현황
               </p>
             </div>
-            
+
             <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
               {/* 학과 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -3165,7 +3165,7 @@ export default function ProcurementManager({
                   }}
                 >
                   <option value="ALL">전체 과제</option>
-                  {Number(selectedYear) === 1 
+                  {Number(selectedYear) === 1
                     ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                         <option key={u} value={u}>{u} 과제</option>
                       ))
@@ -3179,7 +3179,7 @@ export default function ProcurementManager({
 
 
               {currentRole.id !== "GUEST" && (
-                <button 
+                <button
                   className="action-btn"
                   onClick={() => openAddModal("env")}
                   style={{
@@ -3209,12 +3209,12 @@ export default function ProcurementManager({
               <span style={{ fontSize: "0.75rem", color: "var(--accent-color)", fontWeight: "800" }}>🛠️</span>
               <h4 style={{ margin: 0, fontSize: "0.8rem", fontWeight: "800", color: "var(--text-primary)" }}>교육환경 개선 추진 절차 안내</h4>
             </div>
-            
-            <div style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              justifyContent: "space-between", 
-              overflowX: "auto", 
+
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              overflowX: "auto",
               gap: "0.5rem",
               paddingBottom: "0.25rem",
               // 스크롤바 스타일링
@@ -3233,17 +3233,17 @@ export default function ProcurementManager({
                 { no: "09", name: "집행완료", dept: "재무회계팀" }
               ].map((step, idx, arr) => (
                 <React.Fragment key={step.no}>
-                  <div style={{ 
-                    display: "flex", 
-                    flexDirection: "column", 
-                    alignItems: "center", 
-                    minWidth: "105px", 
+                  <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    minWidth: "105px",
                     textAlign: "center",
                     flex: 1
                   }}>
-                    <div style={{ 
-                      display: "flex", 
-                      alignItems: "center", 
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
                       gap: "0.25rem",
                       background: "var(--body-bg)", // 카드의 배경색과 확실한 구분을 주기 위해 body-bg 적용
                       border: "1.5px solid var(--border-color)", // 외각 테두리를 선명하게 1.5px 보더 지정
@@ -3252,10 +3252,10 @@ export default function ProcurementManager({
                       width: "100%",
                       justifyContent: "center"
                     }}>
-                      <span style={{ 
-                        fontSize: "0.65rem", 
-                        fontWeight: "800", 
-                        color: "var(--accent-color)", 
+                      <span style={{
+                        fontSize: "0.65rem",
+                        fontWeight: "800",
+                        color: "var(--accent-color)",
                         background: "rgba(16, 185, 129, 0.15)",
                         borderRadius: "50%",
                         width: "16px",
@@ -3266,16 +3266,16 @@ export default function ProcurementManager({
                       }}>{step.no}</span>
                       <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap" }}>{step.name}</span>
                     </div>
-                    <span style={{ 
-                      fontSize: "0.6rem", 
-                      color: "var(--text-secondary)", 
-                      marginTop: "0.25rem", 
-                      whiteSpace: "nowrap" 
+                    <span style={{
+                      fontSize: "0.6rem",
+                      color: "var(--text-secondary)",
+                      marginTop: "0.25rem",
+                      whiteSpace: "nowrap"
                     }}>{step.dept}</span>
                   </div>
                   {idx < arr.length - 1 && (
-                    <span style={{ 
-                      fontSize: "1rem", 
+                    <span style={{
+                      fontSize: "1rem",
                       color: "var(--text-secondary)", // 라이트/다크 모드 전체 가시성 연동
                       fontWeight: "900",
                       userSelect: "none",
@@ -3292,9 +3292,9 @@ export default function ProcurementManager({
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)" }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid var(--border-color)", background: "transparent" }}>
-                  <th 
-                    rowSpan={3} 
-                    onClick={() => handleSort("seq")} 
+                  <th
+                    rowSpan={3}
+                    onClick={() => handleSort("seq")}
                     style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="순번 기준 정렬"
                   >
@@ -3303,9 +3303,9 @@ export default function ProcurementManager({
                       <ArrowUpDown size={12} style={{ opacity: sortField === "seq" ? 1 : 0.4 }} />
                     </div>
                   </th>
-                  <th 
-                    rowSpan={3} 
-                    onClick={() => handleSort("unit")} 
+                  <th
+                    rowSpan={3}
+                    onClick={() => handleSort("unit")}
                     style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="단위과제 기준 정렬"
                   >
@@ -3316,9 +3316,9 @@ export default function ProcurementManager({
                   </th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px", verticalAlign: "middle" }}>학과 / 부서</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "270px", verticalAlign: "middle" }}>환경구축 명</th>
-                  <th 
-                    rowSpan={3} 
-                    onClick={() => handleSort("unitPrice")} 
+                  <th
+                    rowSpan={3}
+                    onClick={() => handleSort("unitPrice")}
                     style={{ padding: "0.5rem 0.3rem", textAlign: "center", fontWeight: "800", width: "105px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="사업비 기준 정렬"
                   >
@@ -3352,13 +3352,13 @@ export default function ProcurementManager({
                 {/* 3행: 월 리스트 */}
                 <tr style={{ background: "rgba(255, 255, 255, 0.01)", borderBottom: "2px solid var(--border-color)" }}>
                   {monthsOrder.map((m, idx) => (
-                    <th 
-                      key={m} 
-                      style={{ 
-                        padding: "0.3rem 0.2rem", 
-                        textAlign: "center", 
-                        fontWeight: "800", 
-                        fontSize: "0.75rem", 
+                    <th
+                      key={m}
+                      style={{
+                        padding: "0.3rem 0.2rem",
+                        textAlign: "center",
+                        fontWeight: "800",
+                        fontSize: "0.75rem",
                         color: "var(--text-secondary)",
                         width: "36px",
                         whiteSpace: "nowrap",
@@ -3373,10 +3373,10 @@ export default function ProcurementManager({
               <tbody>
                 {(() => {
                   const activeEnvList = envData.length > 0 ? envData : [];
-                  
+
                   // 1) 과제 필터링
-                  let filteredEnvs = selectedEquipUnit === "ALL" 
-                    ? activeEnvList 
+                  let filteredEnvs = selectedEquipUnit === "ALL"
+                    ? activeEnvList
                     : activeEnvList.filter(e => e.unit === selectedEquipUnit);
 
                   // 2) 학과 및 부서 필터
@@ -3466,8 +3466,8 @@ export default function ProcurementManager({
                     });
 
                     return (
-                      <tr 
-                        key={equip.id || idx} 
+                      <tr
+                        key={equip.id || idx}
                         style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.15s ease" }}
                       >
                         <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", color: "var(--text-secondary)" }}>
@@ -3522,7 +3522,7 @@ export default function ProcurementManager({
                             );
                           })()}
                         </td>
-                        
+
                         {monthsOrder.map((m, currIdx) => {
                           const dynamicMilestones = getMilestonesFromDates(equip, selectedYear || 1);
                           const stepList = dynamicMilestones[m] || [];
@@ -3547,7 +3547,7 @@ export default function ProcurementManager({
                           };
 
                           const hasMilestone = stepList.length > 0;
-                          
+
                           const getEnvStatusText = (item: ProcurementItem) => {
                             if (item.dateI) return "검수 완료";
                             if (item.datePr) return "시공 중";
@@ -3577,7 +3577,7 @@ export default function ProcurementManager({
                                         equip.dateI || "";
                           }
 
-                          const colorSet = 
+                          const colorSet =
                             currentStatus.includes("요청") ? { bg: "#f59e0b", shadow: "rgba(245,158,11,0.4)", border: "#fbbf24" } :
                             currentStatus.includes("검토") ? { bg: "#3b82f6", shadow: "rgba(59,130,246,0.4)", border: "#60a5fa" } :
                             currentStatus.includes("설계") ? { bg: "#06b6d4", shadow: "rgba(6,182,212,0.4)", border: "#22d3ee" } :
@@ -3586,11 +3586,11 @@ export default function ProcurementManager({
                             { bg: "rgba(255, 255, 255, 0.1)", shadow: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.2)" };
 
                           return (
-                            <td 
-                              key={currIdx} 
-                              style={{ 
-                                padding: 0, 
-                                position: "relative", 
+                            <td
+                              key={currIdx}
+                              style={{
+                                padding: 0,
+                                position: "relative",
                                 borderRight: currIdx < 11 ? "1px solid var(--border-color)" : "none",
                                 verticalAlign: "middle",
                                 minWidth: "36px",
@@ -3608,12 +3608,12 @@ export default function ProcurementManager({
                                 background: `linear-gradient(to right, ${leftColor} 50%, ${rightColor} 50%)`,
                                 zIndex: 0
                               }} />
-                              
+
                               {/* 화살표 선 흐름 기호 (구간 한가운데에 단 1개의 진행 화살표 렌더링) */}
                               {arrowsToRender
                                 .filter(arr => arr.cellIdx === currIdx)
                                 .map((arr, arrIdx) => (
-                                  <div 
+                                  <div
                                     key={arrIdx}
                                     style={{
                                       position: "absolute",
@@ -3627,7 +3627,7 @@ export default function ProcurementManager({
                                       borderLeft: `4.5px solid ${arr.color}`,
                                       zIndex: 3,
                                       pointerEvents: "none"
-                                    }} 
+                                    }}
                                   />
                                 ))
                               }
@@ -3635,7 +3635,7 @@ export default function ProcurementManager({
                               {/* 두 번째 그림 스타일의 마일스톤 노드 */}
                               <div style={{ position: "relative", zIndex: 2, display: "flex", justifyContent: "center", alignItems: "center", height: "32px" }}>
                                 {shouldShowBalloon && (
-                                  <div 
+                                  <div
                                     className="status-flag-balloon"
                                     style={({
                                       "--bg-color": colorSet.bg,
@@ -3659,7 +3659,7 @@ export default function ProcurementManager({
                                                 rawCode === "Pr" ? equip.datePr :
                                                 equip.dateI;
                                   return (
-                                    <div 
+                                    <div
                                       key={sIdx}
                                       className="milestone-tooltip-container"
                                       style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
@@ -3676,14 +3676,14 @@ export default function ProcurementManager({
                                             <feComposite in="SourceGraphic" in2="blur" operator="over" />
                                           </filter>
                                         </defs>
-                                        <path 
-                                          d="M 4 7 L 12 11.5 L 20 7" 
+                                        <path
+                                          d="M 4 7 L 12 11.5 L 20 7"
                                           fill="none"
-                                          stroke={pColor} 
-                                          strokeWidth="1.5" 
+                                          stroke={pColor}
+                                          strokeWidth="1.5"
                                           strokeLinecap="round"
                                           strokeLinejoin="round"
-                                          opacity="0.9" 
+                                          opacity="0.9"
                                         />
                                         <text x="12" y="4.5" textAnchor="middle" fontSize="9" fontWeight="950" fill="var(--text-primary)" style={{ fontFamily: "monospace", letterSpacing: "-0.5px" }}>
                                           {pCode}
@@ -3697,7 +3697,7 @@ export default function ProcurementManager({
                             </td>
                           );
                         })}
-                        
+
                         {/* 관련문서 열 */}
                         <td style={{ padding: "0.8rem 0.2rem", textAlign: "center", color: "var(--text-secondary)" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", width: "100%" }}>
@@ -3800,7 +3800,7 @@ export default function ProcurementManager({
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", justifyContent: "center" }}>
                             {currentRole.id !== "GUEST" && (["ADMIN", "G_DIRECTOR", "HQ_HEAD", "TEAM_LEADER", "MANAGER"].includes(currentRole.id) || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                               <>
-                                <button 
+                                <button
                                   onClick={() => openEditModal(equip)}
                                   className="btn btn-secondary"
                                   style={{
@@ -3830,7 +3830,7 @@ export default function ProcurementManager({
                                 >
                                   수정
                                 </button>
-                                <button 
+                                <button
                                   onClick={() => {
                                     if (confirm("정말 이 환경개선 건을 삭제하시겠습니까?")) {
                                       setEnvData(activeEnvList.filter(e => e.id !== equip.id));
@@ -3882,7 +3882,7 @@ export default function ProcurementManager({
       {/* 2. 기자재 구입·운영 탭 본문 */}
       {subTab === "equipment_purchase" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
+
           {/* 기자재 상단 필터 카드 */}
           <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
@@ -3893,7 +3893,7 @@ export default function ProcurementManager({
                 단위과제별 교육/연구용 핵심 기자재의 계획·집행 및 실적 관리
               </p>
             </div>
-            
+
             <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
               {/* 학과 필터 (요건 1: 모달창과 동일한 고정 전체 학과 목록 맵핑) */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -4015,7 +4015,7 @@ export default function ProcurementManager({
                   }}
                 >
                   <option value="ALL">전체 과제</option>
-                  {Number(selectedYear) === 1 
+                  {Number(selectedYear) === 1
                     ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                         <option key={u} value={u}>{u} 과제</option>
                       ))
@@ -4027,7 +4027,7 @@ export default function ProcurementManager({
               </div>
 
               {currentRole.id !== "GUEST" && (
-                <button 
+                <button
                   className="action-btn"
                   onClick={() => openAddModal("equip")}
                   style={{
@@ -4057,12 +4057,12 @@ export default function ProcurementManager({
               <span style={{ fontSize: "1.1rem" }}>🔬</span>
               <h4 style={{ margin: 0, fontSize: "0.88rem", fontWeight: "800", color: "var(--text-primary)" }}>기자재 구입 및 운영 절차 안내</h4>
             </div>
-            
-            <div style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "0.35rem", 
-              overflowX: "auto", 
+
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              overflowX: "auto",
               paddingBottom: "0.25rem",
               scrollbarWidth: "thin",
               msOverflowStyle: "none"
@@ -4080,21 +4080,21 @@ export default function ProcurementManager({
                 { no: "10", name: "기자재 운영/관리", dept: "자산부서 · 앵커사업단", desc: "대장 등재 및 관리", tooltip: "각 자산관리부서 및 앵커사업단 자산 대장 등재 및 모니터링" }
               ].map((step, idx, arr) => (
                 <React.Fragment key={step.no}>
-                  <div 
+                  <div
                     title={step.tooltip}
-                    style={{ 
-                      display: "flex", 
-                      flexDirection: "column", 
-                      alignItems: "center", 
-                      minWidth: "120px", 
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      minWidth: "120px",
                       textAlign: "center",
                       flex: 1,
                       cursor: "pointer"
                     }}
                   >
-                    <div style={{ 
-                      display: "flex", 
-                      alignItems: "center", 
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
                       gap: "0.25rem",
                       background: step.no === "04" ? "rgba(16, 185, 129, 0.12)" : "var(--body-bg)", // 확실한 대비를 위해 body-bg 적용
                       border: step.no === "04" ? "1.5px solid var(--accent-color)" : "1.5px solid var(--border-color)", // 1.5px로 외곽선 보강
@@ -4104,10 +4104,10 @@ export default function ProcurementManager({
                       justifyContent: "center",
                       transition: "all 0.2s ease"
                     }}>
-                      <span style={{ 
-                        fontSize: "0.65rem", 
-                        fontWeight: "800", 
-                        color: step.no === "04" ? "white" : "var(--accent-color)", 
+                      <span style={{
+                        fontSize: "0.65rem",
+                        fontWeight: "800",
+                        color: step.no === "04" ? "white" : "var(--accent-color)",
                         background: step.no === "04" ? "var(--accent-color)" : "rgba(16, 185, 129, 0.15)",
                         borderRadius: "50%",
                         width: "16px",
@@ -4118,22 +4118,22 @@ export default function ProcurementManager({
                       }}>{step.no}</span>
                       <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap" }}>{step.name}</span>
                     </div>
-                    <span style={{ 
-                      fontSize: "0.6rem", 
-                      color: "var(--text-secondary)", 
-                      marginTop: "0.25rem", 
-                      whiteSpace: "nowrap" 
+                    <span style={{
+                      fontSize: "0.6rem",
+                      color: "var(--text-secondary)",
+                      marginTop: "0.25rem",
+                      whiteSpace: "nowrap"
                     }}>{step.dept}</span>
-                    <span style={{ 
-                      fontSize: "0.55rem", 
+                    <span style={{
+                      fontSize: "0.55rem",
                       color: "var(--text-secondary)", // 라이트/다크 모드 전체 가시성 연동
-                      marginTop: "0.05rem", 
-                      whiteSpace: "nowrap" 
+                      marginTop: "0.05rem",
+                      whiteSpace: "nowrap"
                     }}>{step.desc}</span>
                   </div>
                   {idx < arr.length - 1 && (
-                    <span style={{ 
-                      fontSize: "1rem", 
+                    <span style={{
+                      fontSize: "1rem",
                       color: "var(--text-secondary)", // 라이트/다크 모드 전체 가시성 연동
                       fontWeight: "900",
                       userSelect: "none",
@@ -4150,8 +4150,8 @@ export default function ProcurementManager({
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem", color: "var(--text-primary)", minWidth: "1200px" }}>
               <thead>
                 <tr style={{ background: "rgba(255, 255, 255, 0.03)", borderBottom: "1px solid var(--border-color)" }}>
-                  <th 
-                    onClick={() => handleSort("seq")} 
+                  <th
+                    onClick={() => handleSort("seq")}
                     style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="순번 기준 정렬"
                   >
@@ -4160,8 +4160,8 @@ export default function ProcurementManager({
                       <ArrowUpDown size={12} style={{ opacity: sortField === "seq" ? 1 : 0.4 }} />
                     </div>
                   </th>
-                  <th 
-                    onClick={() => handleSort("unit")} 
+                  <th
+                    onClick={() => handleSort("unit")}
                     style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="과제 기준 정렬"
                   >
@@ -4173,8 +4173,8 @@ export default function ProcurementManager({
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px", verticalAlign: "middle" }}>학과 / 부서</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "200px", verticalAlign: "middle" }}>품명</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "160px", verticalAlign: "middle" }}>규격</th>
-                  <th 
-                    onClick={() => handleSort("unitPrice")} 
+                  <th
+                    onClick={() => handleSort("unitPrice")}
                     style={{ padding: "0.5rem 0.3rem", textAlign: "center", fontWeight: "800", width: "95px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="단가 기준 정렬"
                   >
@@ -4188,8 +4188,8 @@ export default function ProcurementManager({
                   </th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>단위</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px", verticalAlign: "middle" }}>수량</th>
-                  <th 
-                    onClick={() => handleSort("total")} 
+                  <th
+                    onClick={() => handleSort("total")}
                     style={{ padding: "0.5rem 0.3rem", textAlign: "center", fontWeight: "800", width: "105px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="금액 기준 정렬"
                   >
@@ -4217,10 +4217,10 @@ export default function ProcurementManager({
               <tbody>
                 {(() => {
                   const activeEquipList = equipData;
-                  
+
                   // 1) 과제 필터링
-                  let filteredEquips = selectedEquipUnit === "ALL" 
-                    ? activeEquipList 
+                  let filteredEquips = selectedEquipUnit === "ALL"
+                    ? activeEquipList
                     : activeEquipList.filter(e => e.unit === selectedEquipUnit);
 
                   // 2) 학과 및 부서 필터 이원화 적용 (요건 3 AND 연산 연계)
@@ -4241,7 +4241,7 @@ export default function ProcurementManager({
                   filteredEquips = [...filteredEquips].sort((a, b) => {
                     let aVal = a[sortField];
                     let bVal = b[sortField];
-                    
+
                     if (sortField === "total") {
                       aVal = (Number(a.unitPrice) || 0) * (Number(a.quantity) || 1);
                       bVal = (Number(b.unitPrice) || 0) * (Number(b.quantity) || 1);
@@ -4255,7 +4255,7 @@ export default function ProcurementManager({
                       aVal = String(aVal || "");
                       bVal = String(bVal || "");
                     }
-                    
+
                     if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
                     if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
                     return 0;
@@ -4277,7 +4277,7 @@ export default function ProcurementManager({
                         if (eq.datePr && todayStr >= eq.datePr) return "구매중";
                         if (eq.dateP && todayStr >= eq.dateP) return "결재중";
                         if (eq.dateP && todayStr < eq.dateP) return "준비중";
-                        
+
                         if (eq.dateI) return "구매 완료";
                         if (eq.dateB) return "입찰중";
                         if (eq.datePr) return "구매중";
@@ -4366,8 +4366,8 @@ export default function ProcurementManager({
                       });
 
                       return (
-                        <tr 
-                          key={equip.id || idx} 
+                        <tr
+                          key={equip.id || idx}
                           style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.15s ease" }}
                         >
                           <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }}>
@@ -4438,7 +4438,7 @@ export default function ProcurementManager({
                               );
                             })()}
                           </td>
-                          
+
                           {/* 7. 구매 절차 가로 마일스톤 노드 (요청: 주요 용역과 같은 모양의 그림으로 변경) */}
                           <td style={{ padding: "0.8rem 0.5rem", verticalAlign: "middle" }}>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem", width: "100%" }}>
@@ -4462,7 +4462,7 @@ export default function ProcurementManager({
                                 return (
                                   <React.Fragment key={step.code}>
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "46px" }}>
-                                      <div 
+                                      <div
                                         style={{
                                           padding: "0.22rem 0.45rem",
                                           borderRadius: "14px",
@@ -4623,7 +4623,7 @@ export default function ProcurementManager({
                                       if (confirm("🚨 이 작업은 되돌릴 수 없습니다. 해당 기자재 항목을 정말로 삭제하시겠습니까?")) {
                                         const inputPw = prompt("🔒 삭제 안전장치: 등록 시 설정한 비밀번호를 입력해 주세요.");
                                         const registeredPw = equip.password || "1234";
-                                        
+
                                         if (inputPw === null) return; // 취소
                                         if (inputPw === registeredPw) {
                                           setEquipData(activeEquipList.filter(e => e.id !== equip.id));
@@ -4687,7 +4687,7 @@ export default function ProcurementManager({
       {/* 3. 주요 용역 탭 본문 */}
       {subTab === "major_services" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
+
           {/* 용역 상단 필터 카드 */}
           <div className="glass-card" style={{ padding: "1.25rem", borderRadius: "10px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
@@ -4698,7 +4698,7 @@ export default function ProcurementManager({
                 앵커사업 주요 용역사업 계약 및 진행 현황
               </p>
             </div>
-            
+
             <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
               {/* 학과 필터 */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -4820,7 +4820,7 @@ export default function ProcurementManager({
                   }}
                 >
                   <option value="ALL">전체 과제</option>
-                  {Number(selectedYear) === 1 
+                  {Number(selectedYear) === 1
                     ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                         <option key={u} value={u}>{u} 과제</option>
                       ))
@@ -4832,7 +4832,7 @@ export default function ProcurementManager({
               </div>
 
               {currentRole.id !== "GUEST" && (
-                <button 
+                <button
                   className="action-btn"
                   onClick={() => openAddModal("service")}
                   style={{
@@ -4862,12 +4862,12 @@ export default function ProcurementManager({
               <span style={{ fontSize: "1.1rem" }}>💼</span>
               <h4 style={{ margin: 0, fontSize: "0.88rem", fontWeight: "800", color: "var(--text-primary)" }}>주요 용역 처리 절차 안내</h4>
             </div>
-            
-            <div style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "0.35rem", 
-              overflowX: "auto", 
+
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.35rem",
+              overflowX: "auto",
               paddingBottom: "0.25rem",
               scrollbarWidth: "thin",
               msOverflowStyle: "none"
@@ -4883,21 +4883,21 @@ export default function ProcurementManager({
                 { no: "08", name: "집행완료", dept: "재무회계팀", desc: "대금 지급 및 정산 완료", tooltip: "재무회계팀을 통한 용역 대금 최종 송금 및 예산 정산 완료" }
               ].map((step, idx, arr) => (
                 <React.Fragment key={step.no}>
-                  <div 
+                  <div
                     title={step.tooltip}
-                    style={{ 
-                      display: "flex", 
-                      flexDirection: "column", 
-                      alignItems: "center", 
-                      minWidth: "120px", 
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      minWidth: "120px",
                       textAlign: "center",
                       flex: 1,
                       cursor: "pointer"
                     }}
                   >
-                    <div style={{ 
-                      display: "flex", 
-                      alignItems: "center", 
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
                       gap: "0.25rem",
                       background: step.no === "04" ? "rgba(16, 185, 129, 0.12)" : "var(--body-bg)", // 확실한 대비를 위해 body-bg 적용
                       border: step.no === "04" ? "1.5px solid var(--accent-color)" : "1.5px solid var(--border-color)", // 1.5px로 외곽선 보강
@@ -4907,10 +4907,10 @@ export default function ProcurementManager({
                       justifyContent: "center",
                       transition: "all 0.2s ease"
                     }}>
-                      <span style={{ 
-                        fontSize: "0.65rem", 
-                        fontWeight: "800", 
-                        color: step.no === "04" ? "white" : "var(--accent-color)", 
+                      <span style={{
+                        fontSize: "0.65rem",
+                        fontWeight: "800",
+                        color: step.no === "04" ? "white" : "var(--accent-color)",
                         background: step.no === "04" ? "var(--accent-color)" : "rgba(16, 185, 129, 0.15)",
                         borderRadius: "50%",
                         width: "16px",
@@ -4921,22 +4921,22 @@ export default function ProcurementManager({
                       }}>{step.no}</span>
                       <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap" }}>{step.name}</span>
                     </div>
-                    <span style={{ 
-                      fontSize: "0.6rem", 
-                      color: "var(--text-secondary)", 
-                      marginTop: "0.25rem", 
-                      whiteSpace: "nowrap" 
+                    <span style={{
+                      fontSize: "0.6rem",
+                      color: "var(--text-secondary)",
+                      marginTop: "0.25rem",
+                      whiteSpace: "nowrap"
                     }}>{step.dept}</span>
-                    <span style={{ 
-                      fontSize: "0.55rem", 
+                    <span style={{
+                      fontSize: "0.55rem",
                       color: "var(--text-secondary)", // 라이트/다크 모드 전체 가시성 연동
-                      marginTop: "0.05rem", 
-                      whiteSpace: "nowrap" 
+                      marginTop: "0.05rem",
+                      whiteSpace: "nowrap"
                     }}>{step.desc}</span>
                   </div>
                   {idx < arr.length - 1 && (
-                    <span style={{ 
-                      fontSize: "1rem", 
+                    <span style={{
+                      fontSize: "1rem",
                       color: "var(--text-secondary)", // 라이트/다크 모드 전체 가시성 연동
                       fontWeight: "900",
                       userSelect: "none",
@@ -4972,10 +4972,10 @@ export default function ProcurementManager({
               <tbody>
                 {(() => {
                   const activeServiceList = serviceData.length > 0 ? serviceData : [];
-                  
+
                   // 1) 과제 필터링
-                  let filteredServices = selectedEquipUnit === "ALL" 
-                    ? activeServiceList 
+                  let filteredServices = selectedEquipUnit === "ALL"
+                    ? activeServiceList
                     : activeServiceList.filter(e => e.unit === selectedEquipUnit);
 
                   // 2) 학과 및 부서 필터
@@ -4998,8 +4998,8 @@ export default function ProcurementManager({
 
                   return filteredServices.map((equip, idx) => {
                     return (
-                      <tr 
-                        key={equip.id || idx} 
+                      <tr
+                        key={equip.id || idx}
                         style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.15s ease" }}
                       >
                         {/* 1. 순번 */}
@@ -5090,7 +5090,7 @@ export default function ProcurementManager({
                               return (
                                 <React.Fragment key={step.code}>
                                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "46px" }}>
-                                    <div 
+                                    <div
                                       style={{
                                         padding: "0.22rem 0.45rem",
                                         borderRadius: "14px",
@@ -5220,7 +5220,7 @@ export default function ProcurementManager({
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", alignItems: "center", justifyContent: "center" }}>
                             {currentRole.id !== "GUEST" && (["ADMIN", "G_DIRECTOR", "HQ_HEAD", "TEAM_LEADER", "MANAGER"].includes(currentRole.id) || !equip.created_by || equip.created_by === currentUser?.uuid) && (
                               <>
-                                <button 
+                                <button
                                   onClick={() => openEditModal(equip)}
                                   className="btn btn-secondary"
                                   style={{
@@ -5249,7 +5249,7 @@ export default function ProcurementManager({
                                 >
                                   수정
                                 </button>
-                                <button 
+                                <button
                                   onClick={() => {
                                     if (confirm("정말 이 주요 용역 건을 삭제하시겠습니까?")) {
                                       setServiceData(activeServiceList.filter(e => e.id !== equip.id));
@@ -5330,31 +5330,31 @@ export default function ProcurementManager({
                 {modalType === "equip" && (isEditMode ? "🔬 핵심 기자재 도입 정보 수정" : "🔬 신규 핵심 기자재 도입 등록")}
                 {modalType === "service" && "💼 신규 주요 용역 계약 등록"}
               </h3>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setIsAddModalOpen(false)}
                 style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
               >
                 <X size={18} />
               </button>
             </div>
-            
+
             <form onSubmit={handleFormSubmit} style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem", flex: 1, overflowY: "auto" }}>
-              
+
               {/* 환경개선용 입력 필드들 */}
               {modalType === "env" && (
                 <>
                   {/* 첫번째 줄: 단위과제, 사업연차 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위과제</label>
-                      <select 
-                        name="unit" 
-                        value={formData.unit} 
-                        onChange={handleInputChange} 
-                        className="form-select" 
+                      <label htmlFor="a11y-procurement-manager-1" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위과제</label>
+                      <select id="a11y-procurement-manager-1"
+                        name="unit"
+                        value={formData.unit}
+                        onChange={handleInputChange}
+                        className="form-select"
                       >
-                        {Number(formData.year || selectedYear) === 1 
+                        {Number(formData.year || selectedYear) === 1
                           ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                               <option key={u} value={u}>{u} 과제</option>
                             ))
@@ -5365,12 +5365,12 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업연차</label>
-                      <select 
-                        name="year" 
-                        value={formData.year || selectedYear} 
-                        onChange={handleInputChange} 
-                        className="form-select" 
+                      <label htmlFor="a11y-procurement-manager-2" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업연차</label>
+                      <select id="a11y-procurement-manager-2"
+                        name="year"
+                        value={formData.year || selectedYear}
+                        onChange={handleInputChange}
+                        className="form-select"
                       >
                         <option value={1}>1차년도 (2025년)</option>
                         <option value={2}>2차년도 (2026년)</option>
@@ -5381,10 +5381,10 @@ export default function ProcurementManager({
                   {/* 두번째 줄: 학과 선택, 부서 선택 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "0.25rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>학과 선택</label>
-                      <select 
-                        name="deptName" 
-                        value={formData.deptName} 
+                      <label htmlFor="a11y-procurement-manager-3" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>학과 선택</label>
+                      <select id="a11y-procurement-manager-3"
+                        name="deptName"
+                        value={formData.deptName}
                         onChange={handleInputChange}
                         className="form-select"
                       >
@@ -5423,10 +5423,10 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서 선택</label>
-                      <select 
-                        name="divisionName" 
-                        value={formData.divisionName} 
+                      <label htmlFor="a11y-procurement-manager-4" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서 선택</label>
+                      <select id="a11y-procurement-manager-4"
+                        name="divisionName"
+                        value={formData.divisionName}
                         onChange={handleInputChange}
                         className="form-select"
                       >
@@ -5479,38 +5479,38 @@ export default function ProcurementManager({
                   {/* 세번째 줄: 구축 공간명, 구축 위치(지정 호실) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 공간명</label>
-                      <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 3층 RISE 바이오 메디컬 실습실 구축" className="form-input" />
+                      <label htmlFor="a11y-procurement-manager-5" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 공간명</label>
+                      <input id="a11y-procurement-manager-5" type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 3층 RISE 바이오 메디컬 실습실 구축" className="form-input" />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 위치 (지정 호실)</label>
-                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: 대학 본관 302호" className="form-input" />
+                      <label htmlFor="a11y-procurement-manager-6" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 위치 (지정 호실)</label>
+                      <input id="a11y-procurement-manager-6" type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: 대학 본관 302호" className="form-input" />
                     </div>
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업비 (백만원)</label>
-                      <input 
-                        type="number" 
-                        name="unitPrice" 
-                        step="0.01" 
-                        value={formData.unitPrice} 
-                        onChange={handleInputChange} 
-                        required 
-                        placeholder="예: 50.00" 
+                      <label htmlFor="a11y-procurement-manager-7" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업비 (백만원)</label>
+                      <input id="a11y-procurement-manager-7"
+                        type="number"
+                        name="unitPrice"
+                        step="0.01"
+                        value={formData.unitPrice}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="예: 50.00"
                         className="form-input"
                       />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>현재 실제 집행액 (백만원)</label>
-                      <input 
-                        type="number" 
-                        name="budgetSpent" 
-                        step="0.01" 
-                        value={formData.budgetSpent} 
-                        onChange={handleInputChange} 
-                        placeholder="예: 10.50" 
+                      <label htmlFor="a11y-procurement-manager-8" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>현재 실제 집행액 (백만원)</label>
+                      <input id="a11y-procurement-manager-8"
+                        type="number"
+                        name="budgetSpent"
+                        step="0.01"
+                        value={formData.budgetSpent}
+                        onChange={handleInputChange}
+                        placeholder="예: 10.50"
                         className="form-input"
                       />
                     </div>
@@ -5523,43 +5523,43 @@ export default function ProcurementManager({
                     </span>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.75rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>기획∙승인(PA) 일</label>
-                        <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                        <label htmlFor="a11y-procurement-manager-9" style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>기획∙승인(PA) 일</label>
+                        <input id="a11y-procurement-manager-9" type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>요청∙설계(RD) 일</label>
-                        <input type="date" name="dateA" min={formData.dateP || ""} value={formData.dateA || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                        <label htmlFor="a11y-procurement-manager-10" style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>요청∙설계(RD) 일</label>
+                        <input id="a11y-procurement-manager-10" type="date" name="dateA" min={formData.dateP || ""} value={formData.dateA || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>구매∙입찰∙계약(PBC) 일</label>
-                        <input type="date" name="dateB" min={formData.dateA || formData.dateP || ""} value={formData.dateB || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                        <label htmlFor="a11y-procurement-manager-11" style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>구매∙입찰∙계약(PBC) 일</label>
+                        <input id="a11y-procurement-manager-11" type="date" name="dateB" min={formData.dateA || formData.dateP || ""} value={formData.dateB || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>시공(C) 일</label>
-                        <input type="date" name="datePr" min={formData.dateB || formData.dateA || formData.dateP || ""} value={formData.datePr || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                        <label htmlFor="a11y-procurement-manager-12" style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>시공(C) 일</label>
+                        <input id="a11y-procurement-manager-12" type="date" name="datePr" min={formData.dateB || formData.dateA || formData.dateP || ""} value={formData.datePr || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>검수(I) 일</label>
-                        <input type="date" name="dateI" min={formData.datePr || formData.dateB || formData.dateA || formData.dateP || ""} value={formData.dateI || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                        <label htmlFor="a11y-procurement-manager-13" style={{ display: "block", fontSize: "0.68rem", color: "var(--text-secondary)", marginBottom: "0.2rem", whiteSpace: "nowrap" }}>검수(I) 일</label>
+                        <input id="a11y-procurement-manager-13" type="date" name="dateI" min={formData.datePr || formData.dateB || formData.dateA || formData.dateP || ""} value={formData.dateI || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 목적 (공간 용도)</label>
-                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} required placeholder="특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술" className="form-textarea" style={{ height: "50px", resize: "none" }} />
+                    <label htmlFor="a11y-procurement-manager-14" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축 목적 (공간 용도)</label>
+                    <textarea id="a11y-procurement-manager-14" name="purpose" value={formData.purpose} onChange={handleInputChange} required placeholder="특화 인력 양성을 위한 핵심 시너지 공간 용도 상세 기술" className="form-textarea" style={{ height: "50px", resize: "none" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>향후 활용 계획</label>
-                    <input type="text" name="utilization" value={formData.utilization} onChange={handleInputChange} required placeholder="예: 공간 연계 교육과정 활용 방식 및 융합 연구 활용" className="form-input" />
+                    <label htmlFor="a11y-procurement-manager-15" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>향후 활용 계획</label>
+                    <input id="a11y-procurement-manager-15" type="text" name="utilization" value={formData.utilization} onChange={handleInputChange} required placeholder="예: 공간 연계 교육과정 활용 방식 및 융합 연구 활용" className="form-input" />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>세부 공간 구축 설계 계획 (선택)</label>
-                    <textarea name="plan" value={formData.plan} onChange={handleInputChange} placeholder="예: 바닥 전선 몰딩, 방음벽 흡음 패널 시공 및 스마트 미러링 보드 마운팅 작업" className="form-textarea" style={{ height: "50px", resize: "none" }} />
+                    <label htmlFor="a11y-procurement-manager-16" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>세부 공간 구축 설계 계획 (선택)</label>
+                    <textarea id="a11y-procurement-manager-16" name="plan" value={formData.plan} onChange={handleInputChange} placeholder="예: 바닥 전선 몰딩, 방음벽 흡음 패널 시공 및 스마트 미러링 보드 마운팅 작업" className="form-textarea" style={{ height: "50px", resize: "none" }} />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>공사 진행 실적 현황 (선택)</label>
-                    <textarea name="progress" value={formData.progress} onChange={handleInputChange} placeholder="현재 진행 실무 정보 기술" className="form-textarea" style={{ height: "50px", resize: "none" }} />
+                    <label htmlFor="a11y-procurement-manager-17" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>공사 진행 실적 현황 (선택)</label>
+                    <textarea id="a11y-procurement-manager-17" name="progress" value={formData.progress} onChange={handleInputChange} placeholder="현재 진행 실무 정보 기술" className="form-textarea" style={{ height: "50px", resize: "none" }} />
                   </div>
                 </>
               )}
@@ -5569,14 +5569,14 @@ export default function ProcurementManager({
                 <>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위과제</label>
-                      <select 
-                        name="unit" 
-                        value={formData.unit} 
-                        onChange={handleInputChange} 
-                        className="form-select" 
+                      <label htmlFor="a11y-procurement-manager-18" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위과제</label>
+                      <select id="a11y-procurement-manager-18"
+                        name="unit"
+                        value={formData.unit}
+                        onChange={handleInputChange}
+                        className="form-select"
                       >
-                        {Number(formData.year || selectedYear) === 1 
+                        {Number(formData.year || selectedYear) === 1
                           ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                               <option key={u} value={u}>{u} 과제</option>
                             ))
@@ -5587,12 +5587,12 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업연차 선택</label>
-                      <select 
-                        name="year" 
-                        value={formData.year || selectedYear} 
-                        onChange={handleInputChange} 
-                        className="form-select" 
+                      <label htmlFor="a11y-procurement-manager-19" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업연차 선택</label>
+                      <select id="a11y-procurement-manager-19"
+                        name="year"
+                        value={formData.year || selectedYear}
+                        onChange={handleInputChange}
+                        className="form-select"
                       >
                         <option value={1}>1차년도 (2025년)</option>
                         <option value={2}>2차년도 (2026년)</option>
@@ -5601,12 +5601,12 @@ export default function ProcurementManager({
                   </div>
 
                   <div style={{ marginBottom: "1rem" }}>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>연계 프로그램</label>
-                    <select 
-                      name="operation" 
-                      value={formData.operation} 
-                      onChange={handleInputChange} 
-                      className="form-select" 
+                    <label htmlFor="a11y-procurement-manager-20" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>연계 프로그램</label>
+                    <select id="a11y-procurement-manager-20"
+                      name="operation"
+                      value={formData.operation}
+                      onChange={handleInputChange}
+                      className="form-select"
                     >
                       {getDynamicPrograms(formData.unit).map((p: any) => (
                         <option key={p.id} value={p.name}>[{p.id}] {p.name}</option>
@@ -5616,10 +5616,10 @@ export default function ProcurementManager({
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>학과 선택</label>
-                      <select 
-                        name="deptName" 
-                        value={formData.deptName} 
+                      <label htmlFor="a11y-procurement-manager-21" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>학과 선택</label>
+                      <select id="a11y-procurement-manager-21"
+                        name="deptName"
+                        value={formData.deptName}
                         onChange={handleInputChange}
                         className="form-select"
                       >
@@ -5659,10 +5659,10 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서 선택</label>
-                      <select 
-                        name="divisionName" 
-                        value={formData.divisionName} 
+                      <label htmlFor="a11y-procurement-manager-22" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>부서 선택</label>
+                      <select id="a11y-procurement-manager-22"
+                        name="divisionName"
+                        value={formData.divisionName}
                         onChange={handleInputChange}
                         className="form-select"
                       >
@@ -5716,26 +5716,26 @@ export default function ProcurementManager({
                   </span>
                   {/* 기자재 관리번호 입력란 (선택 항목으로 변경, 바코드 삭제) */}
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                    <label htmlFor="a11y-procurement-manager-23" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
                       기자재 관리번호 <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "normal" }}>(선택 - 검수 완료 후 기재)</span>
                     </label>
-                    <input 
-                      type="text" 
-                      name="asset_number" 
-                      value={formData.asset_number || ""} 
-                      onChange={handleInputChange} 
-                      placeholder="예: AIDX-EQ-2026-004 (검수 완료 시점에 수동 입력)" 
+                    <input id="a11y-procurement-manager-23"
+                      type="text"
+                      name="asset_number"
+                      value={formData.asset_number || ""}
+                      onChange={handleInputChange}
+                      placeholder="예: AIDX-EQ-2026-004 (검수 완료 시점에 수동 입력)"
                       className="form-input"
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>품명</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" className="form-input" />
+                    <label htmlFor="a11y-procurement-manager-24" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>품명</label>
+                    <input id="a11y-procurement-manager-24" type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" className="form-input" />
                   </div>
                   {(modalType as string) !== "env" && (
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>규격</label>
-                      <input type="text" name="spec" value={formData.spec || ""} onChange={handleInputChange} placeholder="예: 20자유도(DoF) 초정밀 관절 제어 메커니즘 탑재" className="form-input" />
+                      <label htmlFor="a11y-procurement-manager-25" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>규격</label>
+                      <input id="a11y-procurement-manager-25" type="text" name="spec" value={formData.spec || ""} onChange={handleInputChange} placeholder="예: 20자유도(DoF) 초정밀 관절 제어 메커니즘 탑재" className="form-input" />
                     </div>
                   )}
                   {(modalType as string) !== "env" && (() => {
@@ -5746,30 +5746,30 @@ export default function ProcurementManager({
                       <>
                         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 2fr", gap: "1rem" }}>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단가 (백만원)</label>
-                            <input type="number" name="unitPrice" step="0.01" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 120.00" className="form-input" />
+                            <label htmlFor="a11y-procurement-manager-26" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단가 (백만원)</label>
+                            <input id="a11y-procurement-manager-26" type="number" name="unitPrice" step="0.01" value={formData.unitPrice} onChange={handleInputChange} required placeholder="예: 120.00" className="form-input" />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위</label>
-                            <input type="text" name="itemUnit" value={formData.itemUnit || ""} onChange={handleInputChange} placeholder="예: 대, 개, 세트" className="form-input" />
+                            <label htmlFor="a11y-procurement-manager-27" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위</label>
+                            <input id="a11y-procurement-manager-27" type="text" name="itemUnit" value={formData.itemUnit || ""} onChange={handleInputChange} placeholder="예: 대, 개, 세트" className="form-input" />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>수량</label>
-                            <input type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} required placeholder="예: 2" className="form-input" />
+                            <label htmlFor="a11y-procurement-manager-28" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>수량</label>
+                            <input id="a11y-procurement-manager-28" type="number" name="quantity" value={formData.quantity} onChange={handleInputChange} required placeholder="예: 2" className="form-input" />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>금액 (백만원)</label>
-                            <input type="text" value={`${parseFloat(totalInMillion).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 백만원`} readOnly style={{ width: "100%", padding: "0.55rem 0.9rem", background: "rgba(255,255,255,0.02)", border: "1.5px solid var(--border-color)", borderRadius: "8px", color: "#10B981", fontWeight: "bold" }} />
+                            <label htmlFor="a11y-procurement-manager-29" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>금액 (백만원)</label>
+                            <input id="a11y-procurement-manager-29" type="text" value={`${parseFloat(totalInMillion).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 백만원`} readOnly style={{ width: "100%", padding: "0.55rem 0.9rem", background: "rgba(255,255,255,0.02)", border: "1.5px solid var(--border-color)", borderRadius: "8px", color: "#10B981", fontWeight: "bold" }} />
                           </div>
                         </div>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구입목적</label>
-                            <textarea name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="기자재의 구입 목적 및 타당성 상세 기술" className="form-textarea" style={{ height: "60px", resize: "none" }} />
+                            <label htmlFor="a11y-procurement-manager-30" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구입목적</label>
+                            <textarea id="a11y-procurement-manager-30" name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="기자재의 구입 목적 및 타당성 상세 기술" className="form-textarea" style={{ height: "60px", resize: "none" }} />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>활용계획</label>
-                            <textarea name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" className="form-textarea" style={{ height: "60px", resize: "none" }} />
+                            <label htmlFor="a11y-procurement-manager-31" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>활용계획</label>
+                            <textarea id="a11y-procurement-manager-31" name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" className="form-textarea" style={{ height: "60px", resize: "none" }} />
                           </div>
                         </div>
                       </>
@@ -5779,70 +5779,70 @@ export default function ProcurementManager({
                   {(modalType as string) === "env" && (
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축목적</label>
-                        <textarea name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="환경구축의 목적 및 타당성 상세 기술" className="form-textarea" style={{ height: "60px", resize: "none" }} />
+                        <label htmlFor="a11y-procurement-manager-32" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축목적</label>
+                        <textarea id="a11y-procurement-manager-32" name="descriptionPurpose" value={formData.descriptionPurpose || ""} onChange={handleInputChange} required placeholder="환경구축의 목적 및 타당성 상세 기술" className="form-textarea" style={{ height: "60px", resize: "none" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>활용계획</label>
-                        <textarea name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" className="form-textarea" style={{ height: "60px", resize: "none" }} />
+                        <label htmlFor="a11y-procurement-manager-33" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>활용계획</label>
+                        <textarea id="a11y-procurement-manager-33" name="descriptionPlan" value={formData.descriptionPlan || ""} onChange={handleInputChange} required placeholder="핵심 활용 계획 및 예상 시너지 상세 기술" className="form-textarea" style={{ height: "60px", resize: "none" }} />
                       </div>
                     </div>
                   )}
-                  
+
                   <div style={{ background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
                     <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem" }}>
                       📅 단계별 이벤트 일자 입력 (선택 입력)
                     </span>
                     <div style={{ display: "grid", gridTemplateColumns: (modalType as string) === "env" ? "repeat(5, 1fr)" : "repeat(4, 1fr)", gap: "0.5rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                        <label htmlFor="a11y-procurement-manager-34" style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           기획∙승인(PA) 일자
                         </label>
-                        <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                        <input id="a11y-procurement-manager-34" type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                       </div>
                       {(modalType as string) === "env" && (
                         <>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
+                            <label htmlFor="a11y-procurement-manager-35" style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
                               요청∙설계(RD) 일자
                             </label>
-                            <input type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                            <input id="a11y-procurement-manager-35" type="date" name="dateA" value={formData.dateA || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                            <label htmlFor="a11y-procurement-manager-36" style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                               구매∙입찰∙계약(PBC) 일자
                             </label>
-                            <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                            <input id="a11y-procurement-manager-36" type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                            <label htmlFor="a11y-procurement-manager-37" style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                               시공(C) 일자
                             </label>
-                            <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                            <input id="a11y-procurement-manager-37" type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                           </div>
                         </>
                       )}
                       {(modalType as string) !== "env" && (
                         <>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                            <label htmlFor="a11y-procurement-manager-38" style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                               구매신청(Pr) 일자
                             </label>
-                            <input type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                            <input id="a11y-procurement-manager-38" type="date" name="datePr" value={formData.datePr || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                           </div>
                           <div>
-                            <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                            <label htmlFor="a11y-procurement-manager-39" style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                               입찰∙계약(BC) 일자
                             </label>
-                            <input type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                            <input id="a11y-procurement-manager-39" type="date" name="dateB" value={formData.dateB || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                           </div>
                         </>
                       )}
                       <div>
-                        <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                        <label htmlFor="a11y-procurement-manager-40" style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           검수(I) 일자
                         </label>
-                        <input type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
+                        <input id="a11y-procurement-manager-40" type="date" name="dateI" value={formData.dateI || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                       </div>
                     </div>
                   </div>
@@ -5880,7 +5880,7 @@ export default function ProcurementManager({
                   <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
 
 
-                      
+
                       {/* 1. 기획문서 업로드 및 AI 분석 (다중 파일 및 1대N 공유 연계 지원) */}
                       <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
@@ -5891,10 +5891,10 @@ export default function ProcurementManager({
 
                         {/* [교육용 주석] 하나의 기획문서가 여러 개의 구매(1대N)를 반영할 수 있도록 기존 결재 연계 드롭다운 신설 */}
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", marginBottom: "0.75rem", background: "rgba(255,255,255,0.02)", padding: "0.5rem", borderRadius: "6px" }}>
-                          <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>
+                          <label htmlFor="a11y-procurement-manager-41" style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>
                             🔗 기존 등록된 기획 결재문서 가져오기 (1대N 공유 매칭)
                           </label>
-                          <select
+                          <select id="a11y-procurement-manager-41"
                             onChange={(e) => {
                               handleSelectLegacyProposal(e.target.value);
                               e.target.value = "";
@@ -5918,15 +5918,15 @@ export default function ProcurementManager({
                             ))}
                           </select>
                         </div>
-                        
+
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                           {/* 파일 추가 인풋 */}
-                          <input 
-                            type="file" 
-                            id="file-plan-upload" 
-                            accept=".pdf,.doc,.docx,.hwp,.txt" 
-                            onChange={(e) => handleFileChange("proposal", e)} 
-                            style={{ display: "none" }} 
+                          <input
+                            type="file"
+                            id="file-plan-upload"
+                            accept=".pdf,.doc,.docx,.hwp,.txt"
+                            onChange={(e) => handleFileChange("proposal", e)}
+                            style={{ display: "none" }}
                           />
 
                           {/* 업로드된 다중 기획문서 목록 루프 */}
@@ -5939,10 +5939,10 @@ export default function ProcurementManager({
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                                   {fileItem.aiData ? (
                                     <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                                      <span style={{ 
-                                        fontSize: "0.7rem", 
-                                        color: darkMode ? "#4ade80" : "#059669", 
-                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)", 
+                                      <span style={{
+                                        fontSize: "0.7rem",
+                                        color: darkMode ? "#4ade80" : "#059669",
+                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)",
                                         border: darkMode ? "1px solid rgba(74, 222, 128, 0.3)" : "1px solid rgba(5, 150, 105, 0.2)",
                                         borderRadius: "12px",
                                         padding: "0.15rem 0.5rem",
@@ -5993,9 +5993,9 @@ export default function ProcurementManager({
                                       {fileItem.isAnalyzing ? "분석중..." : "AI 분석"}
                                     </button>
                                   )}
-                                  <button 
-                                    type="button" 
-                                    onClick={() => handleFileRemove("proposal", fileItem.id)} 
+                                  <button
+                                    type="button"
+                                    onClick={() => handleFileRemove("proposal", fileItem.id)}
                                     style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.15rem" }}
                                     title="파일 제거"
                                   >
@@ -6010,16 +6010,16 @@ export default function ProcurementManager({
                               )}
                             </div>
                           ))}
-                          
-                          <label 
-                            htmlFor="file-plan-upload" 
+
+                          <label
+                            htmlFor="file-plan-upload"
                             style={{ display: "block", textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.72rem", color: "var(--text-secondary)" }}
                           >
                             ➕ 신규 기획문서 추가 업로드 (.pdf, .docx, .hwp)
                           </label>
                         </div>
                       </div>
- 
+
                       {/* 2. 구매문서 업로드 및 AI 분석 (다중 파일 업로드 지원) */}
                       <div style={{ background: "rgba(255,255,255,0.01)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.04)" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
@@ -6027,14 +6027,14 @@ export default function ProcurementManager({
                             {modalType === "env" ? "2. 구매문서 (시설안전관리팀)" : "2. 구매문서 (총무팀 발송)"}
                           </span>
                         </div>
-                        
+
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                          <input 
-                            type="file" 
-                            id="file-purchase-upload" 
-                            accept=".pdf,.doc,.docx,.hwp,.txt" 
-                            onChange={(e) => handleFileChange("purchase", e)} 
-                            style={{ display: "none" }} 
+                          <input
+                            type="file"
+                            id="file-purchase-upload"
+                            accept=".pdf,.doc,.docx,.hwp,.txt"
+                            onChange={(e) => handleFileChange("purchase", e)}
+                            style={{ display: "none" }}
                           />
 
                           {/* 업로드된 다중 구매문서 목록 루프 */}
@@ -6047,10 +6047,10 @@ export default function ProcurementManager({
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                                   {fileItem.aiData ? (
                                     <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                                      <span style={{ 
-                                        fontSize: "0.7rem", 
-                                        color: darkMode ? "#4ade80" : "#059669", 
-                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)", 
+                                      <span style={{
+                                        fontSize: "0.7rem",
+                                        color: darkMode ? "#4ade80" : "#059669",
+                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)",
                                         border: darkMode ? "1px solid rgba(74, 222, 128, 0.3)" : "1px solid rgba(5, 150, 105, 0.2)",
                                         borderRadius: "12px",
                                         padding: "0.15rem 0.5rem",
@@ -6101,9 +6101,9 @@ export default function ProcurementManager({
                                       {fileItem.isAnalyzing ? "분석중..." : "AI 분석"}
                                     </button>
                                   )}
-                                  <button 
-                                    type="button" 
-                                    onClick={() => handleFileRemove("purchase", fileItem.id)} 
+                                  <button
+                                    type="button"
+                                    onClick={() => handleFileRemove("purchase", fileItem.id)}
                                     style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.15rem" }}
                                     title="파일 제거"
                                   >
@@ -6118,9 +6118,9 @@ export default function ProcurementManager({
                               )}
                             </div>
                           ))}
-                          
-                          <label 
-                            htmlFor="file-purchase-upload" 
+
+                          <label
+                            htmlFor="file-purchase-upload"
                             style={{ display: "block", textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.72rem", color: "var(--text-secondary)" }}
                           >
                             ➕ 신규 구매문서 추가 업로드 (.pdf, .docx, .hwp)
@@ -6135,14 +6135,14 @@ export default function ProcurementManager({
                             {modalType === "env" ? "3. 결과문서 (시설안전관리팀)" : "3. 입찰문서 (총무팀 작성)"}
                           </span>
                         </div>
-                        
+
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                          <input 
-                            type="file" 
-                            id="file-bid-upload" 
-                            accept=".pdf,.doc,.docx,.hwp,.txt" 
-                            onChange={(e) => handleFileChange("bid", e)} 
-                            style={{ display: "none" }} 
+                          <input
+                            type="file"
+                            id="file-bid-upload"
+                            accept=".pdf,.doc,.docx,.hwp,.txt"
+                            onChange={(e) => handleFileChange("bid", e)}
+                            style={{ display: "none" }}
                           />
 
                           {/* 업로드된 다중 입찰문서 목록 루프 */}
@@ -6155,10 +6155,10 @@ export default function ProcurementManager({
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                                   {fileItem.aiData ? (
                                     <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                                      <span style={{ 
-                                        fontSize: "0.7rem", 
-                                        color: darkMode ? "#4ade80" : "#059669", 
-                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)", 
+                                      <span style={{
+                                        fontSize: "0.7rem",
+                                        color: darkMode ? "#4ade80" : "#059669",
+                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)",
                                         border: darkMode ? "1px solid rgba(74, 222, 128, 0.3)" : "1px solid rgba(5, 150, 105, 0.2)",
                                         borderRadius: "12px",
                                         padding: "0.15rem 0.5rem",
@@ -6209,9 +6209,9 @@ export default function ProcurementManager({
                                       {fileItem.isAnalyzing ? "분석중..." : "AI 분석"}
                                     </button>
                                   )}
-                                  <button 
-                                    type="button" 
-                                    onClick={() => handleFileRemove("bid", fileItem.id)} 
+                                  <button
+                                    type="button"
+                                    onClick={() => handleFileRemove("bid", fileItem.id)}
                                     style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.15rem" }}
                                     title="파일 제거"
                                   >
@@ -6226,9 +6226,9 @@ export default function ProcurementManager({
                               )}
                             </div>
                           ))}
-                          
-                          <label 
-                            htmlFor="file-bid-upload" 
+
+                          <label
+                            htmlFor="file-bid-upload"
                             style={{ display: "block", textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.72rem", color: "var(--text-secondary)" }}
                           >
                             {modalType === "env" ? "➕ 신규 결과문서 추가 업로드 (.pdf, .docx, .hwp)" : "➕ 신규 입찰문서 추가 업로드 (.pdf, .docx, .hwp)"}
@@ -6243,14 +6243,14 @@ export default function ProcurementManager({
                             4. 검수문서 (사업단/총무팀 공동)
                           </span>
                         </div>
-                        
+
                         <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                          <input 
-                            type="file" 
-                            id="file-check-upload" 
-                            accept=".pdf,.doc,.docx,.hwp,.txt" 
-                            onChange={(e) => handleFileChange("check", e)} 
-                            style={{ display: "none" }} 
+                          <input
+                            type="file"
+                            id="file-check-upload"
+                            accept=".pdf,.doc,.docx,.hwp,.txt"
+                            onChange={(e) => handleFileChange("check", e)}
+                            style={{ display: "none" }}
                           />
 
                           {/* 업로드된 다중 검수문서 목록 루프 */}
@@ -6263,10 +6263,10 @@ export default function ProcurementManager({
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                                   {fileItem.aiData ? (
                                     <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                                      <span style={{ 
-                                        fontSize: "0.7rem", 
-                                        color: darkMode ? "#4ade80" : "#059669", 
-                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)", 
+                                      <span style={{
+                                        fontSize: "0.7rem",
+                                        color: darkMode ? "#4ade80" : "#059669",
+                                        background: darkMode ? "rgba(74, 222, 128, 0.15)" : "rgba(5, 150, 105, 0.08)",
                                         border: darkMode ? "1px solid rgba(74, 222, 128, 0.3)" : "1px solid rgba(5, 150, 105, 0.2)",
                                         borderRadius: "12px",
                                         padding: "0.15rem 0.5rem",
@@ -6317,9 +6317,9 @@ export default function ProcurementManager({
                                       {fileItem.isAnalyzing ? "분석중..." : "AI 분석"}
                                     </button>
                                   )}
-                                  <button 
-                                    type="button" 
-                                    onClick={() => handleFileRemove("check", fileItem.id)} 
+                                  <button
+                                    type="button"
+                                    onClick={() => handleFileRemove("check", fileItem.id)}
                                     style={{ background: "transparent", border: "none", color: "#EF4444", cursor: "pointer", padding: "0.15rem" }}
                                     title="파일 제거"
                                   >
@@ -6334,9 +6334,9 @@ export default function ProcurementManager({
                               )}
                             </div>
                           ))}
-                          
-                          <label 
-                            htmlFor="file-check-upload" 
+
+                          <label
+                            htmlFor="file-check-upload"
                             style={{ display: "block", textAlign: "center", padding: "0.45rem", border: "1px dashed rgba(255,255,255,0.2)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.72rem", color: "var(--text-secondary)" }}
                           >
                             ➕ 신규 검수문서 추가 업로드 (.pdf, .docx, .hwp)
@@ -6355,10 +6355,10 @@ export default function ProcurementManager({
                   {/* 첫번째 줄: 단위과제, 프로그램 진행 상황 (비율 = 1:2) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위과제</label>
-                      <select 
-                        name="unit" 
-                        value={formData.unit} 
+                      <label htmlFor="a11y-procurement-manager-42" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>단위과제</label>
+                      <select id="a11y-procurement-manager-42"
+                        name="unit"
+                        value={formData.unit}
                         onChange={(e) => {
                           const nextUnit = e.target.value;
                           // 단위과제 변경 시 관련 프로그램 목록이 갱신되므로 첫 번째 프로그램으로 자동 셋해줍니다.
@@ -6370,9 +6370,9 @@ export default function ProcurementManager({
                             programName: nextProgs.length > 0 ? nextProgs[0].name : ""
                           }));
                         }}
-                        className="form-select" 
+                        className="form-select"
                       >
-                        {Number(formData.year || selectedYear) === 1 
+                        {Number(formData.year || selectedYear) === 1
                           ? ["A1", "A2", "B1", "B2", "B3", "B4", "C1", "C2", "D1", "D2", "D3", "D4"].map(u => (
                               <option key={u} value={u}>{u} 과제</option>
                             ))
@@ -6383,9 +6383,9 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>연계 프로그램 (진행 상황)</label>
-                      <select 
-                        name="programSelect" 
+                      <label htmlFor="a11y-procurement-manager-43" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>연계 프로그램 (진행 상황)</label>
+                      <select id="a11y-procurement-manager-43"
+                        name="programSelect"
                         value={formData.programId && formData.programName ? `${formData.programId}|${formData.programName}` : ""}
                         onChange={(e) => {
                           const val = e.target.value;
@@ -6404,7 +6404,7 @@ export default function ProcurementManager({
                             }));
                           }
                         }}
-                        className="form-select" 
+                        className="form-select"
                       >
                         <option value="">(연계 프로그램 선택 안 함)</option>
                         {getDynamicPrograms(formData.unit).map((prog: any) => (
@@ -6419,12 +6419,12 @@ export default function ProcurementManager({
                   {/* 두번째 줄: 관련학과, 관련부서 (학과, 부서 중 택1 필수) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련학과 (배정 학과) <span style={{ color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>(학과/부서 중 택1 필수)</span></label>
-                      <select 
-                        name="deptName" 
-                        value={formData.deptName} 
-                        onChange={handleInputChange} 
-                        className="form-select" 
+                      <label htmlFor="a11y-procurement-manager-44" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련학과 (배정 학과) <span style={{ color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>(학과/부서 중 택1 필수)</span></label>
+                      <select id="a11y-procurement-manager-44"
+                        name="deptName"
+                        value={formData.deptName}
+                        onChange={handleInputChange}
+                        className="form-select"
                       >
                         <option value="">(학과 없음/전체)</option>
                         <option value="기계공학부">기계공학부</option>
@@ -6461,12 +6461,12 @@ export default function ProcurementManager({
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련부서 (배정 행정부서) <span style={{ color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>(학과/부서 중 택1 필수)</span></label>
-                      <select 
-                        name="divisionName" 
-                        value={formData.divisionName} 
-                        onChange={handleInputChange} 
-                        className="form-select" 
+                      <label htmlFor="a11y-procurement-manager-45" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련부서 (배정 행정부서) <span style={{ color: "#f59e0b", fontSize: "0.75rem", fontWeight: "700" }}>(학과/부서 중 택1 필수)</span></label>
+                      <select id="a11y-procurement-manager-45"
+                        name="divisionName"
+                        value={formData.divisionName}
+                        onChange={handleInputChange}
+                        className="form-select"
                       >
                         <option value="">(부서 없음/전체)</option>
                         <optgroup label="앵커사업단 및 센터">
@@ -6517,26 +6517,26 @@ export default function ProcurementManager({
                   {/* 세번째 줄: 용역명칭, 용역목적 (둘 다 필수 입력) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>용역 명칭 (500만원 이상) <span style={{ color: "var(--danger-color)" }}>*</span></label>
-                      <input 
-                        type="text" 
-                        name="title" 
-                        value={formData.title} 
-                        onChange={handleInputChange} 
-                        required 
-                        placeholder="예: 앵커 산학 네트워크 포럼 기획 운영 대행 용역" 
+                      <label htmlFor="a11y-procurement-manager-46" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>용역 명칭 (500만원 이상) <span style={{ color: "var(--danger-color)" }}>*</span></label>
+                      <input id="a11y-procurement-manager-46"
+                        type="text"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="예: 앵커 산학 네트워크 포럼 기획 운영 대행 용역"
                         className="form-input"
                       />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>용역목적 (추진 목적) <span style={{ color: "var(--danger-color)" }}>*</span></label>
-                      <input 
-                        type="text" 
-                        name="purpose" 
-                        value={formData.purpose} 
-                        onChange={handleInputChange} 
-                        required 
-                        placeholder="예: 해당 용역이 해결하고자 하는 문제 및 목표" 
+                      <label htmlFor="a11y-procurement-manager-47" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>용역목적 (추진 목적) <span style={{ color: "var(--danger-color)" }}>*</span></label>
+                      <input id="a11y-procurement-manager-47"
+                        type="text"
+                        name="purpose"
+                        value={formData.purpose}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="예: 해당 용역이 해결하고자 하는 문제 및 목표"
                         className="form-input"
                       />
                     </div>
@@ -6544,12 +6544,12 @@ export default function ProcurementManager({
 
                   {/* 네번째 줄: 수행결과 (선택 입력) */}
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>수행결과 (선택)</label>
-                    <textarea 
-                      name="opResult" 
-                      value={formData.opResult} 
-                      onChange={handleInputChange} 
-                      placeholder="예: 최종 용역 수행 결과 및 납품 결과 기술" 
+                    <label htmlFor="a11y-procurement-manager-48" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>수행결과 (선택)</label>
+                    <textarea id="a11y-procurement-manager-48"
+                      name="opResult"
+                      value={formData.opResult}
+                      onChange={handleInputChange}
+                      placeholder="예: 최종 용역 수행 결과 및 납품 결과 기술"
                       className="form-textarea"
                       style={{ height: "50px", resize: "none" }}
                     />
@@ -6558,24 +6558,24 @@ export default function ProcurementManager({
                   {/* 다섯번째 줄: 사업예산(천원), 집행액(천원) */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업예산 (천원)</label>
-                      <input 
-                        type="number" 
-                        name="budgetPlan" 
-                        value={formData.budgetPlan} 
-                        onChange={handleInputChange} 
-                        placeholder="예: 25000 (2천5백만원)" 
+                      <label htmlFor="a11y-procurement-manager-49" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>사업예산 (천원)</label>
+                      <input id="a11y-procurement-manager-49"
+                        type="number"
+                        name="budgetPlan"
+                        value={formData.budgetPlan}
+                        onChange={handleInputChange}
+                        placeholder="예: 25000 (2천5백만원)"
                         className="form-input"
                       />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>집행액 (천원)</label>
-                      <input 
-                        type="number" 
-                        name="budgetSpent" 
-                        value={formData.budgetSpent} 
-                        onChange={handleInputChange} 
-                        placeholder="예: 20000 (2천만원)" 
+                      <label htmlFor="a11y-procurement-manager-50" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>집행액 (천원)</label>
+                      <input id="a11y-procurement-manager-50"
+                        type="number"
+                        name="budgetSpent"
+                        value={formData.budgetSpent}
+                        onChange={handleInputChange}
+                        placeholder="예: 20000 (2천만원)"
                         className="form-input"
                       />
                     </div>
@@ -6586,24 +6586,24 @@ export default function ProcurementManager({
                     <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "#60A5FA", display: "block", marginBottom: "0.5rem" }}>📅 5대 행정 절차 완료 일자 설정</span>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "0.5rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "#f59e0b", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>기획∙승인(PA)</label>
-                        <input type="date" name="datePp" value={formData.datePp || ""} onChange={handleInputChange} className="form-input" style={{ padding: "0.35rem 0.5rem", fontSize: "0.75rem" }} />
+                        <label htmlFor="a11y-procurement-manager-51" style={{ display: "block", fontSize: "0.68rem", color: "#f59e0b", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>기획∙승인(PA)</label>
+                        <input id="a11y-procurement-manager-51" type="date" name="datePp" value={formData.datePp || ""} onChange={handleInputChange} className="form-input" style={{ padding: "0.35rem 0.5rem", fontSize: "0.75rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "#3b82f6", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>구매의뢰(RP)</label>
-                        <input type="date" name="dateRfo" min={formData.datePp || ""} value={formData.dateRfo || ""} onChange={handleInputChange} className="form-input" style={{ padding: "0.35rem 0.5rem", fontSize: "0.75rem" }} />
+                        <label htmlFor="a11y-procurement-manager-52" style={{ display: "block", fontSize: "0.68rem", color: "#3b82f6", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>구매의뢰(RP)</label>
+                        <input id="a11y-procurement-manager-52" type="date" name="dateRfo" min={formData.datePp || ""} value={formData.dateRfo || ""} onChange={handleInputChange} className="form-input" style={{ padding: "0.35rem 0.5rem", fontSize: "0.75rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "#06b6d4", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>평가∙선정∙계약(ESC)</label>
-                        <input type="date" name="dateB" min={formData.dateRfo || formData.datePp || ""} value={formData.dateB || ""} onChange={handleInputChange} className="form-input" style={{ padding: "0.35rem 0.5rem", fontSize: "0.75rem" }} />
+                        <label htmlFor="a11y-procurement-manager-53" style={{ display: "block", fontSize: "0.68rem", color: "#06b6d4", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>평가∙선정∙계약(ESC)</label>
+                        <input id="a11y-procurement-manager-53" type="date" name="dateB" min={formData.dateRfo || formData.datePp || ""} value={formData.dateB || ""} onChange={handleInputChange} className="form-input" style={{ padding: "0.35rem 0.5rem", fontSize: "0.75rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "#eab308", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>수행(E)</label>
-                        <input type="date" name="dateE" min={formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateE || ""} onChange={handleInputChange} className="form-input" style={{ padding: "0.35rem 0.5rem", fontSize: "0.75rem" }} />
+                        <label htmlFor="a11y-procurement-manager-54" style={{ display: "block", fontSize: "0.68rem", color: "#eab308", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>수행(E)</label>
+                        <input id="a11y-procurement-manager-54" type="date" name="dateE" min={formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateE || ""} onChange={handleInputChange} className="form-input" style={{ padding: "0.35rem 0.5rem", fontSize: "0.75rem" }} />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.68rem", color: "#10b981", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>검수(I)</label>
-                        <input type="date" name="dateI" min={formData.dateE || formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateI || ""} onChange={handleInputChange} className="form-input" style={{ padding: "0.35rem 0.5rem", fontSize: "0.75rem" }} />
+                        <label htmlFor="a11y-procurement-manager-55" style={{ display: "block", fontSize: "0.68rem", color: "#10b981", marginBottom: "0.15rem", whiteSpace: "nowrap" }}>검수(I)</label>
+                        <input id="a11y-procurement-manager-55" type="date" name="dateI" min={formData.dateE || formData.dateB || formData.dateRfo || formData.datePp || ""} value={formData.dateI || ""} onChange={handleInputChange} className="form-input" style={{ padding: "0.35rem 0.5rem", fontSize: "0.75rem" }} />
                       </div>
                     </div>
                   </div>
@@ -6611,11 +6611,11 @@ export default function ProcurementManager({
                   {/* 3종 관련 문서 파일 첨부 및 AI 자동분석 패널 */}
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem", marginTop: "0.5rem" }}>
                     <span style={{ fontSize: "0.82rem", fontWeight: "800", color: "#a78bfa", display: "block", marginBottom: "0.5rem" }}>📎 행정 서류 첨부 및 AI Debate 분석 연계</span>
-                    
+
                     {/* 1. 기획문서 첨부 (다중 파일 및 1대N 연계 지원) */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem", background: "rgba(255,255,255,0.01)", padding: "0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.03)" }}>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>기획서 관련 문서 (사업단 작성 기안문)</label>
-                      
+                      <label htmlFor="a11y-procurement-manager-56" style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>기획서 관련 문서 (사업단 작성 기안문)</label>
+
                       {/* 1대N 공유 연계용 드롭다운 */}
                       <select
                         onChange={(e) => {
@@ -6642,7 +6642,7 @@ export default function ProcurementManager({
                       </select>
 
                       <input type="file" id="file-plan-upload-serv" onChange={(e) => handleFileChange("proposal", e)} style={{ display: "none" }} />
-                      
+
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                         {(formData.docPlanFileList || []).map((fileItem: any) => (
                           <div key={fileItem.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", background: "rgba(0,0,0,0.2)", padding: "0.35rem 0.5rem", borderRadius: "4px" }}>
@@ -6670,7 +6670,7 @@ export default function ProcurementManager({
                             </div>
                           </div>
                         ))}
-                        
+
                         <label htmlFor="file-plan-upload-serv" style={{ display: "block", textAlign: "center", padding: "0.35rem", border: "1px dashed var(--border-color)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.7rem", color: "var(--text-secondary)" }}>
                           ➕ 기획문서 추가 선택 (.pdf, .docx, .hwp)
                         </label>
@@ -6679,9 +6679,9 @@ export default function ProcurementManager({
 
                     {/* 2. 구매문서 첨부 (다중 파일 지원) */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.75rem", background: "rgba(255,255,255,0.01)", padding: "0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.03)" }}>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>구매의뢰 관련 문서 (위탁 의뢰 이송 공문)</label>
+                      <label htmlFor="a11y-procurement-manager-58" style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>구매의뢰 관련 문서 (위탁 의뢰 이송 공문)</label>
                       <input type="file" id="file-purchase-upload-serv" onChange={(e) => handleFileChange("purchase", e)} style={{ display: "none" }} />
-                      
+
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                         {(formData.docPurchaseFileList || []).map((fileItem: any) => (
                           <div key={fileItem.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", background: "rgba(0,0,0,0.2)", padding: "0.35rem 0.5rem", borderRadius: "4px" }}>
@@ -6709,7 +6709,7 @@ export default function ProcurementManager({
                             </div>
                           </div>
                         ))}
-                        
+
                         <label htmlFor="file-purchase-upload-serv" style={{ display: "block", textAlign: "center", padding: "0.35rem", border: "1px dashed var(--border-color)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.01)", fontSize: "0.7rem", color: "var(--text-secondary)" }}>
                           ➕ 구매문서 추가 선택 (.pdf, .docx, .hwp)
                         </label>
@@ -6718,7 +6718,7 @@ export default function ProcurementManager({
 
                     {/* 3. 결과문서 첨부 */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>검수조서 관련 문서 (최종 준공/검수 보고서)</label>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>검수조서 관련 문서 (최종 준공/검수 보고서)</span>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                         <input type="file" id="file-bid-upload-serv" onChange={(e) => handleFileChange("bid", e)} style={{ display: "none" }} />
                         <label htmlFor="file-bid-upload-serv" style={{ display: "block", flex: 1, textAlign: "center", padding: "0.45rem", border: "1px dashed var(--border-color)", borderRadius: "6px", cursor: "pointer", background: "rgba(255,255,255,0.02)", fontSize: "0.72rem", color: "var(--text-secondary)" }}>
@@ -6735,16 +6735,16 @@ export default function ProcurementManager({
 
               {/* 버튼 그룹 */}
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.85rem", marginTop: "0.5rem", flexShrink: 0 }}>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn-secondary"
                   onClick={() => setIsAddModalOpen(false)}
                   style={{ padding: "0.5rem 1rem", fontSize: "0.75rem" }}
                 >
                   취소
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="btn-primary"
                   style={{ padding: "0.5rem 1.25rem", fontSize: "0.75rem" }}
                 >
@@ -6760,11 +6760,11 @@ export default function ProcurementManager({
       {/* 월별 Gantt 단계 다중 선택 플로팅 팝오버 컴포넌트 */}
       {activePopover && (
         <>
-          <div 
-            onClick={() => setActivePopover(null)} 
-            style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 1200, background: "transparent" }} 
+          <div
+            onClick={() => setActivePopover(null)}
+            style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 1200, background: "transparent" }}
           />
-          <div 
+          <div
             style={{
               position: "fixed",
               top: `${activePopover.y}px`,
@@ -6804,15 +6804,15 @@ export default function ProcurementManager({
               }
 
               return (
-                <label 
-                  key={step.val} 
-                  style={{ 
-                    display: "flex", 
-                    alignItems: "center", 
-                    gap: "8px", 
-                    fontSize: "0.75rem", 
+                <label
+                  key={step.val}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontSize: "0.75rem",
                     color: "#0f172a", // 어두운 텍스트로 가독성 확보
-                    cursor: "pointer", 
+                    cursor: "pointer",
                     userSelect: "none",
                     padding: "0.2rem 0.35rem",
                     borderRadius: "4px",
@@ -6821,7 +6821,7 @@ export default function ProcurementManager({
                   onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0,0,0,0.05)"}
                   onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                 >
-                  <input
+                  <input id="a11y-procurement-manager-58"
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => handleMilestoneMultiToggle(activePopover.equipId, activePopover.month, step.val)}
@@ -6881,7 +6881,7 @@ export default function ProcurementManager({
                 <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#60A5FA", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   📄 기획문서 상세 조회 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "var(--text-secondary)" }}>(사업단 작성)</span>
                 </h4>
-                <button 
+                <button
                   onClick={() => {
                     setProposalModalData(null);
                     setSelectedProposalIdx(0);
@@ -6898,7 +6898,7 @@ export default function ProcurementManager({
                   <label style={{ display: "block", fontSize: "0.72rem", color: "#93C5FD", fontWeight: "700", marginBottom: "0.25rem" }}>
                     📚 첨부된 기획 결재문서 선택 ({planList.length}건)
                   </label>
-                  <select
+                  <select id="a11y-procurement-manager-56"
                     value={selectedProposalIdx}
                     onChange={(e) => setSelectedProposalIdx(Number(e.target.value))}
                     style={{
@@ -6921,7 +6921,7 @@ export default function ProcurementManager({
                   </select>
                 </div>
               )}
-              
+
               {activeAi ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
                   <div style={{ background: "rgba(96, 165, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(96, 165, 250, 0.25)" }}>
@@ -6958,7 +6958,7 @@ export default function ProcurementManager({
                   goals: ["상세 계획 확인 중"],
                   budget: "0.0백만원"
                 };
-                
+
                 return (
                   <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
                     <div style={{ background: "rgba(96, 165, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(96, 165, 250, 0.25)" }}>
@@ -6990,13 +6990,13 @@ export default function ProcurementManager({
                   </div>
                 );
               })()}
-              
+
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", flexShrink: 0 }}>
                 {activeFile?.url ? (
-                  <a 
-                    href={activeFile.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={activeFile.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", color: "#60A5FA", textDecoration: "none", fontWeight: "700" }}
                   >
                     📎 첨부문서 다운로드
@@ -7004,7 +7004,7 @@ export default function ProcurementManager({
                 ) : (
                   <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>첨부파일 없음</span>
                 )}
-                <button 
+                <button
                   type="button"
                   className="btn-primary"
                   onClick={() => {
@@ -7071,7 +7071,7 @@ export default function ProcurementManager({
                 <h4 style={{ margin: 0, fontSize: "1.1rem", fontWeight: "800", color: "#C084FC", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   📦 구매문서 상세 조회 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "var(--text-secondary)" }}>(총무팀 발송)</span>
                 </h4>
-                <button 
+                <button
                   onClick={() => {
                     setPurchaseModalData(null);
                     setSelectedPurchaseIdx(0);
@@ -7085,10 +7085,10 @@ export default function ProcurementManager({
               {/* 다중 파일이 존재할 경우 문서 선택기 콤보박스 노출 */}
               {purchaseList.length > 1 && (
                 <div style={{ marginBottom: "1rem" }}>
-                  <label style={{ display: "block", fontSize: "0.72rem", color: "#D8B4FE", fontWeight: "700", marginBottom: "0.25rem" }}>
+                  <label htmlFor="a11y-procurement-manager-57" style={{ display: "block", fontSize: "0.72rem", color: "#D8B4FE", fontWeight: "700", marginBottom: "0.25rem" }}>
                     📚 첨부된 구매의뢰문서 선택 ({purchaseList.length}건)
                   </label>
-                  <select
+                  <select id="a11y-procurement-manager-57"
                     value={selectedPurchaseIdx}
                     onChange={(e) => setSelectedPurchaseIdx(Number(e.target.value))}
                     style={{
@@ -7111,7 +7111,7 @@ export default function ProcurementManager({
                   </select>
                 </div>
               )}
-              
+
               {activeAi ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.85rem" }}>
                   <div style={{ background: "rgba(167, 139, 250, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(167, 139, 250, 0.25)" }}>
@@ -7181,13 +7181,13 @@ export default function ProcurementManager({
                   </div>
                 </div>
               )}
-              
+
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", flexShrink: 0 }}>
                 {activeFile?.url ? (
-                  <a 
-                    href={activeFile.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={activeFile.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", color: "#C084FC", textDecoration: "none", fontWeight: "700" }}
                   >
                     📎 첨부문서 다운로드
@@ -7195,7 +7195,7 @@ export default function ProcurementManager({
                 ) : (
                   <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>첨부파일 없음</span>
                 )}
-                <button 
+                <button
                   type="button"
                   className="btn-primary"
                   onClick={() => {
@@ -7247,14 +7247,14 @@ export default function ProcurementManager({
                   <>📜 입찰문서 <span style={{ fontSize: "0.75rem", fontWeight: "400", color: "var(--text-secondary)" }}>(총무팀 작성 문서)</span></>
                 )}
               </h4>
-              <button 
+              <button
                 onClick={() => setBidModalData(null)}
                 style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
               >
                 <X size={18} />
               </button>
             </div>
-            
+
             {(() => {
               const price = Number(bidModalData.unitPrice) || 0;
               const qty = Number(bidModalData.quantity) || 0;
@@ -7274,7 +7274,7 @@ export default function ProcurementManager({
                         {ai.docNo}
                       </strong>
                     </div>
-                    
+
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                       <div>
                         <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>
@@ -7338,7 +7338,7 @@ export default function ProcurementManager({
                   </div>
                 );
               }
-              
+
               return (
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem", fontSize: "0.82rem" }}>
                   <div style={{ background: "rgba(16, 185, 129, 0.08)", padding: "0.85rem", borderRadius: "8px", border: "1px solid rgba(16, 185, 129, 0.25)" }}>
@@ -7346,13 +7346,13 @@ export default function ProcurementManager({
                       {isEnv ? "⚖️ 결과문서 결재번호" : "⚖️ 입찰문서 결재번호"}
                     </span>
                     <strong style={{ fontFamily: "monospace", color: "#FBBF24", fontSize: "1.2rem", letterSpacing: "0.5px" }}>
-                      {bidModalData.docBid || (isEnv 
+                      {bidModalData.docBid || (isEnv
                         ? `UC-RES-${bidModalData.unit}-${String(bidModalData.seq || bidModalData.id).slice(-3).padStart(3, "0")}`
                         : `UC-BID-${bidModalData.unit}-${String(bidModalData.seq || bidModalData.id).slice(-3).padStart(3, "0")}`
                       )}
                     </strong>
                   </div>
-                  
+
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                     <div>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>작성 부서</span>
@@ -7410,7 +7410,7 @@ export default function ProcurementManager({
                           {isEnv ? "최종 구축 공간" : "납품 장소"}
                         </td>
                         <td style={{ padding: "0.5rem" }}>
-                          {isEnv 
+                          {isEnv
                             ? `울산과학대학교 내 지정 공간 (${bidModalData.location || "지정 안 됨"})`
                             : "물산과학대학교 지정 실습 공간 및 지정 교수연구실"
                           }
@@ -7441,13 +7441,13 @@ export default function ProcurementManager({
                 </div>
               );
             })()}
-            
+
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1.5rem", borderTop: "1px solid var(--border-color)", paddingTop: "1rem", flexShrink: 0 }}>
               {bidModalData.docBidFileUrl ? (
-                <a 
-                  href={bidModalData.docBidFileUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href={bidModalData.docBidFileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", fontSize: "0.78rem", color: "#10B981", textDecoration: "none", fontWeight: "700" }}
                 >
                   📎 첨부문서 다운로드
@@ -7455,7 +7455,7 @@ export default function ProcurementManager({
               ) : (
                 <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}>첨부파일 없음</span>
               )}
-              <button 
+              <button
                 type="button"
                 className="btn-primary"
                 onClick={() => setBidModalData(null)}
@@ -7470,15 +7470,15 @@ export default function ProcurementManager({
 
       {/* 모던 토스트 팝업 알림창 */}
       {toast && (
-        <div 
+        <div
           style={{
             position: "fixed",
             bottom: "2rem",
             right: "2rem",
-            background: toast.type === "success" 
-              ? "rgba(16, 185, 129, 0.95)" 
-              : toast.type === "error" 
-                ? "rgba(239, 68, 68, 0.95)" 
+            background: toast.type === "success"
+              ? "rgba(16, 185, 129, 0.95)"
+              : toast.type === "error"
+                ? "rgba(239, 68, 68, 0.95)"
                 : "rgba(59, 130, 246, 0.95)",
             backdropFilter: "blur(12px)",
             color: "#fff",

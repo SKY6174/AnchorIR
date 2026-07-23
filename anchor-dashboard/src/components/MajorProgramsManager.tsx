@@ -115,178 +115,178 @@ const ORDERLY_COURSES: OrderlyCourse[] = [
 ];
 
 // 💡 학과별 PM교수 데이터 정의 (각 학과/전공별 주문식 교육과정 운영 상세 정보 포함)
-// 초보 개발자(교육자)용 설명: 
-// 이 데이터셋은 학과별 PM교수 매핑 정보와 함께 각 학과가 실제로 운영 중인 주문식 교육과정명(courses), 
-// 교육에 참여하는 총학생수(totalStudents), 중복 수강생을 제외한 순수 참여학생수(uniqueStudents), 
+// 초보 개발자(교육자)용 설명:
+// 이 데이터셋은 학과별 PM교수 매핑 정보와 함께 각 학과가 실제로 운영 중인 주문식 교육과정명(courses),
+// 교육에 참여하는 총학생수(totalStudents), 중복 수강생을 제외한 순수 참여학생수(uniqueStudents),
 // 그리고 해당 학과의 교육과정 특징을 기술한 비고(note) 정보까지 통합하여 담고 있습니다.
 const PM_PROFESSORS: PmProfessor[] = [
-  { 
-    dept: "간호학부", 
-    name: "공경란", 
-    courses: "기본간호학 1, 통합간호학", 
-    totalStudents: 334, 
-    uniqueStudents: 310, 
-    note: "통합간호학(PBL) 및 기본간호학(AI) 연계" 
+  {
+    dept: "간호학부",
+    name: "공경란",
+    courses: "기본간호학 1, 통합간호학",
+    totalStudents: 334,
+    uniqueStudents: 310,
+    note: "통합간호학(PBL) 및 기본간호학(AI) 연계"
   },
-  { 
-    dept: "게임영상학과", 
-    name: "이재현", 
-    courses: "3D애니메이션 1, 커뮤니케이션디자인 1", 
-    totalStudents: 60, 
-    uniqueStudents: 55, 
-    note: "3D애니메이션 및 OJT 병행 운영" 
+  {
+    dept: "게임영상학과",
+    name: "이재현",
+    courses: "3D애니메이션 1, 커뮤니케이션디자인 1",
+    totalStudents: 60,
+    uniqueStudents: 55,
+    note: "3D애니메이션 및 OJT 병행 운영"
   },
-  { 
-    dept: "국제학부", 
-    name: "이연주", 
-    courses: "Smartwork 실무, 관광마케팅조실무, 호텔경영실무", 
-    totalStudents: 26, 
-    uniqueStudents: 22, 
-    note: "외국인 유학생 전용 주문식 과정 운영" 
+  {
+    dept: "국제학부",
+    name: "이연주",
+    courses: "Smartwork 실무, 관광마케팅조실무, 호텔경영실무",
+    totalStudents: 26,
+    uniqueStudents: 22,
+    note: "외국인 유학생 전용 주문식 과정 운영"
   },
-  { 
-    dept: "글로벌비즈니스학과", 
-    name: "서용한", 
-    courses: "Smartwork 실무, 관광마케팅조사 실무, 호텔경영론", 
-    totalStudents: 50, 
-    uniqueStudents: 45, 
-    note: "유학생 관광마케팅 및 Smartwork 실무 연계" 
+  {
+    dept: "글로벌비즈니스학과",
+    name: "서용한",
+    courses: "Smartwork 실무, 관광마케팅조사 실무, 호텔경영론",
+    totalStudents: 50,
+    uniqueStudents: 45,
+    note: "유학생 관광마케팅 및 Smartwork 실무 연계"
   },
-  { 
-    dept: "기계공학부 기계시스템전공", 
-    name: "이정준", 
-    courses: "전공종합설계, 챌린지프로젝트(종합설계및창업)(2), 기계품질데이터분석", 
-    totalStudents: 186, 
-    uniqueStudents: 165, 
-    note: "캡스톤디자인 중심 종합설계 교육" 
+  {
+    dept: "기계공학부 기계시스템전공",
+    name: "이정준",
+    courses: "전공종합설계, 챌린지프로젝트(종합설계및창업)(2), 기계품질데이터분석",
+    totalStudents: 186,
+    uniqueStudents: 165,
+    note: "캡스톤디자인 중심 종합설계 교육"
   },
-  { 
-    dept: "기계공학부 기계설비전공", 
-    name: "고형석", 
-    courses: "설비진단, 스마트제조실무", 
-    totalStudents: 50, 
-    uniqueStudents: 45, 
-    note: "설비진단 및 스마트제조 중심" 
+  {
+    dept: "기계공학부 기계설비전공",
+    name: "고형석",
+    courses: "설비진단, 스마트제조실무",
+    totalStudents: 50,
+    uniqueStudents: 45,
+    note: "설비진단 및 스마트제조 중심"
   },
-  { 
-    dept: "물리치료학과", 
-    name: "김원호", 
-    courses: "신경계물리치료중재, 소아물리치료", 
-    totalStudents: 56, 
-    uniqueStudents: 50, 
-    note: "신경계 및 소아 물리치료 특화 PBL" 
+  {
+    dept: "물리치료학과",
+    name: "김원호",
+    courses: "신경계물리치료중재, 소아물리치료",
+    totalStudents: 56,
+    uniqueStudents: 50,
+    note: "신경계 및 소아 물리치료 특화 PBL"
   },
-  { 
-    dept: "사회복지학과", 
-    name: "이수경", 
-    courses: "청소년복지론, 노인상담", 
-    totalStudents: 65, 
-    uniqueStudents: 60, 
-    note: "청소년 및 노인복지 융합형 과정" 
+  {
+    dept: "사회복지학과",
+    name: "이수경",
+    courses: "청소년복지론, 노인상담",
+    totalStudents: 65,
+    uniqueStudents: 60,
+    note: "청소년 및 노인복지 융합형 과정"
   },
-  { 
-    dept: "세무회계학과", 
-    name: "천정애", 
-    courses: "재무제표론", 
-    totalStudents: 37, 
-    uniqueStudents: 37, 
-    note: "재무제표론 중심 세무 실무 교육" 
+  {
+    dept: "세무회계학과",
+    name: "천정애",
+    courses: "재무제표론",
+    totalStudents: 37,
+    uniqueStudents: 37,
+    note: "재무제표론 중심 세무 실무 교육"
   },
-  { 
-    dept: "스포츠건강재활학과", 
-    name: "김원문", 
-    courses: "근골격계재활운동, 근육재활심화테크닉", 
-    totalStudents: 29, 
-    uniqueStudents: 25, 
-    note: "근골격계 재활 및 심화 테크닉 과정" 
+  {
+    dept: "스포츠건강재활학과",
+    name: "김원문",
+    courses: "근골격계재활운동, 근육재활심화테크닉",
+    totalStudents: 29,
+    uniqueStudents: 25,
+    note: "근골격계 재활 및 심화 테크닉 과정"
   },
-  { 
-    dept: "스포츠재활학부 스포츠재활전공", 
-    name: "김원문", 
-    courses: "교정운동및실습(1), 근육재활심화테크닉(1), 스포츠의학개론, 스포츠심리학", 
-    totalStudents: 90, 
-    uniqueStudents: 80, 
-    note: "교정운동 및 스포츠의학 융합 과정" 
+  {
+    dept: "스포츠재활학부 스포츠재활전공",
+    name: "김원문",
+    courses: "교정운동및실습(1), 근육재활심화테크닉(1), 스포츠의학개론, 스포츠심리학",
+    totalStudents: 90,
+    uniqueStudents: 80,
+    note: "교정운동 및 스포츠의학 융합 과정"
   },
-  { 
-    dept: "스포츠재활학부 스포츠지도전공", 
-    name: "서봉한", 
-    courses: "보디빌딩지도법, 스포츠윤리", 
-    totalStudents: 49, 
-    uniqueStudents: 45, 
-    note: "보디빌딩 및 스포츠윤리 지도 특화" 
+  {
+    dept: "스포츠재활학부 스포츠지도전공",
+    name: "서봉한",
+    courses: "보디빌딩지도법, 스포츠윤리",
+    totalStudents: 49,
+    uniqueStudents: 45,
+    note: "보디빌딩 및 스포츠윤리 지도 특화"
   },
-  { 
-    dept: "식품영양학과", 
-    name: "김일낭", 
-    courses: "-", 
-    totalStudents: 0, 
-    uniqueStudents: 0, 
-    note: "3차년도 주문식 과정 개설 예정" 
+  {
+    dept: "식품영양학과",
+    name: "김일낭",
+    courses: "-",
+    totalStudents: 0,
+    uniqueStudents: 0,
+    note: "3차년도 주문식 과정 개설 예정"
   },
-  { 
-    dept: "실내건축디자인과", 
-    name: "김동욱", 
-    courses: "실내건축캡스톤디자인, 실내건축설계(1)", 
-    totalStudents: 34, 
-    uniqueStudents: 30, 
-    note: "실내건축 캡스톤디자인 연계" 
+  {
+    dept: "실내건축디자인과",
+    name: "김동욱",
+    courses: "실내건축캡스톤디자인, 실내건축설계(1)",
+    totalStudents: 34,
+    uniqueStudents: 30,
+    note: "실내건축 캡스톤디자인 연계"
   },
-  { 
-    dept: "융합안전공학과", 
-    name: "한영진", 
-    courses: "통합안전진로탐색, 프로그래밍언어", 
-    totalStudents: 85, 
-    uniqueStudents: 78, 
-    note: "통합안전진로 및 프로그래밍 연계" 
+  {
+    dept: "융합안전공학과",
+    name: "한영진",
+    courses: "통합안전진로탐색, 프로그래밍언어",
+    totalStudents: 85,
+    uniqueStudents: 78,
+    note: "통합안전진로 및 프로그래밍 연계"
   },
-  { 
-    dept: "전기전자공학부 스마트전자전공", 
-    name: "조영", 
-    courses: "캡스톤디자인(1), 파이썬프로그래밍", 
-    totalStudents: 35, 
-    uniqueStudents: 32, 
-    note: "스마트전자 캡스톤 및 파이썬 연계" 
+  {
+    dept: "전기전자공학부 스마트전자전공",
+    name: "조영",
+    courses: "캡스톤디자인(1), 파이썬프로그래밍",
+    totalStudents: 35,
+    uniqueStudents: 32,
+    note: "스마트전자 캡스톤 및 파이썬 연계"
   },
-  { 
-    dept: "조선해양시스템공학과", 
-    name: "양승호", 
-    courses: "배관시스템설계, 부유체안정성", 
-    totalStudents: 25, 
-    uniqueStudents: 22, 
-    note: "배관설계 및 부유체 안정성 실무" 
+  {
+    dept: "조선해양시스템공학과",
+    name: "양승호",
+    courses: "배관시스템설계, 부유체안정성",
+    totalStudents: 25,
+    uniqueStudents: 22,
+    note: "배관설계 및 부유체 안정성 실무"
   },
-  { 
-    dept: "치위생학과", 
-    name: "이동은", 
-    courses: "구강미생물학, 임상전단계실습 1, 구강보건교육학및실습, 구강조직학, 구강생리학", 
-    totalStudents: 456, 
-    uniqueStudents: 410, 
-    note: "구강미생물학(PBL) 및 임상실습 융합" 
+  {
+    dept: "치위생학과",
+    name: "이동은",
+    courses: "구강미생물학, 임상전단계실습 1, 구강보건교육학및실습, 구강조직학, 구강생리학",
+    totalStudents: 456,
+    uniqueStudents: 410,
+    note: "구강미생물학(PBL) 및 임상실습 융합"
   },
-  { 
-    dept: "컴퓨터공학과", 
-    name: "김금석", 
-    courses: "종합설계, 컴퓨터구조, 객체지향프로그래밍(1)", 
-    totalStudents: 138, 
-    uniqueStudents: 125, 
-    note: "종합설계 및 컴퓨터구조 PBL 연계" 
+  {
+    dept: "컴퓨터공학과",
+    name: "김금석",
+    courses: "종합설계, 컴퓨터구조, 객체지향프로그래밍(1)",
+    totalStudents: 138,
+    uniqueStudents: 125,
+    note: "종합설계 및 컴퓨터구조 PBL 연계"
   },
-  { 
-    dept: "호텔조리제빵과", 
-    name: "채영철", 
-    courses: "궁중요리실습, 에스프레소커피실습, Italian Cooking, AI-DX 초콜릿및케이크실습", 
-    totalStudents: 278, 
-    uniqueStudents: 250, 
-    note: "AI-DX 제빵 및 이탈리안 요리 융합" 
+  {
+    dept: "호텔조리제빵과",
+    name: "채영철",
+    courses: "궁중요리실습, 에스프레소커피실습, Italian Cooking, AI-DX 초콜릿및케이크실습",
+    totalStudents: 278,
+    uniqueStudents: 250,
+    note: "AI-DX 제빵 및 이탈리안 요리 융합"
   },
-  { 
-    dept: "화학공학과", 
-    name: "송민석", 
-    courses: "챌린지프로젝트(종합설계및창업), 화학장치운전실무, 현장사례연구, GMP실무", 
-    totalStudents: 87, 
-    uniqueStudents: 80, 
-    note: "현장사례연구 및 GMP실무 특화" 
+  {
+    dept: "화학공학과",
+    name: "송민석",
+    courses: "챌린지프로젝트(종합설계및창업), 화학장치운전실무, 현장사례연구, GMP실무",
+    totalStudents: 87,
+    uniqueStudents: 80,
+    note: "현장사례연구 및 GMP실무 특화"
   }
 ];
 
@@ -521,8 +521,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   // 💡 Supabase 연동 상태 및 예외처리(Fallback)용 상태 정의
   // 초보 개발자용 설명:
   // pmProfessors와 orderlyCourses는 Supabase DB로부터 수신된 실시간 정보를 관리합니다.
-  // 네트워크 장애 등으로 DB 쿼리가 불가능할 경우를 대비해, 
-  // 파일 최상단에 선언해 둔 로컬 백업 상수(PM_PROFESSORS, ORDERLY_COURSES)를 초기값으로 갖게 하여 
+  // 네트워크 장애 등으로 DB 쿼리가 불가능할 경우를 대비해,
+  // 파일 최상단에 선언해 둔 로컬 백업 상수(PM_PROFESSORS, ORDERLY_COURSES)를 초기값으로 갖게 하여
   // 시스템 안전성을 확보합니다.
   const [pmProfessors, setPmProfessors] = useState<PmProfessor[]>(PM_PROFESSORS);
   const [orderlyCourses, setOrderlyCourses] = useState<OrderlyCourse[]>(ORDERLY_COURSES);
@@ -536,20 +536,20 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     async function fetchOrderlyData() {
       try {
         setDbLoading(true);
-        
+
         // 1. 학과/전공별 주문식 교육과정 운영 정보 조회
         const { data: deptData, error: deptError } = await supabase
           .from("orderly_courses_depts")
           .select("*")
           .order("id", { ascending: true });
-        
+
         if (deptError) throw deptError;
 
         // 2. 개별 주문식 교육과정 교과목 조회
         const { data: courseData, error: courseError } = await supabase
           .from("orderly_courses")
           .select("*");
-        
+
         if (courseError) throw courseError;
 
         // DB에 데이터가 존재하는 경우, CamelCase 변환 후 상태를 업데이트합니다.
@@ -1018,7 +1018,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   // 💡 AI 기반 지산학 세미나 결과보고 자동 생성 및 추가 핸들러
   const _generateAISeminarReport = () => {
     const nextId = seminarList.length + 1;
-    
+
     // 차수에 따른 AI 예측 데이터셋
     const aiPresetData: Record<number, any> = {
       4: {
@@ -1062,7 +1062,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
       const offsetWeeks = nextId - 6;
       baseDate.setDate(baseDate.getDate() + (offsetWeeks * 14));
       const formattedDate = `${baseDate.getFullYear()}. ${String(baseDate.getMonth() + 1).padStart(2, '0')}.${String(baseDate.getDate()).padStart(2, '0')}. (금) 11:00~13:00`;
-      
+
       const speakers = [
         "김상균 (경희대학교 교수 / 인지과학자)",
         "유현준 (홍익대학교 교수 / 건축가)",
@@ -1191,7 +1191,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   // 💡 PDF/MD 파일 업로드 감지 및 GPT-4o 분석 시뮬레이션 핸들러
   const handleFileUpload = (file: File | null | undefined) => {
     if (!file) return;
-    
+
     const fileName = (file.name || "").normalize("NFC");
     const isPdf = fileName.toLowerCase().endsWith(".pdf");
     const isMd = fileName.toLowerCase().endsWith(".md");
@@ -1246,11 +1246,11 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     if (isPdf) {
       // 1단계: PDF ➔ MD 변환 (1.0초)
       setAiStatusText("📄 업로드된 PDF 보고서를 마크다운(.md) 파일로 내부 변환 중입니다...");
-      
+
       setTimeout(() => {
         // 2단계: 변환 완료 후 GPT-4o 분석 (1.2초)
         setAiStatusText("🤖 변환 완료! 마크다운 본문 텍스트에서 GPT-4o API를 통해 결과 데이터를 추출 중입니다...");
-        
+
         setTimeout(() => {
           setFormSeminarId(String(parsedNum));
           setFormSeminarDate(fallbackData.date);
@@ -1311,7 +1311,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     if (!formSeminarDate.trim()) return alert("일시를 입력해 주세요.");
     if (!formSeminarSpeaker.trim()) return alert("강사를 입력해 주세요.");
     if (!formSeminarTitle.trim()) return alert("주제를 입력해 주세요.");
-    
+
     const parsedId = parseInt(formSeminarId, 10);
     const parsedAttendees = parseInt(formSeminarAttendees, 10) || 0;
     const parsedMainCost = parseInt(formSeminarMainCost, 10) || 0;
@@ -1393,8 +1393,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   };
 
   // 💡 가로형 단위과제 배지 마우스 호버 상태 관리 (하이라이팅 연동용)
-  // 초보 개발자용 설명: 
-  // 사용자가 단위과제 배지 위에 마우스를 올렸을 때 어떤 과제인지 식별하고 
+  // 초보 개발자용 설명:
+  // 사용자가 단위과제 배지 위에 마우스를 올렸을 때 어떤 과제인지 식별하고
   // 은은한 배경색과 테두리 효과를 즉각적으로 보여주기 위해 마우스 호버 상태를 추적합니다.
   const [hoveredUnit, setHoveredUnit] = useState<string | null>(null);
 
@@ -1420,7 +1420,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     if (selectedYearUnitKeys.length > 0) {
       setSelectedUnit(selectedYearUnitKeys[0]);
       localStorage.setItem("anchor_selected_unit", selectedYearUnitKeys[0]);
-      
+
       const defaultProg = selectedYearData[selectedYearUnitKeys[0]]?.programs[0] || null;
       setSelectedProg(defaultProg);
       if (defaultProg) {
@@ -1443,8 +1443,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     localStorage.setItem("anchor_active_course_id", activeCourseId);
   }, [activeCourseId]);
 
-  // 초보 개발자용 설명: 
-  // 가로형 UI 개편으로 인해 3D 휠 회전 및 휠/방향키 관련 스크롤 감지 훅(useEffect)이 
+  // 초보 개발자용 설명:
+  // 가로형 UI 개편으로 인해 3D 휠 회전 및 휠/방향키 관련 스크롤 감지 훅(useEffect)이
   // 더 이상 필요하지 않아 깔끔하게 제거되었습니다.
 
   // 단위과제를 변경했을 때 프로그램 선택
@@ -1477,36 +1477,36 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
 
         {/* 💡 상단 가로형 단위과제 선택 배지 목록 (기존 세로형 3D 휠 실린더 다이얼에서 전면 개편) */}
         {/* 초보 개발자용 설명: 세로 롤링 휠 대신 가로로 일렬 정렬하여 한눈에 들어오고 호버링 시 하이라이트가 되는 직관적인 UI입니다. */}
-        <div style={{ 
-          display: "flex", 
-          flexDirection: "column", 
-          gap: "0.75rem", 
-          background: "rgba(255, 255, 255, 0.01)", 
-          border: "1px solid var(--border-color)", 
-          borderRadius: "12px", 
-          padding: "1rem" 
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.75rem",
+          background: "rgba(255, 255, 255, 0.01)",
+          border: "1px solid var(--border-color)",
+          borderRadius: "12px",
+          padding: "1rem"
         }}>
-          <div style={{ 
-            fontSize: "0.8rem", 
-            fontWeight: "800", 
-            color: "var(--text-secondary)", 
-            textTransform: "uppercase", 
-            letterSpacing: "1px" 
+          <div style={{
+            fontSize: "0.8rem",
+            fontWeight: "800",
+            color: "var(--text-secondary)",
+            textTransform: "uppercase",
+            letterSpacing: "1px"
           }}>
             과제 선택 (단위과제 목록)
           </div>
-          <div style={{ 
-            display: "flex", 
-            flexDirection: "row", 
-            gap: "0.5rem", 
-            flexWrap: "wrap", 
-            alignItems: "center" 
+          <div style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: "0.5rem",
+            flexWrap: "wrap",
+            alignItems: "center"
           }}>
             {unitKeys.length > 0 ? (
               unitKeys.map((unit) => {
                 const isSelected = selectedUnit === unit;
                 const isHovered = hoveredUnit === unit;
-                
+
                 return (
                   <button
                     key={unit}
@@ -1519,28 +1519,28 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                       fontSize: "0.85rem",
                       fontWeight: "800",
                       cursor: "pointer",
-                      border: isSelected 
-                        ? "1.5px solid rgba(255,255,255,0.4)" 
-                        : isHovered 
-                          ? "1.5px solid rgba(59, 130, 246, 0.5)" 
+                      border: isSelected
+                        ? "1.5px solid rgba(255,255,255,0.4)"
+                        : isHovered
+                          ? "1.5px solid rgba(59, 130, 246, 0.5)"
                           : "1.5px solid rgba(255,255,255,0.08)",
                       background: isSelected
                         ? "linear-gradient(135deg, var(--accent-color), #3b82f6)"
                         : isHovered
                           ? "rgba(59, 130, 246, 0.15)"
                           : "rgba(255, 255, 255, 0.04)",
-                      color: isSelected 
-                        ? "#fff" 
-                        : isHovered 
-                          ? "var(--accent-color)" 
+                      color: isSelected
+                        ? "#fff"
+                        : isHovered
+                          ? "var(--accent-color)"
                           : "var(--text-secondary)",
                       boxShadow: isSelected
                         ? "0 4px 12px rgba(59, 130, 246, 0.3)"
                         : "none",
-                      transform: isSelected 
-                        ? "translateY(-1px) scale(1.03)" 
-                        : isHovered 
-                          ? "translateY(-1px)" 
+                      transform: isSelected
+                        ? "translateY(-1px) scale(1.03)"
+                        : isHovered
+                          ? "translateY(-1px)"
                           : "none",
                       transition: "all 0.2s ease",
                       outline: "none"
@@ -1746,8 +1746,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                         {/* 필터 헤더 */}
                         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", background: "rgba(255,255,255,0.02)", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                            <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>학과 필터</label>
-                            <select
+                            <label htmlFor="a11y-major-programs-manager-1" style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>학과 필터</label>
+                            <select id="a11y-major-programs-manager-1"
                               value={selectedDeptFilter}
                               onChange={(e) => setSelectedDeptFilter(e.target.value)}
                               style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.3rem", borderRadius: "5px", fontSize: "0.75rem", outline: "none" }}
@@ -1760,8 +1760,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                           </div>
 
                           <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                            <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>교육과정 유형</label>
-                            <select
+                            <label htmlFor="a11y-major-programs-manager-2" style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>교육과정 유형</label>
+                            <select id="a11y-major-programs-manager-2"
                               value={selectedTypeFilter}
                               onChange={(e) => setSelectedTypeFilter(e.target.value)}
                               style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.3rem", borderRadius: "5px", fontSize: "0.75rem", outline: "none" }}
@@ -1867,8 +1867,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                   </h5>
                                 </div>
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-                                  <label style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>결과 학과 필터</label>
-                                  <select
+                                  <label htmlFor="a11y-major-programs-manager-3" style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>결과 학과 필터</label>
+                                  <select id="a11y-major-programs-manager-3"
                                     value={selectedResultDeptFilter}
                                     onChange={(e) => setSelectedResultDeptFilter(e.target.value)}
                                     style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", color: "var(--text-primary)", padding: "0.25rem 0.5rem", borderRadius: "5px", fontSize: "0.72rem", outline: "none" }}
@@ -2238,7 +2238,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                         </span>
                       </div>
                     </div>
- 
+
                     {/* 3. 결과 테이블 대장 */}
                     <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
                       <h6 style={{ fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)" }}>지산학 이음 세미나 개최 결과 요약 대장</h6>
@@ -2387,9 +2387,9 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
 
                           {/* 모달 바디 */}
                           <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-                            
+
                             {/* PDF/MD AI 분석 드롭존 섹션 */}
-                            <div 
+                            <div
                               onDragOver={(e) => {
                                 e.preventDefault();
                                 e.currentTarget.style.borderColor = "#3b82f6";
@@ -2407,11 +2407,11 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                 const file = e.dataTransfer.files?.[0];
                                 if (file) handleFileUpload(file);
                               }}
-                              style={{ 
-                                background: "rgba(255,255,255,0.01)", 
-                                border: "1px dashed var(--border-color, rgba(255,255,255,0.15))", 
-                                borderRadius: "10px", 
-                                padding: "1.2rem", 
+                              style={{
+                                background: "rgba(255,255,255,0.01)",
+                                border: "1px dashed var(--border-color, rgba(255,255,255,0.15))",
+                                borderRadius: "10px",
+                                padding: "1.2rem",
                                 textAlign: "center",
                                 transition: "all 0.25s ease"
                               }}
@@ -2448,10 +2448,10 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                             {/* 수동 입력 필드 그리드 */}
                             <form onSubmit={handleSeminarSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                                
+
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>차수 (숫자)</label>
-                                  <input
+                                  <label htmlFor="a11y-major-programs-manager-4" style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>차수 (숫자)</label>
+                                  <input id="a11y-major-programs-manager-4"
                                     type="number"
                                     placeholder="예: 4"
                                     value={formSeminarId}
@@ -2462,8 +2462,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                 </div>
 
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>일시</label>
-                                  <input
+                                  <label htmlFor="a11y-major-programs-manager-5" style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>일시</label>
+                                  <input id="a11y-major-programs-manager-5"
                                     type="text"
                                     placeholder="예: 2026. 05. 22. (금) 11:00~13:00"
                                     value={formSeminarDate}
@@ -2474,8 +2474,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                 </div>
 
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>강사명 및 소속</label>
-                                  <input
+                                  <label htmlFor="a11y-major-programs-manager-6" style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>강사명 및 소속</label>
+                                  <input id="a11y-major-programs-manager-6"
                                     type="text"
                                     placeholder="예: 장동선 (뇌과학자)"
                                     value={formSeminarSpeaker}
@@ -2486,8 +2486,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                 </div>
 
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>세미나 주제 (제목)</label>
-                                  <input
+                                  <label htmlFor="a11y-major-programs-manager-7" style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>세미나 주제 (제목)</label>
+                                  <input id="a11y-major-programs-manager-7"
                                     type="text"
                                     placeholder="예: 인공지능 시대와 대학 교육"
                                     value={formSeminarTitle}
@@ -2498,8 +2498,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                 </div>
 
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>참석자 수 (명)</label>
-                                  <input
+                                  <label htmlFor="a11y-major-programs-manager-8" style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>참석자 수 (명)</label>
+                                  <input id="a11y-major-programs-manager-8"
                                     type="number"
                                     placeholder="예: 88"
                                     value={formSeminarAttendees}
@@ -2509,8 +2509,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                 </div>
 
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>본예산 집행액 (원)</label>
-                                  <input
+                                  <label htmlFor="a11y-major-programs-manager-9" style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>본예산 집행액 (원)</label>
+                                  <input id="a11y-major-programs-manager-9"
                                     type="number"
                                     placeholder="예: 1800000"
                                     value={formSeminarMainCost}
@@ -2520,8 +2520,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                 </div>
 
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>이월예산 집행액 (원)</label>
-                                  <input
+                                  <label htmlFor="a11y-major-programs-manager-10" style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>이월예산 집행액 (원)</label>
+                                  <input id="a11y-major-programs-manager-10"
                                     type="number"
                                     placeholder="예: 370000"
                                     value={formSeminarCarryCost}
@@ -2531,8 +2531,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                 </div>
 
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                  <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>평균 만족도 (1.0 ~ 5.0)</label>
-                                  <input
+                                  <label htmlFor="a11y-major-programs-manager-11" style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>평균 만족도 (1.0 ~ 5.0)</label>
+                                  <input id="a11y-major-programs-manager-11"
                                     type="number"
                                     step="0.1"
                                     min="1.0"
@@ -2547,8 +2547,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                               </div>
 
                               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                                <label style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>기타 및 특이사항</label>
-                                <textarea
+                                <label htmlFor="a11y-major-programs-manager-12" style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "800" }}>기타 및 특이사항</label>
+                                <textarea id="a11y-major-programs-manager-12"
                                   placeholder="세부 지출 내역, 연계 교류회 진행 현황 및 보도자료 게재 사실 등을 자유롭게 기입하세요."
                                   value={formSeminarEtc}
                                   onChange={(e) => setFormSeminarEtc(e.target.value)}

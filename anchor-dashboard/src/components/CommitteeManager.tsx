@@ -2088,7 +2088,7 @@ ${opinionsContext}
       // 💡 [2차 안전 Fallback 요약 엔진] Key 미입력/API 통신 장애 시에도 탑재 완료 보장
       if (!aiSummaryText) {
         aiSummaryText = `### 1. 종합 평가 동향 및 핵심 논지
-본 회의([${selectedMeeting.title}])는 재적 의결 위원 ${qInfo?.total}명 중 ${qInfo?.attended}명이 참석하여 성원(${qInfo?.isEstablished ? "가결 요건 성립" : "미성원"})되었습니다. 
+본 회의([${selectedMeeting.title}])는 재적 의결 위원 ${qInfo?.total}명 중 ${qInfo?.attended}명이 참석하여 성원(${qInfo?.isEstablished ? "가결 요건 성립" : "미성원"})되었습니다.
 수집된 서면 심의 의견 종합 결과, 전반적으로 안건의 사업 목적 타당성 및 실행 계획의 차질 없는 이행을 조건으로 대다수 위원이 찬성 및 원안 가결 의견을 표명하였습니다.
 
 ### 2. 안건(평가영역)별 분석 보고 및 보완 권고사항
@@ -2744,7 +2744,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
               {/* 💡 [사업단 vs 센터별 라디오 체크 버튼 구분] (요구사항 1 반영) */}
               <div style={{ display: "flex", gap: "1rem", marginBottom: "0.6rem", fontSize: "0.85rem" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                <label htmlFor="a11y-committee-manager-1" style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
                   <input
                     type="radio"
                     name="committee_group"
@@ -2755,8 +2755,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   />
                   <span>사업단 위원회</span>
                 </label>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
-                  <input
+                <label htmlFor="a11y-committee-manager-18" style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", color: "var(--text-primary)" }}>
+                  <input id="a11y-committee-manager-18"
                     type="radio"
                     name="committee_group"
                     value="center"
@@ -3410,7 +3410,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         {/* 전자 서명 패드 */}
                         <div>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                            <label style={{ fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                            <label htmlFor="a11y-committee-manager-19" style={{ fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.2rem" }}>
                               <Lock size={12} style={{ color: "var(--accent-color)" }} />
                               3. 위원 서명 (암호화 보안 저장)
                             </label>
@@ -3624,7 +3624,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
                     {isEditingReport ? (
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                        <textarea
+                        <textarea id="a11y-committee-manager-19"
                           value={editedReportText}
                           onChange={(e) => setEditedReportText(e.target.value)}
                           style={{ width: "100%", height: "200px", background: "var(--card-bg-fallback)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "6px", padding: "0.5rem", fontSize: "0.82rem", lineHeight: "1.5", resize: "vertical", outline: "none", fontFamily: "inherit" }}
@@ -3952,8 +3952,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
             <h3 style={{ color: "#fff", fontWeight: "800", fontSize: "1.1rem", marginBottom: "1rem" }}>신규 위원회 개설</h3>
             <form onSubmit={handleCreateCommittee} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               <div>
-                <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>위원회 명칭</label>
-                <input
+                <label htmlFor="a11y-committee-manager-20" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>위원회 명칭</label>
+                <input id="a11y-committee-manager-1"
                   type="text"
                   required
                   placeholder="예: 앵커총괄위원회, 자체평가위원회"
@@ -3963,8 +3963,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                 />
               </div>
               <div>
-                <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>재적 위원 수 (의사정족수 기준)</label>
-                <input
+                <label htmlFor="a11y-committee-manager-2" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>재적 위원 수 (의사정족수 기준)</label>
+                <input id="a11y-committee-manager-2"
                   type="number"
                   min={1}
                   required
@@ -3974,8 +3974,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                 />
               </div>
               <div>
-                <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>의결정족수 기준</label>
-                <select
+                <label htmlFor="a11y-committee-manager-3" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>의결정족수 기준</label>
+                <select id="a11y-committee-manager-3"
                   value={committeeForm.voting_rule}
                   onChange={(e) => setCommitteeForm({ ...committeeForm, voting_rule: e.target.value })}
                   style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
@@ -4004,8 +4004,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
             <form onSubmit={handleAddMember} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>위원 성명</label>
-                  <input
+                  <label htmlFor="a11y-committee-manager-4" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>위원 성명</label>
+                  <input id="a11y-committee-manager-4"
                     type="text"
                     required
                     placeholder="예: 홍길동"
@@ -4015,8 +4015,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>직책/역할</label>
-                  <select
+                  <label htmlFor="a11y-committee-manager-5" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>직책/역할</label>
+                  <select id="a11y-committee-manager-5"
                     value={memberForm.type}
                     onChange={(e) => setMemberForm({ ...memberForm, type: e.target.value })}
                     style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
@@ -4031,8 +4031,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>소속 기관명</label>
-                  <input
+                  <label htmlFor="a11y-committee-manager-6" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>소속 기관명</label>
+                  <input id="a11y-committee-manager-6"
                     type="text"
                     placeholder="예: 울산과학대학교"
                     value={memberForm.org}
@@ -4041,8 +4041,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>부서/학과명</label>
-                  <input
+                  <label htmlFor="a11y-committee-manager-7" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>부서/학과명</label>
+                  <input id="a11y-committee-manager-7"
                     type="text"
                     placeholder="예: 기획처 / 화학공학과"
                     value={memberForm.dept}
@@ -4054,8 +4054,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>직위/직급</label>
-                  <input
+                  <label htmlFor="a11y-committee-manager-8" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>직위/직급</label>
+                  <input id="a11y-committee-manager-8"
                     type="text"
                     placeholder="예: 처장 / 교수"
                     value={memberForm.rank}
@@ -4064,8 +4064,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>구분</label>
-                  <select
+                  <label htmlFor="a11y-committee-manager-9" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>구분</label>
+                  <select id="a11y-committee-manager-9"
                     value={memberForm.location}
                     onChange={(e) => setMemberForm({ ...memberForm, location: e.target.value })}
                     style={{ width: "100%", padding: "0.5rem", borderRadius: "6px", background: "rgba(0,0,0,0.3)", color: "#fff", border: "1px solid var(--border-color)" }}
@@ -4078,8 +4078,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <div style={{ flex: 2 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>비고</label>
-                  <input
+                  <label htmlFor="a11y-committee-manager-10" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>비고</label>
+                  <input id="a11y-committee-manager-10"
                     type="text"
                     placeholder="예: 신규 위촉"
                     value={memberForm.note}
@@ -4088,8 +4088,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>정렬 순서</label>
-                  <input
+                  <label htmlFor="a11y-committee-manager-11" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>정렬 순서</label>
+                  <input id="a11y-committee-manager-11"
                     type="number"
                     value={memberForm.sort_order}
                     onChange={(e) => setMemberForm({ ...memberForm, sort_order: Number(e.target.value) })}
@@ -4130,8 +4130,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
             </div>
             <form onSubmit={handleCreateMeeting} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               <div>
-                <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의명</label>
-                <input
+                <label htmlFor="a11y-committee-manager-12" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의명</label>
+                <input id="a11y-committee-manager-12"
                   type="text"
                   required
                   placeholder="예: 제1차 앵커총괄위원회 회의"
@@ -4142,8 +4142,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
               </div>
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 일시 및 마감기한</label>
-                  <input
+                  <label htmlFor="a11y-committee-manager-13" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 일시 및 마감기한</label>
+                  <input id="a11y-committee-manager-13"
                     type="datetime-local"
                     required
                     value={meetingForm.meeting_date}
@@ -4152,8 +4152,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 방식</label>
-                  <select
+                  <label htmlFor="a11y-committee-manager-14" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 방식</label>
+                  <select id="a11y-committee-manager-14"
                     value={meetingForm.meeting_type}
                     onChange={(e) => setMeetingForm({ ...meetingForm, meeting_type: e.target.value })}
                     className="form-select"
@@ -4167,7 +4167,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
               {/* 💡 [회의 안건 다중화 개조] 개별 의안 관리 컨트롤러 */}
               <div style={{ border: "1px solid var(--border-color)", borderRadius: "8px", padding: "0.75rem", background: "rgba(0,0,0,0.1)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <label style={{ fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)" }}>의결 안건 / 평가 영역 설정 (최소 1개 필수)</label>
+                  <label htmlFor="a11y-committee-manager-15" style={{ fontSize: "0.85rem", fontWeight: "bold", color: "var(--text-primary)" }}>의결 안건 / 평가 영역 설정 (최소 1개 필수)</label>
                   <div style={{ display: "flex", gap: "0.4rem" }}>
                     {selectedCommittee?.id === "evaluation" && (
                       <button
@@ -4210,7 +4210,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                     <div key={index} style={{ border: "1px solid rgba(255,255,255,0.05)", borderRadius: "6px", padding: "0.5rem", background: "rgba(0,0,0,0.2)" }}>
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "0.3rem" }}>
                         <span style={{ fontSize: "0.78rem", fontWeight: "bold", color: "var(--accent-color)" }}>#{index + 1}</span>
-                        <input
+                        <input id="a11y-committee-manager-20"
                           type="text"
                           required
                           placeholder="예: 제1호 의안 - 2차년도 사업계획서 심의"
@@ -4226,8 +4226,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                           className="form-input"
                           style={{ flex: 1, padding: "0.3rem 0.5rem", borderRadius: "4px", fontSize: "0.8rem" }}
                         />
-                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", whiteSpace: "nowrap" }}>
-                          <input
+                        <label htmlFor="a11y-committee-manager-21" style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.2rem", cursor: "pointer", whiteSpace: "nowrap" }}>
+                          <input id="a11y-committee-manager-21"
                             type="checkbox"
                             checked={!!agenda.is_evaluation}
                             onChange={(e) => {
@@ -4272,8 +4272,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
                       {/* 안건별 개별 자료 첨부 입력 컨트롤 (모든 문서/이미지 확장자 지원 & FileReader 무손실 업로드) */}
                       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                        <label style={{ fontSize: "0.7rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>📄 심의자료:</label>
-                        <input
+                        <label htmlFor="a11y-committee-manager-15" style={{ fontSize: "0.7rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>📄 심의자료:</label>
+                        <input id="a11y-committee-manager-15"
                           type="file"
                           accept=".pdf,application/pdf"
                           onChange={async (e) => {
@@ -4358,8 +4358,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
               {/* 💡 [회의 안건 의결 서류 파일 탑재 필드] (PDF 전용 & 2MB 고해상도 자동 최적화 압축 안내) */}
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>의결 심의 자료 첨부 (선택)</label>
-                  <input
+                  <label htmlFor="a11y-committee-manager-16" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>의결 심의 자료 첨부 (선택)</label>
+                  <input id="a11y-committee-manager-16"
                     type="file"
                     accept=".pdf,application/pdf"
                     onChange={handleFileChange}
@@ -4371,8 +4371,8 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   </small>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 보안 PIN코드 (선택)</label>
-                  <input
+                  <label htmlFor="a11y-committee-manager-17" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 보안 PIN코드 (선택)</label>
+                  <input id="a11y-committee-manager-17"
                     type="text"
                     maxLength={10}
                     placeholder="미지정 시 기본 123456"

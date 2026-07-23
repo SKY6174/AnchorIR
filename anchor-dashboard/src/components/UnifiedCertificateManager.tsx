@@ -6,7 +6,7 @@ import { Plus, Trash2, Edit, FileText, Upload, X, AlertTriangle, Download } from
 const formatDateString = (dateStr: unknown): string => {
   if (!dateStr) return "";
   let str = String(dateStr).trim();
-  
+
   // 1. Excel serial date (e.g. 45000)
   if (!Number.isNaN(Number(str)) && Number(str) > 20000) {
     const d = new Date(Math.round((Number(str) - 25569) * 86400 * 1000));
@@ -15,7 +15,7 @@ const formatDateString = (dateStr: unknown): string => {
     const dd = String(d.getDate()).padStart(2, "0");
     return `${yyyy}-${mm}-${dd}`;
   }
-  
+
   // 괄호 및 요일 텍스트 제거 (예: "2026-07-15 (수)" -> "2026-07-15")
   str = str.replace(/\([^)]*\)/g, "").replace(/[가-힣]/g, "").trim();
 
@@ -48,7 +48,7 @@ const formatDateString = (dateStr: unknown): string => {
   if (finalCheck) {
     return str;
   }
-  
+
   // 만약 날짜 객체로 변환 가능한 문자열이면 재가공
   const parsedDate = new Date(str);
   if (!isNaN(parsedDate.getTime())) {
@@ -141,7 +141,7 @@ export default function UnifiedCertificateManager({
   const [_activeTab, _setActiveTab] = useState<string>(
     managerType === "award" ? "award" : managerType === "certificate" ? "certificate" : "all"
   );
-  
+
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<number | string | null>(null);
 
@@ -159,7 +159,7 @@ export default function UnifiedCertificateManager({
   const [_inputProgramName, _setInputProgramName] = useState<string>("");
   const [_inputFileName, _setInputFileName] = useState<string>("");
   const [_inputFileData, _setInputFileData] = useState<string>("");
-  
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [filterYear, setFilterYear] = useState(() => selectedYear ? selectedYear.toString() : "all");
 
@@ -169,7 +169,7 @@ export default function UnifiedCertificateManager({
       setFilterYear(selectedYear.toString());
     }
   }, [selectedYear]);
-  
+
   // 폼 필드
   const [managerDept, setManagerDept] = useState("");
   const [managerName, setManagerName] = useState("");
@@ -187,7 +187,7 @@ export default function UnifiedCertificateManager({
   const [issuer, setIssuer] = useState("사업단장");
   const [content, setContent] = useState("");
   const [awardType, setAwardType] = useState("");
-  
+
   const departmentMembers = React.useMemo(() => {
     const map: Record<string, string[]> = {
       "ECC센터": [],
@@ -222,7 +222,7 @@ export default function UnifiedCertificateManager({
         return match ? `제${acYear}-${match[1]}` : currentCertNo;
       });
     }
-    
+
     const newDynamicName = getDynamicTeamName(issueDate);
     const oldDynamicName = newDynamicName === "RISE사업단" ? "앵커사업단" : "RISE사업단";
     setProjectGroup(currentProjectGroup =>
@@ -235,7 +235,7 @@ export default function UnifiedCertificateManager({
     const date = new Date(issueDate);
     const riseStart = new Date("2025-03-01");
     const anchorStart = new Date("2026-07-01");
-    
+
     let dynamicName = "";
     if (date >= anchorStart) dynamicName = "앵커사업단장";
     else if (date >= riseStart) dynamicName = "RISE사업단장";
@@ -412,7 +412,7 @@ export default function UnifiedCertificateManager({
         if (seen.has(n)) duplicates.push(`${year}년도 ${n}번`);
         seen.add(n);
       });
-      
+
       const max = numbers[numbers.length - 1];
       for (let i = 1; i <= max; i++) {
         if (!seen.has(i)) {
@@ -497,18 +497,18 @@ export default function UnifiedCertificateManager({
 
   const downloadExcel = async () => {
     const headers = [
-      "증서번호", "상장/이수증", "상훈", "팀명", "성명", "학번", 
-      "생년월일", "휴대폰", "수상일(수료일)", "발급부서", "발급자명의", 
+      "증서번호", "상장/이수증", "상훈", "팀명", "성명", "학번",
+      "생년월일", "휴대폰", "수상일(수료일)", "발급부서", "발급자명의",
       "시상내용(과정명)", "담당자-소속", "담당자-성명", "비고"
     ];
     const data = getSortedCerts().map((c) => [
-      c.certNo, c.certType, c.awardType, c.teamName, c.recipientName, c.studentId, 
-      c.birthDate, c.phone, c.issueDate, c.projectGroup, c.issuer, 
+      c.certNo, c.certType, c.awardType, c.teamName, c.recipientName, c.studentId,
+      c.birthDate, c.phone, c.issueDate, c.projectGroup, c.issuer,
       c.content, c.managerDept, c.managerName, c.note
     ]);
     const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
-    
+
     // Auto width
     const colWidths = headers.map(() => ({ wch: 15 }));
     ws['!cols'] = colWidths;
@@ -521,14 +521,14 @@ export default function UnifiedCertificateManager({
 
   const downloadExcelTemplate = async () => {
     const headers = [
-      "증서번호", "상장/이수증", "상훈", "팀명", "성명", "학번", 
-      "생년월일", "휴대폰", "수상일(수료일)", "발급부서", "발급자명의", 
+      "증서번호", "상장/이수증", "상훈", "팀명", "성명", "학번",
+      "생년월일", "휴대폰", "수상일(수료일)", "발급부서", "발급자명의",
       "시상내용(과정명)", "담당자-소속", "담당자-성명", "비고"
     ];
     const data = [[]]; // 빈 데이터 한 줄
     const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
-    
+
     // Auto width
     const colWidths = headers.map(() => ({ wch: 15 }));
     ws['!cols'] = colWidths;
@@ -546,8 +546,8 @@ export default function UnifiedCertificateManager({
       <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "1rem" }}>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           {/* 💡 [연도 누적 선택 필터] (버튼들과 패딩 및 둥글기 통일) */}
-          <select 
-            value={filterYear} 
+          <select
+            value={filterYear}
             onChange={(e) => setFilterYear(e.target.value)}
             style={{
               padding: "0.5rem 0.85rem",
@@ -581,7 +581,7 @@ export default function UnifiedCertificateManager({
           </button>
           <input type="file" ref={fileInputRef} onChange={handleExcelUpload} accept=".xlsx, .xls" style={{ display: "none" }} />
           {currentRole?.id !== "GUEST" && (
-            <button 
+            <button
               onClick={openModalForNew}
               className="action-btn"
               style={{
@@ -699,16 +699,16 @@ export default function UnifiedCertificateManager({
                 {/* 1st Row: 수상(수료)일, 증서번호 */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>수상(수료)일</label>
-                    <input type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)", colorScheme: "dark" }} className="date-input" />
+                    <label htmlFor="a11y-unified-certificate-manager-1" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>수상(수료)일</label>
+                    <input id="a11y-unified-certificate-manager-1" type="date" value={issueDate} onChange={e => setIssueDate(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)", colorScheme: "dark" }} className="date-input" />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>증서번호</label>
+                    <label htmlFor="a11y-unified-certificate-manager-2" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>증서번호</label>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>제{getAcademicYear(issueDate)}-</span>
-                      <input 
-                        type="text" 
-                        value={(certNo || "").replace(/^제\d*-?/, '').replace(/호$/, '')} 
+                      <input
+                        type="text"
+                        value={(certNo || "").replace(/^제\d*-?/, '').replace(/호$/, '')}
                         onChange={e => {
                           const val = e.target.value.replace(/\D/g, "");
                           if (val) {
@@ -716,9 +716,9 @@ export default function UnifiedCertificateManager({
                           } else {
                             setCertNo("");
                           }
-                        }} 
-                        placeholder="001" 
-                        style={{ flex: 1, minWidth: "50px", padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} 
+                        }}
+                        placeholder="001"
+                        style={{ flex: 1, minWidth: "50px", padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}
                       />
                       <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>호</span>
                     </div>
@@ -728,8 +728,8 @@ export default function UnifiedCertificateManager({
                 {/* 2nd Row: 구분, 상훈(상장), 팀명(상장) */}
                 <div style={{ display: "grid", gridTemplateColumns: certType === "상장" ? "1fr 1fr 1fr" : "1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>구분 <span style={{ color: "red" }}>*</span></label>
-                    <select value={certType} onChange={e => {
+                    <label htmlFor="a11y-unified-certificate-manager-14" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>구분 <span style={{ color: "red" }}>*</span></label>
+                    <select id="a11y-unified-certificate-manager-2" value={certType} onChange={e => {
                       setCertType(e.target.value);
                       if (e.target.value !== "상장") {
                         setAwardType("");
@@ -745,8 +745,8 @@ export default function UnifiedCertificateManager({
                   {certType === "상장" && (
                     <>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>상훈</label>
-                        <select value={awardType} onChange={e => setAwardType(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                        <label htmlFor="a11y-unified-certificate-manager-3" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>상훈</label>
+                        <select id="a11y-unified-certificate-manager-3" value={awardType} onChange={e => setAwardType(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
                           <option value="">선택</option>
                           {["대상", "최우수상", "우수상", "장려상", "금상", "은상", "동상"].map(aw => (
                             <option key={aw} value={aw}>{aw}</option>
@@ -754,8 +754,8 @@ export default function UnifiedCertificateManager({
                         </select>
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                        <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>팀명</label>
-                        <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                        <label htmlFor="a11y-unified-certificate-manager-4" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>팀명</label>
+                        <input id="a11y-unified-certificate-manager-4" type="text" value={teamName} onChange={e => setTeamName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                       </div>
                     </>
                   )}
@@ -764,28 +764,28 @@ export default function UnifiedCertificateManager({
                 {/* 3rd Row: 성명, 학번, 생년월일, 휴대폰 */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>성명 <span style={{ color: "red" }}>*</span></label>
-                    <input type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} required style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <label htmlFor="a11y-unified-certificate-manager-5" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>성명 <span style={{ color: "red" }}>*</span></label>
+                    <input id="a11y-unified-certificate-manager-5" type="text" value={recipientName} onChange={e => setRecipientName(e.target.value)} required style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>학번</label>
-                    <input type="text" value={studentId} onChange={e => setStudentId(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <label htmlFor="a11y-unified-certificate-manager-6" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>학번</label>
+                    <input id="a11y-unified-certificate-manager-6" type="text" value={studentId} onChange={e => setStudentId(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>생년월일</label>
-                    <input type="text" value={birthDate} onChange={e => setBirthDate(e.target.value)} placeholder="MM/DD/YYYY" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <label htmlFor="a11y-unified-certificate-manager-7" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>생년월일</label>
+                    <input id="a11y-unified-certificate-manager-7" type="text" value={birthDate} onChange={e => setBirthDate(e.target.value)} placeholder="MM/DD/YYYY" style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>휴대폰</label>
-                    <input type="text" value={phone} onChange={e => setPhone(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                    <label htmlFor="a11y-unified-certificate-manager-8" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>휴대폰</label>
+                    <input id="a11y-unified-certificate-manager-8" type="text" value={phone} onChange={e => setPhone(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                   </div>
                 </div>
 
                 {/* 4th Row: 주관부서, 발급자명의 */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>주관부서</label>
-                    <select value={projectGroup} onChange={e => setProjectGroup(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                    <label htmlFor="a11y-unified-certificate-manager-9" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>주관부서</label>
+                    <select id="a11y-unified-certificate-manager-9" value={projectGroup} onChange={e => setProjectGroup(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
                       <option value="">선택</option>
                       <option value={getDynamicTeamName(issueDate)}>{getDynamicTeamName(issueDate)}</option>
                       <option value="산학협력단">산학협력단</option>
@@ -793,8 +793,8 @@ export default function UnifiedCertificateManager({
                     </select>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>발급자명의</label>
-                    <select value={issuer} onChange={e => setIssuer(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                    <label htmlFor="a11y-unified-certificate-manager-10" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>발급자명의</label>
+                    <select id="a11y-unified-certificate-manager-10" value={issuer} onChange={e => setIssuer(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
                       <option value="">선택</option>
                       <option value="울산과학대학교총장">울산과학대학교총장</option>
                       <option value={`울산과학대학교총장, ${getDynamicTeamName(issueDate)}장`}>울산과학대학교총장, {getDynamicTeamName(issueDate)}장</option>
@@ -808,8 +808,8 @@ export default function UnifiedCertificateManager({
                 {/* 5th Row: 담당자 소속, 담당자 성명 */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>담당자 소속</label>
-                    <select value={managerDept} onChange={e => {
+                    <label htmlFor="a11y-unified-certificate-manager-11" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>담당자 소속</label>
+                    <select id="a11y-unified-certificate-manager-11" value={managerDept} onChange={e => {
                       setManagerDept(e.target.value);
                       setManagerName("");
                     }} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
@@ -820,9 +820,9 @@ export default function UnifiedCertificateManager({
                     </select>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>담당자 성명</label>
+                    <label htmlFor="a11y-unified-certificate-manager-12" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>담당자 성명</label>
                     {managerDept && managerDept !== "기타" ? (
-                      <select value={managerName} onChange={e => setManagerName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
+                      <select id="a11y-unified-certificate-manager-14" value={managerName} onChange={e => setManagerName(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }}>
                         <option value="">선택</option>
                         {departmentMembers[managerDept]?.map(name => (
                           <option key={name} value={name}>{name}</option>
@@ -835,13 +835,13 @@ export default function UnifiedCertificateManager({
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>시상내용(과정명)</label>
-                  <input type="text" value={content} onChange={e => setContent(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                  <label htmlFor="a11y-unified-certificate-manager-12" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>시상내용(과정명)</label>
+                  <input id="a11y-unified-certificate-manager-12" type="text" value={content} onChange={e => setContent(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                 </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                  <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>비고</label>
-                  <input type="text" value={note} onChange={e => setNote(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
+                  <label htmlFor="a11y-unified-certificate-manager-13" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>비고</label>
+                  <input id="a11y-unified-certificate-manager-13" type="text" value={note} onChange={e => setNote(e.target.value)} style={{ padding: "0.5rem", borderRadius: "0.5rem", background: "var(--bg-tertiary)", border: "1px solid var(--border-color)", color: "var(--text-primary)" }} />
                 </div>
 
 

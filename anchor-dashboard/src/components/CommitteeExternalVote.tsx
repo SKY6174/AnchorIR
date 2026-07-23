@@ -617,10 +617,10 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
               {/* 왼쪽 영역: 드롭다운 + 안건 정보 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                  <label style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-secondary)" }}>
+                  <label htmlFor="a11y-committee-external-vote-1" style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-secondary)" }}>
                     📋 열람할 상정 의안 선택 ({selectedMeetingAgendas.length}건 중)
                   </label>
-                  <select
+                  <select id="a11y-committee-external-vote-1"
                     value={activeAgendaId || ""}
                     onChange={(e) => setActiveAgendaId(e.target.value)}
                     style={{
@@ -899,14 +899,14 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         {!hasSubmitted && (
           <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
-              <label style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <label htmlFor="a11y-committee-external-vote-2" style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <Lock size={20} style={{ color: "var(--accent-color)" }} />
                 <span>자필 서명 (AES 암호화 보안 저장)</span>
                 <span style={{ fontSize: "0.78rem", color: "var(--text-secondary)", fontWeight: "normal" }}>(모바일/패드 멀티터치 지원)</span>
               </label>
 
               <div style={{ display: "flex", gap: "0.5rem" }}>
-                <input
+                <input id="a11y-committee-external-vote-2"
                   type="file"
                   ref={fileInputRef}
                   onChange={handleSignatureFileUpload}

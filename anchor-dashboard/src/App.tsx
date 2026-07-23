@@ -778,7 +778,7 @@ function formatDataToMultiYear(data: LegacyAppRecord[]) {
           ];
 
           // 💡 [기획서 다중 비목 명세 100% 최우선 존중 규칙]
-          // 만약 mockData.js의 원천 프로그램 객체에 budget_categories 배열이 존재한다면, 
+          // 만약 mockData.js의 원천 프로그램 객체에 budget_categories 배열이 존재한다면,
           // 아래의 하드코딩 매핑 및 덮어쓰기를 스킵하고 원래 적혀있는 비목을 그대로 이식합니다.
           const hasExplicitCategories = prog.budget_categories &&
             Array.isArray(prog.budget_categories) &&
@@ -1076,7 +1076,7 @@ function mergeProjectsWithInitial(
   const updated = JSON.parse(JSON.stringify(loadedData)) as LegacyAppRecord[];
 
   // 💡 [Self-healing 누락 복원 가드] 최신 기획 템플릿(multiYearInitialData)에는 있으나
-  // DB에서 읽어온 데이터(updated)에 누락된 신규 전략(Strategy) 및 단위과제(Unit)가 있다면 
+  // DB에서 읽어온 데이터(updated)에 누락된 신규 전략(Strategy) 및 단위과제(Unit)가 있다면
   // 구조 유실을 막기 위해 마스터 구조 그대로 자동 복원 및 주입합니다.
   multiYearInitialData.forEach((sourceStrat) => {
     let targetStrat = updated.find(s => s.id === sourceStrat.id);
@@ -1140,8 +1140,8 @@ function mergeProjectsWithInitial(
                 }
 
                 if (updatedYears[yr]) {
-                  // 💡 [D1, D2, D3 예산 강제 동기화 및 자가 치유 가드] D1, D2, D3 관련 프로그램들은 
-                  // DB에 잘못된 옛날 캐시(외부사업비 오염 등)가 남아있고 아직 수동 기획 저장을 거치지 않은 경우에 한해, 
+                  // 💡 [D1, D2, D3 예산 강제 동기화 및 자가 치유 가드] D1, D2, D3 관련 프로그램들은
+                  // DB에 잘못된 옛날 캐시(외부사업비 오염 등)가 남아있고 아직 수동 기획 저장을 거치지 않은 경우에 한해,
                   // 마스터 기획(sourceProg)의 본사업비 공식 분배율(D2는 100% 국비, 나머지는 국고 50%/시비 50%)을 정밀 강제 계산하여 실시간 보정합니다.
                   if (sourceProg.id) {
                     if (sourceProg.years && sourceProg.years[yr]) {
@@ -1153,7 +1153,7 @@ function mergeProjectsWithInitial(
                       const isDirtyRatio = y && y.budget_main > 0 && Math.abs((y.budget_national || 0) / y.budget_main - targetRatio) > 0.05;
                       const isCategoriesEmpty = !y || !y.budget_categories || y.budget_categories.length === 0 || y.budget_categories.every((c: LegacyAppRecord) => (c.budget || 0) === 0);
 
-                      // 💡 [유효 비목 정합성 검사] 
+                      // 💡 [유효 비목 정합성 검사]
                       // 10대 비목이 기본으로 전부 포함되므로, 단순 종류 비교가 아닌 예산이 배정된 '실제 유효 비목'의 종류가 서로 일치하는지 정밀 대조합니다.
                       const hasBimokMismatch = () => {
                         if (!y || !y.budget_categories || !sy || !sy.budget_categories) return true;
@@ -1435,7 +1435,7 @@ function mergeProjectsWithInitial(
               const ratio = totalProgMain > 0 ? totalProgNational / totalProgMain : 0.5;
               const spentRatio = totalProgSpent > 0 ? totalProgSpentNational / totalProgSpent : ratio;
 
-              // 💡 [교육용 한글 주석] A1나(신산업특화) 단위과제는 시비 예산 없이 
+              // 💡 [교육용 한글 주석] A1나(신산업특화) 단위과제는 시비 예산 없이
               // 국비(국고)로만 100% 편성하도록 예외 대상을 적용합니다. (시비 0원)
               const isNationalOnly = unit.id === "A1나";
               unit.budgetDetails[catName].years[yr] = {
@@ -4091,7 +4091,7 @@ export default function App() {
         <div style="padding: 0; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff; width: 100%;">
           <h1 style="text-align: center; font-size: 20px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 앵커사업단 진행현황</h1>
           <p style="text-align: center; font-size: 12px; color: #6b7280; margin-bottom: 20px;">[${selectedYear}차년도] 단위과제별 예산 집행 및 프로그램 추진 실적</p>
-          
+
           <table style="width: 100%; border-collapse: collapse; font-size: 10px; color: #111827; border: 1px solid #d1d5db; table-layout: fixed;">
             ${colGroupHtml}
             <thead>
@@ -4130,7 +4130,7 @@ export default function App() {
               </tr>
             </tbody>
           </table>
-          
+
           <div style="margin-top: 30px; font-size: 10px; color: #9ca3af; text-align: right;">
             울산과학대학교 앵커사업단 성과 예산 관리 시스템 | 출력 일자: ${yyyy}-${mm}-${dd}
           </div>
@@ -4584,7 +4584,7 @@ export default function App() {
           const mergedProjData = mergeProjectsWithInitial(dbProjData, multiYearInitialData);
 
           // 💡 [승인대기 변경신청 데이터 실시간 오버레이 합성]
-          // 일반 연구원(실무진)이 기획 변경 신청을 완료하여 '승인대기' 상태인 요청 정보가 존재하는 경우, 
+          // 일반 연구원(실무진)이 기획 변경 신청을 완료하여 '승인대기' 상태인 요청 정보가 존재하는 경우,
           // 새로고침 시 이 변경 기획 데이터(changes.after)를 세부 프로그램에 오버레이 덮어씌워 렌더링을 유지시킵니다.
           try {
             const { data: pendReqs } = await supabase
@@ -6241,7 +6241,7 @@ export default function App() {
           return;
         }
 
-        // 💡 [중복 방지] 주요 행사(eventId) 또는 회의록(meetingId) 연동 일정은 schedule_monthly DB에 저장하지 않고, 
+        // 💡 [중복 방지] 주요 행사(eventId) 또는 회의록(meetingId) 연동 일정은 schedule_monthly DB에 저장하지 않고,
         // 오직 화면단에서만 실시간 병합/표시합니다. 이를 통해 DB 중복 저장을 원천 차단합니다.
         const pureSchedulesToSync = schedulesToSync.filter(s => !s.eventId && !s.meetingId);
 
@@ -7356,10 +7356,10 @@ export default function App() {
     }
   }, [projects]);
 
-  /* 
+  /*
    * [성과지표 자동 연계 UX 로직]
-   * 사용자가 성과지표 관리('kpis') 탭에 진입하거나, 
-   * 성과지표 서브탭('자율' 또는 '중점')을 전환할 때 빈 화면을 보지 않도록 
+   * 사용자가 성과지표 관리('kpis') 탭에 진입하거나,
+   * 성과지표 서브탭('자율' 또는 '중점')을 전환할 때 빈 화면을 보지 않도록
    * 해당 서브탭 유형에 맞는 첫 번째 성과지표를 자동으로 찾아 상세 조회창(selectedKpi)에 설정합니다.
    */
   useEffect(() => {
@@ -8774,7 +8774,7 @@ export default function App() {
   const getWelcomeMessage = () => {
     if (!currentUser) return "";
 
-    // 만약 사용자가 타이핑한 원래 ID가 데모 가상 계정(g_director, hq_head, manager)이라면, 
+    // 만약 사용자가 타이핑한 원래 ID가 데모 가상 계정(g_director, hq_head, manager)이라면,
     // 주소록 매핑을 타지 않게 강제 우회하여 실명이 표출되지 않고 직함만 출력되도록 처리합니다.
     const cleanId = currentUser.loginId || currentUser.id;
     const isDemoAccount = ["g_director", "hq_head", "manager"].includes(cleanId);
@@ -9721,7 +9721,7 @@ export default function App() {
                   </button>
 
                   {/* 엑셀 업로드 */}
-                  <label
+                  <label htmlFor="a11y-app-1"
                     className="action-btn upload-btn"
                     style={{
                       cursor: "pointer"
@@ -10000,7 +10000,7 @@ export default function App() {
                     </div>
                     {currentRole.rank <= 2 && (
                       <div style={{ display: "flex", gap: "0.35rem", alignItems: "center" }}>
-                        <label
+                        <label htmlFor="a11y-app-22"
                           className="action-btn upload-btn"
                           style={{
                             cursor: "pointer",
@@ -10008,7 +10008,7 @@ export default function App() {
                           }}
                         >
                           <Upload size={16} /> 엑셀 업로드
-                          <input type="file" accept=".xlsx, .xls" style={{ display: "none" }} ref={fileInputRef} onChange={handleUploadExcel} />
+                          <input id="a11y-app-22" type="file" accept=".xlsx, .xls" style={{ display: "none" }} ref={fileInputRef} onChange={handleUploadExcel} />
                         </label>
                         <button
                           onClick={handleDownloadExcel}
@@ -10100,8 +10100,8 @@ export default function App() {
                                     {currentRole.rank <= 2 ? (
                                       <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", alignItems: "center", justifyContent: "center" }}>
                                         {/* 공동배정 체크박스 */}
-                                        <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", cursor: "pointer", color: "var(--text-secondary)" }}>
-                                          <input
+                                        <label htmlFor="a11y-app-23" style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.7rem", cursor: "pointer", color: "var(--text-secondary)" }}>
+                                          <input id="a11y-app-23"
                                             type="checkbox"
                                             checked={!!jointPrograms[prog.id]}
                                             onChange={(e) => {
@@ -11004,8 +11004,8 @@ export default function App() {
 
               <form onSubmit={handleSaveEditedTime} style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>예약일자</label>
-                  <input
+                  <label htmlFor="a11y-app-24" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>예약일자</label>
+                  <input id="a11y-app-1"
                     type="date"
                     value={editResFormData.reserved_date}
                     onChange={(e) => setEditResFormData(prev => ({ ...prev, reserved_date: e.target.value }))}
@@ -11016,8 +11016,8 @@ export default function App() {
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>시작 시간</label>
-                    <input
+                    <label htmlFor="a11y-app-2" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>시작 시간</label>
+                    <input id="a11y-app-2"
                       type="time"
                       value={editResFormData.start_time}
                       onChange={(e) => setEditResFormData(prev => ({ ...prev, start_time: e.target.value }))}
@@ -11026,8 +11026,8 @@ export default function App() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>종료 시간</label>
-                    <input
+                    <label htmlFor="a11y-app-3" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>종료 시간</label>
+                    <input id="a11y-app-3"
                       type="time"
                       value={editResFormData.end_time}
                       onChange={(e) => setEditResFormData(prev => ({ ...prev, end_time: e.target.value }))}
@@ -11342,7 +11342,7 @@ export default function App() {
                                       </td>
                                       <td style={{ textAlign: "right" }}>
                                         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
-                                          <input
+                                          <input id="a11y-app-24"
                                             type="number"
                                             step="any"
                                             className="user-selector"
@@ -12142,8 +12142,8 @@ export default function App() {
               <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem", flex: 1, overflowY: "auto" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>성명 *</label>
-                    <input
+                    <label htmlFor="a11y-app-4" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>성명 *</label>
+                    <input id="a11y-app-4"
                       type="text"
                       required
                       className="form-input"
@@ -12152,8 +12152,8 @@ export default function App() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>소속 부서</label>
-                    <select
+                    <label htmlFor="a11y-app-5" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>소속 부서</label>
+                    <select id="a11y-app-5"
                       className="form-select"
                       value={editingMember.dept}
                       onChange={(e) => setEditingMember({ ...editingMember, dept: e.target.value })}
@@ -12173,8 +12173,8 @@ export default function App() {
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>직책(역할)</label>
-                    <select
+                    <label htmlFor="a11y-app-6" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>직책(역할)</label>
+                    <select id="a11y-app-6"
                       className="form-select"
                       value={editingMember.role}
                       onChange={(e) => {
@@ -12197,8 +12197,8 @@ export default function App() {
                     </select>
                   </div>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>직급/직위</label>
-                    <select
+                    <label htmlFor="a11y-app-7" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>직급/직위</label>
+                    <select id="a11y-app-7"
                       className="form-select"
                       value={editingMember.grade}
                       onChange={(e) => setEditingMember({ ...editingMember, grade: e.target.value })}
@@ -12226,8 +12226,8 @@ export default function App() {
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>이메일 *</label>
-                  <input
+                  <label htmlFor="a11y-app-8" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>이메일 *</label>
+                  <input id="a11y-app-8"
                     type="email"
                     required
                     className="form-input"
@@ -12238,8 +12238,8 @@ export default function App() {
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>교내 전화번호</label>
-                    <input
+                    <label htmlFor="a11y-app-9" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>교내 전화번호</label>
+                    <input id="a11y-app-9"
                       type="text"
                       className="form-input"
                       placeholder="052-230-XXXX"
@@ -12248,8 +12248,8 @@ export default function App() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>휴대전화번호</label>
-                    <input
+                    <label htmlFor="a11y-app-10" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>휴대전화번호</label>
+                    <input id="a11y-app-10"
                       type="text"
                       className="form-input"
                       placeholder="010-XXXX-XXXX"
@@ -12278,8 +12278,8 @@ export default function App() {
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>시작일</label>
-                    <input
+                    <label htmlFor="a11y-app-11" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>시작일</label>
+                    <input id="a11y-app-11"
                       type="date"
                       className="form-input"
                       value={editingMember.startDate || editingMember.hireDate || ""}
@@ -12287,8 +12287,8 @@ export default function App() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>종료일</label>
-                    <input
+                    <label htmlFor="a11y-app-12" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>종료일</label>
+                    <input id="a11y-app-12"
                       type="date"
                       className="form-input"
                       disabled={editingMember.status !== "미참여"}
@@ -12366,8 +12366,8 @@ export default function App() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>단위과제 *</label>
-                  <select
+                  <label htmlFor="a11y-app-13" style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>단위과제 *</label>
+                  <select id="a11y-app-13"
                     value={programForm.unitId}
                     onChange={(e) => setProgramForm({ ...programForm, unitId: e.target.value })}
                     className="form-select"
@@ -12381,8 +12381,8 @@ export default function App() {
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>프로그램 ID *</label>
-                  <input
+                  <label htmlFor="a11y-app-14" style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>프로그램 ID *</label>
+                  <input id="a11y-app-14"
                     type="text"
                     value={programForm.id}
                     onChange={(e) => setProgramForm({ ...programForm, id: e.target.value })}
@@ -12393,8 +12393,8 @@ export default function App() {
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>프로그램명 *</label>
-                  <input
+                  <label htmlFor="a11y-app-15" style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>프로그램명 *</label>
+                  <input id="a11y-app-15"
                     type="text"
                     value={programForm.title}
                     onChange={(e) => setProgramForm({ ...programForm, title: e.target.value })}
@@ -12404,8 +12404,8 @@ export default function App() {
                 </div>
 
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>담당부서</label>
-                  <select
+                  <label htmlFor="a11y-app-16" style={{ display: "block", marginBottom: "0.3rem", fontSize: "0.8rem", fontWeight: "700" }}>담당부서</label>
+                  <select id="a11y-app-16"
                     value={programForm.dept}
                     onChange={(e) => setProgramForm({ ...programForm, dept: e.target.value })}
                     className="form-select"
@@ -12458,8 +12458,8 @@ export default function App() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem", fontSize: "0.8rem" }}>
               <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700", color: "var(--text-secondary)" }}>아이디 (이메일)</label>
-                <input
+                <label htmlFor="a11y-app-17" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700", color: "var(--text-secondary)" }}>아이디 (이메일)</label>
+                <input id="a11y-app-17"
                   type="text"
                   disabled
                   className="user-selector"
@@ -12469,8 +12469,8 @@ export default function App() {
               </div>
 
               <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700", color: "var(--text-secondary)" }}>성명</label>
-                <input
+                <label htmlFor="a11y-app-18" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700", color: "var(--text-secondary)" }}>성명</label>
+                <input id="a11y-app-18"
                   type="text"
                   disabled
                   className="user-selector"
@@ -12480,8 +12480,8 @@ export default function App() {
               </div>
 
               <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>현재 비밀번호 *</label>
-                <input
+                <label htmlFor="a11y-app-19" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>현재 비밀번호 *</label>
+                <input id="a11y-app-19"
                   type="password"
                   required
                   className="user-selector"
@@ -12493,8 +12493,8 @@ export default function App() {
               </div>
 
               <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>새 비밀번호 *</label>
-                <input
+                <label htmlFor="a11y-app-20" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>새 비밀번호 *</label>
+                <input id="a11y-app-20"
                   type="password"
                   required
                   className="user-selector"
@@ -12506,8 +12506,8 @@ export default function App() {
               </div>
 
               <div>
-                <label style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>새 비밀번호 확인 *</label>
-                <input
+                <label htmlFor="a11y-app-21" style={{ display: "block", marginBottom: "0.3rem", fontWeight: "700" }}>새 비밀번호 확인 *</label>
+                <input id="a11y-app-21"
                   type="password"
                   required
                   className="user-selector"
@@ -13029,9 +13029,9 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         <div style="padding: 0; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff; width: 100%;">
           <h1 style="text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 앵커사업비 5개년 총괄 투자 계획</h1>
           <p style="text-align: center; font-size: 11px; color: #6b7280; margin-bottom: 20px;">[${targetYear}년도 기준 조회] 5개년 총괄 투자 현황 (단위: 백만원)</p>
-          
+
           ${progressBarHtml}
-          
+
           <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; color: #111827; border: 1px solid #d1d5db; table-layout: fixed;">
             <colgroup>
               <col style="width: 25%;" />
@@ -13062,7 +13062,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
               ${tableRowsHtml}
             </tbody>
           </table>
-          
+
           <div style="margin-top: 30px; font-size: 9px; color: #9ca3af; text-align: right;">
             울산과학대학교 앵커사업단 | 출력 일자: ${yyyy}-${mm}-${dd}
           </div>
@@ -13314,10 +13314,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         <div style="padding: 0; font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; color: #333333; background: #ffffff; width: 100%;">
           <h1 style="text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 5px; color: #111827;">울산과학대학교 앵커사업비 ${targetYear}년도 재원별 투자 계획</h1>
           <p style="text-align: center; font-size: 11px; color: #6b7280; margin-bottom: 20px;">연차별 재원 안분 현황 (단위: 백만원)</p>
-          
+
           ${progressBar1Html}
           ${progressBar2Html}
-          
+
           <table style="width: 100%; border-collapse: collapse; font-size: 9.5px; color: #111827; border: 1px solid #d1d5db; table-layout: fixed;">
             <colgroup>
               <col style="width: 35%;" />
@@ -13341,7 +13341,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
               ${tableRowsHtml}
             </tbody>
           </table>
-          
+
           <div style="margin-top: 30px; font-size: 9px; color: #9ca3af; text-align: right;">
             울산과학대학교 앵커사업단 | 출력 일자: ${yyyy}-${mm}-${dd}
           </div>

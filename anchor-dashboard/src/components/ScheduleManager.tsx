@@ -693,7 +693,7 @@ export default function ScheduleManager({
       ["위원장", "조홍래", "울산과학대학교", "-", "총장", "교내", "대표"],
       ["위원", "김성철", "울산과학대학교", "-", "부총장", "교내", ""]
     ];
-    
+
     // SheetJS를 사용하여 worksheet 생성 및 workbook 빌드 후 파일 저장
     const XLSX = await import("xlsx");
     const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
@@ -714,7 +714,7 @@ export default function ScheduleManager({
       alert("다운로드할 위원 명단이 없습니다.");
       return;
     }
-    
+
     const headers = ["구분", "성명", "소속기관", "부서/학과", "직위", "교내외", "비고"];
     const dataRows = mems.map(m => [
       m.type || "",
@@ -738,7 +738,7 @@ export default function ScheduleManager({
   const handleExcelUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
@@ -748,28 +748,28 @@ export default function ScheduleManager({
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        
+
         // 2차원 배열 구조로 엑셀 데이터 변환
         const jsonData = XLSX.utils.sheet_to_json<unknown[]>(worksheet, { header: 1 });
         if (jsonData.length <= 1) {
           alert("업로드할 위원 데이터가 존재하지 않습니다.");
           return;
         }
-        
+
         const activeComm = committees.find(c => c.id === selectedCommitteeId) || committees[0];
         if (!activeComm) {
           alert("선택된 위원회가 존재하지 않습니다.");
           return;
         }
-        
+
         const newMembers: any[] = [];
         const currentMembersCount = activeComm.members ? activeComm.members.length : 0;
-        
+
         // 헤더 다음인 첫 번째 행부터 시작
         for (let i = 1; i < jsonData.length; i++) {
           const row = jsonData[i];
           if (!row || row.length < 2 || !row[1]) continue; // 성명(두 번째 컬럼) 필수
-          
+
           newMembers.push({
             committee_id: activeComm.id,
             type: row[0] || "위원",
@@ -783,17 +783,17 @@ export default function ScheduleManager({
             sort_order: currentMembersCount + i
           });
         }
-        
+
         if (newMembers.length === 0) {
           alert("파싱된 위원 정보가 없습니다. 서식 양식을 확인해 주세요.");
           return;
         }
-        
+
         const { error } = await scheduleDb
           .from("committee_members")
           .insert(newMembers);
         if (error) throw error;
-        
+
         alert(`총 ${newMembers.length}명의 위원이 성공적으로 일괄 등록되었습니다!`);
         await loadCommitteesData();
       } catch (err: unknown) {
@@ -1165,7 +1165,7 @@ ${rawText}
     if (e.target.files && e.target.files.length > 0) {
       const files = Array.from(e.target.files);
       const fileNames = files.map(f => f.name).join(", ");
-      
+
       if (type === "plan") {
         setAiFileName(fileNames);
       } else {
@@ -1184,11 +1184,11 @@ ${rawText}
 
       try {
         let combinedRawText = "";
-        
+
         for (let idx = 0; idx < files.length; idx++) {
           const file = files[idx];
           let fileText = "";
-          
+
           updateText(`📄 [${idx + 1}/${files.length}] ${file.name} 텍스트 추출 중...`);
 
           // 1. 텍스트 파일인 경우
@@ -1245,7 +1245,7 @@ ${rawText}
   ): ScheduleFormData => {
     const title = aiData.title || prevFormData.title;
     const location = aiData.location || prevFormData.location;
-    
+
     // 1) 앵커기획위원회나 ~위원회 명칭인 경우 각종분류를 '각종 위원회' (committee) 로 자동 분류 및 세부 위원회명 추출
     let category = prevFormData.category || "operating";
     let committeeType = prevFormData.committeeType || "agency";
@@ -1267,7 +1267,7 @@ ${rawText}
         const shortNameCleaned = nameCleaned.replace("앵커", "");
         return titleCleaned.includes(nameCleaned) || titleCleaned.includes(shortNameCleaned);
       });
-      
+
       if (foundAgency) {
         committeeType = "agency";
         dept = foundAgency;
@@ -1281,7 +1281,7 @@ ${rawText}
           { key: "울산늘봄누리센터", match: ["늘봄", "늘봄누리"] },
           { key: "신산업특화센터", match: ["신산업", "특화센터"] }
         ];
-        
+
         let foundCenter = centerList.find(c => c.match.some(m => title.toLowerCase().includes(m.toLowerCase())));
         if (foundCenter) {
           committeeType = "center";
@@ -1293,9 +1293,9 @@ ${rawText}
     // 2) 서면부의인 경우(또는 시작/종료 시간이 빈 문자열이거나 명시되지 않은 경우) 전일 체크 및 시간 필드 비우기
     const isWrittenQuery = location && (location.includes("서면부의") || location.includes("서면 회의") || location.includes("이메일"));
     const isTimeOmitted = !aiData.meetingStartTime || !aiData.meetingEndTime || aiData.meetingStartTime === "00:00" || aiData.meetingStartTime === "";
-    
+
     const shouldBeAllDay = isWrittenQuery || isTimeOmitted;
-    
+
     return {
       ...prevFormData,
       title: title,
@@ -1324,7 +1324,7 @@ ${rawText}
     const depts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
     const newAgendas: Record<string, string> = {};
     const newResults: Record<string, string> = {};
-    
+
     depts.forEach(d => {
       newAgendas[d] = "";
       newResults[d] = "";
@@ -1741,7 +1741,7 @@ ${targetText}
           // 3. 의제-결과 쌍 테이블 설정
           if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
             setAgendaResultPairs(cleanJson.agendaResultPairs);
-            
+
             // 만약 GPT가 직접 부서별 맵을 리턴하지 않았을 때만 요약 리스트 파싱/분배를 수행하는 폴백 처리
             if (!hasOperatingData) {
               setFormData(prev => {
@@ -1845,7 +1845,7 @@ ${targetText}
         }
 
         const cleanJson = JSON.parse(jsonStr.trim());
-        
+
         if (modalType === "meeting") {
           // 1. 기본 메타 정보(제목, 장소 등) 기입
           setFormData(prev => applyMeetingAiDataRules(cleanJson, prev));
@@ -1871,7 +1871,7 @@ ${targetText}
           // 3. 의제-결과 쌍 테이블 설정
           if (cleanJson.agendaResultPairs && cleanJson.agendaResultPairs.length > 0) {
             setAgendaResultPairs(cleanJson.agendaResultPairs);
-            
+
             // 만약 제미나이가 직접 부서별 맵을 리턴하지 않았을 때만 요약 리스트 파싱/분배를 수행하는 폴백 처리
             if (!hasOperatingData) {
               setFormData(prev => {
@@ -1937,11 +1937,11 @@ ${targetText}
         // 1. ChatGPT 초안 요청
         setAiProgress(25);
         setAiStatusText("ChatGPT-4o-mini 독립 초안 추출 중...");
-        
-        let promptPlan = modalType === "meeting" 
+
+        let promptPlan = modalType === "meeting"
           ? `회의록 기획서를 분석해 JSON형식(title, location, meetingDate, meetingStartTime, meetingEndTime, attendees)으로 정확히 반환하라. 설명은 적지마라. 본문: \n${targetText}`
           : `행사 기획서를 분석해 JSON형식(title, department, location, eventDate, eventStartTime, eventEndTime, attendeesInternal, attendeesExternal, program, purpose)으로 정확히 반환하라. 설명은 적지마라. 본문: \n${targetText}`;
-        
+
         if (analysisType === "result") {
           promptPlan = modalType === "meeting"
             ? `회의 결과보고서를 분석해 다음 JSON형식으로 정확히 반환하라.
@@ -2061,7 +2061,7 @@ JSON 구조:
         // 5. 최종 합의문 도출 (Gemini가 취합)
         setAiProgress(90);
         setAiStatusText("합의된 최종 데이터 패키징 중...");
-        
+
         let consensusPrompt = `너는 ChatGPT와 Gemini의 공동 에이전트이다.
 아래 두 초안과 서로의 비평 검토 의견을 수렴하여, 원문에서 가장 완벽하게 추출된 통합 JSON 합의안만 반환하라.
 반드시 마크다운 코드 블럭 (\`\`\`json ... \`\`\`) 구조로만 감싸서 JSON을 출력해라.
@@ -2142,7 +2142,7 @@ Gemini 피드백: \n${geminiCritiqueText}
   const runConsensusSimulation = (analysisType = "plan") => {
     let isMeeting = modalType === "meeting";
     let _logs = [];
-    
+
     // 타임아웃 큐를 통해 대화형 로그 연출
     setTimeout(() => {
       setAiProgress(25);
@@ -2193,7 +2193,7 @@ Gemini 피드백: \n${geminiCritiqueText}
             setTimeout(() => {
               setAiProgress(100);
               setAiStatusText("최종 합의문 데이터 기입 완료!");
-              
+
               // 최종 폼 바인딩
               if (isMeeting) {
                 if (analysisType === "plan") {
@@ -3709,7 +3709,7 @@ Gemini 피드백: \n${geminiCritiqueText}
             detectedType = "방송";
             detectedMedia = fetchedAuthor || (lowerUrl.includes("kbs") ? "KBS울산" : lowerUrl.includes("mbc") ? "울산MBC" : lowerUrl.includes("ubc") ? "UBC울산방송" : "유튜브 채널");
             detectedTitle = fetchedTitle || `[RISE 성과] 울산과학대학교 앵커사업단 공식 활성화 현장 스케치`;
-            detectedContent = fetchedTitle 
+            detectedContent = fetchedTitle
               ? `유튜브 채널 [${detectedMedia}]에 업로드된 "${fetchedTitle}" 공식 보도 영상 자료입니다. 울산과학대학교 앵커사업단 산하 주요 센터들과 지자체/산업체 간의 상생적 혁신 성과를 다룹니다.`
               : "울산과학대학교 RISE 앵커사업단 산하 주요 8대 센터의 연차별 성과 발표 및 지역 협력 네트워크 시너지 창출 현장을 생생히 기록한 공식 영상 보도자료입니다.";
           } else if (lowerUrl.includes("ksilbo.co.kr")) {
@@ -3758,14 +3758,14 @@ Gemini 피드백: \n${geminiCritiqueText}
         const prompt = `
         사용자가 입력한 언론 보도 URL: "${url}"
         이 URL은 울산과학대학교 RISE 및 앵커(ANCHOR)사업단 관련 실제 보도 뉴스이거나 유튜브 홍보 영상 링크입니다.
-        
+
         ${fetchedTitle ? `[실시간 OEmbed 크롤링 수집 정보]\n- 진짜 미디어 제목: "${fetchedTitle}"\n- 진짜 게시 채널(매체): "${fetchedAuthor}"\n\n위 팩트 정보를 100% 신뢰하여 보도 기사/영상 제목과 매체명으로 적용해 주십시오.` : ""}
-        
+
         해당 URL(도메인, 기사 번호, 키워드 등) 및 위 크롤링 수집된 정보를 분석하여 아래 형식의 JSON 포맷으로 정보를 추출 및 예측해서 리턴해 주세요.
         실제 기사 본문의 직접적인 상세 파싱이 불가능하더라도, 크롤링된 진짜 제목과 채널명, 미디어 도메인의 글쓰기 스타일과 앵커사업의 성격(소상공인 지원, 늘봄학교, 산학 R&BD 등)에 어울리는 가장 사실적이고 인과성 있는 보도 정보를 정량적이고 진실되게 작성해 주셔야 합니다.
-        
+
         반드시 JSON 규격 텍스트만 출력하세요. 마크다운 기호(\`\`\`)는 쓰지 마십시오.
-        
+
         {
           "pressType": "방송" 또는 "신문" 또는 "기타",
           "pressMedia": "언론사 매체명 (예: KBS울산, 울산MBC, 경상일보, 한국대학신문, 네이버 블로그 등)",
@@ -3861,7 +3861,7 @@ Gemini 피드백: \n${geminiCritiqueText}
             detectedType = "방송";
             detectedMedia = fetchedAuthor || (lowerUrl.includes("kbs") ? "KBS울산" : lowerUrl.includes("mbc") ? "울산MBC" : lowerUrl.includes("ubc") ? "UBC울산방송" : "유튜브 채널");
             detectedTitle = fetchedTitle || `[RISE 성과] 울산과학대학교 앵커사업단 공식 활성화 현장 스케치`;
-            detectedContent = fetchedTitle 
+            detectedContent = fetchedTitle
               ? `유튜브 채널 [${detectedMedia}]에 업로드된 "${fetchedTitle}" 공식 보도 영상 자료입니다. 울산과학대학교 앵커사업단 산하 주요 센터들과 지자체/산업체 간의 상생적 혁신 성과를 다룹니다.`
               : "울산과학대학교 RISE 앵커사업단 산하 주요 8대 센터의 연차별 성과 발표 및 지역 협력 네트워크 시너지 창출 현장을 생생히 기록한 공식 영상 보도자료입니다.";
           } else if (lowerUrl.includes("ksilbo.co.kr")) {
@@ -4442,7 +4442,7 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 💡 [교육용 한글 주석 - 성능 최적화 설명]
-  // 기존에는 캘린더의 각 날짜(30~31개)를 렌더링할 때마다 전체 일정 목록(monthlySchedules)을 
+  // 기존에는 캘린더의 각 날짜(30~31개)를 렌더링할 때마다 전체 일정 목록(monthlySchedules)을
   // 매번 filter와 split, map 등으로 반복해서 필터링하여 반응이 극도로 느려지는 현상이 있었습니다.
   // 이 문제를 해결하기 위해, monthlySchedules나 필터 기준이 변경될 때만 해시맵(schedulesByDate)을 딱 한 번 생성하도록 useMemo를 사용합니다.
   // 각 날짜별 일정을 YYYY-MM-DD 키로 미리 묶어둠으로써, 날짜를 그릴 때는 O(1) 수준으로 빠르게 가져올 수 있습니다.
@@ -6168,7 +6168,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 if (lines.length <= 1 && val.includes(",")) {
                                   lines = val.split(",").map((l: string) => l.trim()).filter(Boolean);
                                 }
-                                
+
                                 const agendas: string[] = [];
                                 const notices: string[] = [];
 
@@ -6293,13 +6293,13 @@ Gemini 피드백: \n${geminiCritiqueText}
                                             <span style={{ fontSize: "0.78rem", fontWeight: "800", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                                               📌 {dept}
                                             </span>
-                                            
+
                                             {/* 의제와 결과 좌우 분할 매칭 구조 */}
                                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "1.25rem", fontSize: "0.72rem" }}>
                                               {/* 왼쪽 영역: 의제 / 전달사항 */}
-                                              <div style={{ 
+                                              <div style={{
                                                 background: darkMode ? "rgba(255,255,255,0.005)" : "rgba(0,0,0,0.005)",
-                                                padding: "0.6rem 0.75rem", 
+                                                padding: "0.6rem 0.75rem",
                                                 borderRadius: "6px",
                                                 borderLeft: "2.5px solid #60A5FA" // 의제 파란색 포인트 데코선
                                               }}>
@@ -6308,7 +6308,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                                   {(() => {
                                                     const { agendas, notices } = parseAgendaIntoGroups(agendaVal);
                                                     if (agendas.length === 0 && notices.length === 0) return "논의사항 없음";
-                                                    
+
                                                     return (
                                                       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                                                         {agendas.length > 0 && (
@@ -6342,9 +6342,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                               </div>
 
                                               {/* 오른쪽 영역: 추진상황 / 결과 */}
-                                              <div style={{ 
+                                              <div style={{
                                                 background: darkMode ? "rgba(255,255,255,0.005)" : "rgba(0,0,0,0.005)",
-                                                padding: "0.6rem 0.75rem", 
+                                                padding: "0.6rem 0.75rem",
                                                 borderRadius: "6px",
                                                 borderLeft: "2.5px solid #34D399" // 결과 초록색 포인트 데코선
                                               }}>
@@ -6353,7 +6353,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                                   {(() => {
                                                     const { results, difficulties } = parseResultIntoGroups(resultVal);
                                                     if (results.length === 0 && difficulties.length === 0) return "추진완료 / 특이사항 없음";
-                                                    
+
                                                     return (
                                                       <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                                                         {results.length > 0 && (
@@ -6947,11 +6947,11 @@ Gemini 피드백: \n${geminiCritiqueText}
                           display: "flex",
                           flexDirection: "column",
                           gap: "0.5rem",
-                          background: isActive 
-                            ? (darkMode ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.08)") 
+                          background: isActive
+                            ? (darkMode ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.08)")
                             : (darkMode ? "rgba(255, 255, 255, 0.03)" : "#ffffff"),
-                          border: isActive 
-                            ? "1px solid var(--accent-color)" 
+                          border: isActive
+                            ? "1px solid var(--accent-color)"
                             : (darkMode ? "1px solid var(--border-color)" : "1px solid rgba(0, 0, 0, 0.08)"),
                           boxShadow: isActive ? "0 0 10px rgba(59, 130, 246, 0.2)" : "none",
                           cursor: "pointer",
@@ -7136,17 +7136,17 @@ Gemini 피드백: \n${geminiCritiqueText}
                             본 보도자료는 신문 및 지면 기사 형태로 배포되었습니다. 아래 기사 링크를 클릭하시면 본문 기사 원본 페이지로 바로 이동합니다.
                           </p>
 
-                          <div style={{ 
-                            background: darkMode ? "rgba(59, 130, 246, 0.1)" : "rgba(59, 130, 246, 0.06)", 
-                            padding: "0.75rem", 
-                            borderRadius: "6px", 
-                            border: darkMode ? "1px dashed rgba(96, 165, 250, 0.4)" : "1px dashed rgba(59, 130, 246, 0.3)" 
+                          <div style={{
+                            background: darkMode ? "rgba(59, 130, 246, 0.1)" : "rgba(59, 130, 246, 0.06)",
+                            padding: "0.75rem",
+                            borderRadius: "6px",
+                            border: darkMode ? "1px dashed rgba(96, 165, 250, 0.4)" : "1px dashed rgba(59, 130, 246, 0.3)"
                           }}>
-                            <span style={{ 
-                              fontSize: "0.75rem", 
-                              color: darkMode ? "#93C5FD" : "#1E40AF", 
+                            <span style={{
+                              fontSize: "0.75rem",
+                              color: darkMode ? "#93C5FD" : "#1E40AF",
                               fontWeight: "700",
-                              wordBreak: "break-all" 
+                              wordBreak: "break-all"
                             }}>
                               {activePress.contentUrl || "(등록된 링크 주소가 없습니다)"}
                             </span>
@@ -7159,10 +7159,10 @@ Gemini 피드백: \n${geminiCritiqueText}
                               rel="noopener noreferrer"
                               style={{
                                 display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "0.25rem",
-                                padding: "0.6rem", borderRadius: "6px", 
+                                padding: "0.6rem", borderRadius: "6px",
                                 background: darkMode ? "rgba(59, 130, 246, 0.25)" : "rgba(59, 130, 246, 0.15)",
-                                border: darkMode ? "1px solid rgba(59, 130, 246, 0.5)" : "1px solid rgba(59, 130, 246, 0.3)", 
-                                color: darkMode ? "#E0F2FE" : "#1D4ED8", 
+                                border: darkMode ? "1px solid rgba(59, 130, 246, 0.5)" : "1px solid rgba(59, 130, 246, 0.3)",
+                                color: darkMode ? "#E0F2FE" : "#1D4ED8",
                                 fontSize: "0.8rem", fontWeight: "700", textDecoration: "none", textAlign: "center", transition: "all 0.2s"
                               }}
                             >
@@ -7226,7 +7226,7 @@ Gemini 피드백: \n${geminiCritiqueText}
             <form onSubmit={handleSaveMember} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               {/* 구분 선택/입력 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>구분 (type)</label>
+                <label htmlFor="a11y-schedule-manager-1" style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>구분 (type)</label>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <select
                     value={["위원장", "위원", "위원(자문겸직)", "간사"].includes(memberFormData.type) ? memberFormData.type : "custom"}
@@ -7260,8 +7260,8 @@ Gemini 피드백: \n${geminiCritiqueText}
 
               {/* 성명 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>성명 (name) *</label>
-                <input
+                <label htmlFor="a11y-schedule-manager-44" style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>성명 (name) *</label>
+                <input id="a11y-schedule-manager-1"
                   type="text"
                   required
                   placeholder="예: 홍길동"
@@ -7273,8 +7273,8 @@ Gemini 피드백: \n${geminiCritiqueText}
 
               {/* 소속기관 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>소속기관 (org)</label>
-                <input
+                <label htmlFor="a11y-schedule-manager-2" style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>소속기관 (org)</label>
+                <input id="a11y-schedule-manager-2"
                   type="text"
                   placeholder="예: 울산과학대학교, HD한국조선해양 등"
                   value={memberFormData.org}
@@ -7286,8 +7286,8 @@ Gemini 피드백: \n${geminiCritiqueText}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 {/* 부서/학과 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>부서/학과 (dept)</label>
-                  <input
+                  <label htmlFor="a11y-schedule-manager-3" style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>부서/학과 (dept)</label>
+                  <input id="a11y-schedule-manager-3"
                     type="text"
                     placeholder="예: 기획처, 화학공학과 등"
                     value={memberFormData.dept}
@@ -7298,8 +7298,8 @@ Gemini 피드백: \n${geminiCritiqueText}
 
                 {/* 직위 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>직위 (rank)</label>
-                  <input
+                  <label htmlFor="a11y-schedule-manager-4" style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>직위 (rank)</label>
+                  <input id="a11y-schedule-manager-4"
                     type="text"
                     placeholder="예: 교수, 처장, 대표 등"
                     value={memberFormData.rank}
@@ -7312,8 +7312,8 @@ Gemini 피드백: \n${geminiCritiqueText}
               {/* 교내외 및 비고 */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>교내외 구분</label>
-                  <select
+                  <label htmlFor="a11y-schedule-manager-5" style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>교내외 구분</label>
+                  <select id="a11y-schedule-manager-5"
                     value={memberFormData.location}
                     onChange={(e) => setMemberFormData(prev => ({ ...prev, location: e.target.value }))}
                     style={{ padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", fontSize: "0.8rem" }}
@@ -7323,8 +7323,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                   </select>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>비고 (note)</label>
-                  <input
+                  <label htmlFor="a11y-schedule-manager-6" style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>비고 (note)</label>
+                  <input id="a11y-schedule-manager-6"
                     type="text"
                     placeholder="예: 신규 추가 등"
                     value={memberFormData.note}
@@ -7337,8 +7337,8 @@ Gemini 피드백: \n${geminiCritiqueText}
               {/* 💡 [임기 가드 개조] 단일 텍스트 창 대신 캘린더 2개(시작일/종료일)로 직관적 날짜 입력 받기 */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>임기 시작일</label>
-                  <input
+                  <label htmlFor="a11y-schedule-manager-7" style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>임기 시작일</label>
+                  <input id="a11y-schedule-manager-7"
                     type="date"
                     value={memberFormData.termStart || ""}
                     onChange={(e) => setMemberFormData(prev => ({ ...prev, termStart: e.target.value }))}
@@ -7346,8 +7346,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                   />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>임기 종료일</label>
-                  <input
+                  <label htmlFor="a11y-schedule-manager-8" style={{ fontSize: "0.78rem", fontWeight: "700", color: "var(--text-secondary)" }}>임기 종료일</label>
+                  <input id="a11y-schedule-manager-8"
                     type="date"
                     value={memberFormData.termEnd || ""}
                     onChange={(e) => setMemberFormData(prev => ({ ...prev, termEnd: e.target.value }))}
@@ -7540,19 +7540,19 @@ Gemini 피드백: \n${geminiCritiqueText}
               {modalType === "deadline" && (
                 <>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>마감일 내용</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 RISE 최종 계획서 마감" className="form-input" />
+                    <label htmlFor="a11y-schedule-manager-9" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>마감일 내용</label>
+                    <input id="a11y-schedule-manager-9" type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 RISE 최종 계획서 마감" className="form-input" />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>마감 기한 (일자)</label>
-                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-10" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>마감 기한 (일자)</label>
+                      <input id="a11y-schedule-manager-10" type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} className="form-input" />
                     </div>
                     <div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>마감 시간</label>
+                        <label htmlFor="a11y-schedule-manager-11" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>마감 시간</label>
                         <label style={{ fontSize: "0.75rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-                          <input type="checkbox" name="noTime" checked={formData.noTime} onChange={handleCheckboxChange} style={{ cursor: "pointer" }} />
+                          <input id="a11y-schedule-manager-44" type="checkbox" name="noTime" checked={formData.noTime} onChange={handleCheckboxChange} style={{ cursor: "pointer" }} />
                           시간 지정 안 함
                         </label>
                       </div>
@@ -7574,12 +7574,12 @@ Gemini 피드백: \n${geminiCritiqueText}
               {modalType === "task" && (
                 <>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>할일 내용</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 결과 보고서 작성 및 결재 요청" className="form-input" />
+                    <label htmlFor="a11y-schedule-manager-45" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>할일 내용</label>
+                    <input id="a11y-schedule-manager-11" type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 결과 보고서 작성 및 결재 요청" className="form-input" />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 부서</label>
-                    <select name="dept" value={formData.dept} onChange={handleInputChange} className="form-select">
+                    <label htmlFor="a11y-schedule-manager-12" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 부서</label>
+                    <select id="a11y-schedule-manager-12" name="dept" value={formData.dept} onChange={handleInputChange} className="form-select">
                       {["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => (
                         <option key={d} value={d}>{d}</option>
                       ))}
@@ -7587,14 +7587,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>할일 일자</label>
-                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-13" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>할일 일자</label>
+                      <input id="a11y-schedule-manager-13" type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} className="form-input" />
                     </div>
                     <div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>할일 시간</label>
+                        <label htmlFor="a11y-schedule-manager-14" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>할일 시간</label>
                         <label style={{ fontSize: "0.75rem", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-                          <input type="checkbox" name="noTime" checked={formData.noTime} onChange={handleCheckboxChange} style={{ cursor: "pointer" }} />
+                          <input id="a11y-schedule-manager-45" type="checkbox" name="noTime" checked={formData.noTime} onChange={handleCheckboxChange} style={{ cursor: "pointer" }} />
                           시간 지정 안 함
                         </label>
                       </div>
@@ -7617,32 +7617,32 @@ Gemini 피드백: \n${geminiCritiqueText}
                 <>
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                      <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>일정 명칭</label>
+                      <label htmlFor="a11y-schedule-manager-46" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>일정 명칭</label>
                       {aiPlanApplied && (
                         <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.15)", border: "1px solid rgba(167, 139, 250, 0.35)", color: "#a78bfa", padding: "0.1rem 0.35rem", borderRadius: "4px", fontWeight: "700" }}>
                           ✨ AI 기획 정보 반영됨 ✓
                         </span>
                       )}
                     </div>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 1차 보고서 제출 마감" className="form-input" />
+                    <input id="a11y-schedule-manager-46" type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 2차년도 1차 보고서 제출 마감" className="form-input" />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일정 유형</label>
-                      <select name="type" value={formData.type} onChange={handleInputChange} className="form-select">
+                      <label htmlFor="a11y-schedule-manager-47" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>일정 유형</label>
+                      <select id="a11y-schedule-manager-14" name="type" value={formData.type} onChange={handleInputChange} className="form-select">
                         {["행사", "회의", "위원회", "기타"].map(t => (
                           <option key={t} value={t}>{t}</option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>관련 부서 (중복 선택 가능)</label>
+                      <label htmlFor="a11y-schedule-manager-15" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>관련 부서 (중복 선택 가능)</label>
                       <div style={{ display: "flex", gap: "0.5rem 0.75rem", flexWrap: "wrap", padding: "0.5rem", background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "6px" }}>
                         {["전체", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => {
                           const checked = formData.dept ? formData.dept.split(",").map((x: string) => x.trim()).includes(d) : false;
                           return (
                             <label key={d} style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.78rem", color: "var(--text-primary)", cursor: "pointer", userSelect: "none" }}>
-                              <input
+                              <input id="a11y-schedule-manager-47"
                                 type="checkbox"
                                 checked={checked}
                                 onChange={() => handleDeptCheckboxChange(d)}
@@ -7657,35 +7657,35 @@ Gemini 피드백: \n${geminiCritiqueText}
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작일시 (일자)</label>
-                      <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-48" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작일시 (일자)</label>
+                      <input id="a11y-schedule-manager-15" type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} className="form-input" />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작 시간</label>
-                      <input type="time" name="startTime" value={formData.startTime} onChange={handleInputChange} className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-16" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작 시간</label>
+                      <input id="a11y-schedule-manager-16" type="time" name="startTime" value={formData.startTime} onChange={handleInputChange} className="form-input" />
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료일시 (일자)</label>
-                      <input type="date" name="endDate" value={formData.endDate} onChange={handleInputChange} className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-17" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료일시 (일자)</label>
+                      <input id="a11y-schedule-manager-17" type="date" name="endDate" value={formData.endDate} onChange={handleInputChange} className="form-input" />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료 시간</label>
-                      <input type="time" name="endTime" value={formData.endTime} onChange={handleInputChange} className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-18" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료 시간</label>
+                      <input id="a11y-schedule-manager-18" type="time" name="endTime" value={formData.endTime} onChange={handleInputChange} className="form-input" />
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
-                    <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 대학 본부 대회의실" className="form-input" />
+                    <label htmlFor="a11y-schedule-manager-19" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
+                    <input id="a11y-schedule-manager-19" type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 대학 본부 대회의실" className="form-input" />
                   </div>
                   <div style={{ marginTop: "0.75rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                      <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                      <label htmlFor="a11y-schedule-manager-20" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                         👥 전체 사업단 참석자 선택
                       </label>
                       <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
-                        <input
+                        <input id="a11y-schedule-manager-48"
                           type="checkbox"
                           checked={includeProfessors}
                           onChange={(e) => setIncludeProfessors(e.target.checked)}
@@ -7811,7 +7811,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                     <div style={{ marginBottom: "0.5rem" }}>
                       <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#a78bfa" }}>🧠 지능형 AI-분석 연동 (기획 vs 결과 분리)</span>
                     </div>
-                    
+
                     <p style={{ fontSize: "0.68rem", color: "var(--text-secondary)", lineHeight: "1.3", marginBottom: "0.75rem" }}>
                       💡 <strong>기획서</strong>를 분석하면 명칭, 담당 부서, 장소, 일자, 시간, 목적, 프로그램 등 일정 정보가 자동 완성됩니다.<br />
                       💡 <strong>결과보고서</strong>를 분석하면 하단의 행사 결과 요약이 자동으로 입력됩니다.
@@ -7858,7 +7858,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                           </span>
                           <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.2)", padding: "0.1rem 0.25rem", borderRadius: "3px" }}>탐색</span>
                         </label>
-                        <textarea
+                        <textarea id="a11y-schedule-manager-20"
                           value={aiRawText}
                           onChange={(e) => setAiRawText(e.target.value)}
                           placeholder="또는 기획서 본문을 직접 붙여넣으세요..."
@@ -8046,7 +8046,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                             let color = "var(--text-primary)";
                             let prefix = "🤖 ";
                             let bg = "rgba(255,255,255,0.02)";
-                            
+
                             if (log.role === "chatgpt") {
                               color = "#10B981";
                               prefix = "🟢 ChatGPT: ";
@@ -8083,8 +8083,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>담당 부서(센터)</label>
-                      <select name="department" value={formData.department} onChange={handleInputChange} className="form-select">
+                      <label htmlFor="a11y-schedule-manager-21" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>담당 부서(센터)</label>
+                      <select id="a11y-schedule-manager-21" name="department" value={formData.department} onChange={handleInputChange} className="form-select">
                         <option value="">-- 부서 선택 --</option>
                         {["ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터", "사업운영팀"].map(d => (
                           <option key={d} value={d}>{d}</option>
@@ -8093,10 +8093,10 @@ Gemini 피드백: \n${geminiCritiqueText}
                       </select>
                       {formData.department === "external" && (
                         <div style={{ marginTop: "0.5rem" }}>
-                          <label style={{ display: "block", fontSize: "0.72rem", color: "var(--accent-color)", marginBottom: "0.25rem", fontWeight: "700" }}>
+                          <label htmlFor="a11y-schedule-manager-22" style={{ display: "block", fontSize: "0.72rem", color: "var(--accent-color)", marginBottom: "0.25rem", fontWeight: "700" }}>
                             🏢 외부 주관 기관명 직접 입력
                           </label>
-                          <input
+                          <input id="a11y-schedule-manager-22"
                             type="text"
                             name="externalDept"
                             value={formData.externalDept || ""}
@@ -8110,48 +8110,48 @@ Gemini 피드백: \n${geminiCritiqueText}
                       )}
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
-                      <input type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 체육관 특설 돔" className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-23" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
+                      <input id="a11y-schedule-manager-23" type="text" name="location" value={formData.location} onChange={handleInputChange} placeholder="예: 체육관 특설 돔" className="form-input" />
                     </div>
                   </div>
 
                   {/* 일자 및 시작/종료시간 개별 입력 */}
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.9fr 0.9fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 일자</label>
-                      <input type="date" name="eventDate" value={formData.eventDate} onChange={handleInputChange} required className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-24" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 일자</label>
+                      <input id="a11y-schedule-manager-24" type="date" name="eventDate" value={formData.eventDate} onChange={handleInputChange} required className="form-input" />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작 시간</label>
-                      <input type="time" name="eventStartTime" value={formData.eventStartTime} onChange={handleInputChange} required className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-25" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>시작 시간</label>
+                      <input id="a11y-schedule-manager-25" type="time" name="eventStartTime" value={formData.eventStartTime} onChange={handleInputChange} required className="form-input" />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료 시간</label>
-                      <input type="time" name="eventEndTime" value={formData.eventEndTime} onChange={handleInputChange} required className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-26" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>종료 시간</label>
+                      <input id="a11y-schedule-manager-26" type="time" name="eventEndTime" value={formData.eventEndTime} onChange={handleInputChange} required className="form-input" />
                     </div>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (내부 구분)</label>
-                      <input type="text" name="attendeesInternal" value={formData.attendeesInternal} onChange={handleInputChange} placeholder="예: 내부 교수 및 연구원 15명" className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-27" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (내부 구분)</label>
+                      <input id="a11y-schedule-manager-27" type="text" name="attendeesInternal" value={formData.attendeesInternal} onChange={handleInputChange} placeholder="예: 내부 교수 및 연구원 15명" className="form-input" />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (외부 구분)</label>
-                      <input type="text" name="attendeesExternal" value={formData.attendeesExternal} onChange={handleInputChange} placeholder="예: 지자체 관계자 5명" className="form-input" />
+                      <label htmlFor="a11y-schedule-manager-28" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>참석자 (외부 구분)</label>
+                      <input id="a11y-schedule-manager-28" type="text" name="attendeesExternal" value={formData.attendeesExternal} onChange={handleInputChange} placeholder="예: 지자체 관계자 5명" className="form-input" />
                     </div>
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 프로그램</label>
-                    <input type="text" name="program" value={formData.program} onChange={handleInputChange} placeholder="예: 지역 정착 지원 프로그램" className="form-input" />
+                    <label htmlFor="a11y-schedule-manager-29" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>관련 프로그램</label>
+                    <input id="a11y-schedule-manager-29" type="text" name="program" value={formData.program} onChange={handleInputChange} placeholder="예: 지역 정착 지원 프로그램" className="form-input" />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 목적</label>
-                    <textarea name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="행사를 통해 도달하고자 하는 목표 기술" className="form-textarea" style={{ height: "46px", resize: "none" }} />
+                    <label htmlFor="a11y-schedule-manager-30" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>행사 목적</label>
+                    <textarea id="a11y-schedule-manager-30" name="purpose" value={formData.purpose} onChange={handleInputChange} placeholder="행사를 통해 도달하고자 하는 목표 기술" className="form-textarea" style={{ height: "46px", resize: "none" }} />
                   </div>
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>행사 결과</label>
+                        <label htmlFor="a11y-schedule-manager-31" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>행사 결과</label>
                         <span style={{ fontSize: "0.68rem", color: "var(--text-muted)", opacity: 0.75 }}>
                           (💡 행사 종료 후 결과 등록 시 작성 가능)
                         </span>
@@ -8171,8 +8171,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                 <>
                   {/* 회의 대분류 (최상단으로 위치 이동 완료) */}
                   <div style={{ marginBottom: "1rem" }}>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 대분류</label>
-                    <select name="category" value={formData.category} onChange={handleInputChange} className="form-select">
+                    <label htmlFor="a11y-schedule-manager-49" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>회의 대분류</label>
+                    <select id="a11y-schedule-manager-31" name="category" value={formData.category} onChange={handleInputChange} className="form-select">
                       <option value="operating">사업운영위원회</option>
                       <option value="center">부서별 회의</option>
                       <option value="committee">각종 위원회</option>
@@ -8190,7 +8190,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                     <div style={{ marginBottom: "0.5rem" }}>
                       <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#a78bfa" }}>🧠 지능형 AI-분석 연동 (기획 vs 결과 분리)</span>
                     </div>
-                    
+
                     <p style={{ fontSize: "0.68rem", color: "var(--text-secondary)", lineHeight: "1.3", marginBottom: "0.75rem" }}>
                       💡 <strong>기획/일정안</strong>을 분석하면 회의 명칭, 장소, 일자, 시작/종료시간, 참석자 등 기본 정보가 자동 완성됩니다. (다중 파일 업로드 지원)<br />
                       💡 <strong>결과보고서(회의록)</strong>를 분석하면 하단의 안건별 결과 리스트(의제 및 결과)가 자동으로 채워집니다. (다중 파일 업로드 지원)
@@ -8238,7 +8238,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                           </span>
                           <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.2)", padding: "0.1rem 0.25rem", borderRadius: "3px" }}>탐색</span>
                         </label>
-                        <textarea
+                        <textarea id="a11y-schedule-manager-49"
                           value={aiRawText}
                           onChange={(e) => setAiRawText(e.target.value)}
                           placeholder="또는 회의 계획 본문을 직접 붙여넣으세요..."
@@ -8391,7 +8391,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                             let color = "var(--text-primary)";
                             let prefix = "🤖 ";
                             let bg = "rgba(255,255,255,0.02)";
-                            
+
                             if (log.role === "chatgpt") {
                               color = "#10B981";
                               prefix = "🟢 ChatGPT: ";
@@ -8430,7 +8430,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                   {/* 회의 명칭 */}
                   <div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                      <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>회의 명칭</label>
+                      <label htmlFor="a11y-schedule-manager-32" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>회의 명칭</label>
                       {aiPlanApplied && (
                         <span style={{ fontSize: "0.65rem", background: "rgba(167, 139, 250, 0.15)", border: "1px solid rgba(167, 139, 250, 0.35)", color: "#a78bfa", padding: "0.1rem 0.35rem", borderRadius: "4px", fontWeight: "700" }}>
                           ✨ AI 계획 정보 반영됨 ✓
@@ -8442,14 +8442,14 @@ Gemini 피드백: \n${geminiCritiqueText}
 
                   {/* 장소 */}
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
-                    <input type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: ICC 센터장실" className="form-input" />
+                    <label htmlFor="a11y-schedule-manager-50" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>장소</label>
+                    <input id="a11y-schedule-manager-32" type="text" name="location" value={formData.location} onChange={handleInputChange} required placeholder="예: ICC 센터장실" className="form-input" />
                   </div>
 
                   {/* 1) 각종 위원회 세부 구분 버튼메뉴 (category === "committee" 일 때 노출) */}
                   {formData.category === "committee" && (
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", marginTop: "0.25rem" }}>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)" }}>위원회 구분</label>
+                      <label htmlFor="a11y-schedule-manager-33" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)" }}>위원회 구분</label>
                       <div style={{ display: "flex", gap: "0.5rem", width: "100%" }}>
                         {["agency", "center"].map((type) => {
                           const isSelected = (formData.committeeType || "agency") === type;
@@ -8494,7 +8494,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                         <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
                           {formData.category === "committee" && (formData.committeeType || "agency") === "agency" ? "위원회명" : "부서(센터)명"}
                         </label>
-                        <select name="dept" value={formData.dept} onChange={handleInputChange} className="form-select">
+                        <select id="a11y-schedule-manager-33" name="dept" value={formData.dept} onChange={handleInputChange} className="form-select">
                           {(() => {
                             if (formData.category === "committee") {
                               if ((formData.committeeType || "agency") === "agency") {
@@ -8515,8 +8515,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                         </select>
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
-                        <select name="writer" value={formData.writer} onChange={handleInputChange} className="form-select">
+                        <label htmlFor="a11y-schedule-manager-34" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>작성자</label>
+                        <select id="a11y-schedule-manager-34" name="writer" value={formData.writer} onChange={handleInputChange} className="form-select">
                           {(() => {
                             const isCenterMeeting =
                               formData.category === "center" ||
@@ -8580,9 +8580,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                   <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.9fr 0.9fr", gap: "1rem", marginTop: "0.5rem" }}>
                     <div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                        <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>회의 일자</label>
+                        <label htmlFor="a11y-schedule-manager-35" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>회의 일자</label>
                         <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
-                          <input
+                          <input id="a11y-schedule-manager-50"
                             type="checkbox"
                             name="noTime"
                             checked={formData.noTime || false}
@@ -8603,8 +8603,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                       <input type="date" name="meetingDate" value={formData.meetingDate} onChange={handleInputChange} required className="form-input" />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", opacity: formData.noTime ? 0.4 : 1 }}>시작 시간</label>
-                      <input
+                      <label htmlFor="a11y-schedule-manager-51" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", opacity: formData.noTime ? 0.4 : 1 }}>시작 시간</label>
+                      <input id="a11y-schedule-manager-35"
                         type="time"
                         name="meetingStartTime"
                         value={formData.meetingStartTime}
@@ -8619,8 +8619,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                       />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", opacity: formData.noTime ? 0.4 : 1 }}>종료 시간</label>
-                      <input
+                      <label htmlFor="a11y-schedule-manager-36" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", opacity: formData.noTime ? 0.4 : 1 }}>종료 시간</label>
+                      <input id="a11y-schedule-manager-36"
                         type="time"
                         name="meetingEndTime"
                         value={formData.meetingEndTime}
@@ -8697,11 +8697,11 @@ Gemini 피드백: \n${geminiCritiqueText}
                         return (
                           <>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                              <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                              <label htmlFor="a11y-schedule-manager-37" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                                 {labelText}
                               </label>
                               <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
-                                <input
+                                <input id="a11y-schedule-manager-51"
                                   type="checkbox"
                                   checked={includeProfessors}
                                   onChange={(e) => setIncludeProfessors(e.target.checked)}
@@ -8714,11 +8714,11 @@ Gemini 피드백: \n${geminiCritiqueText}
                             {/* 부서별 그룹 카드 형태로 예쁘게 렌더링 */}
                             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginBottom: "0.5rem", maxHeight: "250px", overflowY: "auto", paddingRight: "0.25rem" }}>
                               {grouped.map(g => (
-                                <div key={g.deptName} style={{ 
-                                  padding: "0.4rem 0.5rem", 
-                                  background: darkMode ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.02)", 
-                                  border: darkMode ? "1px solid rgba(255,255,255,0.03)" : "1px solid rgba(0,0,0,0.08)", 
-                                  borderRadius: "6px" 
+                                <div key={g.deptName} style={{
+                                  padding: "0.4rem 0.5rem",
+                                  background: darkMode ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.02)",
+                                  border: darkMode ? "1px solid rgba(255,255,255,0.03)" : "1px solid rgba(0,0,0,0.08)",
+                                  borderRadius: "6px"
                                 }}>
                                   <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#a78bfa", marginBottom: "0.25rem" }}>
                                     📌 {g.deptName}
@@ -8739,14 +8739,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                                             padding: "0.2rem 0.4rem",
                                             fontSize: "0.65rem",
                                             borderRadius: "4px",
-                                            border: "1px solid " + (isSelected 
-                                              ? "var(--accent-color)" 
+                                            border: "1px solid " + (isSelected
+                                              ? "var(--accent-color)"
                                               : (darkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.12)")),
-                                            background: isSelected 
-                                              ? (darkMode ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.08)") 
+                                            background: isSelected
+                                              ? (darkMode ? "rgba(59, 130, 246, 0.12)" : "rgba(59, 130, 246, 0.08)")
                                               : "transparent",
-                                            color: isSelected 
-                                              ? (darkMode ? "#60A5FA" : "#1E40AF") 
+                                            color: isSelected
+                                              ? (darkMode ? "#60A5FA" : "#1E40AF")
                                               : (darkMode ? "var(--text-secondary)" : "#475569"),
                                             cursor: "pointer",
                                             transition: "all 0.1s ease",
@@ -8769,7 +8769,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                       if (formData.category === "committee") {
                         labelText = "👥 위원회 위원 선택";
                         const currentDept = formData.dept || "";
-                        
+
                         const targetCommittee = committees.find(c => {
                           const nameMatch = c.name === currentDept || c.name.includes(currentDept);
                           const keyMatch = (currentDept.startsWith("ECC") && c.id === "ecc_op") ||
@@ -8790,7 +8790,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                       } else {
                         labelText = "👥 소속 연구원 선택 (부서별 자동 연동)";
                         showIncludeProfessors = true;
-                        
+
                         displayMembers = (members || []).filter(m => {
                           const isDeptMatch = m.dept === formData.dept;
                           if (!isDeptMatch) return false;
@@ -8819,12 +8819,12 @@ Gemini 피드백: \n${geminiCritiqueText}
                       return (
                         <>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                            <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+                            <label htmlFor="a11y-schedule-manager-52" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>
                               {labelText}
                             </label>
                             {showIncludeProfessors && (
                               <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.35rem", cursor: "pointer" }}>
-                                <input
+                                <input id="a11y-schedule-manager-52"
                                   type="checkbox"
                                   checked={includeProfessors}
                                   onChange={(e) => setIncludeProfessors(e.target.checked)}
@@ -8834,21 +8834,21 @@ Gemini 피드백: \n${geminiCritiqueText}
                               </label>
                             )}
                           </div>
-                          
+
                           {displayMembers.length === 0 ? (
                             <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.5rem", padding: "0.25rem", background: "rgba(255,255,255,0.02)", borderRadius: "4px" }}>
                               {formData.category === "committee" ? "선택한 위원회의 구성원을 찾을 수 없습니다." : "소속 부서를 먼저 선택해 주세요."}
                             </div>
                           ) : (
-                            <div style={{ 
-                              display: "flex", 
-                              gap: "0.35rem", 
-                              flexWrap: "wrap", 
-                              marginBottom: "0.5rem", 
-                              padding: "0.5rem", 
-                              background: darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)", 
-                              borderRadius: "6px", 
-                              border: darkMode ? "1px solid rgba(255,255,255,0.04)" : "1px solid rgba(0,0,0,0.08)" 
+                            <div style={{
+                              display: "flex",
+                              gap: "0.35rem",
+                              flexWrap: "wrap",
+                              marginBottom: "0.5rem",
+                              padding: "0.5rem",
+                              background: darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
+                              borderRadius: "6px",
+                              border: darkMode ? "1px solid rgba(255,255,255,0.04)" : "1px solid rgba(0,0,0,0.08)"
                             }}>
                               {displayMembers.map((m: { name: string; role: string; key: number | string }) => {
                                 const isSelected = (formData.attendees || "")
@@ -8865,14 +8865,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                                       padding: "0.25rem 0.5rem",
                                       fontSize: "0.7rem",
                                       borderRadius: "4px",
-                                      border: "1px solid " + (isSelected 
-                                        ? "var(--accent-color)" 
+                                      border: "1px solid " + (isSelected
+                                        ? "var(--accent-color)"
                                         : (darkMode ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.15)")),
-                                      background: isSelected 
-                                        ? (darkMode ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.08)") 
+                                      background: isSelected
+                                        ? (darkMode ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.08)")
                                         : "transparent",
-                                      color: isSelected 
-                                        ? (darkMode ? "#60A5FA" : "#1E40AF") 
+                                      color: isSelected
+                                        ? (darkMode ? "#60A5FA" : "#1E40AF")
                                         : (darkMode ? "var(--text-secondary)" : "#475569"),
                                       cursor: "pointer",
                                       transition: "all 0.1s ease",
@@ -8889,10 +8889,10 @@ Gemini 피드백: \n${geminiCritiqueText}
                       );
                     })()}
 
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.5rem", marginBottom: "0.25rem" }}>
+                    <label htmlFor="a11y-schedule-manager-53" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.5rem", marginBottom: "0.25rem" }}>
                       참석자 (위의 버튼을 누르면 자동으로 입력되며, 타 부서 인원의 경우 수기입력 가능)
                     </label>
-                    <input
+                    <input id="a11y-schedule-manager-37"
                       type="text"
                       name="attendees"
                       value={formData.attendees || ""}
@@ -8907,7 +8907,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                   <div style={{ marginTop: "1rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                     {/* 1번째 칸: MP3 음성 파일 */}
                     <div>
-                      <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
+                      <label htmlFor="a11y-schedule-manager-38" style={{ display: "block", fontSize: "0.78rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
                         🎙️ 음성 녹음 파일 (MP3 전용, 최대 5MB)
                       </label>
                       {formData.audioUrl ? (
@@ -8981,7 +8981,7 @@ Gemini 피드백: \n${geminiCritiqueText}
 
                     {/* 2번째 칸: PDF 문서 파일 */}
                     <div>
-                      <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
+                      <label htmlFor="a11y-schedule-manager-54" style={{ display: "block", fontSize: "0.78rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>
                         📄 회의록 첨부 문서 (PDF 전용, 최대 2MB)
                       </label>
                       {formData.pdfUrl ? (
@@ -9057,7 +9057,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                   {/* 주요 의제 및 회의 결과 1:1 대칭 대응 입력 목록 */}
                   {formData.category === "operating" ? (
                     <div style={{ marginTop: "1rem" }}>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "700" }}>
+                      <label htmlFor="a11y-schedule-manager-55" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: "700" }}>
                         🏢 부서별 주요 업무추진 현황 및 애로사항 입력
                       </label>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", maxHeight: "250px", overflowY: "auto", paddingRight: "0.25rem" }}>
@@ -9082,7 +9082,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 📌 {deptName}
                               </span>
                               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                                <input
+                                <input id="a11y-schedule-manager-55"
                                   type="text"
                                   value={deptAgendaVal}
                                   onChange={(e) => {
@@ -9122,7 +9122,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                     <div style={{ marginTop: "1rem" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                          <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "700" }}>
+                          <label htmlFor="a11y-schedule-manager-56" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "700" }}>
                             📝 회의 의제 및 결과 관리 (AI 자동 추출 및 1:1 편집)
                           </label>
                           {aiResultApplied && (
@@ -9217,7 +9217,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                               border: "1px solid rgba(255, 255, 255, 0.04)"
                             }}
                           >
-                            <input
+                            <input id="a11y-schedule-manager-56"
                               type="text"
                               value={pair.agenda}
                               onChange={(e) => {
@@ -9303,44 +9303,44 @@ Gemini 피드백: \n${geminiCritiqueText}
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도 구분</label>
-                      <select name="pressType" value={formData.pressType} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
+                      <label htmlFor="a11y-schedule-manager-57" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도 구분</label>
+                      <select id="a11y-schedule-manager-38" name="pressType" value={formData.pressType} onChange={handleInputChange} style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }}>
                         <option value="방송">📺 방송</option>
                         <option value="신문">📰 신문</option>
                         <option value="기타">🌐 기타 (뉴미디어 등)</option>
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도 매체</label>
-                      <input type="text" name="pressMedia" value={formData.pressMedia} onChange={handleInputChange} required placeholder="예: 울산MBC, 경상일보, 블로그 등" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <label htmlFor="a11y-schedule-manager-39" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도 매체</label>
+                      <input id="a11y-schedule-manager-39" type="text" name="pressMedia" value={formData.pressMedia} onChange={handleInputChange} required placeholder="예: 울산MBC, 경상일보, 블로그 등" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도 제목</label>
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 울산과학대학교, 지역 창업 연계 RISE 앵커사업 활성화 시동" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                    <label htmlFor="a11y-schedule-manager-40" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도 제목</label>
+                    <input id="a11y-schedule-manager-40" type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="예: 울산과학대학교, 지역 창업 연계 RISE 앵커사업 활성화 시동" style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도 일자</label>
-                      <input type="date" name="pressDate" value={formData.pressDate} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <label htmlFor="a11y-schedule-manager-41" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도 일자</label>
+                      <input id="a11y-schedule-manager-41" type="date" name="pressDate" value={formData.pressDate} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도/방송 시간</label>
-                      <input type="time" name="pressTime" value={formData.pressTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
+                      <label htmlFor="a11y-schedule-manager-42" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도/방송 시간</label>
+                      <input id="a11y-schedule-manager-42" type="time" name="pressTime" value={formData.pressTime} onChange={handleInputChange} required style={{ width: "100%", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)" }} />
                     </div>
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도내용 (기사 상세 본문)</label>
-                    <textarea name="pressContent" value={formData.pressContent || ""} onChange={handleInputChange} placeholder="기사 본문 또는 세부 보도 내용을 기술해 주세요." style={{ width: "100%", height: "100px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
+                    <label htmlFor="a11y-schedule-manager-43" style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>보도내용 (기사 상세 본문)</label>
+                    <textarea id="a11y-schedule-manager-43" name="pressContent" value={formData.pressContent || ""} onChange={handleInputChange} placeholder="기사 본문 또는 세부 보도 내용을 기술해 주세요." style={{ width: "100%", height: "100px", padding: "0.5rem", background: "var(--input-bg)", border: "1px solid var(--border-color)", borderRadius: "6px", color: "var(--text-primary)", resize: "none" }} />
                   </div>
 
                   <div>
-                    <label style={{ display: "block", fontSize: "0.85rem", color: "#8b5cf6", fontWeight: "700", marginBottom: "0.35rem" }}>✨ 보도 내용 URL (유튜브 링크 또는 기사 링크)</label>
+                    <label htmlFor="a11y-schedule-manager-57" style={{ display: "block", fontSize: "0.85rem", color: "#8b5cf6", fontWeight: "700", marginBottom: "0.35rem" }}>✨ 보도 내용 URL (유튜브 링크 또는 기사 링크)</label>
                     <div style={{ display: "flex", gap: "0.5rem" }}>
-                      <input
+                      <input id="a11y-schedule-manager-57"
                         type="url"
                         name="pressUrl"
                         value={formData.pressUrl || ""}

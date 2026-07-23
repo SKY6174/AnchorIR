@@ -1108,7 +1108,7 @@ interface UnitStrategyData {
 
 export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps) {
   const [selectedProjectId, setSelectedProjectId] = useState<string>("A");
-  
+
   const currentProjectsData = selectedYear === 1 ? PROJECTS_DATA_Y1 : PROJECTS_DATA;
   const currentStrategyMapping = (
     selectedYear === 1 ? STRATEGY_TASK_MAPPING_Y1 : STRATEGY_TASK_MAPPING
@@ -1226,14 +1226,14 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
 
   return (
     <div className="unit-system-container" style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%" }}>
-      
+
       {/* 🚀 상단 블록: 단위과제 기획 체계 설명 카드 */}
       <div className="glass-card" style={{ padding: "1.8rem" }}>
         <h3 style={{ fontSize: "1.1rem", fontWeight: "900", color: "var(--accent-color)", display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
           <Info size={20} />
           울산과학대학교 앵커사업 체계
         </h3>
-        
+
         <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: "1.6", marginBottom: "1.2rem" }}>
           앵커 사업의 효율적인 기획 및 성과관리를 위해 본 대시보드는 <strong>프로젝트 - 단위과제 - 추진전략 - 전략과제 - 프로그램</strong>의 5단계 고유 연계 체계를 도입하여 관리하고 있습니다.
         </p>
@@ -1276,12 +1276,12 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
             <strong style={{ fontSize: "0.82rem", color: "var(--text-primary)" }}>프로그램 ID 규칙 (Rule)</strong>
           </div>
           <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", lineHeight: "1.4", margin: 0 }}>
-            <code style={{ 
-              background: "rgba(59, 130, 246, 0.1)", 
+            <code style={{
+              background: "rgba(59, 130, 246, 0.1)",
               border: "1px solid rgba(59, 130, 246, 0.2)",
-              padding: "0.15rem 0.4rem", 
-              borderRadius: "0.3rem", 
-              color: "var(--accent-color)", 
+              padding: "0.15rem 0.4rem",
+              borderRadius: "0.3rem",
+              color: "var(--accent-color)",
               fontFamily: "monospace",
               fontWeight: "700"
             }}>
@@ -1298,7 +1298,7 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
 
       {/* 🛠️ 하단 블록: 3단 드롭다운 연동 레이아웃 */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", minHeight: "450px" }}>
-        
+
         {/* 좌측: PJ -> WS -> S 3단 드롭다운 선택 패널 */}
         <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.2rem" }}>
           <h4 style={{ fontSize: "0.9rem", fontWeight: "900", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.6rem" }}>
@@ -1308,10 +1308,10 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
 
           {/* 1. 프로젝트 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
+            <label htmlFor="a11y-unit-system-view-1" style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
               1단계: 프로젝트 선택 (4 PJ)
             </label>
-            <select
+            <select id="a11y-unit-system-view-1"
               value={selectedProjectId}
               onChange={(e) => handleProjectChange(e.target.value)}
               className="user-selector"
@@ -1335,10 +1335,10 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
 
           {/* 2. 단위과제 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
+            <label htmlFor="a11y-unit-system-view-2" style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
               2단계: 단위과제 선택 (12 UP)
             </label>
-            <select
+            <select id="a11y-unit-system-view-2"
               value={selectedUnitId}
               onChange={(e) => setSelectedUnitId(e.target.value)}
               className="user-selector"
@@ -1362,10 +1362,10 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
 
           {/* 3. 추진전략 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
+            <label htmlFor="a11y-unit-system-view-3" style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
               3단계: 추진전략 선택 (S)
             </label>
-            <select
+            <select id="a11y-unit-system-view-3"
               value={selectedStratId}
               onChange={(e) => setSelectedStratId(e.target.value)}
               className="user-selector"
@@ -1389,10 +1389,10 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
 
           {/* 4. 전략과제 드롭다운 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-            <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
+            <label htmlFor="a11y-unit-system-view-4" style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: "700" }}>
               4단계: 전략과제 선택 (T)
             </label>
-            <select
+            <select id="a11y-unit-system-view-4"
               value={selectedTaskId}
               onChange={(e) => setSelectedTaskId(e.target.value)}
               className="user-selector"
@@ -1417,7 +1417,7 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
 
         {/* 우측: 선택한 전략에 연동된 전략과제(T) 및 프로그램(PG) 출력 영역 */}
         <div className="glass-card" style={{ padding: "1.8rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
+
           {/* 상단: 현재 선택된 추진전략 상세 */}
           <div style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "1rem" }}>
             <span style={{
@@ -1471,7 +1471,7 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
             }}>
               선택된 전략과제 (Strategic Task)
             </span>
-            
+
             <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
               {!selectedTaskId ? (
                 <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)", textAlign: "center", padding: "2rem", border: "1px dashed var(--border-color)" }}>
@@ -1527,7 +1527,7 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
             }}>
               {selectedTaskId ? `T${selectedTaskId}${getJosa(selectedTaskId)} 연계한 프로그램 내역 (PROGRAMS)` : "소속 프로그램 내역 (PROGRAMS)"}
             </span>
-            
+
             <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.6rem" }}>
               {filteredPrograms.length === 0 ? (
                 <div style={{ gridColumn: "1/-1", fontSize: "0.78rem", color: "var(--text-secondary)", textAlign: "center", padding: "2rem" }}>

@@ -309,7 +309,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
     const ws = XLSX.utils.json_to_sheet(templateData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "파트너적재템플릿");
-    
+
     // 열 너비 설정
     ws["!cols"] = Array(8).fill({ wch: 25 });
 
@@ -360,9 +360,9 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
             .from("partner_institutions")
             .insert(importedPartners)
             .select();
-          
+
           if (error) throw error;
-          
+
           setPartners([...(insData || importedPartners), ...partners]);
           alert(`엑셀 파일로부터 ${importedPartners.length}개의 파트너기관 정보를 성공적으로 업로드하여 적재했습니다!`);
         }
@@ -376,7 +376,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
 
   // 필터링 및 검색 로직
   const filteredPartners = partners.filter((p) => {
-    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           (p.contact_person || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                           (p.location || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === "all" || p.category === filterCategory;
@@ -397,15 +397,15 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   const renderSortIcon = (field: PartnerSortField) => {
     const isActive = sortField === field;
     return (
-      <ArrowUpDown 
-        size={13} 
-        style={{ 
-          marginLeft: "0.4rem", 
+      <ArrowUpDown
+        size={13}
+        style={{
+          marginLeft: "0.4rem",
           verticalAlign: "middle",
           color: isActive ? "var(--accent-color)" : "rgba(255,255,255,0.2)",
           transform: isActive && sortDirection === "desc" ? "rotate(180deg)" : "none",
           transition: "all 0.2s ease"
-        }} 
+        }}
       />
     );
   };
@@ -519,7 +519,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
           </button>
 
           {/* 엑셀 업로드 (Upload) */}
-          <label
+          <label htmlFor="a11y-partner-manager-1"
             className="action-btn upload-btn"
             style={{
               cursor: "pointer",
@@ -578,25 +578,25 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
         <table className="mini-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", textAlign: "center" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid var(--border-color-dark)", color: "var(--text-secondary)" }}>
-              <th 
+              <th
                 onClick={() => handleSort("name")}
                 style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
               >
                 기관명{renderSortIcon("name")}
               </th>
-              <th 
+              <th
                 onClick={() => handleSort("category")}
                 style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
               >
                 분류{renderSortIcon("category")}
               </th>
-              <th 
+              <th
                 onClick={() => handleSort("sub_category")}
                 style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
               >
                 세부분류{renderSortIcon("sub_category")}
               </th>
-              <th 
+              <th
                 onClick={() => handleSort("location")}
                 style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
               >
@@ -732,8 +732,8 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 {/* 기관명 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>기관명 *</label>
-                  <input
+                  <label htmlFor="a11y-partner-manager-1" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>기관명 *</label>
+                  <input id="a11y-partner-manager-1"
                     type="text"
                     required
                     value={formName}
@@ -744,8 +744,8 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
 
                 {/* 지역 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>지역/도시 *</label>
-                  <input
+                  <label htmlFor="a11y-partner-manager-2" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>지역/도시 *</label>
+                  <input id="a11y-partner-manager-2"
                     type="text"
                     required
                     value={formLocation}
@@ -758,8 +758,8 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 {/* 대분류 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>기관 대분류</label>
-                  <select
+                  <label htmlFor="a11y-partner-manager-3" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>기관 대분류</label>
+                  <select id="a11y-partner-manager-3"
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value)}
                     className="form-select"
@@ -772,8 +772,8 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
 
                 {/* 세부분류 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>세부 분류</label>
-                  <select
+                  <label htmlFor="a11y-partner-manager-4" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>세부 분류</label>
+                  <select id="a11y-partner-manager-4"
                     value={formSubCategory}
                     onChange={(e) => setFormSubCategory(e.target.value)}
                     className="form-select"
@@ -788,8 +788,8 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 {/* 담당자 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>담당자 성명</label>
-                  <input
+                  <label htmlFor="a11y-partner-manager-5" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>담당자 성명</label>
+                  <input id="a11y-partner-manager-5"
                     type="text"
                     value={formContactPerson}
                     onChange={(e) => setFormContactPerson(e.target.value)}
@@ -799,8 +799,8 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
 
                 {/* 연락처 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                  <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>연락처 (전화번호)</label>
-                  <input
+                  <label htmlFor="a11y-partner-manager-6" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>연락처 (전화번호)</label>
+                  <input id="a11y-partner-manager-6"
                     type="text"
                     value={formContactPhone}
                     onChange={(e) => setFormContactPhone(e.target.value)}
@@ -812,7 +812,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
 
               {/* 협력 분야 다중 선택 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>협력분야 (다중선택)</label>
+                <label htmlFor="a11y-partner-manager-7" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>협력분야 (다중선택)</label>
                 <div className="form-chips-container" style={{ maxHeight: "120px", overflowY: "auto" }}>
                   {SECTOR_OPTIONS.map((sec) => {
                     const isSelected = formSectors.includes(sec);
@@ -842,8 +842,8 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
 
               {/* 메모 */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                <label style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>주요 협력 메모 / 추진 실적</label>
-                <textarea
+                <label htmlFor="a11y-partner-manager-7" style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>주요 협력 메모 / 추진 실적</label>
+                <textarea id="a11y-partner-manager-7"
                   value={formRemarks}
                   onChange={(e) => setFormRemarks(e.target.value)}
                   rows={3}

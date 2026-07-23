@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine 
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
 } from "recharts";
-import { 
+import {
   FileSpreadsheet, QrCode, ClipboardCheck, Plus, Trash2,
   Send, BarChart3, FileText, Check, Download, RefreshCw,
   Compass, Sparkles
@@ -281,7 +281,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
         // 시드 삽입 후 다시 조회
         const { data: reSurveys } = await supabase.from("satisfaction_surveys").select("*").order("created_at", { ascending: false });
         const { data: reResponses } = await supabase.from("satisfaction_responses").select("*");
-        
+
         formatted = (reSurveys || []).map(s => {
           const matching = (reResponses || [])
             .filter(r => r.survey_id === s.id)
@@ -360,7 +360,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
     const currentYear = customYear ? parseInt(customYear, 10) : (2024 + Number(selectedYear ?? 1));
     const mainDept = Array.isArray(depts) ? (depts.length > 0 ? depts[0] : "ECC") : (depts || "ECC");
     const sameDeptSurveys = surveys.filter(s => s.id.startsWith(`${currentYear}-${mainDept}-`));
-    
+
     // 번호 산출 (예: 2026-ECC-1)
     let maxNum = 0;
     sameDeptSurveys.forEach(s => {
@@ -456,7 +456,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
   const handleSyncToGoogleSheets = async (id: string) => {
     setSyncingId(id);
     const mockSheetUrl = `https://docs.google.com/spreadsheets/d/live_${id}/edit?usp=sharing`;
-    
+
     try {
       const { error } = await supabase
         .from("satisfaction_surveys")
@@ -471,7 +471,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
         }
         return s;
       }));
-      
+
       alert("현재까지 DB에 수집된 실제 응답 데이터가 실시간 구글 스프레드시트 연동 뷰어로 완벽하게 동기화되었습니다!");
       setShowSheetsViewer(true);
     } catch (err) {
@@ -485,17 +485,17 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
   // 100점 만점 환산용 통계 가중평균치 계산 (5점 리커트 척도 반영)
   const getLikertConvertedScore = (responses: SurveyResponse[], questionsCount: number) => {
     if (!responses || responses.length === 0 || questionsCount === 0) return 0;
-    
+
     let totalScore = 0;
     let totalItems = 0;
-    
+
     responses.forEach(res => {
       res.scores.forEach(s => {
         totalScore += s * 20; // 5점 만점 -> 100점 만점 환산 (1=20, 2=40, 3=60, 4=80, 5=100)
         totalItems++;
       });
     });
-    
+
     return parseFloat((totalScore / totalItems).toFixed(1));
   };
 
@@ -504,7 +504,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
     if (!survey.responses || survey.responses.length === 0) {
       return survey.questions.map((q, i) => ({ name: `문항 ${i + 1}`, score: 0 }));
     }
-    
+
     return survey.questions.map((q, i) => {
       let sum = 0;
       survey.responses.forEach(res => {
@@ -590,7 +590,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
       let isSuccess = false;
       let parsed: AiSurveyData | null = null;
 
-      const systemPrompt = `당신은 대학 RISE 사업단의 만족도조사 텍스트 분석기입니다. 
+      const systemPrompt = `당신은 대학 RISE 사업단의 만족도조사 텍스트 분석기입니다.
 제시된 만족도조사 보고서/통계 원본 텍스트를 파싱하여 아래의 JSON 구조로 정보를 추출해 주세요.
 
 [요구 JSON 스키마]
@@ -643,7 +643,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
       if (!isSuccess) {
         console.log("Using smart local regex parser...");
         const text = aiInputRawText;
-        
+
         // 제목 추출 (첫 번째 행 또는 핵심 키워드 매칭)
         let title = "외부 연동 만족도 조사";
         const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
@@ -772,7 +772,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
       // 1. 신규 ID 발급
       const yearFromDate = extractedData.startDate ? extractedData.startDate.split("-")[0] : null;
       const generatedId = getNextSurveyId([extractedData.department], yearFromDate);
-      
+
       const newSurvey = {
         id: generatedId,
         title: extractedData.title.trim(),
@@ -807,7 +807,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
       // 3. 추출된 만족도 평균 점수(100점 만점)에 일치하도록 가상의 리커트 5점 응답 묶음 자동 빌딩
       const targetAvgLikert = extractedData.averageScore / 20; // 5점 척도 값 (예: 90점 -> 4.5점)
       const names = ["김성현", "이지은", "박민혁", "윤서현", "정재형", "최유리", "강태영", "신민아", "오승우", "한소희"];
-      
+
       const responseInserts = Array.from({ length: extractedData.responsesCount }).map((_, idx) => {
         // 문항별 점수 생성 (평균 점수에 수렴하도록 3~5점 사이 랜덤 가중치 부여)
         const scores = newSurvey.questions.map(() => {
@@ -849,7 +849,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
       // 5. DB를 다시 쿼리하여 전체 화면 갱신
       await fetchSurveysFromDb();
       alert(`[만족도조사 외부 데이터 연동 성공]\n\n조사명: [${newSurvey.title}]\n참여응답수: ${extractedData.responsesCount}건\n종합만족도: ${extractedData.averageScore}점\n위 정보와 응답 분석 내역이 데이터베이스에 안전하게 등록 완료되었습니다.`);
-      
+
       // 모달 리셋 및 닫기
       setShowAiInputModal(false);
       setAiInputRawText("");
@@ -918,7 +918,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
     const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     if (!apiKey) throw new Error("OpenAI API Key가 설정되지 않았습니다.");
 
-    const prompt = `당신은 대학 RISE(앵커) 사업 만족도 조사 분석가(GPT-4o)입니다. 
+    const prompt = `당신은 대학 RISE(앵커) 사업 만족도 조사 분석가(GPT-4o)입니다.
     다음 만족도 조사 텍스트를 정밀 분석하여 아래 JSON 스키마를 만족하는 분석 요약본을 출력하십시오.
     응답은 반드시 마크다운(예: \`\`\`json 등)이나 불필요한 사설 없이 순수 JSON 객체만 반환해야 합니다.
 
@@ -1115,7 +1115,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
       // GPT-4o 초안 생성 API 호출
       setDebateLogs(prev => [...prev, { sender: "system", message: `[시스템] GPT-4o 분석 엔진 호출 중...` }]);
       const gptDraft = await callOpenAiGptForSatisfaction(aiInputRawText);
-      
+
       setDebateLogs(prev => [...prev, {
         sender: "gpt",
         message: `[GPT-4o] ${gptDraft.gptOpinion || `문서 분석을 끝냈습니다. 조사제목은 [${gptDraft.title}]이며, 대상은 [${gptDraft.target}]으로 판독됩니다. 종합 평점은 ${gptDraft.averageScore}점입니다.`}`
@@ -1125,7 +1125,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
       // 3단계: 크로스 디베이트 (Debate)
       setDebatePhase("debate");
       setDebateLogs(prev => [...prev, { sender: "system", message: `[토론 진행] Google Gemini 검증 엔진 호출 중 및 날짜 데이터/지표 팩트체크 토론 진행...` }]);
-      
+
       // Gemini 검토 API 호출
       const geminiDraft = await callGeminiApiForSatisfaction(aiInputRawText, gptDraft);
 
@@ -1145,7 +1145,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
       // 4단계: 최종 합의 조율 (Consensus)
       setDebatePhase("consensus");
       setDebateLogs(prev => [...prev, { sender: "system", message: `[합의 완료] 두 에이전트 간 합의 최종 조율 중...` }]);
-      
+
       // 최종 합의안 도출 API 호출
       const consensusResult = await callConsensusCompilerForSatisfaction(gptDraft, geminiDraft);
 
@@ -1376,7 +1376,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
   // 설문조사 완료(마감) 처리
   const handleCompleteSurveyStatus = async (id: string) => {
     if (!confirm("해당 만족도 조사를 마감하시겠습니까? 마감 시 상태가 '완료'로 잠기게 됩니다.")) return;
-    
+
     try {
       const { error } = await supabase
         .from("satisfaction_surveys")
@@ -1400,7 +1400,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
   // 조사지 삭제
   const handleDeleteSurvey = async (id: string) => {
     if (!confirm("해당 만족도 조사와 수집된 모든 응답이 영구 삭제됩니다. 진행하시겠습니까?")) return;
-    
+
     try {
       const { error } = await supabase
         .from("satisfaction_surveys")
@@ -1484,14 +1484,14 @@ ${commentList || "(없음)"}
         report = `금번 만족도 조사는 종합 ${avgScore}점으로 목표 만족도에 미치지 못하여 긴급 보완책이 시급합니다. 문항별 지표를 분석해 보면 공간 쾌적도 및 행정 절차 지연 부문에서 저평가가 확인되었습니다. 차년도 사업 재설계 시, 행정 프로세스의 디지털 자동화와 실습실 상시 소독 점검 제도를 강제화하고, 예산의 10% 이상을 환경 개선 비목에 우선 배정하는 특단의 환류 계획이 입안되어야 할 것으로 사료됩니다.`;
       }
       setAiReport(report);
-      
+
       try {
         await supabase
           .from("satisfaction_surveys")
           .update({ ai_report: report })
           .eq("id", survey.id);
 
-        setSurveys(prev => 
+        setSurveys(prev =>
           prev.map(s => s.id === survey.id ? { ...s, aiReport: report } : s)
         );
       } catch (dbErr) {
@@ -1540,7 +1540,7 @@ ${commentList || "(없음)"}
       if (text) {
         const finalReport = text.trim();
         setAiReport(finalReport);
-        
+
         try {
           const { error: dbUpdateError } = await supabase
             .from("satisfaction_surveys")
@@ -1550,8 +1550,8 @@ ${commentList || "(없음)"}
           if (dbUpdateError) {
             console.error("Failed to save AI report to Supabase:", dbUpdateError);
           } else {
-            setSurveys(prevSurveys => 
-              prevSurveys.map(s => 
+            setSurveys(prevSurveys =>
+              prevSurveys.map(s =>
                 s.id === survey.id ? { ...s, aiReport: finalReport } : s
               )
             );
@@ -1611,7 +1611,7 @@ ${commentList || "(없음)"}
     const XLSX = await import("xlsx");
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(worksheetData);
-    
+
     // 스타일을 위한 열 넓이 설정 자동화
     ws["!cols"] = [{ wch: 15 }, { wch: 15 }, { wch: 15 }, ...survey.questions.map(() => ({ wch: 22 })), { wch: 45 }];
 
@@ -1658,7 +1658,7 @@ ${commentList || "(없음)"}
           {selectedYearFull}년도 만족도 조사 관리 플랫폼
         </h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
-          부서별(ECC, ICC, RCC 등) 만족도 조사를 기획·생성하고, 실시간 QR코드 및 URL 배포, 
+          부서별(ECC, ICC, RCC 등) 만족도 조사를 기획·생성하고, 실시간 QR코드 및 URL 배포,
           데이터베이스 저장, 구글 스프레드시트 동기화, 리커트 5점 척도 기반 100점 만점 환산 통계 분석을 전 주기로 관리하는 통합 공간입니다.
         </p>
       </div>
@@ -1732,8 +1732,8 @@ ${commentList || "(없음)"}
             className={`btn-primary ${activeSurveyTab === "create" ? "active" : ""}`}
             style={{
               border: "none",
-              background: activeSurveyTab === "create" 
-                ? "linear-gradient(135deg, #1d4ed8, #1e40af)" 
+              background: activeSurveyTab === "create"
+                ? "linear-gradient(135deg, #1d4ed8, #1e40af)"
                 : "linear-gradient(135deg, var(--accent-color), #2563eb)",
               padding: "0.55rem 1.3rem",
               fontSize: "0.82rem",
@@ -1831,11 +1831,11 @@ ${commentList || "(없음)"}
                         <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
                           <button
                             className="btn-primary"
-                            style={{ 
-                              padding: "0.2rem 0.55rem", 
-                              fontSize: "0.7rem", 
-                              borderRadius: "0.3rem", 
-                              background: "rgba(59, 130, 246, 0.1)", 
+                            style={{
+                              padding: "0.2rem 0.55rem",
+                              fontSize: "0.7rem",
+                              borderRadius: "0.3rem",
+                              background: "rgba(59, 130, 246, 0.1)",
                               border: "1px solid rgba(59, 130, 246, 0.2)",
                               color: "#3b82f6",
                               fontWeight: "800",
@@ -1850,11 +1850,11 @@ ${commentList || "(없음)"}
                             수정
                           </button>
                           <button
-                            style={{ 
-                              padding: "0.2rem 0.55rem", 
-                              fontSize: "0.7rem", 
-                              borderRadius: "0.3rem", 
-                              background: "rgba(239, 68, 68, 0.1)", 
+                            style={{
+                              padding: "0.2rem 0.55rem",
+                              fontSize: "0.7rem",
+                              borderRadius: "0.3rem",
+                              background: "rgba(239, 68, 68, 0.1)",
                               border: "1px solid rgba(239, 68, 68, 0.2)",
                               color: "#ef4444",
                               fontWeight: "800",
@@ -1880,7 +1880,7 @@ ${commentList || "(없음)"}
 
       {activeSurveyTab === "list" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          
+
           {/* 만족도조사 목록 하부 부서 선택 멀티 체크박스 필터 */}
           {surveys.length > 0 && (
             <div className="glass-card" style={{ padding: "1rem 1.5rem", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
@@ -1905,15 +1905,15 @@ ${commentList || "(없음)"}
                   </button>
                 </div>
               </div>
-              
-              <div style={{ 
-                display: "flex", 
-                flexWrap: "wrap", 
-                gap: "0.6rem 1.2rem", 
-                background: "rgba(255,255,255,0.01)", 
-                padding: "0.6rem 1rem", 
-                borderRadius: "0.375rem", 
-                border: "1px solid var(--border-color)" 
+
+              <div style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "0.6rem 1.2rem",
+                background: "rgba(255,255,255,0.01)",
+                padding: "0.6rem 1rem",
+                borderRadius: "0.375rem",
+                border: "1px solid var(--border-color)"
               }}>
                 {[
                   { key: "ECC", label: "ECC (지산학)" },
@@ -1925,13 +1925,13 @@ ${commentList || "(없음)"}
                 ].map((deptObj) => {
                   const isChecked = filterDepts.includes(deptObj.key);
                   return (
-                    <label 
-                      key={deptObj.key} 
-                      style={{ 
-                        display: "flex", 
-                        alignItems: "center", 
-                        gap: "0.4rem", 
-                        fontSize: "0.76rem", 
+                    <label htmlFor="a11y-satisfaction-manager-1"
+                      key={deptObj.key}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.4rem",
+                        fontSize: "0.76rem",
                         color: isChecked ? "var(--text-primary)" : "var(--text-secondary)",
                         cursor: "pointer",
                         fontWeight: isChecked ? "700" : "500",
@@ -1981,11 +1981,11 @@ ${commentList || "(없음)"}
 
               if (filteredSurveys.length === 0) {
                 return (
-                  <div style={{ 
-                    padding: "3rem", 
-                    textAlign: "center", 
-                    color: "var(--text-secondary)", 
-                    border: "1px dashed rgba(255,255,255,0.06)", 
+                  <div style={{
+                    padding: "3rem",
+                    textAlign: "center",
+                    color: "var(--text-secondary)",
+                    border: "1px dashed rgba(255,255,255,0.06)",
                     borderRadius: "0.5rem",
                     fontSize: "0.8rem",
                     background: "rgba(255,255,255,0.01)"
@@ -2000,20 +2000,20 @@ ${commentList || "(없음)"}
                   {filteredSurveys.map((survey) => {
                     const convertedAvg = getLikertConvertedScore(survey.responses, survey.questions.length);
                     return (
-                       <div 
-                        key={survey.id} 
-                        className="glass-card animate-fade-in" 
-                        style={{ 
-                          padding: "1.5rem", 
-                          display: "flex", 
-                          flexDirection: "column", 
+                       <div
+                        key={survey.id}
+                        className="glass-card animate-fade-in"
+                        style={{
+                          padding: "1.5rem",
+                          display: "flex",
+                          flexDirection: "column",
                           justifyContent: "space-between",
                           border: selectedSurveyId === survey.id ? "1.5px solid var(--accent-color)" : "1px solid var(--border-color)",
-                          background: selectedSurveyId === survey.id 
-                            ? "linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08))" 
+                          background: selectedSurveyId === survey.id
+                            ? "linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.08))"
                             : "linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.04))",
-                          boxShadow: selectedSurveyId === survey.id 
-                            ? "0 8px 32px rgba(59, 130, 246, 0.25)" 
+                          boxShadow: selectedSurveyId === survey.id
+                            ? "0 8px 32px rgba(59, 130, 246, 0.25)"
                             : "0 4px 16px rgba(0, 0, 0, 0.15)",
                           backdropFilter: "blur(12px)"
                         }}
@@ -2046,14 +2046,14 @@ ${commentList || "(없음)"}
                               </span>
                             </div>
                           </div>
-                          
-                          <h4 
+
+                          <h4
                             onClick={() => { setSelectedSurveyId(survey.id); setActiveSurveyTab("detail"); }}
-                            style={{ 
-                              fontSize: "0.95rem", 
-                              fontWeight: "800", 
-                              marginBottom: "0.5rem", 
-                              color: "var(--text-primary)", 
+                            style={{
+                              fontSize: "0.95rem",
+                              fontWeight: "800",
+                              marginBottom: "0.5rem",
+                              color: "var(--text-primary)",
                               lineHeight: "1.3",
                               cursor: "pointer",
                               transition: "color 0.15s ease"
@@ -2136,8 +2136,8 @@ ${commentList || "(없음)"}
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
             <div>
-              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>수행 부서 선택</label>
-              <select
+              <label htmlFor="a11y-satisfaction-manager-16" style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>수행 부서 선택</label>
+              <select id="a11y-satisfaction-manager-1"
                 value={newDept}
                 onChange={(e) => setNewDept(e.target.value)}
                 className="user-selector"
@@ -2152,8 +2152,8 @@ ${commentList || "(없음)"}
               </select>
             </div>
             <div>
-              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>추천 자동발급 ID</label>
-              <input
+              <label htmlFor="a11y-satisfaction-manager-2" style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>추천 자동발급 ID</label>
+              <input id="a11y-satisfaction-manager-2"
                 type="text"
                 value={getNextSurveyId(newDept, newStartDate ? newStartDate.split("-")[0] : null)}
                 disabled
@@ -2164,8 +2164,8 @@ ${commentList || "(없음)"}
           </div>
 
           <div>
-            <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 제목</label>
-            <input
+            <label htmlFor="a11y-satisfaction-manager-3" style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 제목</label>
+            <input id="a11y-satisfaction-manager-3"
               type="text"
               placeholder="예) 2026년도 AID-X 역량강화 세미나 만족도 조사"
               value={newTitle}
@@ -2177,8 +2177,8 @@ ${commentList || "(없음)"}
           </div>
 
           <div>
-            <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 목적</label>
-            <textarea
+            <label htmlFor="a11y-satisfaction-manager-4" style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 목적</label>
+            <textarea id="a11y-satisfaction-manager-4"
               placeholder="조사의 구체적인 배경 및 환류 계획을 적어주세요."
               value={newPurpose}
               onChange={(e) => setNewPurpose(e.target.value)}
@@ -2190,9 +2190,9 @@ ${commentList || "(없음)"}
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
             <div>
-              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 일정 (시작 ~ 종료)</label>
+              <label htmlFor="a11y-satisfaction-manager-5" style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 일정 (시작 ~ 종료)</label>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <input
+                <input id="a11y-satisfaction-manager-16"
                   type="date"
                   value={newStartDate}
                   onChange={(e) => setNewStartDate(e.target.value)}
@@ -2210,8 +2210,8 @@ ${commentList || "(없음)"}
               </div>
             </div>
             <div>
-              <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 대상</label>
-              <input
+              <label htmlFor="a11y-satisfaction-manager-17" style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조사 대상</label>
+              <input id="a11y-satisfaction-manager-5"
                 type="text"
                 placeholder="예) 인공지능 재직자 교육 참여자 전체"
                 value={newTarget}
@@ -2223,15 +2223,15 @@ ${commentList || "(없음)"}
           </div>
 
           <div>
-            <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem", fontWeight: "700" }}>
+            <label htmlFor="a11y-satisfaction-manager-6" style={{ fontSize: "0.78rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem", fontWeight: "700" }}>
               만족도조사 문항 빌더 (리커트 5점 척도형)
             </label>
-            
+
             <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.8rem" }}>
               {newQuestions.map((q, idx) => (
                 <div key={idx} style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                   <span style={{ fontSize: "0.75rem", color: "var(--accent-color)", fontWeight: "800", minWidth: "45px" }}>문항 {idx + 1}</span>
-                  <input
+                  <input id="a11y-satisfaction-manager-17"
                     type="text"
                     value={q}
                     onChange={(e) => {
@@ -2279,13 +2279,13 @@ ${commentList || "(없음)"}
               type="button"
               onClick={() => setActiveSurveyTab("list")}
               className="btn-secondary"
-              style={{ 
-                border: "1px solid rgba(255, 255, 255, 0.18)", 
-                background: "rgba(255, 255, 255, 0.04)", 
-                color: "rgba(255, 255, 255, 0.85)", 
-                padding: "0.6rem 1.5rem", 
-                borderRadius: "0.4rem", 
-                cursor: "pointer", 
+              style={{
+                border: "1px solid rgba(255, 255, 255, 0.18)",
+                background: "rgba(255, 255, 255, 0.04)",
+                color: "rgba(255, 255, 255, 0.85)",
+                padding: "0.6rem 1.5rem",
+                borderRadius: "0.4rem",
+                cursor: "pointer",
                 fontWeight: "700",
                 transition: "all 0.2s"
               }}
@@ -2348,12 +2348,12 @@ ${commentList || "(없음)"}
               <h4 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                 <QrCode size={18} /> 실시간 배포용 QR코드 & 모바일 링크
               </h4>
-              
+
               <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: "1.5rem", alignItems: "center" }}>
                 <div style={{ background: "white", padding: "0.5rem", borderRadius: "0.5rem", display: "flex", alignItems: "center", justifyContent: "center", width: "120px", height: "120px" }}>
                   {/* qrcode.react를 이용한 SVG QR코드 실시간 생성 */}
-                  <QRCodeSVG 
-                    value={`https://uc-anchor.vercel.app/sv/${selectedSurvey.id}`} 
+                  <QRCodeSVG
+                    value={`https://uc-anchor.vercel.app/sv/${selectedSurvey.id}`}
                     size={110}
                     level="H"
                     includeMargin={false}
@@ -2362,10 +2362,10 @@ ${commentList || "(없음)"}
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
                   <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
-                    모바일 카메라나 현장 안내용 프린트물에 아래 QR코드를 부착하세요. 
+                    모바일 카메라나 현장 안내용 프린트물에 아래 QR코드를 부착하세요.
                     스캔 시 해당 조사지로 직통 연결됩니다.
                   </p>
-                  
+
                   <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                     <input
                       type="text"
@@ -2423,10 +2423,10 @@ ${commentList || "(없음)"}
                   <p style={{ fontSize: "0.78rem" }}>GPT-4o-mini 모델이 응답 데이터와 피드백을 기반으로 환류 의견을 작성 중입니다...</p>
                 </div>
               ) : aiReport ? (
-                <div style={{ 
-                  padding: "1rem", 
-                  borderRadius: "0.5rem", 
-                  background: "rgba(59, 130, 246, 0.02)", 
+                <div style={{
+                  padding: "1rem",
+                  borderRadius: "0.5rem",
+                  background: "rgba(59, 130, 246, 0.02)",
                   border: "1px solid rgba(59, 130, 246, 0.15)",
                   fontSize: "0.78rem",
                   color: "var(--text-secondary)",
@@ -2444,8 +2444,8 @@ ${commentList || "(없음)"}
                 </div>
               ) : (
                 <div style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)", border: "1px dashed var(--border-color-dark)", borderRadius: "0.4rem", fontSize: "0.78rem" }}>
-                  {selectedSurvey.responses.length === 0 
-                    ? "수집된 만족도 조사가 없어 AI 총평을 실행할 수 없습니다." 
+                  {selectedSurvey.responses.length === 0
+                    ? "수집된 만족도 조사가 없어 AI 총평을 실행할 수 없습니다."
                     : "우측 상단의 'AI 총평 생성/갱신' 버튼을 눌러 종합의견 리포트를 작성해 보세요."}
                 </div>
               )}
@@ -2480,8 +2480,8 @@ ${commentList || "(없음)"}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem", background: "rgba(255,255,255,0.01)", padding: "1rem", borderRadius: "0.4rem", border: "1px solid var(--border-color)" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
                     <div>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>응답자 정보</label>
-                      <input
+                      <label htmlFor="a11y-satisfaction-manager-18" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>응답자 정보</label>
+                      <input id="a11y-satisfaction-manager-6"
                         type="text"
                         value={simulatedResponder}
                         onChange={(e) => setSimulatedResponder(e.target.value)}
@@ -2490,10 +2490,10 @@ ${commentList || "(없음)"}
                       />
                     </div>
                     <div>
-                      <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>개별 문항 점수 부여 (1~5점)</label>
+                      <label htmlFor="a11y-satisfaction-manager-7" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>개별 문항 점수 부여 (1~5점)</label>
                       <div style={{ display: "flex", gap: "0.3rem", marginTop: "0.2rem" }}>
                         {selectedSurvey.questions.map((_, qIdx) => (
-                          <select
+                          <select id="a11y-satisfaction-manager-18"
                             key={qIdx}
                             value={simulatedScores[qIdx] || 5}
                             onChange={(e) => {
@@ -2516,8 +2516,8 @@ ${commentList || "(없음)"}
                   </div>
 
                   <div>
-                    <label style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>주관식 기타 건의사항</label>
-                    <input
+                    <label htmlFor="a11y-satisfaction-manager-19" style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>주관식 기타 건의사항</label>
+                    <input id="a11y-satisfaction-manager-7"
                       type="text"
                       placeholder="예) 교재 상태가 아주 훌륭했습니다."
                       value={simulatedComment}
@@ -2542,14 +2542,14 @@ ${commentList || "(없음)"}
 
           {/* 우측: 리커트 5점 척도 100점 환산 차트 및 수집 의견 목록 */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            
+
             {/* 결과 통계 차트 및 시트 동기화 */}
             <div className="glass-card" style={{ padding: "1.8rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.2rem", flexWrap: "wrap", gap: "0.5rem" }}>
                 <h4 style={{ fontSize: "0.95rem", fontWeight: "800", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                   <BarChart3 size={18} /> 문항별 만족도 점수 (100점 만점)
                 </h4>
-                
+
                 <div style={{ display: "flex", gap: "0.3rem" }}>
                   {/* 구글 시트 연동 버튼 */}
                   <button
@@ -2614,7 +2614,7 @@ ${commentList || "(없음)"}
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
                         <XAxis dataKey="name" stroke="var(--text-secondary)" />
                         <YAxis domain={[0, 100]} stroke="var(--text-secondary)" />
-                        <Tooltip 
+                        <Tooltip
                           contentStyle={{ background: "#0f172a", border: "1px solid var(--border-color)", borderRadius: "0.3rem" }}
                           labelStyle={{ color: "white", fontWeight: "700" }}
                           itemStyle={{ color: "var(--accent-color)" }}
@@ -2658,12 +2658,12 @@ ${commentList || "(없음)"}
                   </p>
                 ) : (
                   selectedSurvey.responses.filter(r => r.comment).map((res) => (
-                    <div 
-                      key={res.id} 
-                      style={{ 
-                        padding: "0.6rem 0.8rem", 
-                        borderRadius: "0.4rem", 
-                        background: "rgba(255,255,255,0.01)", 
+                    <div
+                      key={res.id}
+                      style={{
+                        padding: "0.6rem 0.8rem",
+                        borderRadius: "0.4rem",
+                        background: "rgba(255,255,255,0.01)",
                         border: "1px solid var(--border-color)",
                         fontSize: "0.75rem"
                       }}
@@ -2765,8 +2765,8 @@ ${commentList || "(없음)"}
               color: "rgba(255,255,255,0.85)",
               alignItems: "center"
             }}>
-              <span 
-                style={{ cursor: "pointer", color: "#0f9d58", fontWeight: "900", display: "inline-flex", alignItems: "center", gap: "0.3rem" }} 
+              <span
+                style={{ cursor: "pointer", color: "#0f9d58", fontWeight: "900", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}
                 onClick={() => handleOpenGoogleSheetsDirect(selectedSurvey)}
               >
                 田 Google Sheets 웹으로 바로가기 (실제 데이터 자동 복사)
@@ -2927,7 +2927,7 @@ ${commentList || "(없음)"}
 
             {/* 모달 바디 (단계별 분기 렌더링) */}
             <div style={{ padding: "1.5rem", overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-              
+
               {/* 1단계: 파일 업로드 대기 */}
               {aiAnalysisStep === 1 && (
                 <>
@@ -2936,7 +2936,7 @@ ${commentList || "(없음)"}
                     AI(GPT-4o & Gemini) 협동 의사결정 모델이 파일 데이터를 읽고 상호 검증(Debate)을 거쳐 최종 결과를 추출합니다.
                   </p>
 
-                  <div 
+                  <div
                     onClick={() => document.getElementById("satisfaction-file-input")?.click()}
                     style={{
                       border: "2px dashed var(--border-color)",
@@ -2954,7 +2954,7 @@ ${commentList || "(없음)"}
                     onMouseOver={(e) => e.currentTarget.style.borderColor = "var(--accent-color)"}
                     onMouseOut={(e) => e.currentTarget.style.borderColor = "var(--border-color)"}
                   >
-                    <input 
+                    <input
                       id="satisfaction-file-input"
                       type="file"
                       accept=".xlsx, .xls, .hwp, .pdf"
@@ -2986,7 +2986,7 @@ ${commentList || "(없음)"}
                         <span style={{ color: "var(--text-primary)", fontWeight: "700" }}>{uploadedFile.name}</span>
                         <span style={{ color: "var(--text-secondary)" }}>({(uploadedFile.size / 1024).toFixed(1)} KB)</span>
                       </div>
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setUploadedFile(null);
@@ -3048,23 +3048,23 @@ ${commentList || "(없음)"}
                   <div style={{ background: "rgba(255,255,255,0.03)", padding: "0.8rem", borderRadius: "0.4rem", border: "1px solid var(--border-color)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.72rem", marginBottom: "0.35rem", fontWeight: "800" }}>
                       <span style={{ color: "var(--accent-color)" }}>
-                        {debatePhase === "extract" ? "1. 파일 데이터 추출 단계" : 
-                         debatePhase === "draft" ? "2. 모델별 데이터 추출 초안 작성" : 
-                         debatePhase === "debate" ? "3. 크로스 데이터 팩트체크 및 토론" : 
+                        {debatePhase === "extract" ? "1. 파일 데이터 추출 단계" :
+                         debatePhase === "draft" ? "2. 모델별 데이터 추출 초안 작성" :
+                         debatePhase === "debate" ? "3. 크로스 데이터 팩트체크 및 토론" :
                          "4. 최종 의사결정 합의 도달 (Consensus)"}
                       </span>
                       <span style={{ color: "var(--text-secondary)" }}>
-                        {debatePhase === "extract" ? "25%" : 
-                         debatePhase === "draft" ? "50%" : 
+                        {debatePhase === "extract" ? "25%" :
+                         debatePhase === "draft" ? "50%" :
                          debatePhase === "debate" ? "75%" : "100%"}
                       </span>
                     </div>
                     <div style={{ width: "100%", height: "6px", background: "rgba(255,255,255,0.05)", borderRadius: "3px", overflow: "hidden" }}>
-                      <div style={{ 
-                        width: debatePhase === "extract" ? "25%" : 
-                               debatePhase === "draft" ? "50%" : 
+                      <div style={{
+                        width: debatePhase === "extract" ? "25%" :
+                               debatePhase === "draft" ? "50%" :
                                debatePhase === "debate" ? "75%" : "100%",
-                        height: "100%", 
+                        height: "100%",
                         background: "linear-gradient(90deg, #10b981, var(--accent-color))",
                         borderRadius: "3px",
                         transition: "width 0.5s ease"
@@ -3085,8 +3085,8 @@ ${commentList || "(없음)"}
                     gap: "0.8rem"
                   }}>
                     {debateLogs.map((log, idx) => (
-                      <div 
-                        key={idx} 
+                      <div
+                        key={idx}
                         style={{
                           display: "flex",
                           flexDirection: "column",
@@ -3095,9 +3095,9 @@ ${commentList || "(없음)"}
                         }}
                       >
                         {log.sender !== "system" && (
-                          <span style={{ 
-                            fontSize: "0.62rem", 
-                            fontWeight: "800", 
+                          <span style={{
+                            fontSize: "0.62rem",
+                            fontWeight: "800",
                             color: log.sender === "gpt" ? "#10b981" : "#a855f7",
                             marginBottom: "0.15rem",
                             display: "flex",
@@ -3143,10 +3143,10 @@ ${commentList || "(없음)"}
                     {/* 수행 부서 선택 / 추천 자동발급 ID (2컬럼) */}
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
+                        <label htmlFor="a11y-satisfaction-manager-8" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
                           수행 부서 선택
                         </label>
-                        <select
+                        <select id="a11y-satisfaction-manager-8"
                           value={extractedData.department}
                           onChange={(e) => setExtractedData({ ...extractedData, department: e.target.value })}
                           style={{ width: "100%", padding: "0.45rem", fontSize: "0.75rem", background: "var(--input-bg)", color: "var(--text-primary)", border: "1px solid var(--border-color)", borderRadius: "0.3rem" }}
@@ -3160,10 +3160,10 @@ ${commentList || "(없음)"}
                         </select>
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
+                        <label htmlFor="a11y-satisfaction-manager-9" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
                           추천 자동발급 ID
                         </label>
-                        <input
+                        <input id="a11y-satisfaction-manager-9"
                           type="text"
                           readOnly
                           value={getNextSurveyId([extractedData.department], extractedData.startDate ? extractedData.startDate.split("-")[0] : null)}
@@ -3174,10 +3174,10 @@ ${commentList || "(없음)"}
 
                     {/* 조사 제목 */}
                     <div>
-                      <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
+                      <label htmlFor="a11y-satisfaction-manager-10" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
                         조사 제목
                       </label>
-                      <input
+                      <input id="a11y-satisfaction-manager-10"
                         type="text"
                         value={extractedData.title}
                         onChange={(e) => setExtractedData({ ...extractedData, title: e.target.value })}
@@ -3188,10 +3188,10 @@ ${commentList || "(없음)"}
 
                     {/* 조사 목적 */}
                     <div>
-                      <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
+                      <label htmlFor="a11y-satisfaction-manager-11" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
                         조사 목적
                       </label>
-                      <textarea
+                      <textarea id="a11y-satisfaction-manager-11"
                         value={extractedData.purpose}
                         onChange={(e) => setExtractedData({ ...extractedData, purpose: e.target.value })}
                         placeholder="조사의 구체적인 배경 및 환류 계획을 적어주세요."
@@ -3202,11 +3202,11 @@ ${commentList || "(없음)"}
                     {/* 조사 일정 / 조사 대상 (2컬럼) */}
                     <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "0.8rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
+                        <label htmlFor="a11y-satisfaction-manager-12" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
                           조사 일정 (시작 ~ 종료)
                         </label>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                          <input
+                          <input id="a11y-satisfaction-manager-19"
                             type="date"
                             value={extractedData.startDate}
                             onChange={(e) => setExtractedData({ ...extractedData, startDate: e.target.value })}
@@ -3222,10 +3222,10 @@ ${commentList || "(없음)"}
                         </div>
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
+                        <label htmlFor="a11y-satisfaction-manager-20" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
                           조사 대상
                         </label>
-                        <input
+                        <input id="a11y-satisfaction-manager-12"
                           type="text"
                           value={extractedData.target}
                           onChange={(e) => setExtractedData({ ...extractedData, target: e.target.value })}
@@ -3237,7 +3237,7 @@ ${commentList || "(없음)"}
 
                     {/* 만족도조사 문항 빌더 (리커트 5점 척도형) */}
                     <div style={{ marginTop: "0.3rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.6rem" }}>
-                      <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "800", marginBottom: "0.4rem" }}>
+                      <label htmlFor="a11y-satisfaction-manager-13" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "800", marginBottom: "0.4rem" }}>
                         만족도조사 문항 빌더 (리커트 5점 척도형)
                       </label>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
@@ -3246,7 +3246,7 @@ ${commentList || "(없음)"}
                             <span style={{ fontSize: "0.7rem", fontWeight: "800", color: "var(--accent-color)", width: "3.2rem", flexShrink: 0 }}>
                               문항 {idx + 1}
                             </span>
-                            <input
+                            <input id="a11y-satisfaction-manager-20"
                               type="text"
                               value={qText}
                               onChange={(e) => {
@@ -3297,10 +3297,10 @@ ${commentList || "(없음)"}
                     {/* 응답 수 및 만족도 평균 (2컬럼) */}
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.8rem", borderTop: "1px solid var(--border-color)", paddingTop: "0.6rem" }}>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
+                        <label htmlFor="a11y-satisfaction-manager-13" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
                           응답 수 (인원수)
                         </label>
-                        <input
+                        <input id="a11y-satisfaction-manager-13"
                           type="number"
                           value={extractedData.responsesCount}
                           onChange={(e) => setExtractedData({ ...extractedData, responsesCount: parseInt(e.target.value, 10) || 10 })}
@@ -3308,10 +3308,10 @@ ${commentList || "(없음)"}
                         />
                       </div>
                       <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
+                        <label htmlFor="a11y-satisfaction-manager-14" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
                           종합 만족도 평균 (100점 만점)
                         </label>
-                        <input
+                        <input id="a11y-satisfaction-manager-14"
                           type="number"
                           step="0.1"
                           value={extractedData.averageScore}
@@ -3323,10 +3323,10 @@ ${commentList || "(없음)"}
 
                     {/* 주관식 의견 */}
                     <div>
-                      <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
+                      <label htmlFor="a11y-satisfaction-manager-15" style={{ display: "block", fontSize: "0.72rem", color: "var(--text-primary)", fontWeight: "700", marginBottom: "0.25rem" }}>
                         합의된 주요 주관식 의견 / 피드백 (줄바꿈으로 구분)
                       </label>
-                      <textarea
+                      <textarea id="a11y-satisfaction-manager-15"
                         value={extractedData.comments.join("\n")}
                         onChange={(e) => setExtractedData({ ...extractedData, comments: e.target.value.split("\n").filter(Boolean) })}
                         placeholder="한 줄에 의견 하나씩 기입해 주세요"
