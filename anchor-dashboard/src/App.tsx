@@ -6196,6 +6196,7 @@ export default function App() {
       }
     }, 150);
     return () => clearTimeout(timer);
+  // oxlint-disable-next-line react/exhaustive-deps -- service data, year, and load guards own synchronization; auth restoration is a permission check, not a write trigger.
   }, [serviceData, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 최신 monthlySchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
@@ -6404,6 +6405,7 @@ export default function App() {
         performSync(latestMonthlySchedulesRef.current, selectedYear);
       }
     };
+  // oxlint-disable-next-line react/exhaustive-deps -- schedule data, year, and load guards own synchronization; auth restoration must not flush or delete schedules.
   }, [monthlySchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 최신 eventSchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
@@ -6698,6 +6700,7 @@ export default function App() {
         performSync(latestEventSchedulesRef.current, selectedYear);
       }
     };
+  // oxlint-disable-next-line react/exhaustive-deps -- event data, year, and load guards own synchronization; auth restoration must not flush or delete events.
   }, [eventSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 최신 meetingSchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
@@ -6866,6 +6869,7 @@ export default function App() {
         performSync(latestMeetingSchedulesRef.current, selectedYear);
       }
     };
+  // oxlint-disable-next-line react/exhaustive-deps -- meeting data, year, and load guards own synchronization; auth restoration must not flush or delete meetings.
   }, [meetingSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
 
@@ -7175,7 +7179,7 @@ export default function App() {
         }
       }
     }
-  }, [activeTab, menuVisibility, kpiSubTab, displayProjects]);
+  }, [activeTab, menuVisibility, kpiSubTab, displayProjects, isSongDirector]);
 
 
   // 새로고침 시 스크롤 위치 영속성 복원 훅 (.main-content 컨테이너 대상) - 마운트 시 1회 작동
