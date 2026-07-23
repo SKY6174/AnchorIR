@@ -30,14 +30,14 @@ const formatToMillionWon = (value?: number | null): string => {
 };
 
 // 천 단위 구분 쉼표 포맷팅 헬퍼 함수
-const formatNumberWithCommas = (value?: number | string | null): string => {
+const _formatNumberWithCommas = (value?: number | string | null): string => {
   if (value === undefined || value === null) return "";
   const clean = String(value).replace(/[^0-9]/g, "");
   if (!clean) return "";
   return Number(clean).toLocaleString("ko-KR");
 };
 
-const parseNumberFromCommas = (value?: number | string | null): number => {
+const _parseNumberFromCommas = (value?: number | string | null): number => {
   if (!value) return 0;
   return parseInt(String(value).replace(/,/g, ""), 10) || 0;
 };
@@ -83,7 +83,7 @@ const getRequesterRoleName = (user: LegacyPdcaRecord | null | undefined) => {
   return "실무자";
 };
 
-const MONTHS_LIST = ["26.3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "27.1월", "2월"];
+const _MONTHS_LIST = ["26.3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "27.1월", "2월"];
 
 const BUDGET_CATEGORIES_OPTIONS = [
   { value: "", label: "선택 안 함" },
@@ -233,8 +233,8 @@ export default function PDCAManager({
 
   // P 단계 기획 및 재원 배정용 상태 (본예산 및 이월예산 구분)
   const [inputTimeline, setInputTimeline] = useState("");
-  const [inputStartDate, setInputStartDate] = useState("");
-  const [inputEndDate, setInputEndDate] = useState("");
+  const [_inputStartDate, setInputStartDate] = useState("");
+  const [_inputEndDate, setInputEndDate] = useState("");
   const [inputTargetAudience, setInputTargetAudience] = useState("");
   const [inputCoopDept1, setInputCoopDept1] = useState("");
   const [inputCoopDept2, setInputCoopDept2] = useState("");
@@ -247,7 +247,7 @@ export default function PDCAManager({
   // 이월예산 재원 상태 (신설)
   const [inputBudgetCarryNational, setInputBudgetCarryNational] = useState("");
   const [inputBudgetCarryCity, setInputBudgetCarryCity] = useState("");
-  const [inputBudgetCarryExternal, setInputBudgetCarryExternal] = useState("");
+  const [_inputBudgetCarryExternal, setInputBudgetCarryExternal] = useState("");
 
   // 이원화 비목별 예산용 상태 (본예산/이월예산/집행액 구분, 최대 4칸)
   const [inputBudgetCategories, setInputBudgetCategories] = useState([
@@ -323,7 +323,7 @@ export default function PDCAManager({
   const [inputKpiLinks, setInputKpiLinks] = useState([""]);
   const [inputKpiTargets, setInputKpiTargets] = useState<Record<string, number | string>>({});
   const [inputKpiActuals, setInputKpiActuals] = useState<Record<string, number | string>>({});
-  const [inputActualFrequency, setInputActualFrequency] = useState("");
+  const [_inputActualFrequency, setInputActualFrequency] = useState("");
   const [inputAchieveRate, setInputAchieveRate] = useState("");
 
   // D단계 세부 실제 실적 수치 상태
@@ -674,7 +674,7 @@ export default function PDCAManager({
   }, [selectedProgId, selectedYear, selectedVersionId, programVersions]);
 
   // 추진일정 변경 이벤트 핸들러 (기존 호환 유지)
-  const handleTimelineChange = (start: string, end: string) => {
+  const _handleTimelineChange = (start: string, end: string) => {
     setInputStartDate(start);
     setInputEndDate(end);
     if (start && end) {
@@ -860,7 +860,7 @@ export default function PDCAManager({
     const currentP = activeProg.pdca?.p || "대기";
     const currentD = activeProg.pdca?.d || "대기";
     const currentC = activeProg.pdca?.c || "대기";
-    const currentA = activeProg.pdca?.a || "대기";
+    const _currentA = activeProg.pdca?.a || "대기";
 
     if (status === "완료") {
       // 1. 단계별 의존성 체크
@@ -1274,7 +1274,7 @@ export default function PDCAManager({
 
     // 비목별 본집행 및 이월집행 합산 총액
     const totalSpentMain = categoriesToSave.reduce((sum, c) => sum + (c.spent || 0), 0);
-    const totalSpentCarry = categoriesToSave.reduce((sum, c) => sum + (c.spent_carry || 0), 0);
+    const _totalSpentCarry = categoriesToSave.reduce((sum, c) => sum + (c.spent_carry || 0), 0);
 
     // 본집행 실적을 국고/시비/외부사업비 한도에 비례하여 자동 안분 배분
     let sNational = 0;
@@ -1551,8 +1551,8 @@ export default function PDCAManager({
       </tr>
     `).join("");
 
-    const pMonths = inputMonthlyPDCA.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음";
-    const dMonths = inputMonthlyPDCAActual.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음";
+    const _pMonths = inputMonthlyPDCA.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음";
+    const _dMonths = inputMonthlyPDCAActual.map((val, idx) => val ? `${idx + 3}월(${val})` : null).filter(Boolean).join(", ") || "일정 없음";
 
     // 💡 [비주얼 타임라인 렌더링 헬퍼 함수]
     const renderTimelineCell = (val: string) => {
@@ -2188,9 +2188,9 @@ ${inputEvalType === "우수" ? `
                   <div className="pdca-stepper">
                     {["p", "d", "c", "a"].map((stage) => {
                       const status = activeProg.pdca[stage];
-                      const isDone = status === "완료";
-                      const isProgress = status === "진행";
-                      const isAutoStage = stage === "p" || stage === "d";
+                      const _isDone = status === "완료";
+                      const _isProgress = status === "진행";
+                      const _isAutoStage = stage === "p" || stage === "d";
                       return (
                         <div
                           key={stage}
@@ -3083,7 +3083,7 @@ ${inputEvalType === "우수" ? `
                           {inputBudgetCategories
                             .filter(item => item.category && item.category !== "")
                             .map((item, idx) => {
-                              const originalIdx = inputBudgetCategories.findIndex(c => c.category === item.category);
+                              const _originalIdx = inputBudgetCategories.findIndex(c => c.category === item.category);
                               return (
                                 <div key={idx} style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "0.2rem", alignItems: "center" }}>
                                   <div style={{
