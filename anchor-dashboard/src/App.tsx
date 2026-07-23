@@ -11,7 +11,6 @@ const InstructorPoolManager = React.lazy(() => import("./components/InstructorPo
 const PDCAManager = React.lazy(() => import("./components/PDCAManager"));
 const BudgetExecutionManager = React.lazy(() => import("./components/BudgetExecutionManager"));
 const PartnerManager = React.lazy(() => import("./components/PartnerManager"));
-const AssetManager = React.lazy(() => import("./components/AssetManager"));
 import BudgetItemsManager from "./components/BudgetItemsManager";
 import SurveyResponder from "./components/SurveyResponder";
 import LLMWiki from "./components/LLMWiki";
@@ -40,6 +39,7 @@ import { useDashboardScroll } from "./app/hooks/use-dashboard-scroll";
 import { useDashboardUiLifecycle } from "./app/hooks/use-dashboard-ui-lifecycle";
 import { useAgreementLocalCache, useScholarshipLocalCache, useUnifiedCertificateLocalCache } from "./app/hooks/use-record-local-cache";
 import { useAgreementsAutosave } from "./features/agreements/hooks/use-agreements-autosave";
+import { AssetScreen } from "./features/assets/screens/asset-screen";
 import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
 import { DashboardScreen } from "./features/dashboard/screens/dashboard-screen";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
@@ -6880,18 +6880,14 @@ export default function App() {
         )}
 
         {activeTab === "asset" && (
-          <div className="asset-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-            <React.Suspense fallback={null}>
-              <AssetManager
-                currentRole={currentRole}
-                currentUser={currentUser}
-                activeSubTab={assetSubTab}
-                onChangeSubTab={setAssetSubTab}
-                darkMode={darkMode}
-                selectedYear={selectedYear}
-              />
-            </React.Suspense>
-          </div>
+          <AssetScreen
+            currentRole={currentRole}
+            currentUser={currentUser}
+            activeSubTab={assetSubTab}
+            onChangeSubTab={setAssetSubTab}
+            darkMode={darkMode}
+            selectedYear={selectedYear}
+          />
         )}
 
         {activeTab === "committee" && (
