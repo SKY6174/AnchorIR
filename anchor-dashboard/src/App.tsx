@@ -52,6 +52,7 @@ import { deleteEnvironmentRecordsByYear, deleteEquipmentRecordsByYear, deleteSer
 import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
 import { useProjectAutosave } from "./features/projects/hooks/use-project-autosave";
+import { useKpiSelection, useVisibleKpiSubTabGuard } from "./features/projects/hooks/use-kpi-selection-lifecycle";
 import { useProjectLocalBackup } from "./features/projects/hooks/use-project-local-backup";
 import { useJointProgramDetection, useProjectFetchReset } from "./features/projects/hooks/use-project-state-lifecycle";
 import { deleteMonthlySchedulesByIds, deleteMonthlySchedulesByYear, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, fetchStandaloneMonthlyScheduleIds, insertMonthlySchedules, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertMonthlySchedules, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
@@ -4833,49 +4834,16 @@ export default function App() {
 
 
 
-  // 성과지표 subTab이 노출 여부 설정에 의해 가려졌을 때 활성화 탭을 자동으로 숨겨지지 않은 유효 탭으로 보정
-  useEffect(() => {
-    // 관리자(단장, 운영팀장, 본부장, ADMIN 등)는 숨겨진 탭도 직접 관리할 수 있도록 튕김 예외 처리
-    if (isSongDirector) return;
-
-    if (activeTab === "kpis" && menuVisibility) {
-      const isStatusVisible = menuVisibility.kpi_status !== false;
-      const isSelfVisible = menuVisibility.kpi_self !== false;
-      const isFocusVisible = menuVisibility.kpi_focus !== false;
-
-      if (kpiSubTab === "공통" && !isStatusVisible) {
-        if (isSelfVisible) {
-          setKpiSubTab("자율");
-          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "자율");
-          setSelectedKpi(first || null);
-        } else if (isFocusVisible) {
-          setKpiSubTab("중점");
-          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "중점");
-          setSelectedKpi(first || null);
-        }
-      } else if (kpiSubTab === "자율" && !isSelfVisible) {
-        if (isStatusVisible) {
-          setKpiSubTab("공통");
-          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "공통");
-          setSelectedKpi(first || null);
-        } else if (isFocusVisible) {
-          setKpiSubTab("중점");
-          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "중점");
-          setSelectedKpi(first || null);
-        }
-      } else if (kpiSubTab === "중점" && !isFocusVisible) {
-        if (isStatusVisible) {
-          setKpiSubTab("공통");
-          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "공통");
-          setSelectedKpi(first || null);
-        } else if (isSelfVisible) {
-          setKpiSubTab("자율");
-          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "자율");
-          setSelectedKpi(first || null);
-        }
-      }
-    }
-  }, [activeTab, menuVisibility, kpiSubTab, displayProjects, isSongDirector]);
+  // 숨겨진 성과지표 subTab을 노출 가능한 첫 탭으로 보정합니다.
+  useVisibleKpiSubTabGuard({
+    activeTab,
+    menuVisibility,
+    kpiSubTab,
+    displayProjects,
+    isPrivilegedUser: isSongDirector,
+    setKpiSubTab,
+    setSelectedKpi
+  });
 
 
   // 새로고침 시 스크롤 위치를 복원하고 탭 전환 시 최상단으로 이동합니다.
@@ -4904,23 +4872,13 @@ export default function App() {
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useProjectLocalBackup(projects);
 
-  /*
-   * [성과지표 자동 연계 UX 로직]
-   * 사용자가 성과지표 관리('kpis') 탭에 진입하거나,
-   * 성과지표 서브탭('자율' 또는 '중점')을 전환할 때 빈 화면을 보지 않도록
-   * 해당 서브탭 유형에 맞는 첫 번째 성과지표를 자동으로 찾아 상세 조회창(selectedKpi)에 설정합니다.
-   */
-  useEffect(() => {
-    if (activeTab === "kpis") {
-      // 모든 단위과제(units)의 성과지표(kpis) 중에서 현재 선택된 서브탭 유형('자율'/'중점')과 일치하는 첫 번째 지표를 검색합니다.
-      const firstKpi = projects
-        .flatMap((p) => p.units.flatMap((u: LegacyAppRecord) => u.kpis || []))
-        .find((k) => k ? k.type === kpiSubTab : false);
-
-      // 검색된 첫 번째 지표가 있으면 자동으로 조회 대상으로 설정하고, 없으면 null로 초기화합니다.
-      setSelectedKpi(firstKpi || null);
-    }
-  }, [activeTab, kpiSubTab, projects]);
+  // 성과지표 탭 진입 또는 서브탭 전환 시 첫 지표를 자동 선택합니다.
+  useKpiSelection({
+    activeTab,
+    kpiSubTab,
+    projects,
+    setSelectedKpi
+  });
 
   const handleLoginSuccess = async (user: LegacyAppRecord) => {
     setCurrentUser(user);
