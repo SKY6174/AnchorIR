@@ -45,7 +45,7 @@ export default defineConfig({
               name: 'features',
               // Keep the lazy-loaded external vote page out of the shared
               // component chunk to prevent a circular chunk dependency.
-              test: /src[\\/]components[\\/](?!CommitteeExternalVote\.tsx$)/,
+              test: /src[\\/](?:components[\\/](?!CommitteeExternalVote\.tsx$)|features[\\/])/,
               priority: 10,
               maxSize: 450_000,
               includeDependenciesRecursively: false,
