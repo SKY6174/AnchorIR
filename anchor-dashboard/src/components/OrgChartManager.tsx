@@ -518,10 +518,10 @@ export interface OrgChartManagerProps {
 }
 
 export default function OrgChartManager({
-  darkMode,
+  darkMode: _darkMode,
   selectedYear: initialYear = 2026,
-  currentRole,
-  currentUser
+  currentRole: _currentRole,
+  currentUser: _currentUser
 }: OrgChartManagerProps = {}) {
   const [selectedKey, setSelectedKey] = useState<string>("university");
   const [selectedYear, setSelectedYear] = useState<number>(initialYear);

@@ -8,7 +8,7 @@ export interface SurveyResponderProps {
   currentRole?: any;
 }
 
-export default function SurveyResponder({}: SurveyResponderProps = {}) {
+export default function SurveyResponder(_props: SurveyResponderProps = {}) {
   const [surveyId, setSurveyId] = useState<string | null>(null);
   const [survey, setSurvey] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);

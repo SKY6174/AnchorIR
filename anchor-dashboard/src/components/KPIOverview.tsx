@@ -71,7 +71,7 @@ const renderCustomizedLabel = ({
 /**
  * 💡 KPIOverview - 5대 핵심 KPI 및 집행률 요약 TSX 컴포넌트
  */
-export default function KPIOverview({ projects = [], currentRole, selectedYear = 2 }: KPIOverviewProps): React.JSX.Element {
+export default function KPIOverview({ projects = [], currentRole: _currentRole, selectedYear = 2 }: KPIOverviewProps): React.JSX.Element {
   // 안전 방어 코드: projects가 배열이 아닐 경우 빈 배열로 처리하여 TypeError 방지
   const safeProjects = Array.isArray(projects) ? projects : [];
 

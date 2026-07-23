@@ -56,7 +56,7 @@ export interface BudgetExecutionManagerProps {
   currentUser?: any;
 }
 
-export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear = 2, supabase, darkMode = true }: BudgetExecutionManagerProps) {
+export default function BudgetExecutionManager({ projects = [], currentRole: _currentRole, selectedYear: rawYear = 2, supabase, darkMode = true }: BudgetExecutionManagerProps) {
   const selectedYear = Number(rawYear);
   const [activeUploadTab, setActiveUploadTab] = useState<string>("main"); // "main" (본예산 집행 등록) vs "carryover" (이월예산 집행 등록)
   
@@ -167,7 +167,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
           console.error("Supabase 기존 데이터 삭제 실패 (RLS 또는 DB 에러):", delError);
           triggerToast(`⚠️ DB 동기화(삭제) 실패: ${delError.message}`, "warning");
         } else if (newRecords.length > 0) {
-          const bulkInsert = newRecords.map(({ id, created_at, ...rest }) => rest);
+          const bulkInsert = newRecords.map(({ id: _id, created_at: _created_at, ...rest }) => rest);
           const { error: insError } = await supabase
             .from("budget_executions")
             .insert(bulkInsert);

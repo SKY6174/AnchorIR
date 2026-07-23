@@ -6266,7 +6266,7 @@ export default function App() {
 
           if (upError) {
             if (upError.code === "42703") {
-              const fallbackItems = updateItems.map(({ event_id, meeting_id, ...rest }) => rest);
+              const fallbackItems = updateItems.map(({ event_id: _event_id, meeting_id: _meeting_id, ...rest }) => rest);
               const { data: fbData, error: fbError } = await supabase
                 .from("schedule_monthly")
                 .upsert(fallbackItems, { onConflict: "id" })
@@ -6290,7 +6290,7 @@ export default function App() {
 
           if (insError) {
             if (insError.code === "42703") {
-              const fallbackItems = newItems.map(({ event_id, meeting_id, ...rest }) => rest);
+              const fallbackItems = newItems.map(({ event_id: _event_id, meeting_id: _meeting_id, ...rest }) => rest);
               const { data: fbData, error: fbError } = await supabase
                 .from("schedule_monthly")
                 .insert(fallbackItems)
@@ -10482,7 +10482,7 @@ export default function App() {
                                       </td>
                                     </tr>
                                   ) : (
-                                    versionRequests.map((req, idx) => {
+                                    versionRequests.map((req, _idx) => {
                                       // 💡 [교육용 한글 주석] 송경영 단장님의 직접 수정 이력은 공식 수정 횟차(seq) 집계에 들어가지 않도록 배제 처리합니다.
                                       const approvedRequests = versionRequests.filter(r => r.status === "승인완료" && r.version_name !== "송경영 단장 직접 수정");
                                       const isApproved = req.status === "승인완료";
@@ -11176,7 +11176,7 @@ export default function App() {
                           return numA - numB;
                         });
 
-                        return sortedKpis.map(({ k, nk }) => {
+                        return sortedKpis.map(({ k: _k, nk }) => {
                           let rate = 0;
                           if (selectedYear === 1 && nk.id === "L-1") {
                             rate = 111.9;

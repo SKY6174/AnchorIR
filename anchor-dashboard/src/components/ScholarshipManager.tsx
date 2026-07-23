@@ -114,7 +114,7 @@ export default function ScholarshipManager({
   onUpdateScholarship,
   onDeleteScholarship,
   setScholarships,
-  currentRole
+  currentRole: _currentRole
 }: ScholarshipManagerProps): React.JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<string | number | null>(null);

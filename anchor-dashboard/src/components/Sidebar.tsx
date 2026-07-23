@@ -49,8 +49,8 @@ export interface SidebarProps {
  * 💡 Sidebar - 대시보드 메인 사이드바 네비게이션 TSX 컴포넌트
  */
 export default function Sidebar({
-  currentRole,
-  onChangeRole,
+  currentRole: _currentRole,
+  onChangeRole: _onChangeRole,
   activeTab,
   onChangeTab,
   projectsSubTab,
@@ -75,7 +75,7 @@ export default function Sidebar({
   onChangeCommitteeSubTab,
   menuVisibility = {},
   isSongDirector = false,
-  currentUser = null
+  currentUser: _currentUser = null
 }: SidebarProps): React.JSX.Element {
   const [hoveredTab, setHoveredTab] = React.useState<string | null>(null);
 

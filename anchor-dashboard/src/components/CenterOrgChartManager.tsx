@@ -9,10 +9,10 @@ export interface CenterOrgChartManagerProps {
 }
 
 export default function CenterOrgChartManager({
-  darkMode,
-  selectedYear,
-  currentRole,
-  currentUser
+  darkMode: _darkMode,
+  selectedYear: _selectedYear,
+  currentRole: _currentRole,
+  currentUser: _currentUser
 }: CenterOrgChartManagerProps = {}) {
   // 사용자가 마우스를 올린 조직 노드의 ID를 저장하는 상태(State)입니다.
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);

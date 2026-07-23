@@ -179,7 +179,7 @@ export default function PDCAManager({
   projects = [],
   currentRole = {},
   onUpdateProgramDetails = () => undefined,
-  onAddProgram = () => undefined,
+  onAddProgram: _onAddProgram = () => undefined,
   selectedYear = 1,
   selectedUnitId = "",
   setSelectedUnitId = () => undefined,
@@ -351,7 +351,7 @@ export default function PDCAManager({
         .select("*")
         .eq("program_id", activeProg.id)
         .order("requested_at", { ascending: true })
-        .then(({ data, error }: { data: LegacyPdcaRecord[] | null; error: unknown }) => {
+        .then(({ data, error: _error }: { data: LegacyPdcaRecord[] | null; error: unknown }) => {
           if (data) {
             setProgramVersions(data);
           } else {

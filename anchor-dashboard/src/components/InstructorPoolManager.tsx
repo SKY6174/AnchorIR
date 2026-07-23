@@ -152,7 +152,7 @@ export interface InstructorPoolManagerProps {
   selectedYear?: number;
 }
 
-export default function InstructorPoolManager({ currentUser, currentRole }: InstructorPoolManagerProps) {
+export default function InstructorPoolManager({ currentUser, currentRole: _currentRole }: InstructorPoolManagerProps) {
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
   const [histories, setHistories] = useState<InstructorHistory[]>([]); // 💡 변동 정보 이력 상태값으로 통합 관리

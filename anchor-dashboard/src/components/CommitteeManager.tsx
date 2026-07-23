@@ -3212,7 +3212,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         📊 의안별 실시간 의결 및 평가 집계
                       </h4>
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                        {selectedMeetingAgendas.map((agenda, aIdx) => {
+                        {selectedMeetingAgendas.map((agenda, _aIdx) => {
                           const stats = getAgendaVoteStats(agenda.id, agenda.is_evaluation);
                           const cleanAgendaTitle = String(agenda.title || "").replace(/^\[안건\s*\d+\]\s*/gi, "").replace(/^\[의안\s*\d+\]\s*/gi, "").replace(/\(5점척도\)/gi, "").replace(/\[첨부:.*?\]/gi, "").trim();
                           return (

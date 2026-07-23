@@ -119,7 +119,7 @@ export interface SatisfactionManagerProps {
   darkMode?: boolean;
 }
 
-export default function SatisfactionManager({ currentRole, currentUser, selectedYear, darkMode }: SatisfactionManagerProps = {}) {
+export default function SatisfactionManager({ currentRole: _currentRole, currentUser: _currentUser, selectedYear, darkMode: _darkMode }: SatisfactionManagerProps = {}) {
   const [surveys, setSurveys] = useState<SatisfactionSurvey[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -2616,7 +2616,7 @@ ${commentList || "(없음)"}
                           contentStyle={{ background: "#0f172a", border: "1px solid var(--border-color)", borderRadius: "0.3rem" }}
                           labelStyle={{ color: "white", fontWeight: "700" }}
                           itemStyle={{ color: "var(--accent-color)" }}
-                          formatter={(value, name, props) => [`${value}점`, "환산 만족도"]}
+                          formatter={(value, _name, _props) => [`${value}점`, "환산 만족도"]}
                         />
                         <ReferenceLine y={80} stroke="rgba(16,185,129,0.5)" strokeDasharray="3 3" label={{ value: "우수선 (80점)", fill: "#10b981", fontSize: 10, position: "top" }} />
                         <Bar dataKey="score" fill="url(#blueGrad)" radius={[4, 4, 0, 0]} />

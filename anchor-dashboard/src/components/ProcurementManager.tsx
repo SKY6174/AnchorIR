@@ -1241,7 +1241,7 @@ export default function ProcurementManager({
   selectedYear,
   setSelectedYear,
   subTab,
-  onChangeSubTab,
+  onChangeSubTab: _onChangeSubTab,
   envData = [],
   setEnvData = () => undefined,
   equipData = [],

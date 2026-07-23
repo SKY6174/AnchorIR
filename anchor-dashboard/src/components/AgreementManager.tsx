@@ -400,7 +400,7 @@ export default function AgreementManager({
           sectors: string[];
         }> = [];
 
-        rawRows.forEach((row, index) => {
+        rawRows.forEach((row, _index) => {
           const dateVal = row["체결일자"];
           const centerVal = row["관련 센터"];
           const orgsVal = row["협약 대상기관"];

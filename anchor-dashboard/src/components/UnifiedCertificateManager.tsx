@@ -127,13 +127,13 @@ export interface UnifiedCertificateManagerProps {
 }
 
 export default function UnifiedCertificateManager({
-  projects = [],
+  projects: _projects = [],
   certificates = [],
   selectedYear,
   onAddCertificate,
   onUpdateCertificate,
   onDeleteCertificate,
-  setCertificates,
+  setCertificates: _setCertificates,
   currentRole,
   members = [],
   managerType = "all"
@@ -630,7 +630,7 @@ export default function UnifiedCertificateManager({
           </thead>
           <tbody>
             {getSortedCerts().length > 0 ? (
-              getSortedCerts().map((c, idx) => (
+              getSortedCerts().map((c, _idx) => (
                 <tr key={c.id}>
                   <td style={{ whiteSpace: "nowrap", textAlign: "center" }}>{c.certNo}</td>
                   <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
