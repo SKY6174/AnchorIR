@@ -162,7 +162,7 @@ export interface PDCAManagerProps {
   projects?: any[];
   currentRole?: any;
   onUpdateProgramDetails?: (unitId: string, programId: string, details: any) => void;
-  onAddProgram?: (unitId: string, program: any) => void;
+  onAddProgram?: (unitId: string, title: string, assignee: string, budget2026: string | number, carryBudget: string | number) => void;
   selectedYear?: number;
   selectedUnitId?: string;
   setSelectedUnitId?: (unitId: string) => void;

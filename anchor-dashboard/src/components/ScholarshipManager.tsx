@@ -102,6 +102,7 @@ export interface ScholarshipManagerProps {
   onDeleteScholarship?: (id: string | number) => void;
   setScholarships?: (items: ScholarshipItem[]) => void;
   currentRole?: any;
+  members?: Array<Record<string, any>>;
 }
 
 /**

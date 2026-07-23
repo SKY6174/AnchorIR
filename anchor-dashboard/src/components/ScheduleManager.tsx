@@ -21,7 +21,7 @@ type ScheduleItem = Record<string, any> & {
   year?: number | string;
 };
 
-type CommitteeMember = Record<string, any> & {
+export type ScheduleCommitteeMember = Record<string, any> & {
   id?: number | string;
   name: string;
   type?: string | null;
@@ -370,7 +370,7 @@ export interface ScheduleManagerProps {
   setMeetingSchedules?: React.Dispatch<React.SetStateAction<ScheduleItem[]>>;
   pressReleases?: ScheduleItem[];
   setPressReleases?: React.Dispatch<React.SetStateAction<ScheduleItem[]>>;
-  members?: CommitteeMember[];
+  members?: ScheduleCommitteeMember[];
 }
 
 export default function ScheduleManager({
@@ -400,7 +400,7 @@ export default function ScheduleManager({
   const [editingItemId, setEditingItemId] = useState<number | string | null>(null); // 편집 대상 일정 ID
 
   // 교원의 경우 직급/직위를 '센터장', '팀장교수'로 이원화 표기 및 심현미 운영팀장 표기 헬퍼 함수
-  const getFormattedMemberGrade = (m: CommitteeMember | null | undefined, _includeProfessors?: boolean) => {
+  const getFormattedMemberGrade = (m: ScheduleCommitteeMember | null | undefined, _includeProfessors?: boolean) => {
     if (!m) return "연구원";
 
     // 송경영의 경우 직위를 '단장'으로 강제 표기하여 목록 노출을 보정합니다.
@@ -461,7 +461,7 @@ export default function ScheduleManager({
   };
 
   // 회의록 작성자에서 센터장, 교수진(팀장교수 포함), 운영팀장을 배제하는 판별 함수
-  const isWriterExcluded = (m: CommitteeMember | null | undefined) => {
+  const isWriterExcluded = (m: ScheduleCommitteeMember | null | undefined) => {
     if (!m) return true;
     const displayRole = getFormattedMemberGrade(m);
 
@@ -552,10 +552,10 @@ export default function ScheduleManager({
   // 위원회 및 위원 명단 상태 (초기값은 하드코딩 백업 데이터)
   const [committees, setCommittees] = useState<any[]>(COMMITTEES_DATA);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState<CommitteeMember | null>(null); // 수정할 위원 정보 (null 이면 신규 추가)
+  const [editingMember, setEditingMember] = useState<ScheduleCommitteeMember | null>(null); // 수정할 위원 정보 (null 이면 신규 추가)
 
   // 💡 [위원 직분별 우선순위 정렬 헬퍼] 위원장 -> 위원 -> 간사 순서 출력
-  const sortMembersByRole = (membersList: CommitteeMember[], _context?: unknown) => {
+  const sortMembersByRole = (membersList: ScheduleCommitteeMember[], _context?: unknown) => {
     if (!Array.isArray(membersList)) return [];
     const getRolePriority = (typeStr?: string | null) => {
       if (!typeStr) return 2;
@@ -8778,7 +8778,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                         });
 
                         const commMembers = targetCommittee ? (targetCommittee.members || []) : [];
-                        displayMembers = commMembers.map((m: CommitteeMember) => ({
+                        displayMembers = commMembers.map((m: ScheduleCommitteeMember) => ({
                           name: m.name,
                           role: `${m.type}(${m.rank || m.org || ''})`,
                           key: m.id || m.name

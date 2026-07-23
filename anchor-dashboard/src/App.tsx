@@ -27,6 +27,12 @@ import AssetManager from "./components/AssetManager";
 import CommitteeManager from "./components/CommitteeManager";
 import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
+import type { ProjectData } from "./data/mockData";
+import type { AgreementItem } from "./components/AgreementManager";
+import type { ScholarshipItem } from "./components/ScholarshipManager";
+import type { CommitteeMember } from "./components/CommitteeManager";
+import type { ProcurementItem } from "./components/ProcurementManager";
+import type { ScheduleCommitteeMember } from "./components/ScheduleManager";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen, FileSpreadsheet } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import type { Tables, TablesInsert } from "./types/supabase";
@@ -9029,8 +9035,6 @@ export default function App() {
                       : "1px solid rgba(239, 68, 68, 0.2)",
                   fontWeight: "700",
                   textDecoration: syncStatus === "error" ? "underline" : "none",
-                  display: "flex",
-                  alignItems: "center",
                   height: "28px"
                 }}
                 title={syncStatus === "error" ? "클릭하여 로컬 캐시 초기화" : ""}
@@ -9833,8 +9837,8 @@ export default function App() {
                           <th
                             onClick={() => requestMemberSort("dept")}
                             style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-                            onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
-                            onMouseLeave={(e) => e.target.style.color = ""}
+                            onMouseEnter={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                            onMouseLeave={(e) => e.currentTarget.style.color = ""}
                           >
                             소속 부서 {memberSortConfig.key === "dept" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                           </th>
@@ -9842,8 +9846,8 @@ export default function App() {
                           <th
                             onClick={() => requestMemberSort("role")}
                             style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-                            onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
-                            onMouseLeave={(e) => e.target.style.color = ""}
+                            onMouseEnter={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                            onMouseLeave={(e) => e.currentTarget.style.color = ""}
                           >
                             직책 {memberSortConfig.key === "role" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                           </th>
@@ -9854,8 +9858,8 @@ export default function App() {
                           <th
                             onClick={() => requestMemberSort("startDate")}
                             style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-                            onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
-                            onMouseLeave={(e) => e.target.style.color = ""}
+                            onMouseEnter={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                            onMouseLeave={(e) => e.currentTarget.style.color = ""}
                           >
                             시작일 {memberSortConfig.key === "startDate" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                           </th>
@@ -9863,8 +9867,8 @@ export default function App() {
                           <th
                             onClick={() => requestMemberSort("status")}
                             style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-                            onMouseEnter={(e) => e.target.style.color = "var(--accent-color)"}
-                            onMouseLeave={(e) => e.target.style.color = ""}
+                            onMouseEnter={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                            onMouseLeave={(e) => e.currentTarget.style.color = ""}
                           >
                             참여 여부 {memberSortConfig.key === "status" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                           </th>
@@ -10272,7 +10276,7 @@ export default function App() {
                         <tbody>
                           {registeredUsers.filter(u => ["admin", "g_director", "hq_head", "center_director", "manager", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
                             <tr>
-                              <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "1.5rem" }}>
+                              <td colSpan={6} style={{ textAlign: "center", color: "var(--text-secondary)", padding: "1.5rem" }}>
                                 등록된 고정 계정이 없습니다.
                               </td>
                             </tr>
@@ -10334,7 +10338,7 @@ export default function App() {
                         <tbody>
                           {registeredUsers.filter(u => !["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase())).length === 0 ? (
                             <tr>
-                              <td colSpan="6" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
+                              <td colSpan={6} style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
                                 연동된 주소록 회원이 없습니다.
                               </td>
                             </tr>
@@ -10474,7 +10478,7 @@ export default function App() {
                                 <tbody>
                                   {versionRequests.length === 0 ? (
                                     <tr>
-                                      <td colSpan="8" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
+                                      <td colSpan={8} style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
                                         결재 대기 중이거나 처리된 변경 요청 문서가 없습니다.
                                       </td>
                                     </tr>
@@ -10601,13 +10605,13 @@ export default function App() {
                                 <tbody>
                                   {reservations.length === 0 ? (
                                     <tr>
-                                      <td colSpan="9" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
+                                      <td colSpan={9} style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2.5rem" }}>
                                         접수된 교육환경 공간 예약 승인 신청 문서가 없습니다.
                                       </td>
                                     </tr>
                                   ) : (
                                     reservations.map((res) => {
-                                      const SPACE_ROOMS = {
+                                      const SPACE_ROOMS: Record<string, string> = {
                                         "AI∙DX다목적강의실": "M-404",
                                         "AI∙DX강의실1": "M-402",
                                         "AI∙DX강의실2": "M-405",
@@ -11597,12 +11601,12 @@ export default function App() {
                 <AgreementManager
                   key={`agreement-${darkMode}-${selectedYear}`}
                   projects={displayProjects}
-                  agreements={agreements}
+                  agreements={agreements as AgreementItem[]}
                   selectedYear={selectedYear}
                   onAddAgreement={handleAddAgreement}
                   onUpdateAgreement={handleUpdateAgreement}
                   onDeleteAgreement={handleDeleteAgreement}
-                  setAgreements={setAgreements}
+                  setAgreements={setAgreements as React.Dispatch<React.SetStateAction<AgreementItem[]>>}
                   currentRole={currentRole}
                 />
               )}
@@ -11627,8 +11631,8 @@ export default function App() {
               {agreementsSubTab === "scholarships" && (
                 <ScholarshipManager
                   key={`scholarship-${darkMode}-${selectedYear}`}
-                  scholarships={scholarships}
-                  setScholarships={setScholarships}
+                  scholarships={scholarships as ScholarshipItem[]}
+                  setScholarships={setScholarships as React.Dispatch<React.SetStateAction<ScholarshipItem[]>>}
                   selectedYear={selectedYear}
                   currentRole={currentRole}
                   members={members}
@@ -11695,7 +11699,7 @@ export default function App() {
             {/* 본문 콘텐츠 스위칭 */}
             {progressSubTab === "progress_status" ? (
               <ProgramProgressManager
-                projects={displayProjects}
+                projects={displayProjects as ProjectData[]}
                 selectedYear={selectedYear}
                 darkMode={darkMode}
                 onUpdateProgramDetails={handleUpdateProgramDetails}
@@ -11786,7 +11790,7 @@ export default function App() {
             ) : budgetSubTab === "budget_categories" ? (
               <BudgetItemsManager
                 key={`budget-items-${darkMode}-${selectedYear}`}
-                projects={displayProjects}
+                projects={displayProjects as ProjectData[]}
                 currentRole={currentRole}
                 onUpdateBudgetDetails={handleUpdateBudgetDetails}
                 selectedYear={selectedYear}
@@ -11794,7 +11798,7 @@ export default function App() {
             ) : budgetSubTab === "execution_rate" ? (
               <BudgetExecutionManager
                 key={`budget-exec-${darkMode}-${selectedYear}`}
-                projects={displayProjects}
+                projects={displayProjects as ProjectData[]}
                 currentRole={currentRole}
                 selectedYear={selectedYear}
                 supabase={supabase}
@@ -11834,7 +11838,7 @@ export default function App() {
               setMeetingSchedules={setMeetingSchedules}
               pressReleases={pressReleases}
               setPressReleases={setPressReleases}
-              members={members}
+              members={members as CommitteeMember[]}
             />
           </div>
         )}
@@ -11903,12 +11907,12 @@ export default function App() {
               setSelectedYear={setSelectedYear}
               subTab={procurementSubTab}
               onChangeSubTab={setProcurementSubTab}
-              envData={envData}
-              setEnvData={setEnvData}
-              equipData={equipData}
-              setEquipData={setEquipData}
-              serviceData={serviceData}
-              setServiceData={setServiceData}
+              envData={envData as ProcurementItem[]}
+              setEnvData={setEnvData as React.Dispatch<React.SetStateAction<ProcurementItem[]>>}
+              equipData={equipData as ProcurementItem[]}
+              setEquipData={setEquipData as React.Dispatch<React.SetStateAction<ProcurementItem[]>>}
+              serviceData={serviceData as ProcurementItem[]}
+              setServiceData={setServiceData as React.Dispatch<React.SetStateAction<ProcurementItem[]>>}
               projects={displayProjects}
             />
           </div>
@@ -12002,7 +12006,7 @@ export default function App() {
               setMeetingSchedules={setMeetingSchedules}
               pressReleases={pressReleases}
               setPressReleases={setPressReleases}
-              members={members}
+              members={members as ScheduleCommitteeMember[]}
             />
           </div>
         )}
@@ -12067,13 +12071,14 @@ export default function App() {
                   setMembers(updatedList);
                   try {
                     const sanitized = sanitizeMemberForDb(editingMember);
+                    if (!sanitized) throw new Error("저장할 구성원 정보가 올바르지 않습니다.");
                     const { error } = await supabase
                       .from("rise_members")
                       .upsert(sanitized);
                     if (error) throw error;
                   } catch (err) {
                     console.error("Failed to update member in DB:", err);
-                    alert(`DB 저장 중 오류가 발생했습니다. (테이블 생성 여부 확인 필요): ${err.message || err}`);
+                    alert(`DB 저장 중 오류가 발생했습니다. (테이블 생성 여부 확인 필요): ${getErrorMessage(err)}`);
                     setMembers(oldMembers); // 롤백
                   }
                 } else {
@@ -12087,13 +12092,14 @@ export default function App() {
                   setMembers([...members, newMember]);
                   try {
                     const sanitized = sanitizeMemberForDb(newMember);
+                    if (!sanitized) throw new Error("추가할 구성원 정보가 올바르지 않습니다.");
                     const { error } = await supabase
                       .from("rise_members")
                       .insert(sanitized);
                     if (error) throw error;
                   } catch (err) {
                     console.error("Failed to insert member into DB:", err);
-                    alert(`DB 추가 중 오류가 발생했습니다. (테이블 생성 여부 확인 필요): ${err.message || err}`);
+                    alert(`DB 추가 중 오류가 발생했습니다. (테이블 생성 여부 확인 필요): ${getErrorMessage(err)}`);
                     setMembers(oldMembers); // 롤백
                   }
                 }
@@ -12519,26 +12525,37 @@ export default function App() {
 
 
 // 문자열 내의 특수 점을 표준 가운데점(·)으로 통일하는 헬퍼
-const normalizeCategoryName = (name) => {
+const normalizeCategoryName = (name: string) => {
   if (!name) return "";
   return name.replace(/[∙•]/g, "·").trim();
 };
 
-function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, projects, selectedYear, darkMode }) {
-  const [expandedUnits, setExpandedUnits] = React.useState({});
-  // PDF 다운로드 진행 상태 제어 (어느 탭에서 다운로드 중인지 기록)
-  const [isDownloadingPdf, setIsDownloadingPdf] = React.useState(null);
+type InvestmentValue = { main: number; carry: number };
+type InvestmentCategory = { name: string; values: InvestmentValue[] };
+type AnnualInvestmentCategory = { name: string; values: number[] };
+type TotalInvestmentManagerProps = {
+  investmentSubTab: string;
+  onChangeInvestmentSubTab: (tab: string) => void;
+  projects: LegacyAppRecord[];
+  selectedYear: number;
+  darkMode: boolean;
+};
 
-  const toggleUnit = (id) => {
-    setExpandedUnits(prev => ({ ...prev, [id]: !prev[id] }));
+function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, projects, selectedYear, darkMode }: TotalInvestmentManagerProps) {
+  const [expandedUnits, setExpandedUnits] = React.useState<Record<string, boolean>>({});
+  // PDF 다운로드 진행 상태 제어 (어느 탭에서 다운로드 중인지 기록)
+  const [isDownloadingPdf, setIsDownloadingPdf] = React.useState<"five_year" | "annual" | null>(null);
+
+  const toggleUnit = (id: string) => {
+    setExpandedUnits((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   // 1. 모든 단위과제 수집 (정렬 포함)
-  const allUnits = [];
+  const allUnits: LegacyAppRecord[] = [];
   if (projects && Array.isArray(projects)) {
-    projects.forEach((p) => {
+    projects.forEach((p: LegacyAppRecord) => {
       if (p.units && Array.isArray(p.units)) {
-        p.units.forEach((u) => {
+        p.units.forEach((u: LegacyAppRecord) => {
           allUnits.push({
             ...u,
             projectTitle: p.title
@@ -12589,17 +12606,17 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     const totalRow = [...annualTotals, { main: fiveYearMainSum, carry: fiveYearCarrySum }];
 
     // 비목별 5개년 예산
-    const categoriesMap = {};
+    const categoriesMap: Record<string, InvestmentValue[]> = {};
     CATEGORY_ORDER.forEach((catName) => {
       categoriesMap[catName] = [1, 2, 3, 4, 5].map(() => ({ main: 0, carry: 0 })); // 1~5차년도
     });
 
     // 프로그램들을 순회하며 각 연도의 비목 데이터 합산
     if (u.programs && Array.isArray(u.programs)) {
-      u.programs.forEach((prog) => {
+      u.programs.forEach((prog: LegacyAppRecord) => {
         [1, 2, 3, 4, 5].forEach((yr) => {
           const bgCats = prog.years?.[yr]?.budget_categories || [];
-          bgCats.forEach((cat) => {
+          bgCats.forEach((cat: LegacyAppRecord) => {
             const normCat = normalizeCategoryName(cat.category);
             const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
             if (matchedOrderCat) {
@@ -12618,11 +12635,11 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     }
 
     // 값이 0보다 큰 비목만 필터링하여 categories 구성
-    const categories = [];
+    const categories: InvestmentCategory[] = [];
     CATEGORY_ORDER.forEach((catName) => {
       const values = categoriesMap[catName];
-      const mainSum = values.reduce((sum, val) => sum + val.main, 0);
-      const carrySum = values.reduce((sum, val) => sum + val.carry, 0);
+      const mainSum = values.reduce((sum: number, val: InvestmentValue) => sum + val.main, 0);
+      const carrySum = values.reduce((sum: number, val: InvestmentValue) => sum + val.carry, 0);
       const catSum = mainSum + carrySum;
       if (catSum > 0) {
         categories.push({
@@ -12698,7 +12715,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
     let uNat = 0, uCity = 0, uExt = 0;
     if (u.programs && Array.isArray(u.programs)) {
-      u.programs.forEach((prog) => {
+      u.programs.forEach((prog: LegacyAppRecord) => {
         const py = prog.years?.[selectedYear] || {};
         uNat += (py.budget_national || 0) + (py.budget_carry_national || 0);
         uCity += (py.budget_city || 0) + (py.budget_carry_city || 0);
@@ -12716,13 +12733,13 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     const totalRow = [natKr, cityKr, extKr, sumKr, 100.0];
 
     // 비목별 재원 안분 계산
-    const categoriesMap = {};
+    const categoriesMap: Record<string, { national: number; city: number; external: number }> = {};
     CATEGORY_ORDER.forEach((catName) => {
       categoriesMap[catName] = { national: 0, city: 0, external: 0 };
     });
 
     if (u.programs && Array.isArray(u.programs)) {
-      u.programs.forEach((prog) => {
+      u.programs.forEach((prog: LegacyAppRecord) => {
         const py = prog.years?.[selectedYear] || {};
         const progBudgetMain = py.budget_main || 0;
         const progBudgetCarry = py.budget_carry || 0;
@@ -12737,7 +12754,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
         const carryExtRatio = progBudgetCarry > 0 ? (py.budget_carry_external || 0) / progBudgetCarry : 0;
 
         const bgCats = py.budget_categories || [];
-        bgCats.forEach((cat) => {
+        bgCats.forEach((cat: LegacyAppRecord) => {
           const normCat = normalizeCategoryName(cat.category);
           const matchedOrderCat = CATEGORY_ORDER.find(c => normalizeCategoryName(c) === normCat);
           if (matchedOrderCat) {
@@ -12757,7 +12774,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       });
     }
 
-    const categories = [];
+    const categories: AnnualInvestmentCategory[] = [];
     CATEGORY_ORDER.forEach((catName) => {
       const cData = categoriesMap[catName];
       const catSum = cData.national + cData.city + cData.external;
@@ -12832,7 +12849,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   const targetYear = 2024 + selectedYear;
 
   // 천 단위 콤마 포맷팅 및 소수점 1자리 표기를 위한 공통 헬퍼 함수
-  const formatValue = (val) => {
+  const formatValue = (val: number | null | undefined) => {
     if (val === undefined || val === null || val === 0) return "-";
     return val.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   };
@@ -12857,7 +12874,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       const fileName = `앵커사업비_5개년_총괄_투자계획_${targetYear}_${yyyy}${mm}${dd}.pdf`;
 
       // 💡 [요구사항 반영] 5개년 단위과제별 예산 합산 비율 차트 데이터 가공
-      const fiveYearUnitTotals = {};
+      const fiveYearUnitTotals: Record<string, number> = {};
       let totalSumVal = 0;
       TOTAL_INVESTMENT_5YEAR_DATA.forEach(u => {
         const normId = getNormalizedUnitId(u.id);
@@ -12956,7 +12973,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       });
 
       const summaryLabels = ["총 사업비", "인건비", "그 밖의 사업운영비", "간접비", "총사업비 중 운영비"];
-      const summaryKeys = ["total", "labor", "operation", "indirect", "only_operation"];
+      const summaryKeys: Array<keyof typeof TOTAL_INVESTMENT_SUMMARY_DATA> = ["total", "labor", "operation", "indirect", "only_operation"];
       summaryKeys.forEach((key, sIdx) => {
         const rowData = TOTAL_INVESTMENT_SUMMARY_DATA[key];
         const rowSum = (rowData[5]?.main || 0) + (rowData[5]?.carry || 0);
@@ -13032,7 +13049,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
       await html2pdf().from(htmlContent).set(opt).save();
     } catch (err) {
-      alert("PDF 다운로드 도중 에러가 발생하였습니다: " + err.message);
+      alert("PDF 다운로드 도중 에러가 발생하였습니다: " + getErrorMessage(err));
     } finally {
       setIsDownloadingPdf(null);
     }
@@ -13066,7 +13083,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       md += `| **[총괄 요약]** | | | | | | | |\n`;
 
       const summaryLabels = ["총 사업비", "인건비", "그 밖의 사업운영비", "간접비", "총사업비 중 운영비"];
-      const summaryKeys = ["total", "labor", "operation", "indirect", "only_operation"];
+      const summaryKeys: Array<keyof typeof TOTAL_INVESTMENT_SUMMARY_DATA> = ["total", "labor", "operation", "indirect", "only_operation"];
       summaryKeys.forEach((key, sIdx) => {
         const rowData = TOTAL_INVESTMENT_SUMMARY_DATA[key];
         const rowSum = (rowData[5]?.main || 0) + (rowData[5]?.carry || 0);
@@ -13083,7 +13100,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (err) {
-      alert("마크다운 내보내기 도중 에러가 발생하였습니다: " + err.message);
+      alert("마크다운 내보내기 도중 에러가 발생하였습니다: " + getErrorMessage(err));
     }
   };
 
@@ -13107,7 +13124,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       const fileName = `앵커사업비_${targetYear}년도_재원별_투자계획_${yyyy}${mm}${dd}.pdf`;
 
       // 💡 [요구사항 반영] (1) 연차별 단위과제별 예산 비율 차트 데이터 가공
-      const annualUnitTotals = {};
+      const annualUnitTotals: Record<string, number> = {};
       let annualTotalGovSum = 0;
       ANNUAL_INVESTMENT_DATA.forEach(u => {
         const normId = getNormalizedUnitId(u.id);
@@ -13311,7 +13328,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
       await html2pdf().from(htmlContent).set(opt).save();
     } catch (err) {
-      alert("PDF 다운로드 도중 에러가 발생하였습니다: " + err.message);
+      alert("PDF 다운로드 도중 에러가 발생하였습니다: " + getErrorMessage(err));
     } finally {
       setIsDownloadingPdf(null);
     }
@@ -13362,18 +13379,18 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (err) {
-      alert("마크다운 내보내기 도중 에러가 발생하였습니다: " + err.message);
+      alert("마크다운 내보내기 도중 에러가 발생하였습니다: " + getErrorMessage(err));
     }
   };
 
-  const getNormalizedUnitId = (id) => {
+  const getNormalizedUnitId = (id: string) => {
     if (id === "Common" || id === "X0") return id;
     const match = id.match(/^[A-D][1-4]/);
     return match ? match[0] : id;
   };
 
-  const getUnitColor = (id) => {
-    const colors = {
+  const getUnitColor = (id: string) => {
+    const colors: Record<string, string> = {
       A1: "#3b82f6",
       A2: "#60a5fa",
       B1: "#6366f1",
@@ -13388,9 +13405,9 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     return colors[id] || "#64748b";
   };
 
-  const HorizontalProgressBar = ({ title, items, unitText = "백만원" }) => {
-    const validItems = items.filter(item => item.value > 0);
-    const totalVal = validItems.reduce((acc, curr) => acc + curr.value, 0);
+  const HorizontalProgressBar = ({ title, items, unitText = "백만원" }: { title?: string; items: Array<{ name: string; value: number; color: string }>; unitText?: string }) => {
+    const validItems = items.filter((item) => item.value > 0);
+    const totalVal = validItems.reduce((acc: number, curr) => acc + curr.value, 0);
 
     return (
       <div style={{
@@ -13424,7 +13441,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
               예산 데이터가 없습니다.
             </div>
           ) : (
-            validItems.map((item, idx) => {
+            validItems.map((item, idx: number) => {
               const itemRatio = totalVal > 0 ? (item.value / totalVal) * 100 : 0;
               return (
                 <div
@@ -13452,7 +13469,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
             color: "var(--text-secondary)",
             marginTop: "0.2rem"
           }}>
-            {validItems.map((item, idx) => {
+            {validItems.map((item, idx: number) => {
               const itemRatio = totalVal > 0 ? (item.value / totalVal) * 100 : 0;
               return (
                 <div key={idx} style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
@@ -13476,7 +13493,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
   };
 
   const renderFiveYear = () => {
-    const fiveYearUnitTotals = {};
+    const fiveYearUnitTotals: Record<string, number> = {};
     let totalSumVal = 0;
     TOTAL_INVESTMENT_5YEAR_DATA.forEach(u => {
       const normId = getNormalizedUnitId(u.id);
@@ -13852,10 +13869,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                   const carryVal = v.carry || 0;
                   return (
                     <React.Fragment key={i}>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#60a5fa", borderRight: "1px dashed rgba(255, 255, 255, 0.15)", color: "#10b981" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", borderRight: "1px dashed rgba(255, 255, 255, 0.15)", color: "#10b981" }}>
                         {formatValue(mainVal)}
                       </td>
-                      <td style={{ textAlign: "right", paddingRight: "0.5rem", color: "#34d399", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", color: "#10b981" }}>
+                      <td style={{ textAlign: "right", paddingRight: "0.5rem", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", color: "#10b981" }}>
                         {formatValue(carryVal)}
                       </td>
                     </React.Fragment>
@@ -13878,7 +13895,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
 
   const renderAnnual = () => {
     // (1) 당해년도 단위과제별 예산(국비+시비) 비율 가공
-    const annualUnitTotals = {};
+    const annualUnitTotals: Record<string, number> = {};
     let annualTotalGovSum = 0;
     ANNUAL_INVESTMENT_DATA.forEach(u => {
       const normId = getNormalizedUnitId(u.id);
@@ -14159,11 +14176,10 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
     );
   };
 
-  const renderExcelDownload = () => {
-    // 엑셀 다운로드 헬퍼
-    const handleDownloadUnifiedExcel = (type = "all") => {
+  // 엑셀 다운로드 헬퍼
+  const handleDownloadUnifiedExcel = (type: "all" | "five_year" | "annual" = "all") => {
       // 1. 5개년 총괄 데이터 포맷팅
-      const fiveYearRows = [];
+      const fiveYearRows: Array<Array<string | number>> = [];
       fiveYearRows.push([
         "구분",
         "2025",
@@ -14225,7 +14241,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       });
 
       // 2. 연차별 계획 데이터 포맷팅
-      const annualRows = [];
+      const annualRows: Array<Array<string | number>> = [];
       annualRows.push([
         `${targetYear}년도 구분`,
         "국비",
@@ -14282,8 +14298,9 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
           : `앵커사업비_${targetYear}년도_재원별_계획.xlsx`;
 
       XLSX.writeFile(wb, filename);
-    };
+  };
 
+  const renderExcelDownload = () => {
     return (
       <div className="glass-card" style={{ padding: "2.5rem", maxWidth: "600px", margin: "2rem auto", textAlign: "center", border: "1px solid var(--border-color)" }}>
         <div style={{ display: "inline-flex", padding: "1.2rem", borderRadius: "50%", background: "rgba(16, 185, 129, 0.1)", color: "#10b981", marginBottom: "1.5rem" }}>
