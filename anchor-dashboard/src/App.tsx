@@ -46,7 +46,8 @@ import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, f
 import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
 import { deleteScholarshipsByYear, deleteUnifiedCertificatesByYear, insertScholarships, insertUnifiedCertificates } from "./features/management/services/management-record-service";
 import { deleteRiseMember, fetchRiseMembers, insertRiseMember, upsertRiseMember, upsertRiseMembers } from "./features/management/services/member-service";
-import { fetchMenuVisibility, saveMenuVisibility } from "./features/management/services/portal-config-service";
+import { saveMenuVisibility } from "./features/management/services/portal-config-service";
+import { usePortalMenuVisibility } from "./features/management/hooks/use-portal-menu-visibility";
 import { deleteEnvironmentRecordsByYear, deleteEquipmentRecordsByYear, deleteServiceRecordsByYear, insertEnvironmentRecords, insertEquipmentRecords, insertServiceRecords, probeProcurementAdvancedColumns, upsertEquipmentAssets } from "./features/procurement/services/procurement-data-service";
 import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
@@ -382,30 +383,7 @@ export default function App() {
   };
 
   // 로그인 성공 혹은 세션 로드 시 Supabase DB로부터 마스터 포털 노출 설정 수신
-  useEffect(() => {
-    const fetchPortalConfig = async () => {
-      try {
-        const { data, error } = await fetchMenuVisibility();
-
-        if (!error && data && data.value && typeof data.value === "object" && !Array.isArray(data.value)) {
-          const merged = {
-            committee: true,
-            committee_meeting: true,
-            committee_report: true,
-            ...(data.value as LegacyAppRecord)
-          };
-          setMenuVisibility(merged);
-          localStorage.setItem("anchor_menu_visibility", JSON.stringify(merged));
-        }
-      } catch (err) {
-        console.error("Failed to fetch portal config from DB:", err);
-      }
-    };
-
-    if (currentUser) {
-      fetchPortalConfig();
-    }
-  }, [currentUser]);
+  usePortalMenuVisibility({ currentUser, setMenuVisibility });
 
   const [projects, setProjects] = useState<LegacyAppRecord[]>(() => {
     // 💡 [깜빡임 방지 최우선 처리] 현재 로컬 선택 연도별 캐시 데이터를 최우선적으로 선제 로드하여 0초 반응을 제공합니다.
