@@ -14,7 +14,7 @@ function scanAllExcels(dirPath) {
         let stats;
         try {
           stats = fs.statSync(fullPath);
-        } catch (e) {
+        } catch {
           continue;
         }
         
@@ -36,7 +36,7 @@ function scanAllExcels(dirPath) {
           }
         }
       }
-    } catch (e) {}
+    } catch {}
   }
   
   scan(dirPath);

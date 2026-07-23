@@ -11,7 +11,7 @@ function scanDirRecursive(dirPath) {
       let stats;
       try {
         stats = fs.statSync(fullPath);
-      } catch (e) {
+      } catch {
         continue;
       }
       
@@ -30,7 +30,7 @@ function scanDirRecursive(dirPath) {
         }
       }
     }
-  } catch (e) {
+  } catch {
     // 디렉토리 읽기 실패 시 무시
   }
 }

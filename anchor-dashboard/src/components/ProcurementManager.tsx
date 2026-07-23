@@ -857,7 +857,7 @@ const uploadFileToSupabase = async (
       size: file.size,
       url: publicUrl || ""
     };
-  } catch (error) {
+  } catch {
     console.warn("⚠️ 실제 Supabase Storage 업로드에 실패했습니다. 로컬 mock 업로드로 가상 대체합니다.");
     
     // 모의 업로드 결과 반환 (Supabase Storage 버킷이 아직 세팅되지 않은 경우 원활한 실연을 지원)

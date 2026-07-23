@@ -415,13 +415,13 @@ export default function AgreementManager({
 
           const organizations = orgList.map((name, i) => {
             let subject = "";
-            const match = name.match(/([^\(]+)\(([^)]+)\)/);
+            const match = name.match(/([^(]+)\(([^)]+)\)/);
             let finalName = name;
             if (match) {
               finalName = match[1].trim();
               subject = match[2].trim();
             } else if (subjectsList[i]) {
-              const subMatch = subjectsList[i].match(/([^\(]+)\(([^)]+)\)/);
+              const subMatch = subjectsList[i].match(/([^(]+)\(([^)]+)\)/);
               if (subMatch && subMatch[1].trim() === name) {
                 subject = subMatch[2].trim();
               } else {
@@ -507,7 +507,7 @@ export default function AgreementManager({
       temp = temp.replaceAll(kw, "");
     });
     // 3) 남은 괄호기호()를 완벽히 소거하여 최종 정화된 이름만 리턴합니다.
-    return temp.replace(/[\(\)]/g, "");
+    return temp.replace(/[()]/g, "");
   };
 
   // ==========================================
@@ -822,7 +822,7 @@ export default function AgreementManager({
       const blob = new Blob([byteArray], { type: mimeType });
       const blobUrl = URL.createObjectURL(blob);
       window.open(blobUrl, "_blank");
-    } catch (e) {
+    } catch {
       alert("⚠️ 사본 파일을 여는 중에 오류가 발생했습니다. 파일이 손상되었거나 브라우저 권한을 확인해 주세요.");
     }
   };

@@ -9,7 +9,7 @@ function scanDirRecursive(dirPath) {
       let stats;
       try {
         stats = fs.statSync(fullPath);
-      } catch (e) {
+      } catch {
         continue;
       }
       
@@ -22,7 +22,7 @@ function scanDirRecursive(dirPath) {
         }
       }
     }
-  } catch (e) {}
+  } catch {}
 }
 
 console.log("=== documents 폴더 내 모든 엑셀 스캔 시작 ===");

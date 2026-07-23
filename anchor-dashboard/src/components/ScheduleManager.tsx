@@ -2649,7 +2649,7 @@ Gemini 피드백: \n${geminiCritiqueText}
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (e) {
+    } catch {
       alert("엑셀(CSV) 다운로드 중 오류가 발생했습니다.");
     }
   };
@@ -6311,8 +6311,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                                                             <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#3B82F6", marginBottom: "0.15rem" }}>[의제]</div>
                                                             <ul style={{ margin: 0, paddingLeft: "1rem", listStyleType: "disc" }}>
                                                               {agendas.map((line, idx) => {
-                                                                let cleanLine = line.replace(/^[•\-\*\s]+/, "").trim();
-                                                                cleanLine = cleanLine.replace(/^\d+[\.\)\s]+/, "").trim();
+                                                                let cleanLine = line.replace(/^[•\-*\s]+/, "").trim();
+                                                                cleanLine = cleanLine.replace(/^\d+[.)\s]+/, "").trim();
                                                                 return <li key={idx} style={{ marginBottom: "0.2rem" }}>{cleanLine}</li>;
                                                               })}
                                                             </ul>
@@ -6323,8 +6323,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                                                             <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#60A5FA", marginBottom: "0.15rem" }}>[전달사항]</div>
                                                             <ul style={{ margin: 0, paddingLeft: "1rem", listStyleType: "disc" }}>
                                                               {notices.map((line, idx) => {
-                                                                let cleanLine = line.replace(/^[•\-\*\s]+/, "").trim();
-                                                                cleanLine = cleanLine.replace(/^\d+[\.\)\s]+/, "").trim();
+                                                                let cleanLine = line.replace(/^[•\-*\s]+/, "").trim();
+                                                                cleanLine = cleanLine.replace(/^\d+[.)\s]+/, "").trim();
                                                                 return <li key={idx} style={{ marginBottom: "0.2rem" }}>{cleanLine}</li>;
                                                               })}
                                                             </ul>
@@ -6356,8 +6356,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                                                             <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#10B981", marginBottom: "0.15rem" }}>[추진상황]</div>
                                                             <ul style={{ margin: 0, paddingLeft: "1rem", listStyleType: "disc" }}>
                                                               {results.map((line, idx) => {
-                                                                let cleanLine = line.replace(/^[•\-\*\s]+/, "").trim();
-                                                                cleanLine = cleanLine.replace(/^\d+[\.\)\s]+/, "").trim();
+                                                                let cleanLine = line.replace(/^[•\-*\s]+/, "").trim();
+                                                                cleanLine = cleanLine.replace(/^\d+[.)\s]+/, "").trim();
                                                                 return <li key={idx} style={{ marginBottom: "0.2rem", fontWeight: "700" }}>{cleanLine}</li>;
                                                               })}
                                                             </ul>
@@ -6368,8 +6368,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                                                             <div style={{ fontSize: "0.68rem", fontWeight: "800", color: "#F59E0B", marginBottom: "0.15rem" }}>[애로사항]</div>
                                                             <ul style={{ margin: 0, paddingLeft: "1rem", listStyleType: "disc" }}>
                                                               {difficulties.map((line, idx) => {
-                                                                let cleanLine = line.replace(/^[•\-\*\s]+/, "").trim();
-                                                                cleanLine = cleanLine.replace(/^\d+[\.\)\s]+/, "").trim();
+                                                                let cleanLine = line.replace(/^[•\-*\s]+/, "").trim();
+                                                                cleanLine = cleanLine.replace(/^\d+[.)\s]+/, "").trim();
                                                                 return <li key={idx} style={{ marginBottom: "0.2rem", fontWeight: "700" }}>{cleanLine}</li>;
                                                               })}
                                                             </ul>

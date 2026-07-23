@@ -14,7 +14,7 @@ function inspectWorkbook(filePath) {
         console.log(`  - ${sheetName}: 행 개수 ${rows.length}`);
       }
     }
-  } catch (e) {
+  } catch {
     // console.error(e);
   }
 }

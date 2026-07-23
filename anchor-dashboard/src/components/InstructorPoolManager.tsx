@@ -71,7 +71,7 @@ const decryptData = (ciphertext: string) => {
       return trimmed;
     }
     return decrypted;
-  } catch (e) {
+  } catch {
     // 예외 발생 시 안전하게 평문 원본 반환
     return trimmed;
   }

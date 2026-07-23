@@ -119,7 +119,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
       // 로컬 스토리지 캐시 백업
       const cached = localStorage.getItem("anchor_partner_institutions");
       if (cached) {
-        try { setPartners(JSON.parse(cached) as PartnerRecord[]); } catch (err) { setPartners(MOCK_PARTNERS); }
+        try { setPartners(JSON.parse(cached) as PartnerRecord[]); } catch { setPartners(MOCK_PARTNERS); }
       } else {
         setPartners(MOCK_PARTNERS);
       }

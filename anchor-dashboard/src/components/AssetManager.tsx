@@ -669,7 +669,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
         if (equipFormData.memo && equipFormData.memo.trim().startsWith("{")) {
           memoObj = JSON.parse(equipFormData.memo);
         }
-      } catch (err) {}
+      } catch {}
 
       // 만약 memo에 기존 검수일자가 없거나 다른 연도로 기입되어 있다면 보정
       if (!memoObj.inspect_date || !memoObj.inspect_date.includes(targetYearStr)) {
@@ -1869,7 +1869,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                         if (e.memo && e.memo.trim().startsWith("{")) {
                           memoObj = JSON.parse(e.memo);
                         }
-                      } catch (err) {}
+                      } catch {}
 
                       const specText = (memoObj.spec || "").toLowerCase();
                       const catText = (memoObj.category_name || (e.category === "ai_dx" ? "AI∙DX 특화" : "기타자산")).toLowerCase();
@@ -1905,10 +1905,10 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                     let metaB: LegacyAssetRecord = {};
                     try {
                       if (a.memo && a.memo.trim().startsWith("{")) metaA = JSON.parse(a.memo);
-                    } catch(e){}
+                    } catch {}
                     try {
                       if (b.memo && b.memo.trim().startsWith("{")) metaB = JSON.parse(b.memo);
-                    } catch(e){}
+                    } catch {}
 
                     switch(sortKey) {
                       case "item_name":

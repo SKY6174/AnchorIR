@@ -15,7 +15,7 @@ function findRecentExcels(dirPath) {
         let stats;
         try {
           stats = fs.statSync(fullPath);
-        } catch (e) {
+        } catch {
           continue;
         }
         
@@ -38,7 +38,7 @@ function findRecentExcels(dirPath) {
           }
         }
       }
-    } catch (e) {}
+    } catch {}
   }
   
   scan(dirPath);

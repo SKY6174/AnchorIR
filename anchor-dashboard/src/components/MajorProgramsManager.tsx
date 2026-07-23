@@ -1104,21 +1104,21 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     let date = "";
     const dateMatch = text.match(/(?:일\s*시)\s*:\s*([^\n]+)/i);
     if (dateMatch) {
-      date = dateMatch[1].replace(/^[ \t\u200B\u00A0\ufeff\-\*]+/, "").trim();
+      date = dateMatch[1].replace(/^[ \t\u200B\u00A0\ufeff\-*]+/, "").trim();
     }
 
     // 2. 강사 추출 (예: "초청 연사: 김영곤" 또는 "초청연사 : 박승남...")
     let speaker = "";
     const speakerMatch = text.match(/(?:초\s*청\s*연\s*사|초\s*청\s*강\s*사|연\s*사)\s*:\s*([^\n]+)/i);
     if (speakerMatch) {
-      speaker = speakerMatch[1].replace(/^[ \t\u200B\u00A0\ufeff\-\*]+/g, "").replace(/\([^\)]+\)/g, "").trim();
+      speaker = speakerMatch[1].replace(/^[ \t\u200B\u00A0\ufeff\-*]+/g, "").replace(/\([^)]+\)/g, "").trim();
     }
 
     // 3. 주제 추출 (예: "세미나 주제: 종이, 그 이상의 이야기" 또는 "주제: 조선산업...")
     let title = "";
     const titleMatch = text.match(/(?:주\s*제|세\s*미\s*나\s*주\s*제)\s*:\s*([^\n]+)/i);
     if (titleMatch) {
-      title = titleMatch[1].replace(/^[ \t\u200B\u00A0\ufeff\-\*]+/g, "").trim();
+      title = titleMatch[1].replace(/^[ \t\u200B\u00A0\ufeff\-*]+/g, "").trim();
     }
 
     // 4. 참석인원 추출 (예: "참석 대상: 총 77명" 또는 "참석인원 : 총 74명...")
@@ -1171,7 +1171,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     let etc = `제${parsedId}차 지산학 이음 세미나 결과보고서 파싱 완료.`;
     const purposeMatch = text.match(/(?:개\s*최\s*목\s*적|목\s*적)\s*\n?\s*∘\s*([^\n]+)/i);
     if (purposeMatch) {
-      etc = purposeMatch[1].replace(/^[ \t\u200B\u00A0\ufeff\-\*\s]+/g, "").trim() + " 세미나 정상 개최.";
+      etc = purposeMatch[1].replace(/^[ \t\u200B\u00A0\ufeff\-*\s]+/g, "").trim() + " 세미나 정상 개최.";
     }
 
     return {
@@ -1210,7 +1210,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     } else {
       // 2단계: "차"가 붙지 않은 단순 숫자 매칭 시, 맨 앞의 순번("1. ")이나 연도("2026년")를 필터링하여 순수한 차수 추출
       const filteredName = fileName
-        .replace(/^[0-9]+[\.\-\_\s]+/, "") // 맨 앞의 순번 제거
+        .replace(/^[0-9]+[.\-_\s]+/, "") // 맨 앞의 순번 제거
         .replace(/202[0-9]년?/g, "");     // 연도 제거
       const simpleMatch = filteredName.match(/\d+/);
       if (simpleMatch) {
@@ -1222,7 +1222,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     let inferredTitle = "지산학 이음 세미나";
     const titleCleaned = fileName
       .replace(/\.[a-zA-Z0-9]+$/, "") // 확장자 제거
-      .replace(/^[0-9]+[\.\-\_\s]+/, "") // 맨 앞의 순번 제거
+      .replace(/^[0-9]+[.\-_\s]+/, "") // 맨 앞의 순번 제거
       .replace(/\[[^\]]+\]/g, "") // 대괄호 내용 제거
       .replace(/개최\s*결과보고/g, "")
       .replace(/결과보고/g, "")
@@ -1408,7 +1408,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
       setSelectedUnit(savedUnit);
       try {
         setSelectedProg(JSON.parse(savedProg));
-      } catch(e) {}
+      } catch {}
       return;
     }
 
