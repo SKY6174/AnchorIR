@@ -3,6 +3,9 @@ import type { ChangeEvent, CSSProperties, FormEvent } from "react";
 import Sidebar from "./components/Sidebar";
 import KPIOverview from "./components/KPIOverview";
 const CommitteeExternalVote = React.lazy(() => import("./components/CommitteeExternalVote"));
+const SatisfactionManager = React.lazy(() => import("./components/SatisfactionManager"));
+const ProcurementManager = React.lazy(() => import("./components/ProcurementManager"));
+const ScheduleManager = React.lazy(() => import("./components/ScheduleManager"));
 import PDCAManager from "./components/PDCAManager";
 import AgreementManager from "./components/AgreementManager";
 import UnifiedCertificateManager from "./components/UnifiedCertificateManager";
@@ -11,7 +14,6 @@ import BudgetItemsManager from "./components/BudgetItemsManager";
 import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
 import MajorProgramsManager from "./components/MajorProgramsManager";
-import SatisfactionManager from "./components/SatisfactionManager";
 import SurveyResponder from "./components/SurveyResponder";
 import LLMWiki from "./components/LLMWiki";
 import OrgChartManager from "./components/OrgChartManager";
@@ -20,8 +22,6 @@ import PartnerManager from "./components/PartnerManager";
 import PortalConfigManager from "./components/PortalConfigManager";
 import InstructorPoolManager from "./components/InstructorPoolManager";
 import AuthManager from "./components/AuthManager";
-import ProcurementManager from "./components/ProcurementManager";
-import ScheduleManager from "./components/ScheduleManager";
 import AssetManager from "./components/AssetManager";
 import CommitteeManager from "./components/CommitteeManager";
 import UnitSystemView from "./components/UnitSystemView";
@@ -11733,10 +11733,12 @@ export default function App() {
                 selectedYear={selectedYear}
               />
             ) : (
-              <SatisfactionManager
-                key={`satisfaction-${darkMode}`}
-                selectedYear={selectedYear}
-              />
+              <React.Suspense fallback={null}>
+                <SatisfactionManager
+                  key={`satisfaction-${darkMode}`}
+                  selectedYear={selectedYear}
+                />
+              </React.Suspense>
             )}
           </div>
         )}
@@ -11915,23 +11917,25 @@ export default function App() {
             </div>
 
             {/* 본문 콘텐츠 */}
-            <ProcurementManager
-              key={`procurement-${darkMode}-${selectedYear}`}
-              darkMode={darkMode}
-              currentRole={currentRole}
-              currentUser={currentUser}
-              selectedYear={selectedYear}
-              setSelectedYear={setSelectedYear}
-              subTab={procurementSubTab}
-              onChangeSubTab={setProcurementSubTab}
-              envData={envData as ProcurementItem[]}
-              setEnvData={setEnvData as React.Dispatch<React.SetStateAction<ProcurementItem[]>>}
-              equipData={equipData as ProcurementItem[]}
-              setEquipData={setEquipData as React.Dispatch<React.SetStateAction<ProcurementItem[]>>}
-              serviceData={serviceData as ProcurementItem[]}
-              setServiceData={setServiceData as React.Dispatch<React.SetStateAction<ProcurementItem[]>>}
-              projects={displayProjects}
-            />
+            <React.Suspense fallback={null}>
+              <ProcurementManager
+                key={`procurement-${darkMode}-${selectedYear}`}
+                darkMode={darkMode}
+                currentRole={currentRole}
+                currentUser={currentUser}
+                selectedYear={selectedYear}
+                setSelectedYear={setSelectedYear}
+                subTab={procurementSubTab}
+                onChangeSubTab={setProcurementSubTab}
+                envData={envData as ProcurementItem[]}
+                setEnvData={setEnvData as React.Dispatch<React.SetStateAction<ProcurementItem[]>>}
+                equipData={equipData as ProcurementItem[]}
+                setEquipData={setEquipData as React.Dispatch<React.SetStateAction<ProcurementItem[]>>}
+                serviceData={serviceData as ProcurementItem[]}
+                setServiceData={setServiceData as React.Dispatch<React.SetStateAction<ProcurementItem[]>>}
+                projects={displayProjects}
+              />
+            </React.Suspense>
           </div>
         )}
 
@@ -12007,24 +12011,26 @@ export default function App() {
             </div>
 
             {/* 본문 콘텐츠 */}
-            <ScheduleManager
-              key={`schedule-${darkMode}-${selectedYear}`}
-              currentUser={currentUser}
-              currentRole={currentRole}
-              selectedYear={selectedYear}
-              darkMode={darkMode}
-              subTab={scheduleSubTab}
-              onChangeSubTab={setScheduleSubTab}
-              monthlySchedules={monthlySchedules}
-              setMonthlySchedules={setMonthlySchedules}
-              eventSchedules={eventSchedules}
-              setEventSchedules={setEventSchedules}
-              meetingSchedules={meetingSchedules}
-              setMeetingSchedules={setMeetingSchedules}
-              pressReleases={pressReleases}
-              setPressReleases={setPressReleases}
-              members={members as ScheduleCommitteeMember[]}
-            />
+            <React.Suspense fallback={null}>
+              <ScheduleManager
+                key={`schedule-${darkMode}-${selectedYear}`}
+                currentUser={currentUser}
+                currentRole={currentRole}
+                selectedYear={selectedYear}
+                darkMode={darkMode}
+                subTab={scheduleSubTab}
+                onChangeSubTab={setScheduleSubTab}
+                monthlySchedules={monthlySchedules}
+                setMonthlySchedules={setMonthlySchedules}
+                eventSchedules={eventSchedules}
+                setEventSchedules={setEventSchedules}
+                meetingSchedules={meetingSchedules}
+                setMeetingSchedules={setMeetingSchedules}
+                pressReleases={pressReleases}
+                setPressReleases={setPressReleases}
+                members={members as ScheduleCommitteeMember[]}
+              />
+            </React.Suspense>
           </div>
         )}
 
