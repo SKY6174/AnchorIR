@@ -37,6 +37,10 @@ import {
 } from "../features/schedule/services/schedule-ai-document-service";
 import { fetchScheduleCommittees } from "../features/schedule/services/schedule-committee-service";
 import {
+  downloadCommitteeMemberList,
+  downloadCommitteeRegistrationTemplate
+} from "../features/schedule/services/schedule-committee-workbook-service";
+import {
   applyMeetingAiDataRules,
   buildOperatingAgendaDistribution
 } from "../features/schedule/utils/schedule-ai-form-utils";
@@ -194,18 +198,7 @@ export default function ScheduleManager({
 
   // 💡 [교육용 한글 주석] 기존 CSV 서식 양식 다운로드를 호환성이 높은 XLSX 규격으로 개선합니다.
   const handleDownloadExcelFormat = async () => {
-    const headers = ["구분", "성명", "소속기관", "부서/학과", "직위", "교내외", "비고"];
-    const data = [
-      ["위원장", "조홍래", "울산과학대학교", "-", "총장", "교내", "대표"],
-      ["위원", "김성철", "울산과학대학교", "-", "부총장", "교내", ""]
-    ];
-
-    // SheetJS를 사용하여 worksheet 생성 및 workbook 빌드 후 파일 저장
-    const XLSX = await import("xlsx");
-    const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, ws, "위원회_위원등록_서식");
-    XLSX.writeFile(workbook, "위원회_위원등록_양식.xlsx");
+    await downloadCommitteeRegistrationTemplate();
   };
 
   // 💡 [교육용 한글 주석] 기존 CSV 명단 조회를 XLSX 형식으로 추출하도록 업데이트합니다.
@@ -221,23 +214,7 @@ export default function ScheduleManager({
       return;
     }
 
-    const headers = ["구분", "성명", "소속기관", "부서/학과", "직위", "교내외", "비고"];
-    const dataRows = mems.map(m => [
-      m.type || "",
-      m.name || "",
-      m.org || "",
-      m.dept || "",
-      m.rank || "",
-      m.location || "",
-      m.note || ""
-    ]);
-
-    // XLSX 통합 워크시트 구성 및 파일 생성
-    const XLSX = await import("xlsx");
-    const ws = XLSX.utils.aoa_to_sheet([headers, ...dataRows]);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, ws, "위원명단");
-    XLSX.writeFile(workbook, `${activeComm.name}_위원명단_목록.xlsx`);
+    await downloadCommitteeMemberList(activeComm.name, mems);
   };
 
   // 💡 [교육용 한글 주석] 업로드된 .xlsx 포맷의 파일 바이트 데이터를 로드하여 파싱하고 DB에 insert합니다.
