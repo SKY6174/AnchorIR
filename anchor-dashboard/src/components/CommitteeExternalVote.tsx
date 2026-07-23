@@ -31,8 +31,7 @@ const COMMITTEE_DISPLAY_NAMES: Record<string, string> = {
 };
 
 const getCommitteeSystemName = (committeeId: unknown): string => {
-  const committeeName = COMMITTEE_DISPLAY_NAMES[String(committeeId || "").toLowerCase()] || "위원회";
-  return `앵커사업단 ${committeeName} 시스템`;
+  return COMMITTEE_DISPLAY_NAMES[String(committeeId || "").toLowerCase()] || "위원회";
 };
 
 // 💡 [안건 제목 완벽 정제 헬퍼]: 파일 확장자(.pdf, .hwp 등), 서술형 파일명, [RISE사업...], (5점척도) 지문 완전 제거
@@ -489,12 +488,14 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       <main className="committee-login-page">
         <section className="committee-login-hero" aria-label="위원회 보안 안내">
           <div className="committee-login-brand">
-            <span className="committee-login-brand-mark">UC</span>
+            <span className="committee-login-brand-mark">
+              <img src="/logo.png" alt="" aria-hidden="true" />
+            </span>
             <span
               className="committee-login-brand-copy"
-              aria-label={`울산과학대학교 ${committeeSystemName}`}
+              aria-label={`울산과학대학교 앵커사업단 ${committeeSystemName}`}
             >
-              <strong>울산과학대학교</strong>
+              <strong>울산과학대학교 앵커사업단</strong>
               <small>{committeeSystemName}</small>
             </span>
           </div>
@@ -592,9 +593,11 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
         {/* 상단 회의 헤더 */}
         <header className="committee-workspace-header">
         <div className="committee-workspace-brand">
-          <span className="committee-workspace-brand-mark">UC</span>
+          <span className="committee-workspace-brand-mark">
+            <img src="/logo.png" alt="" aria-hidden="true" />
+          </span>
           <span className="committee-workspace-brand-copy">
-            <strong>울산과학대학교</strong>
+            <strong>울산과학대학교 앵커사업단</strong>
             <small>{committeeSystemName}</small>
           </span>
         </div>

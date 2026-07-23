@@ -200,18 +200,25 @@ body.light-mode {
 }
 
 .committee-login-brand-mark {
+  position: relative;
+  overflow: hidden;
   width: 58px;
   height: 58px;
-  display: grid;
-  place-items: center;
   border: 2px solid rgba(176, 218, 255, 0.52);
   border-radius: 14px;
-  background: linear-gradient(145deg, #2f8ae8, #0861bf);
+  background: #ffffff;
   box-shadow: 0 12px 32px rgba(2, 22, 49, 0.28);
-  color: #ffffff;
-  font-size: 1.18rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
+}
+
+.committee-login-brand-mark img,
+.committee-workspace-brand-mark img {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 155%;
+  max-width: none;
+  height: auto;
+  transform: translateX(-50%);
 }
 
 .committee-login-brand-copy {
@@ -642,18 +649,15 @@ body.light-mode {
 }
 
 .committee-workspace-brand-mark {
-  display: grid;
+  position: relative;
+  overflow: hidden;
   flex: 0 0 auto;
   width: 54px;
   height: 54px;
-  place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 14px;
-  background: linear-gradient(145deg, #2f8beb, #1264c4);
+  background: #ffffff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  color: #ffffff;
-  font-size: 1rem;
-  font-weight: 900;
 }
 
 .committee-workspace-brand-copy {
