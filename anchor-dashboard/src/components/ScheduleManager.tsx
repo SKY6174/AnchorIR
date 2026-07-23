@@ -11,32 +11,14 @@ import {
 import { supabase } from "../supabaseClient";
 import * as pdfjsLib from "pdfjs-dist";
 import { COMMITTEES_DATA, dashToDotDate, dotToDashDate, getCommitteeIcon } from "../features/schedule/data/schedule-committee-data";
+import type {
+  AgendaResultPair,
+  AiDebateLog,
+  ScheduleCommitteeMember,
+  ScheduleFormData,
+  ScheduleItem
+} from "../features/schedule/schedule-types";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-
-type ScheduleItem = Record<string, any> & {
-  id?: number | string;
-  title?: string;
-  date?: string;
-  year?: number | string;
-};
-
-export type ScheduleCommitteeMember = Record<string, any> & {
-  id?: number | string;
-  name: string;
-  type?: string | null;
-};
-
-type ScheduleFormData = Record<string, any>;
-
-interface AgendaResultPair {
-  agenda: string;
-  result: string;
-}
-
-interface AiDebateLog {
-  role: string;
-  text: string;
-}
 
 const scheduleDb = supabase as any;
 const ENABLE_AI_PRESS_RELEASE_GENERATION = false;

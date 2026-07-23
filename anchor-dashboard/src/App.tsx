@@ -10,7 +10,7 @@ import type { AgreementItem } from "./components/AgreementManager";
 import type { ScholarshipItem } from "./components/ScholarshipManager";
 import type { CommitteeMember } from "./components/CommitteeManager";
 import type { ProcurementItem } from "./components/ProcurementManager";
-import type { ScheduleCommitteeMember } from "./components/ScheduleManager";
+import type { ScheduleCommitteeMember } from "./features/schedule/schedule-types";
 import { Sun, Moon, LogOut, Lock as LockIcon, X, BookOpen } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import { parseCommitteeVotePath } from "./utils/committee-short-link";
