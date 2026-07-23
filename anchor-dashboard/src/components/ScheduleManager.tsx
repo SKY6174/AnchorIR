@@ -27,6 +27,7 @@ import {
 import {
   getDaysInMonth,
   getOneHourLater,
+  parseScheduleDateTime,
   getStartDayOfWeek,
   getYoutubeEmbedUrl
 } from "../features/schedule/utils/schedule-display-utils";
@@ -1636,25 +1637,7 @@ Gemini 피드백: \n${geminiCritiqueText}
   const parseDateTime = (
     dateTimeStr: string | undefined,
     defaultVal: [string, string] = [`${targetYearNum}-07-15`, "10:00"]
-  ): [string, string] => {
-    if (!dateTimeStr) return defaultVal;
-    let date = "";
-    let time = "";
-    if (dateTimeStr.includes("T")) {
-      const parts = dateTimeStr.split("T");
-      date = parts[0];
-      if (parts[1]) {
-        time = parts[1].substring(0, 5);
-      }
-    } else if (dateTimeStr.includes(" ")) {
-      const parts = dateTimeStr.split(" ");
-      date = parts[0];
-      time = parts[1];
-    } else {
-      date = dateTimeStr;
-    }
-    return [date || defaultVal[0], time || defaultVal[1]];
-  };
+  ): [string, string] => parseScheduleDateTime(dateTimeStr, defaultVal);
 
   // 관련 부서 멀티 체크박스 토글 핸들러
   const handleDeptCheckboxChange = (deptName: string) => {

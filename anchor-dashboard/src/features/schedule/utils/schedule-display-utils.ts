@@ -43,3 +43,28 @@ export const getDaysInMonth = (year: number, month: number) =>
 
 export const getStartDayOfWeek = (year: number, month: number) =>
   new Date(year, month - 1, 1).getDay();
+
+export const parseScheduleDateTime = (
+  dateTimeString: string | undefined,
+  defaultValue: [string, string]
+): [string, string] => {
+  if (!dateTimeString) return defaultValue;
+
+  let date = "";
+  let time = "";
+  if (dateTimeString.includes("T")) {
+    const parts = dateTimeString.split("T");
+    date = parts[0];
+    if (parts[1]) {
+      time = parts[1].substring(0, 5);
+    }
+  } else if (dateTimeString.includes(" ")) {
+    const parts = dateTimeString.split(" ");
+    date = parts[0];
+    time = parts[1];
+  } else {
+    date = dateTimeString;
+  }
+
+  return [date || defaultValue[0], time || defaultValue[1]];
+};
