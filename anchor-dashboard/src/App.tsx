@@ -36,6 +36,18 @@ import "./styles/dashboard.css";
 type LegacyAppRecord = Record<string, any>;
 type LegacyYearRecord = Record<number, LegacyAppRecord>;
 type RiseMemberInsert = TablesInsert<"rise_members">;
+type Html2PdfFactory = () => LegacyAppRecord;
+
+declare global {
+  interface Window {
+    html2pdf?: Html2PdfFactory;
+    __HAS_NO_ADVANCED_SERVICES_COLUMNS__?: boolean;
+    __HAS_NO_ADVANCED_ENV_COLUMNS__?: boolean;
+    __HAS_NO_ADVANCED_EQUIP_COLUMNS__?: boolean;
+  }
+}
+
+declare const html2pdf: Html2PdfFactory;
 
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
@@ -513,7 +525,7 @@ function recalculateCarryOver(years: LegacyYearRecord | null | undefined) {
 // 다년도 예산/집행 구조 동적 변환기 (1~5차년도)
 function formatDataToMultiYear(data: LegacyAppRecord[]) {
   return data.map((p) => {
-    const newUnits = p.units.map((u) => {
+    const newUnits = p.units.map((u: LegacyAppRecord) => {
       // 1. 단위과제 예산 다년도 맵핑
       const unitYears: LegacyYearRecord = {};
       const isA1Na = u.id === "A1나";
@@ -628,7 +640,7 @@ function formatDataToMultiYear(data: LegacyAppRecord[]) {
       });
 
       // 2~5차년도용 프로그램 다년도 매핑 (1차년도는 제외)
-      const y2Progs = u.programs.map((prog) => {
+      const y2Progs = u.programs.map((prog: LegacyAppRecord) => {
         const progYears: LegacyYearRecord = {};
         [2, 3, 4, 5].forEach((yr) => {
           let budgetMain = 0;
@@ -757,17 +769,17 @@ function formatDataToMultiYear(data: LegacyAppRecord[]) {
           // 아래의 하드코딩 매핑 및 덮어쓰기를 스킵하고 원래 적혀있는 비목을 그대로 이식합니다.
           const hasExplicitCategories = prog.budget_categories &&
             Array.isArray(prog.budget_categories) &&
-            prog.budget_categories.some(c => c.category);
+            prog.budget_categories.some((c: LegacyAppRecord) => c.category);
 
           if (hasExplicitCategories) {
             // 💡 [다중 비목 연도별 예산 자동 스케일링 규칙]
             // mockData.js의 budget_categories는 2차년도(2026) 기준이므로,
             // 2차년도가 아닌 타 연도(1, 3, 4, 5차년도)에 대해서는 프로그램 총예산(budgetMain)에 맞게 비율 배분합니다.
             const totalRef = prog.budget_2026 || 0;
-            const explicitSum = prog.budget_categories.reduce((s, c) => s + (c.budget || 0), 0);
+            const explicitSum = prog.budget_categories.reduce((s: number, c: LegacyAppRecord) => s + (c.budget || 0), 0);
 
             progYears[yr].budget_categories = standardCategories.map((catName) => {
-              const srcCat = prog.budget_categories.find(c => c.category === catName);
+              const srcCat = prog.budget_categories.find((c: LegacyAppRecord) => c.category === catName);
               const isMatch = srcCat !== undefined;
 
               let bVal = isMatch ? (srcCat.budget || 0) : 0;
@@ -860,14 +872,14 @@ function formatDataToMultiYear(data: LegacyAppRecord[]) {
             seenIds.add(prog.id);
             uniquePrograms.push(JSON.parse(JSON.stringify(prog)));
           } else {
-            const existingIdx = uniquePrograms.findIndex(p => p.id === prog.id);
+            const existingIdx = uniquePrograms.findIndex((p: LegacyAppRecord) => p.id === prog.id);
             if (existingIdx !== -1) {
               const existing = uniquePrograms[existingIdx];
               existing.years = {
                 ...(existing.years || {}),
                 ...(prog.years || {})
               };
-              const hasCurrentData = (p) => p.years && Object.keys(p.years).some(y => p.years[y] && p.years[y].budget_main > 0);
+              const hasCurrentData = (p: LegacyAppRecord) => p.years && Object.keys(p.years).some(y => p.years[y] && p.years[y].budget_main > 0);
               if (!hasCurrentData(existing) && hasCurrentData(prog)) {
                 const mergedYears = existing.years;
                 uniquePrograms[existingIdx] = {
@@ -962,7 +974,7 @@ function formatDataToMultiYear(data: LegacyAppRecord[]) {
           let allocatedSpentCarry = 0;
 
           if (py.budget_categories && Array.isArray(py.budget_categories)) {
-            py.budget_categories.forEach((catItem) => {
+            py.budget_categories.forEach((catItem: LegacyAppRecord) => {
               const catName = catItem.category;
               if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
                 const mainVal = parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0;
@@ -1065,8 +1077,8 @@ function mergeProjectsWithInitial(
     }
 
     if (sourceStrat.units && Array.isArray(sourceStrat.units)) {
-      sourceStrat.units.forEach((sourceUnit) => {
-        let targetUnit = targetStrat.units.find(u => u.id === sourceUnit.id);
+      sourceStrat.units.forEach((sourceUnit: LegacyAppRecord) => {
+        let targetUnit = targetStrat.units.find((u: LegacyAppRecord) => u.id === sourceUnit.id);
         if (!targetUnit) {
           // 단위과제가 통째로 누락되었으므로 마스터 템플릿의 사본을 주입
           targetUnit = JSON.parse(JSON.stringify(sourceUnit));
@@ -1083,14 +1095,14 @@ function mergeProjectsWithInitial(
 
   updated.forEach((strategy) => {
     if (strategy.units && Array.isArray(strategy.units)) {
-      strategy.units.forEach((unit) => {
+      strategy.units.forEach((unit: LegacyAppRecord) => {
         const sourceUnit = multiYearInitialData
           ?.flatMap(s => s.units)
-          ?.find(u => u.id === unit.id);
+          ?.find((u: LegacyAppRecord) => u.id === unit.id);
 
         if (sourceUnit && sourceUnit.programs) {
-          const mergedPrograms = sourceUnit.programs.map((sourceProg) => {
-            const cachedProg = unit.programs?.find(cp => cp.id === sourceProg.id);
+          const mergedPrograms = sourceUnit.programs.map((sourceProg: LegacyAppRecord) => {
+            const cachedProg = unit.programs?.find((cp: LegacyAppRecord) => cp.id === sourceProg.id);
             if (cachedProg) {
               // 💡 [Self-healing 연구원 배정 등급 호칭 불일치 자가 보정]
               if (cachedProg.assignee === "박인숙 연구원") {
@@ -1126,7 +1138,7 @@ function mergeProjectsWithInitial(
                       // 💡 [재원 비율 및 비목 자가 복구 가드] DB에 저장된 국비 비율이 sourceProg의 2차년도 공식 기획 재원 비율과 오차가 생기거나 비목 상세가 비어 있으면 강제 복원 대상입니다.
                       const targetRatio = sourceProg.budget_2026 > 0 ? (sourceProg.budget_national || 0) / sourceProg.budget_2026 : 0.5;
                       const isDirtyRatio = y && y.budget_main > 0 && Math.abs((y.budget_national || 0) / y.budget_main - targetRatio) > 0.05;
-                      const isCategoriesEmpty = !y || !y.budget_categories || y.budget_categories.length === 0 || y.budget_categories.every(c => (c.budget || 0) === 0);
+                      const isCategoriesEmpty = !y || !y.budget_categories || y.budget_categories.length === 0 || y.budget_categories.every((c: LegacyAppRecord) => (c.budget || 0) === 0);
 
                       // 💡 [유효 비목 정합성 검사] 
                       // 10대 비목이 기본으로 전부 포함되므로, 단순 종류 비교가 아닌 예산이 배정된 '실제 유효 비목'의 종류가 서로 일치하는지 정밀 대조합니다.
@@ -1134,25 +1146,25 @@ function mergeProjectsWithInitial(
                         if (!y || !y.budget_categories || !sy || !sy.budget_categories) return true;
 
                         const yActiveCats = y.budget_categories
-                          .filter(c => {
+                          .filter((c: LegacyAppRecord) => {
                             const b = parseInt(String(c.budget || "0").replace(/,/g, ""), 10) || 0;
                             const bc = parseInt(String(c.budget_carry || "0").replace(/,/g, ""), 10) || 0;
                             return b > 0 || bc > 0;
                           })
-                          .map(c => c.category)
+                          .map((c: LegacyAppRecord) => c.category)
                           .sort();
 
                         const syActiveCats = sy.budget_categories
-                          .filter(c => {
+                          .filter((c: LegacyAppRecord) => {
                             const b = parseInt(String(c.budget || "0").replace(/,/g, ""), 10) || 0;
                             const bc = parseInt(String(c.budget_carry || "0").replace(/,/g, ""), 10) || 0;
                             return b > 0 || bc > 0;
                           })
-                          .map(c => c.category)
+                          .map((c: LegacyAppRecord) => c.category)
                           .sort();
 
                         if (yActiveCats.length !== syActiveCats.length) return true;
-                        return yActiveCats.some((val, idx) => val !== syActiveCats[idx]);
+                        return yActiveCats.some((val: string, idx: number) => val !== syActiveCats[idx]);
                       };
                       const isDirtyBimok = hasBimokMismatch();
 
@@ -1267,7 +1279,7 @@ function mergeProjectsWithInitial(
 
                   // 5. 비목 카테고리 예산 오버플로우 보정
                   if (y.budget_categories && Array.isArray(y.budget_categories)) {
-                    y.budget_categories.forEach((cat) => {
+                    y.budget_categories.forEach((cat: LegacyAppRecord) => {
                       const catBudget = parseInt(String(cat.budget || "0").replace(/,/g, ""), 10) || 0;
                       if (catBudget > 10000000000) {
                         cat.budget = Math.round(catBudget / 1000);
@@ -1289,21 +1301,21 @@ function mergeProjectsWithInitial(
           // 💡 [중복 ID 방지 가드] 1차년도와 다년도 프로그램 목록 병합 시 발생할 수 있는 동일 ID 프로그램 중복 노출을 차단합니다.
           const uniquePrograms: LegacyAppRecord[] = [];
           const seenIds = new Set<string>();
-          mergedPrograms.forEach((prog) => {
+          mergedPrograms.forEach((prog: LegacyAppRecord) => {
             if (prog && prog.id) {
               if (!seenIds.has(prog.id)) {
                 seenIds.add(prog.id);
                 uniquePrograms.push(prog);
               } else {
                 // 중복된 경우, 상세 연도 정보(years)를 서로 병합하고, 유효한 상세 연도 정보(years[selectedYear])를 가진 객체를 우선하여 속성을 덮어씁니다.
-                const existingIdx = uniquePrograms.findIndex(p => p.id === prog.id);
+                const existingIdx = uniquePrograms.findIndex((p: LegacyAppRecord) => p.id === prog.id);
                 if (existingIdx !== -1) {
                   const existing = uniquePrograms[existingIdx];
                   existing.years = {
                     ...(existing.years || {}),
                     ...(prog.years || {})
                   };
-                  const hasCurrentData = (p) => p.years && Object.keys(p.years).some(y => p.years[y] && p.years[y].budget_main > 0);
+                const hasCurrentData = (p: LegacyAppRecord) => p.years && Object.keys(p.years).some(y => p.years[y] && p.years[y].budget_main > 0);
                   if (!hasCurrentData(existing) && hasCurrentData(prog)) {
                     const mergedYears = existing.years;
                     uniquePrograms[existingIdx] = {
@@ -1335,7 +1347,7 @@ function mergeProjectsWithInitial(
 
           [1, 2, 3, 4, 5].forEach((yr) => {
             if (unit.programs && Array.isArray(unit.programs)) {
-              unit.programs.forEach((prog) => {
+              unit.programs.forEach((prog: LegacyAppRecord) => {
                 const py = prog.years?.[yr] || {};
                 const progTotalMain = py.budget_main || 0;
                 const progTotalCarry = py.budget_carry || 0;
@@ -1348,7 +1360,7 @@ function mergeProjectsWithInitial(
                 let allocatedSpentCarry = 0;
 
                 if (py.budget_categories && Array.isArray(py.budget_categories)) {
-                  py.budget_categories.forEach((catItem) => {
+                  py.budget_categories.forEach((catItem: LegacyAppRecord) => {
                     const catName = catItem.category;
                     if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
                       const mainVal = parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0;
@@ -1398,7 +1410,7 @@ function mergeProjectsWithInitial(
               let totalProgSpentNational = 0;
 
               if (unit.programs && Array.isArray(unit.programs)) {
-                unit.programs.forEach((prog) => {
+                unit.programs.forEach((prog: LegacyAppRecord) => {
                   const py = prog.years?.[yr] || {};
                   totalProgMain += py.budget_main || 0;
                   totalProgNational += py.budget_national || 0;
@@ -1487,13 +1499,16 @@ function mergeProjectsWithInitial(
     if (strategy.units && Array.isArray(strategy.units)) {
       strategy.units.forEach((unit) => {
         if (unit.budgetDetails) {
+          const budgetDetailValues = Object.values(
+            unit.budgetDetails as Record<string, LegacyAppRecord>
+          );
           [1, 2, 3, 4, 5].forEach((yr) => {
             if (!unit.years) unit.years = {};
             if (!unit.years[yr]) {
               unit.years[yr] = { budget_main: 0, spent_main: 0, budget_carry: 0, spent_carry: 0 };
             }
 
-            unit.years[yr].budget_main = Object.values(unit.budgetDetails).reduce((sum, b) => {
+            unit.years[yr].budget_main = budgetDetailValues.reduce((sum, b) => {
               return sum + (b.years?.[yr]?.budget_main || 0);
             }, 0);
 
@@ -1506,33 +1521,33 @@ function mergeProjectsWithInitial(
               unit.years[yr].spent_city = 0;
               unit.years[yr].spent_external = 0;
             } else {
-              unit.years[yr].budget_national = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              unit.years[yr].budget_national = budgetDetailValues.reduce((sum, b) => {
                 return sum + (b.years?.[yr]?.budget_national || 0);
               }, 0);
-              unit.years[yr].budget_city = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              unit.years[yr].budget_city = budgetDetailValues.reduce((sum, b) => {
                 return sum + (b.years?.[yr]?.budget_city || 0);
               }, 0);
-              unit.years[yr].budget_external = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              unit.years[yr].budget_external = budgetDetailValues.reduce((sum, b) => {
                 return sum + (b.years?.[yr]?.budget_external || 0);
               }, 0);
-              unit.years[yr].spent_national = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              unit.years[yr].spent_national = budgetDetailValues.reduce((sum, b) => {
                 return sum + (b.years?.[yr]?.spent_national || 0);
               }, 0);
-              unit.years[yr].spent_city = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              unit.years[yr].spent_city = budgetDetailValues.reduce((sum, b) => {
                 return sum + (b.years?.[yr]?.spent_city || 0);
               }, 0);
-              unit.years[yr].spent_external = Object.values(unit.budgetDetails).reduce((sum, b) => {
+              unit.years[yr].spent_external = budgetDetailValues.reduce((sum, b) => {
                 return sum + (b.years?.[yr]?.spent_external || 0);
               }, 0);
             }
 
-            unit.years[yr].budget_carry = Object.values(unit.budgetDetails).reduce((sum, b) => {
+            unit.years[yr].budget_carry = budgetDetailValues.reduce((sum, b) => {
               return sum + (b.years?.[yr]?.budget_carry || 0);
             }, 0);
-            unit.years[yr].spent_main = Object.values(unit.budgetDetails).reduce((sum, b) => {
+            unit.years[yr].spent_main = budgetDetailValues.reduce((sum, b) => {
               return sum + (b.years?.[yr]?.spent_main || 0);
             }, 0);
-            unit.years[yr].spent_carry = Object.values(unit.budgetDetails).reduce((sum, b) => {
+            unit.years[yr].spent_carry = budgetDetailValues.reduce((sum, b) => {
               return sum + (b.years?.[yr]?.spent_carry || 0);
             }, 0);
           });
@@ -2041,11 +2056,11 @@ const getNormalizedKpi = (k: LegacyAppRecord, selectedYear: number) => {
 };
 
 // 월별 추진일정 상세 대조 렌더러
-const renderTimelineDiff = (timelineStr) => {
-  const parts = (timelineStr || "").split(",").map(p => p.trim());
+const renderTimelineDiff = (timelineStr?: string) => {
+  const parts = (timelineStr || "").split(",").map((p: string) => p.trim());
   const months = ["25.3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "26.1월", "2월"];
 
-  const getStatusColor = (v) => {
+  const getStatusColor = (v: string) => {
     if (!v || typeof v !== "string") return "transparent";
     if (v.startsWith("P/D")) return "#1e3a8a";
     if (v.startsWith("D/C")) return "#064e3b";
@@ -2096,8 +2111,8 @@ const renderTimelineDiff = (timelineStr) => {
 };
 
 // 비목별 예산 배정 상세 대조 렌더러
-const renderBudgetCategoriesDiff = (categories) => {
-  const validList = (categories || []).filter(c => c.category);
+const renderBudgetCategoriesDiff = (categories?: LegacyAppRecord[]) => {
+  const validList = (categories || []).filter((c: LegacyAppRecord) => c.category);
   if (validList.length === 0) {
     return <div style={{ fontSize: "0.7rem", color: "var(--text-secondary)" }}>등록된 비목별 예산이 없습니다.</div>;
   }
@@ -2151,13 +2166,13 @@ export default function App() {
   // [전역 자가 치유 에러 핸들러]
   // 캐시 오염 등으로 렌더링 에러가 날 경우, 화이트스크린 방지를 위해 로컬 세션을 비우고 클린 샌드박스로 자동 복원합니다.
   useEffect(() => {
-    const handleGlobalError = (event) => {
+    const handleGlobalError = (event: Event) => {
       // 비동기 API 통신 오류(unhandledrejection)는 렌더링 화이트스크린 유발 주범이 아니므로 자가치유에서 전면 제외
       if (event.type === "unhandledrejection") {
         return;
       }
 
-      const err = event.error;
+      const err = (event as Event & LegacyAppRecord).error;
       if (!err) return;
 
       const errMsg = String(err.message || err);
@@ -2302,7 +2317,7 @@ export default function App() {
     return defaultVisibility;
   });
 
-  const handleSaveMenuVisibility = async (nextVisibility) => {
+  const handleSaveMenuVisibility = async (nextVisibility: LegacyAppRecord) => {
     setMenuVisibility(nextVisibility);
     localStorage.setItem("anchor_menu_visibility", JSON.stringify(nextVisibility));
 
@@ -2325,17 +2340,17 @@ export default function App() {
 
   // 💡 [초경량 캐시 다이어트 함수] 로컬스토리지 용량 초과(QuotaExceededError)를 근본적으로 방지하기 위해
   // 런타임에 언제든 재계산이 가능한 파생 집계 필드(budgetDetails, kpis)와 중복 무거운 텍스트를 제거하여 데이터 용량을 85% 이상 감량합니다.
-  const getCleanProjectsForStorage = (rawProjects) => {
+  const getCleanProjectsForStorage = <T extends LegacyAppRecord[] | null | undefined,>(rawProjects: T): T => {
     if (!rawProjects || !Array.isArray(rawProjects)) return rawProjects;
-    return rawProjects.map(strat => ({
+    return rawProjects.map((strat: LegacyAppRecord) => ({
       ...strat,
-      units: strat.units?.map(unit => {
+      units: strat.units?.map((unit: LegacyAppRecord) => {
         const { budgetDetails, kpis, ...restUnit } = unit;
         return {
           ...restUnit,
-          programs: unit.programs?.map(prog => {
+          programs: unit.programs?.map((prog: LegacyAppRecord) => {
             const { years, ...restProg } = prog;
-            const cleanedYears = {};
+            const cleanedYears: Record<string, LegacyAppRecord> = {};
             if (years) {
               Object.keys(years).forEach(yr => {
                 const y = years[yr];
@@ -2343,7 +2358,7 @@ export default function App() {
                   const { budget_categories, ...restY } = y;
                   cleanedYears[yr] = {
                     ...restY,
-                    budget_categories: budget_categories?.map(cat => ({
+                    budget_categories: budget_categories?.map((cat: LegacyAppRecord) => ({
                       category: cat.category,
                       budget: cat.budget,
                       budget_carry: cat.budget_carry,
@@ -2361,28 +2376,28 @@ export default function App() {
           })
         };
       })
-    }));
+    })) as unknown as T;
   };
 
   // 💡 [HTML5 IndexedDB 대용량 캐시 솔루션] 브라우저의 5MB 용량 한계를 극복하기 위해 IndexedDB 기반 비동기 Key-Value 저장소를 선언합니다.
-  const initIndexedDB = () => {
-    return new Promise((resolve, reject) => {
+  const initIndexedDB = (): Promise<IDBDatabase> => {
+    return new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open("anchor_ir_db", 1);
-      request.onupgradeneeded = (e) => {
-        const db = e.target.result;
+      request.onupgradeneeded = () => {
+        const db = request.result;
         if (!db.objectStoreNames.contains("kv_store")) {
           db.createObjectStore("kv_store");
         }
       };
-      request.onsuccess = (e) => resolve(e.target.result);
-      request.onerror = (e) => reject(e.target.error);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
     });
   };
 
-  const getIndexedDBCache = async (key) => {
+  const getIndexedDBCache = async (key: string): Promise<unknown> => {
     try {
       const db = await initIndexedDB();
-      return new Promise((resolve, reject) => {
+      return new Promise<unknown>((resolve, reject) => {
         const transaction = db.transaction("kv_store", "readonly");
         const store = transaction.objectStore("kv_store");
         const request = store.get(key);
@@ -2395,10 +2410,10 @@ export default function App() {
     }
   };
 
-  const setIndexedDBCache = async (key, valueStr) => {
+  const setIndexedDBCache = async (key: string, valueStr: string): Promise<boolean | void> => {
     try {
       const db = await initIndexedDB();
-      return new Promise((resolve, reject) => {
+      return new Promise<boolean>((resolve, reject) => {
         const transaction = db.transaction("kv_store", "readwrite");
         const store = transaction.objectStore("kv_store");
         const request = store.put(valueStr, key);
@@ -2419,10 +2434,10 @@ export default function App() {
     }
   };
 
-  const removeIndexedDBCache = async (key) => {
+  const removeIndexedDBCache = async (key: string): Promise<boolean | void> => {
     try {
       const db = await initIndexedDB();
-      return new Promise((resolve, reject) => {
+      return new Promise<boolean>((resolve, reject) => {
         const transaction = db.transaction("kv_store", "readwrite");
         const store = transaction.objectStore("kv_store");
         const request = store.delete(key);
@@ -2436,7 +2451,7 @@ export default function App() {
   };
 
   // 💡 [안전한 로컬스토리지/IndexedDB 저장 헬퍼] QuotaExceededError 차단을 위해 내부적으로 IndexedDB 백엔드를 사용합니다.
-  const safeSetLocalStorage = (key, valueStr, currentYear) => {
+  const safeSetLocalStorage = (key: string, valueStr: string, _currentYear: number) => {
     setIndexedDBCache(key, valueStr);
   };
 
@@ -2450,12 +2465,12 @@ export default function App() {
           .eq("key", "menu_visibility")
           .maybeSingle();
 
-        if (!error && data && data.value) {
+        if (!error && data && data.value && typeof data.value === "object" && !Array.isArray(data.value)) {
           const merged = {
             committee: true,
             committee_meeting: true,
             committee_report: true,
-            ...data.value
+            ...(data.value as LegacyAppRecord)
           };
           setMenuVisibility(merged);
           localStorage.setItem("anchor_menu_visibility", JSON.stringify(merged));
@@ -3794,7 +3809,7 @@ export default function App() {
 
       XLSX.writeFile(wb, fileName);
     } catch (err) {
-      alert("엑셀 다운로드 도중 에러가 발생하였습니다: " + err.message);
+      alert("엑셀 다운로드 도중 에러가 발생하였습니다: " + getErrorMessage(err));
     }
   };
 
@@ -3909,7 +3924,7 @@ export default function App() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (err) {
-      alert("마크다운 내보내기 도중 에러가 발생하였습니다: " + err.message);
+      alert("마크다운 내보내기 도중 에러가 발생하였습니다: " + getErrorMessage(err));
     }
   };
 
@@ -4112,7 +4127,7 @@ export default function App() {
 
       await html2pdf().from(htmlContent).set(opt).save();
     } catch (err) {
-      alert("PDF 다운로드 도중 에러가 발생하였습니다: " + err.message);
+      alert("PDF 다운로드 도중 에러가 발생하였습니다: " + getErrorMessage(err));
     } finally {
       setIsDownloadingPdf(null);
     }
@@ -4512,7 +4527,7 @@ export default function App() {
           envRes?.error, equipRes?.error, servRes?.error, monthRes?.error,
           eventRes?.error, meetRes?.error, pressRes?.error, execRes?.error
         ].filter(err => {
-          const status = err ? err.status : null;
+          const status = err ? (err as LegacyAppRecord).status : null;
           const code = err ? String(err.code || "") : "";
           const msg = err ? String(err.message || "") : "";
           return err && (
@@ -4541,7 +4556,7 @@ export default function App() {
         if (projData && projData.data) {
           // [성과 동기화] 원격 DB 데이터 로드 시점에도 mockData.js의 최신 KPI 구조(C-1~C-6 등)가 강제 유지되도록 동기화합니다.
           // [ID 마이그레이션] DB에서 읽어온 데이터 내의 프로그램 ID들을 5단계 위계 규정에 맞게 마이그레이션 적용합니다.
-          const dbProjData = migrateProgramIds(projData.data);
+          const dbProjData = migrateProgramIds(projData.data as unknown as LegacyAppRecord[]);
           const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
 
           // 💡 [병합 수정] Supabase에서 로드한 데이터를 최신 실증 데이터 템플릿과 머지하여 데이터 유실을 방지합니다.
@@ -4564,8 +4579,9 @@ export default function App() {
                     if (unit.programs && Array.isArray(unit.programs)) {
                       unit.programs.forEach((prog) => {
                         const req = pendReqs.find(r => r.program_id === prog.id);
-                        if (req && req.changes && req.changes.after) {
-                          const after = req.changes.after;
+                        const changes = req?.changes as LegacyAppRecord | null;
+                        if (changes?.after) {
+                          const after = changes.after as LegacyAppRecord;
 
                           // P기획 및 수동 수치 오버레이 주입
                           if (after.timeline !== undefined) prog.timeline = after.timeline;
