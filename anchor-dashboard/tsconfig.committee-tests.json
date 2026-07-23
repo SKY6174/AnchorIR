@@ -18,6 +18,8 @@
     "src/utils/committee-vote-validation.test.ts",
     "src/utils/committee-short-link.ts",
     "src/utils/committee-short-link.test.ts",
+    "src/utils/committee-code.ts",
+    "src/utils/committee-code.test.ts",
     "src/utils/quorumEvaluator.ts",
     "src/utils/quorumEvaluator.test.ts",
     "src/services/otp-auth-core.ts",

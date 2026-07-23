@@ -17,6 +17,7 @@ import {
 import { CommitteeVoteApiError } from "../types/committee-vote";
 import { buildValidatedVoteItems, createIdempotencyKey } from "../utils/committee-vote-validation";
 import { buildCommitteeVotePath } from "../utils/committee-short-link";
+import { buildCommitteeHumanCode } from "../utils/committee-code";
 import {
   Users,
   ClipboardList,
@@ -3222,6 +3223,11 @@ ${selectedMeetingAgendas.map((a, idx) => {
                     const shortMeetingCode = selectedMeeting.public_code?.trim();
                     const shortVotePath = shortMeetingCode ? buildCommitteeVotePath(shortMeetingCode) : "";
                     const shortVoteUrl = shortVotePath ? `${window.location.origin}${shortVotePath}` : "";
+                    const committeeCode = buildCommitteeHumanCode({
+                      committeeId: selectedMeeting.committee_id,
+                      title: selectedMeeting.title,
+                      meetingDate: selectedMeeting.meeting_date
+                    });
 
                     if (!shortVoteUrl) {
                       return (
@@ -3267,6 +3273,9 @@ ${selectedMeetingAgendas.map((a, idx) => {
                           </div>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                          <span style={{ fontSize: "0.75rem", background: "rgba(59, 130, 246, 0.15)", color: "#60a5fa", padding: "0.25rem 0.5rem", borderRadius: "4px", fontWeight: "bold" }}>
+                            위원회 코드: {committeeCode}
+                          </span>
                           <span style={{ fontSize: "0.75rem", background: "rgba(245, 158, 11, 0.15)", color: "#fbbf24", padding: "0.25rem 0.5rem", borderRadius: "4px", fontWeight: "bold" }}>
                             보안 PIN: {selectedMeeting.access_pin || "미발급"}
                           </span>
@@ -3274,7 +3283,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                             className="btn btn-primary"
                             style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: "0.25rem" }}
                             onClick={() => {
-                              const copyText = `안녕하세요, RISE 위원회 위원님.\n\n개설된 회의 심의 의결 안내 드립니다.\n\n■ 회의 안건: ${selectedMeeting.title}\n■ 접속 단축 링크: ${shortVoteUrl}\n■ 보안 PIN코드: ${selectedMeeting.access_pin || "미발급"}\n\n위 단축 링크로 접속하신 후 위원 성명과 보안 PIN코드를 입력하시고 의결 및 전자서명을 제출해 주시기 바랍니다.`;
+                              const copyText = `안녕하세요, RISE 위원회 위원님.\n\n개설된 회의 심의 의결 안내 드립니다.\n\n■ 회의 안건: ${selectedMeeting.title}\n■ 위원회 코드: ${committeeCode}\n■ 접속 단축 링크: ${shortVoteUrl}\n■ 보안 PIN코드: ${selectedMeeting.access_pin || "미발급"}\n\n위 단축 링크로 접속하신 후 위원 성명과 보안 PIN코드를 입력하시고 의결 및 전자서명을 제출해 주시기 바랍니다.`;
                               navigator.clipboard.writeText(copyText);
                               alert("외부 위원 안내문 및 단축 접속 링크가 클립보드에 복사되었습니다!");
                             }}

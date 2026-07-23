@@ -9,6 +9,7 @@ import {
 } from "../services/committee-vote-service";
 import { CommitteeVoteContext } from "../types/committee-vote";
 import { buildValidatedVoteItems, createIdempotencyKey } from "../utils/committee-vote-validation";
+import { buildCommitteeHumanCode } from "../utils/committee-code";
 
 const COMMITTEE_DISPLAY_NAMES: Record<string, string> = {
   total: "앵커총괄위원회",
@@ -476,9 +477,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   }
 
   if (!isAuthorized) {
-    const queryParams = new URLSearchParams(window.location.search);
-    const accessCode = meetingId || queryParams.get("v") || queryParams.get("meetingId") || queryParams.get("meeting") || queryParams.get("id") || "";
     const committeeSystemName = getCommitteeSystemName(meeting?.committee_id);
+    const committeeCode = buildCommitteeHumanCode({
+      committeeId: meeting?.committee_id,
+      title: meeting?.title,
+      meetingDate: meeting?.meeting_date
+    });
 
     return (
       <main className="committee-login-page">
@@ -532,7 +536,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
               <input
                 id="committee-access-code"
                 type="text"
-                value={accessCode}
+                value={committeeCode}
                 readOnly
                 aria-readonly="true"
                 className="form-input committee-login-input committee-login-input-readonly"
