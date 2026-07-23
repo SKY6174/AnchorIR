@@ -363,6 +363,7 @@ export default function PDCAManager({
       setProgramVersions([]);
       setSelectedVersionId("current");
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- program selection, year, and client identity intentionally own version-history loading; the derived active program is not a separate trigger.
   }, [selectedProgId, selectedYear, supabase]);
 
   // 모든 프로그램 수집
@@ -445,6 +446,7 @@ export default function PDCAManager({
     // 3. 달성률 계산 (소수점 없이 반올림 정수, 100% 한도 적용)
     const rate = totalPlannedBudget > 0 ? Math.min(100, Math.round((totalSpent / totalPlannedBudget) * 100)) : 0;
     setInputAchieveRate(String(rate));
+  // oxlint-disable-next-line react/exhaustive-deps -- getExcelSpentAmount reads cachedExecs, which is already the explicit recalculation input.
   }, [activeProg, selectedYear, cachedExecs]);
 
   // selectedProgId, selectedYear, selectedVersionId가 바뀔 때 모든 기획/환류/재원 상태 로드
@@ -671,6 +673,7 @@ export default function PDCAManager({
       setInputActualFrequency("");
       setInputAchieveRate("");
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- these source selections own form rebinding; render-local program collections and lookup helpers must not reset edits on every render.
   }, [selectedProgId, selectedYear, selectedVersionId, programVersions]);
 
   // 추진일정 변경 이벤트 핸들러 (기존 호환 유지)

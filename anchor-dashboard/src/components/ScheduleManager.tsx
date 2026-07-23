@@ -617,6 +617,7 @@ export default function ScheduleManager({
     return () => {
       window.removeEventListener("anchor_committee_members_updated", handleCommitteeMembersUpdated);
     };
+  // oxlint-disable-next-line react/exhaustive-deps -- selectedYear owns the listener closure; adding the render-local loader would rebind the listener on every render.
   }, [selectedYear]);
 
   // Supabase 실시간 위원회 명단 조회 함수
@@ -683,6 +684,7 @@ export default function ScheduleManager({
 
   useEffect(() => {
     loadCommitteesData();
+  // oxlint-disable-next-line react/exhaustive-deps -- selectedYear intentionally owns committee loading; a render-local loader must not trigger duplicate database reads.
   }, [selectedYear]);
 
   // 💡 [교육용 한글 주석] 기존 CSV 서식 양식 다운로드를 호환성이 높은 XLSX 규격으로 개선합니다.
