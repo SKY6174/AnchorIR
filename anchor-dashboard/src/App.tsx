@@ -4,7 +4,6 @@ import Sidebar from "./components/Sidebar";
 const CommitteeExternalVote = React.lazy(() => import("./components/CommitteeExternalVote"));
 import SurveyResponder from "./components/SurveyResponder";
 import AuthManager from "./components/AuthManager";
-import CommitteeManager from "./components/CommitteeManager";
 import { initialProjectsData } from "./data/mockData";
 import type { ProjectData } from "./data/mockData";
 import type { AgreementItem } from "./components/AgreementManager";
@@ -29,6 +28,7 @@ import { AssetScreen } from "./features/assets/screens/asset-screen";
 import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
 import { BudgetScreen } from "./features/budget/screens/budget-screen";
 import { KpiScreen } from "./features/kpis/screens/kpi-screen";
+import { CommitteeScreen } from "./features/committee/screens/committee-screen";
 import { DashboardScreen } from "./features/dashboard/screens/dashboard-screen";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
 import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
@@ -4239,25 +4239,23 @@ export default function App() {
         )}
 
         {activeTab === "committee" && (
-          <div className="committee-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-            <CommitteeManager
-              currentRole={currentRole}
-              currentUser={currentUser}
-              activeSubTab={committeeSubTab}
-              onChangeSubTab={setCommitteeSubTab}
-              darkMode={darkMode}
-              selectedYear={selectedYear}
-              monthlySchedules={monthlySchedules}
-              setMonthlySchedules={setMonthlySchedules}
-              eventSchedules={eventSchedules}
-              setEventSchedules={setEventSchedules}
-              meetingSchedules={meetingSchedules}
-              setMeetingSchedules={setMeetingSchedules}
-              pressReleases={pressReleases}
-              setPressReleases={setPressReleases}
-              members={members as CommitteeMember[]}
-            />
-          </div>
+          <CommitteeScreen
+            currentRole={currentRole}
+            currentUser={currentUser}
+            activeSubTab={committeeSubTab}
+            onChangeSubTab={setCommitteeSubTab}
+            darkMode={darkMode}
+            selectedYear={selectedYear}
+            monthlySchedules={monthlySchedules}
+            setMonthlySchedules={setMonthlySchedules}
+            eventSchedules={eventSchedules}
+            setEventSchedules={setEventSchedules}
+            meetingSchedules={meetingSchedules}
+            setMeetingSchedules={setMeetingSchedules}
+            pressReleases={pressReleases}
+            setPressReleases={setPressReleases}
+            members={members as CommitteeMember[]}
+          />
         )}
 
         {activeTab === "procurement" && (
