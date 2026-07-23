@@ -139,6 +139,444 @@ body.light-mode {
   border-right: 1px solid var(--border-color-light);
 }
 
+/* 외부위원 심의 로그인 - UC 산학협력단 보안 포털 */
+.committee-login-page {
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  background: #ffffff;
+  color: #14233a;
+  overflow: hidden;
+}
+
+.committee-login-hero {
+  position: relative;
+  min-height: 100vh;
+  padding: clamp(2.5rem, 4vw, 4.5rem) clamp(2.5rem, 4vw, 5rem) 3.25rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 83% 18%, rgba(39, 128, 220, 0.3), transparent 32%),
+    linear-gradient(132deg, #06294f 0%, #0b3c70 52%, #145b9f 100%);
+  color: #ffffff;
+}
+
+.committee-login-hero::before,
+.committee-login-hero::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.committee-login-hero::before {
+  width: min(48vw, 820px);
+  height: min(48vw, 820px);
+  right: min(-19vw, -260px);
+  bottom: min(-26vw, -360px);
+  border: clamp(62px, 7vw, 120px) solid rgba(80, 157, 231, 0.11);
+}
+
+.committee-login-hero::after {
+  width: min(30vw, 520px);
+  height: min(30vw, 520px);
+  right: min(-10vw, -120px);
+  bottom: min(-16vw, -220px);
+  border: 1px solid rgba(132, 193, 246, 0.24);
+}
+
+.committee-login-brand,
+.committee-login-hero-content,
+.committee-login-environment {
+  position: relative;
+  z-index: 1;
+}
+
+.committee-login-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.committee-login-brand-mark {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(176, 218, 255, 0.52);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #2f8ae8, #0861bf);
+  box-shadow: 0 12px 32px rgba(2, 22, 49, 0.28);
+  color: #ffffff;
+  font-size: 1.18rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.committee-login-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.committee-login-brand-copy strong {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.committee-login-brand-copy small {
+  color: rgba(220, 237, 252, 0.6);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.committee-login-hero-content {
+  max-width: 560px;
+  margin-top: clamp(7.5rem, 20vh, 13rem);
+}
+
+.committee-login-eyebrow {
+  display: block;
+  margin-bottom: 1.45rem;
+  color: #78c2ff;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.27em;
+}
+
+.committee-login-hero h1 {
+  color: #ffffff;
+  font-size: clamp(3rem, 4.1vw, 4.85rem);
+  font-weight: 850;
+  line-height: 1.12;
+  letter-spacing: -0.065em;
+}
+
+.committee-login-hero-content > p {
+  margin-top: 1.65rem;
+  color: rgba(220, 237, 252, 0.7);
+  font-size: clamp(0.95rem, 1.1vw, 1.08rem);
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+.committee-login-trust-grid {
+  width: min(100%, 505px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 3rem;
+}
+
+.committee-login-trust-card {
+  min-height: 122px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid rgba(184, 219, 248, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.065);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+.committee-login-trust-card svg {
+  margin-bottom: 0.85rem;
+  color: #6dbaff;
+}
+
+.committee-login-trust-card strong {
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.committee-login-trust-card span {
+  margin-top: 0.25rem;
+  color: rgba(220, 237, 252, 0.58);
+  font-size: 0.73rem;
+}
+
+.committee-login-environment {
+  position: absolute;
+  left: clamp(2.5rem, 4vw, 5rem);
+  bottom: 3.25rem;
+  color: rgba(220, 237, 252, 0.38);
+  font-size: 0.68rem;
+}
+
+.committee-login-access {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background: #ffffff;
+}
+
+.committee-login-access-inner {
+  width: min(100%, 530px);
+  transform: translateY(-1.5rem);
+}
+
+.committee-login-lock {
+  width: 70px;
+  height: 70px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 1.7rem;
+  border-radius: 17px;
+  background: #eaf3ff;
+  color: #126bd0;
+}
+
+.committee-login-access-label {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: #1b70d6;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.17em;
+}
+
+.committee-login-access h2 {
+  color: #14233a;
+  font-size: clamp(2rem, 2.35vw, 2.7rem);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.055em;
+}
+
+.committee-login-access-description {
+  margin-top: 0.8rem;
+  color: #8a98aa;
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.committee-login-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+}
+
+.committee-login-form label {
+  margin: 0 0 0.45rem;
+  color: #64748b;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.committee-login-page .committee-login-access .committee-login-form input.committee-login-input {
+  width: 100%;
+  height: 62px;
+  padding: 0 1rem;
+  border: 1px solid #cdd8e6;
+  border-radius: 11px;
+  outline: none;
+  background: #eef4ff;
+  color: #14233a;
+  font-size: 0.94rem;
+  font-weight: 650;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.committee-login-input + label {
+  margin-top: 1rem;
+}
+
+.committee-login-page .committee-login-access .committee-login-form input.committee-login-input::placeholder {
+  color: #a4afbd;
+  font-weight: 500;
+}
+
+.committee-login-page .committee-login-access .committee-login-form input.committee-login-input:focus {
+  border-color: #2f80ed;
+  background: #f4f8ff;
+  box-shadow: 0 0 0 4px rgba(47, 128, 237, 0.12);
+}
+
+.committee-login-page .committee-login-access .committee-login-form input.committee-login-input-readonly {
+  background: #fbfcfe;
+  color: #7e8998;
+  cursor: default;
+}
+
+.committee-login-submit {
+  width: 100%;
+  height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-top: 1.8rem;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(100deg, #1264c4 0%, #2684e8 100%);
+  box-shadow: 0 13px 30px rgba(26, 113, 210, 0.2);
+  color: #ffffff;
+  font-size: 0.98rem;
+  font-weight: 850;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.committee-login-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(26, 113, 210, 0.28);
+  filter: brightness(1.03);
+}
+
+.committee-login-submit:focus-visible {
+  outline: 3px solid rgba(47, 128, 237, 0.3);
+  outline-offset: 3px;
+}
+
+.committee-login-security-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+  color: #9aa7b7;
+  font-size: 0.68rem;
+  line-height: 1.5;
+}
+
+.committee-login-security-note svg {
+  flex: 0 0 auto;
+  color: #3f8fdf;
+}
+
+@media (max-width: 1100px) {
+  .committee-login-page {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+
+  .committee-login-hero {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+
+  .committee-login-hero-content {
+    margin-top: 8rem;
+  }
+
+  .committee-login-hero h1 {
+    font-size: 3.25rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .committee-login-page {
+    min-height: 100vh;
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .committee-login-hero {
+    min-width: 0;
+    min-height: auto;
+    padding: 2rem 2rem 2.5rem;
+  }
+
+  .committee-login-hero-content {
+    min-width: 0;
+    max-width: 100%;
+    margin-top: 3.25rem;
+  }
+
+  .committee-login-hero h1 {
+    font-size: clamp(2.5rem, 8vw, 3.8rem);
+  }
+
+  .committee-login-trust-grid {
+    width: 100%;
+    margin-top: 2rem;
+  }
+
+  .committee-login-environment {
+    display: none;
+  }
+
+  .committee-login-access {
+    min-height: auto;
+    padding: 3.5rem 2rem 4rem;
+  }
+
+  .committee-login-access-inner {
+    width: min(100%, 560px);
+    transform: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .committee-login-hero {
+    padding: 1.4rem 1.25rem 1.8rem;
+  }
+
+  .committee-login-brand-mark {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+  }
+
+  .committee-login-brand-copy strong {
+    font-size: 0.9rem;
+  }
+
+  .committee-login-hero-content {
+    margin-top: 2.5rem;
+  }
+
+  .committee-login-eyebrow {
+    margin-bottom: 1rem;
+    font-size: 0.65rem;
+  }
+
+  .committee-login-hero h1 {
+    font-size: 2.35rem;
+  }
+
+  .committee-login-hero-content > p {
+    margin-top: 1rem;
+    font-size: 0.86rem;
+  }
+
+  .committee-login-trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin-top: 1.5rem;
+  }
+
+  .committee-login-trust-card {
+    min-height: 105px;
+    padding: 1rem;
+  }
+
+  .committee-login-access {
+    padding: 2.5rem 1.25rem 3rem;
+  }
+
+  .committee-login-lock {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 1.25rem;
+  }
+
+  .committee-login-input {
+    height: 58px;
+  }
+
+  .committee-login-submit {
+    height: 60px;
+  }
+}
+
 .logo-section {
   display: flex;
   flex-direction: column;

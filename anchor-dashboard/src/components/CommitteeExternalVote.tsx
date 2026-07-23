@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Users, Lock, FileText, Check, AlertTriangle, Send, Vote, Upload, RefreshCw, LogOut } from "lucide-react";
+import { Lock, FileText, Check, AlertTriangle, Send, Vote, Upload, RefreshCw, LogOut, ArrowRight, ShieldCheck } from "lucide-react";
 import {
   authenticateCommitteeVoter,
   getCommitteeVoteContext,
@@ -453,46 +453,99 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
   }
 
   if (!isAuthorized) {
+    const queryParams = new URLSearchParams(window.location.search);
+    const accessCode = meetingId || queryParams.get("v") || queryParams.get("meetingId") || queryParams.get("meeting") || queryParams.get("id") || "";
+
     return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", padding: "1rem" }}>
-        <div className="glass-card" style={{ width: "100%", maxWidth: "400px", padding: "2rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          <div style={{ textAlign: "center" }}>
-            <Lock size={48} style={{ color: "var(--accent-color)", marginBottom: "0.5rem" }} />
-            <h2 style={{ fontSize: "1.3rem", fontWeight: "800" }}>외부 위원 본인 인증</h2>
-            <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.3rem" }}>
-              {meeting?.title} 의결 및 전자서명을 위해 성명과 보안 PIN(6자리)을 입력해 주세요.
-            </p>
+      <main className="committee-login-page">
+        <section className="committee-login-hero" aria-label="위원회 보안 안내">
+          <div className="committee-login-brand">
+            <span className="committee-login-brand-mark">UC</span>
+            <span className="committee-login-brand-copy">
+              <strong>울산과학대학교</strong>
+              <small>산학협력단 위원회 시스템</small>
+            </span>
           </div>
 
-          <form onSubmit={handleAuthSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div>
-              <label style={{ fontSize: "0.85rem", fontWeight: "700", display: "block", marginBottom: "0.4rem" }}>위원 성명</label>
+          <div className="committee-login-hero-content">
+            <span className="committee-login-eyebrow">SECURE COMMITTEE</span>
+            <h1>자료 검토부터<br />심의와 서명까지</h1>
+            <p>위원별 보안코드와 비공개 PDF 열람으로 안전하게 심의에 참여하세요.</p>
+
+            <div className="committee-login-trust-grid">
+              <div className="committee-login-trust-card">
+                <FileText size={24} aria-hidden="true" />
+                <strong>PDF 보안 열람</strong>
+                <span>권한 확인 후 단기 링크</span>
+              </div>
+              <div className="committee-login-trust-card">
+                <ShieldCheck size={24} aria-hidden="true" />
+                <strong>심의 증적 보존</strong>
+                <span>제출·서명 감사 추적</span>
+              </div>
+            </div>
+          </div>
+
+          <p className="committee-login-environment">인가된 위원만 접근할 수 있는 보안 심의 환경입니다.</p>
+        </section>
+
+        <section className="committee-login-access" aria-label="외부위원 로그인">
+          <div className="committee-login-access-inner">
+            <div className="committee-login-lock">
+              <Lock size={30} strokeWidth={2.25} aria-hidden="true" />
+            </div>
+            <span className="committee-login-access-label">MEMBER ACCESS</span>
+            <h2>위원 로그인</h2>
+            <p className="committee-login-access-description">
+              간사에게 전달받은 위원회 코드와 개인 보안코드를 입력해 주세요.
+            </p>
+
+            <form className="committee-login-form" onSubmit={handleAuthSubmit}>
+              <label htmlFor="committee-access-code">위원회 코드</label>
               <input
+                id="committee-access-code"
+                type="text"
+                value={accessCode}
+                readOnly
+                aria-readonly="true"
+                className="form-input committee-login-input committee-login-input-readonly"
+              />
+
+              <label htmlFor="committee-member-code">위원 코드</label>
+              <input
+                id="committee-member-code"
                 type="text"
                 value={loginForm.name}
                 onChange={(e) => setLoginForm({ ...loginForm, name: e.target.value })}
-                placeholder="성명 입력 (예: 송경영)"
-                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)", background: "var(--input-bg)", color: "var(--text-primary)" }}
+                placeholder="위원 코드를 입력해 주세요."
+                autoComplete="username"
+                className="form-input committee-login-input"
               />
-            </div>
-            <div>
-              <label style={{ fontSize: "0.85rem", fontWeight: "700", display: "block", marginBottom: "0.4rem" }}>보안 PIN (6자리)</label>
+
+              <label htmlFor="committee-security-code">개인 보안코드</label>
               <input
+                id="committee-security-code"
                 type="password"
                 value={loginForm.pin}
                 onChange={(e) => setLoginForm({ ...loginForm, pin: e.target.value })}
-                placeholder="보안 PIN 6자리 입력 (예: 123456)"
-                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border-color)", background: "var(--input-bg)", color: "var(--text-primary)" }}
+                placeholder="개인 보안코드를 입력해 주세요."
+                autoComplete="current-password"
+                className="form-input committee-login-input"
               />
-            </div>
 
-            <button type="submit" className="btn-primary" style={{ width: "100%", padding: "0.8rem", marginTop: "0.5rem" }}>
-              <Users size={18} />
-              <span>인증하고 회의 입장하기</span>
-            </button>
-          </form>
-        </div>
-      </div>
+              <button type="submit" className="committee-login-submit">
+                <span>위원회 입장</span>
+                <ArrowRight size={20} aria-hidden="true" />
+              </button>
+            </form>
+
+            <p className="committee-login-security-note">
+              <ShieldCheck size={18} aria-hidden="true" />
+              <span>5회 연속 실패하면 15분간 로그인이 제한됩니다. 보안코드를 다른 사람과 공유하지 마세요.</span>
+            </p>
+          </div>
+        </section>
+      </main>
     );
   }
 
