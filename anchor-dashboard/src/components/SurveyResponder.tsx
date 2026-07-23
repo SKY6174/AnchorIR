@@ -56,19 +56,19 @@ export default function SurveyResponder({}: SurveyResponderProps = {}) {
 
       setSurvey(data);
     } catch (err) {
-      setErrorMsg(err.message || "설문 정보를 읽어오는 중 에러가 발생했습니다.");
+      setErrorMsg(err instanceof Error ? err.message : "설문 정보를 읽어오는 중 에러가 발생했습니다.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleScoreChange = (qIdx, value) => {
+  const handleScoreChange = (qIdx: number, value: number) => {
     const updated = [...scores];
     updated[qIdx] = value;
     setScores(updated);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (submitting) return;
 
@@ -91,7 +91,8 @@ export default function SurveyResponder({}: SurveyResponderProps = {}) {
 
       setIsSubmitted(true);
     } catch (err) {
-      alert("설문 제출 중 오류가 발생했습니다: " + err.message);
+      const message = err instanceof Error ? err.message : "알 수 없는 오류";
+      alert("설문 제출 중 오류가 발생했습니다: " + message);
     } finally {
       setSubmitting(false);
     }

@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { Wallet, Info, FileEdit, CheckCircle } from "lucide-react";
+import type { ProjectData } from "../data/mockData";
+
+type BudgetField = "budget_main" | "budget_carry";
+type EditedBudget = Record<BudgetField, string>;
+type BudgetUnit = Record<string, any> & {
+  id: string;
+  title: string;
+  projectTitle?: string;
+};
 
 // 두번째 그림 기준 정렬된 표준 10대 비목 순서
 const STANDARD_BUDGET_CATEGORIES = [
@@ -40,7 +49,7 @@ const splitLabel = (val: string, isMobile: boolean): string[] => {
     return mobileMappings[val] || [val];
   }
 
-  const mappings = {
+  const mappings: Record<string, string[]> = {
     "교육∙연구 프로그램 개발∙운영비": ["교육∙연구", "프로그램 개발", "∙운영비"],
     "실험∙실습장비 및 기자재 구입∙운영비": ["실험∙실습장비", "및 기자재", "구입∙운영비"],
     "지역 연계∙협업 지원비": ["지역 연계", "∙협업 지원비"],
@@ -53,8 +62,15 @@ const splitLabel = (val: string, isMobile: boolean): string[] => {
 };
 
 // Recharts x축 긴 라벨용 커스텀 틱 컴포넌트 (최대 3줄 표출 및 간격 조정, 모바일 축약 대응)
-const CustomizedAxisTick = (props) => {
-  const { x, y, payload, isMobile } = props;
+interface CustomizedAxisTickProps {
+  x?: number;
+  y?: number;
+  payload?: { value: string };
+  isMobile: boolean;
+}
+
+const CustomizedAxisTick = (props: CustomizedAxisTickProps) => {
+  const { x = 0, y = 0, payload = { value: "" }, isMobile } = props;
   const val = payload.value;
   if (!val) return null;
 
@@ -74,18 +90,18 @@ const CustomizedAxisTick = (props) => {
 };
 
 export interface BudgetItemsManagerProps {
-  projects?: any[];
+  projects?: ProjectData[];
   currentRole?: any;
   onUpdateBudgetDetails?: (unitId: string, budgets: any) => void;
-  selectedYear?: number | string;
+  selectedYear?: number;
   darkMode?: boolean;
   currentUser?: any;
 }
 
-export default function BudgetItemsManager({ projects, currentRole, onUpdateBudgetDetails, selectedYear }: BudgetItemsManagerProps) {
+export default function BudgetItemsManager({ projects, currentRole, onUpdateBudgetDetails, selectedYear = 2 }: BudgetItemsManagerProps) {
   const [selectedUnitId, setSelectedUnitId] = useState("A1가");
   const [selectedDeptName, setSelectedDeptName] = useState("all");
-  const [editedBudgets, setEditedBudgets] = useState({}); // {budgetName: {budget_main: '', budget_carry: ''}}
+  const [editedBudgets, setEditedBudgets] = useState<Record<string, EditedBudget>>({});
   const [feedback, setFeedback] = useState("");
 
   // 서브탭 상태 관리: "main" (본사업비) 또는 "carry" (이월사업비)
@@ -119,15 +135,15 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   // 💡 [실시간 업로드 데이터 동적 합산 가드]
   // 부모 컴포넌트인 App.jsx에서 엑셀 실시간 정산액을 이미 완벽하게 환산 반영하여 projects prop으로 내려주므로,
   // 자식 컴포넌트에서는 중복 계산 없이 전달받은 projects 객체를 그대로 정규화 프로젝트 데이터로 채택합니다.
-  const normalizedProjects = projects;
+  const normalizedProjects = projects ?? [];
 
   // 모든 단위과제 수집 (정규화된 프로젝트 기반)
-  const allUnits = [];
+  const allUnits: BudgetUnit[] = [];
   if (normalizedProjects && Array.isArray(normalizedProjects)) {
     normalizedProjects.forEach(p => {
       if (p.units && Array.isArray(p.units)) {
         p.units.forEach(u => {
-          allUnits.push({ ...u, projectTitle: p.title });
+          allUnits.push({ ...u, projectTitle: p.title } as BudgetUnit);
         });
       }
     });
@@ -186,7 +202,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     activeProjectTitle = "울산과학대학교 앵커 사업단";
 
     // 가상의 budgetDetails 생성하여 모든 단위과제의 비목 데이터를 실시간으로 합산
-    const combinedDetails = {};
+    const combinedDetails: Record<string, any> = {};
     BUDGET_ITEM_NAMES.forEach(bName => {
       combinedDetails[bName] = {
         years: {
@@ -237,7 +253,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     for (const p of normalizedProjects) {
       const found = p.units.find(u => u.id === selectedUnitId);
       if (found) {
-        activeUnit = found;
+        activeUnit = found as BudgetUnit;
         activeProjectTitle = p.title;
         break;
       }
@@ -264,7 +280,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
       setSubTab("main");
     }
     if (!activeUnit) return;
-    const init = {};
+    const init: Record<string, EditedBudget> = {};
     const details = activeUnit.budgetDetails || {};
     Object.keys(details).forEach(key => {
       const detailYear = details[key].years?.[selectedYear] || {};
@@ -276,13 +292,13 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     setEditedBudgets(init);
   }, [selectedUnitId, selectedYear, projects]);
 
-  const handleSelectUnit = (unit) => {
+  const handleSelectUnit = (unit: BudgetUnit) => {
     setSelectedUnitId(unit.id);
     setFeedback("");
   };
 
   // 실시간 입력값 상태 동기화 핸들러
-  const handleBudgetChange = (bName, field, val) => {
+  const handleBudgetChange = (bName: string, field: BudgetField, val: string) => {
     setEditedBudgets(prev => ({
       ...prev,
       [bName]: { ...prev[bName], [field]: val }
@@ -290,7 +306,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   };
 
   // 포커스 아웃 시 실시간 예산 연동 및 유동성 검사 저장 핸들러
-  const handleInputBlur = (bName, field, rawValue) => {
+  const handleInputBlur = (bName: string, field: BudgetField, rawValue: string) => {
     if (!activeUnit) return;
     const valInMillion = parseInt(rawValue || "0", 10);
     if (isNaN(valInMillion) || valInMillion < 0) {
@@ -359,19 +375,19 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
       }
     };
 
-    onUpdateBudgetDetails(activeUnit.id, parsedDetails);
+    onUpdateBudgetDetails?.(activeUnit.id, parsedDetails);
     setFeedback(`'${bName}'의 예산 배정이 실시간 적용되었습니다.`);
     setTimeout(() => setFeedback(""), 3000);
   };
 
   // 예산 배정액 적용 처리 핸들러
-  const handleSaveBudgetDetails = (e) => {
+  const handleSaveBudgetDetails = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!activeUnit) return;
 
     let newTotalMain = 0;
     let newTotalCarry = 0;
-    const parsedDetails = {};
+    const parsedDetails: Record<string, any> = {};
 
     // 1. 모든 비목 데이터를 순회하며 정수 변환 및 유효성 검사 수행
     for (const key of Object.keys(activeUnit.budgetDetails || {})) {
@@ -422,7 +438,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
     }
 
     // 3. 최상위 프로젝트 상태 업데이트 트리거
-    onUpdateBudgetDetails(activeUnit.id, parsedDetails);
+    onUpdateBudgetDetails?.(activeUnit.id, parsedDetails);
     setFeedback("재원별 비목 예산 배정이 안전하게 갱신되었습니다.");
     setTimeout(() => setFeedback(""), 3000);
   };
@@ -647,7 +663,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                   <XAxis dataKey="name" stroke="var(--text-secondary)" height={90} interval={0} tick={<CustomizedAxisTick isMobile={isMobile} />} />
                   <YAxis stroke="var(--text-secondary)" fontSize={9} />
                   <Tooltip
-                    formatter={value => `${value.toLocaleString()} 백만원`}
+                    formatter={value => `${Number(value ?? 0).toLocaleString()} 백만원`}
                     contentStyle={{
                       background: "rgba(24, 24, 27, 0.9)",
                       border: "1px solid var(--border-color)",

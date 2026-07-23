@@ -188,6 +188,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     } else {
       setCurrentBlobUrl(rawStr);
     }
+    return undefined;
   }, [currentFileData, activeAgendaIndex]);
 
   const applyVoteContext = (context: CommitteeVoteContext) => {

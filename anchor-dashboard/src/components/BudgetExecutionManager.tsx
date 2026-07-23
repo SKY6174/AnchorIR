@@ -2,6 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Upload, AlertTriangle, CheckCircle2, TrendingUp, DollarSign, Calendar, FileText, Download, Trash2, ShieldCheck } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from "recharts";
 import * as XLSX from "xlsx";
+import type { ProjectData } from "../data/mockData";
+
+type BudgetType = "main" | "carryover";
+type ToastType = "success" | "warning";
+
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 // 💡 [교육용 한글 주석] 월별 집행현황 엑셀 파일을 월별로 올릴 수 있는 '26.3월 ~ '27.2월까지의 기간 정의
 const MONTHS_CONFIG = [
@@ -35,12 +42,13 @@ export interface ExecutionRecord {
 
 export interface FileMeta {
   fileName: string;
-  uploadedAt: string;
+  uploadedAt?: string;
   count: number;
+  totalAmount: number;
 }
 
 export interface BudgetExecutionManagerProps {
-  projects?: any[];
+  projects?: ProjectData[];
   currentRole?: any;
   selectedYear?: number | string;
   supabase?: any;
@@ -48,7 +56,7 @@ export interface BudgetExecutionManagerProps {
   currentUser?: any;
 }
 
-export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear, supabase, darkMode = true }: BudgetExecutionManagerProps) {
+export default function BudgetExecutionManager({ projects = [], currentRole, selectedYear: rawYear = 2, supabase, darkMode = true }: BudgetExecutionManagerProps) {
   const selectedYear = Number(rawYear);
   const [activeUploadTab, setActiveUploadTab] = useState<string>("main"); // "main" (본예산 집행 등록) vs "carryover" (이월예산 집행 등록)
   
@@ -101,7 +109,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
         }
       }
     } catch (e) {
-      console.warn("Supabase 데이터 로드 에러 (LocalStorage 백업 모드로 전환합니다):", e.message);
+      console.warn("Supabase 데이터 로드 에러 (LocalStorage 백업 모드로 전환합니다):", getErrorMessage(e));
     }
 
     // 2. 실패 시 LocalStorage 폴백 데이터 로드
@@ -121,9 +129,9 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
   };
 
   // 기존 내역으로부터 파일 메타 정보 재생성
-  const rebuildFileMeta = (records) => {
-    const meta = {};
-    records.forEach(r => {
+  const rebuildFileMeta = (records: ExecutionRecord[]) => {
+    const meta: Record<string, FileMeta> = {};
+    records.forEach((r) => {
       const key = `${r.year}_${r.budget_type}_${r.month_label}`;
       if (!meta[key]) {
         meta[key] = {
@@ -139,7 +147,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
   };
 
   // 로컬 및 데이터베이스 데이터 영속 저장
-  const saveRecords = async (newRecords) => {
+  const saveRecords = async (newRecords: ExecutionRecord[]) => {
     setExecutionRecords(newRecords);
     rebuildFileMeta(newRecords);
     
@@ -173,14 +181,14 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
         }
       }
     } catch (e) {
-      console.error("Supabase 실시간 백업 동기화 예외 발생:", e.message);
-      triggerToast(`⚠️ DB 백업 예외: ${e.message}`, "warning");
+      console.error("Supabase 실시간 백업 동기화 예외 발생:", getErrorMessage(e));
+      triggerToast(`⚠️ DB 백업 예외: ${getErrorMessage(e)}`, "warning");
     }
   };
 
   // 💡 [교육용 한글 주석] 첫 번째 그림에 표기된 14개 핵심 헤더를 준수하는 엑셀 양식을 다운로드합니다.
   // monthLabel 인자(예: "26.3월")를 받아 파일명을 "26년3월_예산집행현황_업로드양식.xlsx" 과 같이 동적 지정합니다.
-  const handleDownloadTemplate = (monthLabel) => {
+  const handleDownloadTemplate = (monthLabel?: string) => {
     // 만약 월 레이블이 없으면 현재 선택한 차년도의 시작월을 기본값으로 사용
     // 1차년도 시작월: "25.3월", 2차년도 시작월: "26.3월"
     const defaultLabel = selectedYear === 1 ? "25.3월" : "26.3월";
@@ -229,17 +237,17 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
   };
 
   // 💡 [교육용 한글 주석] 파싱된 엑셀 데이터를 무결성 규칙에 맞춰 정제하고 중복을 걸러 저장합니다.
-  const processExcelData = (file, monthLabel, budgetType) => {
+  const processExcelData = (file: File, monthLabel: string, budgetType: BudgetType) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const data = new Uint8Array(e.target.result);
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         
         // 2차원 배열 형태로 데이터를 정밀 로드
-        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const rows = XLSX.utils.sheet_to_json<unknown[]>(worksheet, { header: 1 });
         if (rows.length <= 1) {
           triggerToast("⚠️ 엑셀 파일 내에 유효한 집행 데이터가 존재하지 않습니다.", "warning");
           return;
@@ -247,7 +255,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
 
         // 헤더 매칭 및 열 인덱스 판별
         const headers = Array.from(rows[0] || []).map(h => (h || "").toString().trim().replace(/\s/g, ""));
-        const getIdx = (name) => headers.findIndex(h => h && typeof h === "string" && h.includes(name));
+        const getIdx = (name: string): number => headers.findIndex(h => h && typeof h === "string" && h.includes(name));
 
         // 💡 [사용자 지산학 특화 4대 핵심 매핑 가드]
         // 사용자가 명시한 A열(0: 프로그램ID), C열(2: 비목항목명), H열(7: 집행일자), L열(11: 집행액)을 기본 매핑으로 삼고,
@@ -294,7 +302,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
         let managerIdx = getIdx("담당자");
         if (managerIdx === -1) managerIdx = 13;
 
-        let newParsedRows = [];
+        const newParsedRows: ExecutionRecord[] = [];
         let duplicateCount = 0;
         let invalidCarryoverCount = 0;
 
@@ -334,7 +342,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
             Number(r.amount) === amount &&
             r.budget_type === budgetType &&
             r.year === selectedYear
-          ) || newParsedRows.some(r =>
+          ) || newParsedRows.some((r) =>
             r.resolution_no === resolutionNo &&
             r.program_id === programId &&
             r.execution_date === execDate &&
@@ -386,7 +394,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
           [key]: {
             fileName: file.name,
             count: (prev[key]?.count || 0) + newParsedRows.length,
-            totalAmount: (prev[key]?.totalAmount || 0) + newParsedRows.reduce((sum, r) => sum + r.amount, 0)
+            totalAmount: (prev[key]?.totalAmount || 0) + newParsedRows.reduce((sum, r) => sum + Number(r.amount || 0), 0)
           }
         }));
 
@@ -405,7 +413,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
   };
 
   // 💡 특정 월의 업로드 내역 삭제(초기화) 처리
-  const handleClearMonth = (monthLabel, budgetType) => {
+  const handleClearMonth = (monthLabel: string, budgetType: BudgetType) => {
     if (!window.confirm(`⚠️ [${monthLabel} ${budgetType === "main" ? "본예산" : "이월예산"}] 집행 내역을 모두 삭제하시겠습니까?`)) {
       return;
     }
@@ -424,14 +432,14 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
     triggerToast(`🗑️ ${monthLabel} 집행 데이터가 성공적으로 초기화되었습니다.`, "success");
   };
 
-  const triggerToast = (msg, type = "success") => {
+  const triggerToast = (msg: string, type: ToastType = "success") => {
     setToastMsg(msg);
     setToastType(type);
     setTimeout(() => setToastMsg(""), 4000);
   };
 
   // 드래그앤드롭 이벤트 핸들러
-  const handleDrag = (e, monthValue) => {
+  const handleDrag = (e: React.DragEvent<HTMLElement>, monthValue: string | null) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -441,7 +449,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
     }
   };
 
-  const handleDrop = (e, monthLabel, budgetType) => {
+  const handleDrop = (e: React.DragEvent<HTMLElement>, monthLabel: string, budgetType: BudgetType) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(null);
@@ -456,7 +464,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
     }
   };
 
-  const handleFileChange = (e, monthLabel, budgetType) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, monthLabel: string, budgetType: BudgetType) => {
     if (e.target.files && e.target.files[0]) {
       processExcelData(e.target.files[0], monthLabel, budgetType);
     }
@@ -520,8 +528,8 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
     const carryoverBalance = totalCarryoverBudget - spentCarryover;
 
     // [교육용 주석] 회계 월별 마감 시점을 직관적으로 나타내도록 X축 라벨을 치환하는 맵 헬퍼 정의
-    const getSpecificDateLabel = (rawLabel) => {
-      const map = {
+    const getSpecificDateLabel = (rawLabel: string): string => {
+      const map: Record<string, string> = {
         "26.3월": "26.3월말",
         "26.4월": "26.4월말",
         "26.5월": "26.5월말",
@@ -539,12 +547,19 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
     };
 
     // 월별 누적 추이 차트 데이터 조립
-    const chartData = [];
+    interface ExecutionChartPoint {
+      month: string;
+      mainBudget: number;
+      mainSpentAmt: number;
+      carryoverBudget?: number;
+      carryoverSpentAmt?: number;
+    }
+    const chartData: ExecutionChartPoint[] = [];
     let cumulativeMain = 0;
     let cumulativeCarry = 0;
 
     // [교육용 주석] 26.2월말 기초 데이터 0% 및 0원 선제 추가 (집행 시작 3/1 전날 기점)
-    const startPoint = {
+    const startPoint: ExecutionChartPoint = {
       month: "26.2월말",
       mainBudget: 0,
       mainSpentAmt: 0
@@ -575,7 +590,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
 
       const dateLabel = getSpecificDateLabel(m.label);
 
-      const dataPoint = {
+      const dataPoint: ExecutionChartPoint = {
         month: dateLabel,
         mainBudget: parseFloat(mainPct.toFixed(1)),
         mainSpentAmt: Math.round(cumulativeMain / 1000000) // 백만원 단위 누적 집행액 추가
@@ -911,7 +926,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole, sel
                   unit="M"
                 />
                 <Tooltip 
-                  formatter={(value, name) => [`${value.toLocaleString()} 백만 원`, name]}
+                  formatter={(value, name) => [`${Number(value ?? 0).toLocaleString()} 백만 원`, name]}
                   contentStyle={{
                     background: "rgba(224, 235, 246, 0.95)",
                     border: "1px solid var(--border-color)",

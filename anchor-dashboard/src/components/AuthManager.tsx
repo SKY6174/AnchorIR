@@ -32,7 +32,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }: AuthManage
       const safeMembers = Array.isArray(members)
         ? members
         : (members && Array.isArray((members as any).data) ? (members as any).data : []);
-      const matchedMember = safeMembers.find((member) => {
+      const matchedMember = safeMembers.find((member: any) => {
         const email = String(member?.email || "").trim().toLowerCase();
         return email === normalizedLoginId || email.split("@")[0] === normalizedLoginId;
       });

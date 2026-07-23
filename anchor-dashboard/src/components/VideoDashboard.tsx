@@ -9,10 +9,10 @@ import { Clock, Play, BookOpen } from "lucide-react";
 export interface VideoItem {
   id: string | number;
   title: string;
-  description?: string;
-  video_id?: string;
-  youtube_url?: string;
-  created_at: string;
+  description?: string | null;
+  video_id?: string | null;
+  youtube_url?: string | null;
+  created_at: string | null;
 }
 
 export interface VideoDashboardProps {
@@ -142,7 +142,7 @@ export default function VideoDashboard({ initialVideoId }: VideoDashboardProps =
                       </span>
                       <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                         <Clock size={11} />
-                        {new Date(video.created_at).toLocaleDateString()}
+                        {new Date(video.created_at ?? 0).toLocaleDateString()}
                       </span>
                     </div>
 
@@ -163,7 +163,7 @@ export default function VideoDashboard({ initialVideoId }: VideoDashboardProps =
           <div style={{ minHeight: "450px" }}>
             {selectedVideo ? (
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <YouTubePlayer videoId={extractVideoId(selectedVideo.video_id || selectedVideo.youtube_url)} />
+                <YouTubePlayer videoId={extractVideoId(selectedVideo.video_id || selectedVideo.youtube_url || undefined)} />
 
                 <div
                   style={{

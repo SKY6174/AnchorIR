@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Network, ChevronRight, ChevronDown, Award, Phone, MapPin, Layers, BookOpen } from "lucide-react";
 
 // 대학조직도 데이터 셋트
-export const academicYears = {
+export const academicYears: Record<number, OrgCategory> = {
   2023: {
     title: "학부(과)",
     desc: "2023학년도 학부(과) 조직",
@@ -245,8 +245,8 @@ export const academicYears = {
   }
 };
 
-export const getAllValidDepartments = () => {
-  const depts = new Set();
+export const getAllValidDepartments = (): string[] => {
+  const depts = new Set<string>();
   const currentYearData = academicYears[2026];
   if (currentYearData) {
     currentYearData.departments.forEach(group => {
@@ -257,7 +257,7 @@ export const getAllValidDepartments = () => {
   }
   return Array.from(depts);
 };
-export const universityOrgData = {
+export const universityOrgData: Record<string, OrgCategory> = {
   university: {
     title: "대학본부",
     desc: "대학의 행정 및 교육 지원 전반을 관장하는 본부 부서",
@@ -496,7 +496,7 @@ export interface OrgSubTeam {
   task?: string;
   rise?: string;
   isFaculty?: boolean;
-  majors?: { name: string }[];
+  majors?: { name: string; rise?: string }[];
 }
 
 export interface OrgDepartment {
@@ -640,7 +640,7 @@ export default function OrgChartManager({
                     cursor: "pointer"
                   }}
                 >
-                  {Object.keys(academicYears).sort((a,b) => b - a).map(year => (
+                  {Object.keys(academicYears).sort((a,b) => Number(b) - Number(a)).map(year => (
                     <option key={year} value={year} style={{ background: "#1f2937" }}>{year}학년도</option>
                   ))}
                 </select>
@@ -797,7 +797,7 @@ export default function OrgChartManager({
 
                                 {isFacultyExpanded && (
                                   <div style={{ padding: "0.4rem 0.6rem 0.6rem", display: "flex", flexDirection: "column", gap: "0.3rem", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
-                                    {team.majors.map((major) => (
+                                    {team.majors?.map((major) => (
                                       <div
                                         key={major.name}
                                         onClick={() => setSelectedTeam(major)}

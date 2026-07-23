@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Calendar, User, Wallet, ClipboardList } from "lucide-react";
+import type { ProgramData, ProjectData } from "../data/mockData";
 
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
-const formatToMillionWon = (value) => {
+const formatToMillionWon = (value: number | null | undefined): string => {
   if (value === undefined || value === null || isNaN(value)) return "0.0";
   return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 };
@@ -24,11 +25,11 @@ const MONTHS_GUIDE = [
 ];
 
 // YYYY-MM-DD ~ YYYY-MM-DD 포맷 파서
-const parseTimelineDates = (timelineStr) => {
+const parseTimelineDates = (timelineStr: string): { start: string; end: string } => {
   if (!timelineStr || !timelineStr.includes("~")) return { start: "", end: "" };
   const parts = timelineStr.split("~").map((p) => p.trim());
   
-  const toYYYYMMDD = (str) => {
+  const toYYYYMMDD = (str: string): string => {
     if (!str) return "";
     if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
     const dotted = str.replace(/\./g, "-");
@@ -44,16 +45,16 @@ const parseTimelineDates = (timelineStr) => {
 };
 
 // 타임라인을 12개월 (P/D/C/A) 배열로 파싱
-const parseTimelineToMonths = (timelineStr) => {
+const parseTimelineToMonths = (timelineStr: string): string[] => {
   const defaultValue = Array(12).fill("");
   if (!timelineStr) return defaultValue;
 
   if (timelineStr.includes(",")) {
     const parts = timelineStr.split(",");
     if (parts.length === 12) {
-      return parts.map(p => {
+      return parts.map((p: string) => {
         const trimmed = p.trim().toUpperCase();
-        if (trimmed.split("").some(char => ["P", "D", "C", "A"].includes(char))) {
+        if (trimmed.split("").some((char: string) => ["P", "D", "C", "A"].includes(char))) {
           return trimmed;
         }
         return "";
@@ -67,7 +68,7 @@ const parseTimelineToMonths = (timelineStr) => {
       const startMonth = parseInt(dates.start.split("-")[1], 10);
       const endMonth = parseInt(dates.end.split("-")[1], 10);
 
-      const getMonthIndex = (m) => {
+      const getMonthIndex = (m: number): number => {
         if (m >= 3 && m <= 12) return m - 3;
         if (m === 1 || m === 2) return m + 9;
         return -1;
@@ -94,7 +95,7 @@ const parseTimelineToMonths = (timelineStr) => {
 };
 
 // 프로그램 ID 기반 모의 타임라인 범위 산정 헬퍼
-const getProgramTimeline = (progId) => {
+const getProgramTimeline = (progId: string) => {
   // ID 끝자리 숫자를 추출하여 다채로운 타임라인 할당
   const cleanId = progId.replace(/[^0-9]/g, "");
   const num = cleanId ? parseInt(cleanId.slice(-1), 10) : 1;
@@ -115,10 +116,10 @@ const getProgramTimeline = (progId) => {
 };
 
 export interface ProgramProgressManagerProps {
-  projects?: any[];
+  projects?: ProjectData[];
   selectedYear?: number;
   darkMode?: boolean;
-  onSelectProgram?: (program: any) => void;
+  onSelectProgram?: (unitId: string, programId: string) => void;
   onUpdateProgramDetails?: (unitId: string, programId: string, details: any) => void;
   currentUser?: any;
   currentRole?: any;
@@ -145,7 +146,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
     { name: "2월", label: `${endYrShort}.2` }
   ];
 
-  const allUnits = projects.flatMap(p => p.units).sort((a, b) => {
+  const allUnits = (projects ?? []).flatMap(p => p.units).sort((a, b) => {
     if (a.id === "Common" || a.id === "X0") return 1;
     if (b.id === "Common" || b.id === "X0") return -1;
     return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
@@ -172,7 +173,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
   // 슬롯 인덱스(0~23)를 YYYY.MM.DD ~ YYYY.MM.DD 날짜 범위로 파싱해 주는 유틸
   const getSlotDateRange = (startSlot: number, endSlot: number, yr: number) => {
     const startYr = 2024 + yr;
-    const getSlotDetails = (slot) => {
+    const getSlotDetails = (slot: number) => {
       const monthOffset = Math.floor(slot / 2); // 0 ~ 11
       const isSecondHalf = slot % 2 === 1;
       let month = 3 + monthOffset;
@@ -181,7 +182,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
         month -= 12;
         year += 1;
       }
-      const pad = (num) => String(num).padStart(2, "0");
+      const pad = (num: number): string => String(num).padStart(2, "0");
       let startDay = isSecondHalf ? "16" : "01";
       let endDay = "";
       if (isSecondHalf) {
@@ -207,11 +208,11 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
   };
 
   // 24개 반달 슬롯 문자열을 12개월 쉼표 구조(P,D,C,A)로 변환해 주는 헬퍼 함수
-  const convertSlotsToTimelineActual = (startSlot, endSlot, currentTimeline) => {
+  const convertSlotsToTimelineActual = (startSlot: number, endSlot: number, currentTimeline: string): string => {
     const minSlot = Math.min(startSlot, endSlot);
     const maxSlot = Math.max(startSlot, endSlot);
     const months = currentTimeline && currentTimeline.split(",").length === 12 
-      ? currentTimeline.split(",").map(m => m.trim())
+      ? currentTimeline.split(",").map((m: string) => m.trim())
       : Array(12).fill("");
       
     for (let slot = 0; slot < 24; slot++) {
@@ -226,12 +227,17 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
   const activeUnit = allUnits.find(u => u.id === selectedUnitId);
 
   // 단위과제 클릭 핸들러
-  const handleSelectUnit = (unitId) => {
+  const handleSelectUnit = (unitId: string) => {
     setSelectedUnitId(unitId);
   };
 
   // 마우스 간트 드래그 핸들러
-  const handleGanttMouseDown = (progId, unitId, type, slotIdx) => {
+  const handleGanttMouseDown = (
+    progId: string,
+    unitId: string,
+    type: "plan" | "actual",
+    slotIdx: number
+  ) => {
     setDragState({
       isDragging: true,
       progId,
@@ -242,7 +248,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
     });
   };
 
-  const handleGanttMouseEnter = (progId, slotIdx) => {
+  const handleGanttMouseEnter = (progId: string, slotIdx: number) => {
     if (dragState.isDragging && dragState.progId === progId) {
       setDragState(prev => ({
         ...prev,
@@ -251,8 +257,8 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
     }
   };
 
-  const handleGanttMouseUp = (prog) => {
-    if (!dragState.isDragging || !onUpdateProgramDetails) {
+  const handleGanttMouseUp = (prog: ProgramData) => {
+    if (!dragState.isDragging || !onUpdateProgramDetails || !dragState.unitId || !dragState.progId) {
       setDragState({ isDragging: false, progId: null, unitId: null, type: null, startSlot: null, currentSlot: null });
       return;
     }
@@ -417,8 +423,9 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                       const monthlyPDCA = parseTimelineToMonths(prog.timeline || "");
 
                       // 드래그 영역 판정용 함수
-                      const isSlotInDrag = (type, slotIdx) => {
+                      const isSlotInDrag = (type: "plan" | "actual", slotIdx: number): boolean => {
                         if (!dragState.isDragging || dragState.progId !== prog.id || dragState.type !== type) return false;
+                        if (dragState.startSlot === null || dragState.currentSlot === null) return false;
                         const minS = Math.min(dragState.startSlot, dragState.currentSlot);
                         const maxS = Math.max(dragState.startSlot, dragState.currentSlot);
                         return slotIdx >= minS && slotIdx <= maxS;
@@ -495,7 +502,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                               {(() => {
                                 const assigneeText = prog.assignee || "미배정";
                                 const assignees = assigneeText.includes("/") ? assigneeText.split("/") : [assigneeText];
-                                return assignees.map((name, idx) => (
+                                return assignees.map((name: string, idx: number) => (
                                   <div key={idx} style={{ 
                                     display: "inline-flex", 
                                     alignItems: "center", 
@@ -552,7 +559,11 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                               {monthlyPDCA.map((val, idx) => {
                                 const steps = val ? val.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s)) : [];
                                 
-                                const getSingleColor = (char, isActual = false, progData = null) => {
+                                const getSingleColor = (
+                                  char: string,
+                                  isActual = false,
+                                  progData: ProgramData | null = null
+                                ): string => {
                                   if (!char || typeof char !== "string") return "transparent";
                                   if (isActual && progData) {
                                     const stageKey = char.toLowerCase();
@@ -622,7 +633,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                                 };
                                 const actualBg = getActualBg();
 
-                                const isActualActive = (i) => {
+                                const isActualActive = (i: number): boolean => {
                                   if (prog.actual_timeline) {
                                     const actualMonths = parseTimelineToMonths(prog.actual_timeline) || [];
                                     const actVal = actualMonths[i];
@@ -808,7 +819,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                     })
                   ) : (
                     <tr>
-                      <td colSpan="5" style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
+                      <td colSpan={5} style={{ textAlign: "center", color: "var(--text-secondary)", padding: "2rem" }}>
                         소속된 세부 프로그램이 없습니다.
                       </td>
                     </tr>

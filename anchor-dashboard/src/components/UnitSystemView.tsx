@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Info, Award, Layout, GitFork, ArrowRight, List } from "lucide-react";
 import STRATEGY_TASK_MAPPING_Y1 from "../data/extracted_1st_year.json";
-import { initialProjectsData } from "../data/mockData";
+import {
+  initialProjectsData,
+  type ProgramData,
+  type UnitData
+} from "../data/mockData";
 
 
 // 1. 프로젝트 및 단위과제 매핑 정보 정의 (2차년도 기준)
@@ -86,7 +90,7 @@ const PROJECTS_DATA_Y1 = [
 ];
 
 // 한글 조사의 은/는, 이/가, 을/를, 와/과를 문자열 끝자리 숫자의 받침 유무에 따라 자동 결정해주는 도우미 함수
-const getJosa = (id) => {
+const getJosa = (id: string): string => {
   if (!id) return "과";
   const lastChar = id.slice(-1);
   // 1(일), 3(삼), 6(육), 7(칠), 8(팔), 0(영) 은 받침이 있어 '과'가 적절함.
@@ -1085,11 +1089,30 @@ export interface UnitSystemViewProps {
   currentRole?: any;
 }
 
+interface StrategyItem {
+  id: string;
+  title: string;
+}
+
+interface StrategyTaskItem {
+  strat: string;
+  id: string;
+  title: string;
+}
+
+interface UnitStrategyData {
+  strategies: StrategyItem[];
+  tasks: StrategyTaskItem[];
+  programs: ProgramData[];
+}
+
 export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps) {
   const [selectedProjectId, setSelectedProjectId] = useState<string>("A");
   
   const currentProjectsData = selectedYear === 1 ? PROJECTS_DATA_Y1 : PROJECTS_DATA;
-  const currentStrategyMapping: any = selectedYear === 1 ? STRATEGY_TASK_MAPPING_Y1 : STRATEGY_TASK_MAPPING;
+  const currentStrategyMapping = (
+    selectedYear === 1 ? STRATEGY_TASK_MAPPING_Y1 : STRATEGY_TASK_MAPPING
+  ) as unknown as Record<string, UnitStrategyData>;
 
   // 선택한 프로젝트 소속 단위과제들 중 첫 번째 과제를 기본값으로 설정
   const currentProject = currentProjectsData.find(p => p.id === selectedProjectId);
@@ -1148,7 +1171,7 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
   }, [selectedStratId, selectedUnitId, filteredTasks, selectedTaskId]);
 
   // 프로젝트 변경 시 단위과제 및 추진전략 자동 갱신
-  const handleProjectChange = (projId) => {
+  const handleProjectChange = (projId: string) => {
     setSelectedProjectId(projId);
     const targetProj = currentProjectsData.find(p => p.id === projId);
     if (targetProj && targetProj.units.length > 0) {
@@ -1164,11 +1187,11 @@ export default function UnitSystemView({ selectedYear = 2 }: UnitSystemViewProps
   };
 
   // 선택한 단위과제의 프로그램 목록 동적 로드 (1차년도는 JSON, 2차년도는 mockData.js의 initialProjectsData에서 실시간 추출)
-  const getRawPrograms = () => {
+  const getRawPrograms = (): ProgramData[] => {
     if (selectedYear === 1) {
       return selectedUnitData.programs || [];
     } else {
-      let foundUnit = null;
+      let foundUnit: UnitData | null = null;
       for (const proj of initialProjectsData) {
         const u = proj.units.find(unit => unit.id === selectedUnitId);
         if (u) {

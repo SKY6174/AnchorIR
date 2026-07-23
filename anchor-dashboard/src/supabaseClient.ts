@@ -1,4 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from './types/supabase';
+
+type AnchorSupabaseClient = SupabaseClient<Database>;
 
 // 1. Vite 환경 변수에서 Supabase 접속 정보(URL, Anon Key)를 가져옵니다.
 // VITE_ 접두사가 붙은 환경 변수는 Vite 빌드 도구에서 클라이언트 측 코드로 안전하게 노출해 줍니다.
@@ -15,7 +18,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 // 3. 크래시 방지용 더미(Mock) 폴백 객체 정의
 // 환경 변수가 없거나 초기화에 실패할 경우, 메서드 체이닝 시 에러가 터져 화면이 화이트 스크린이 되는 것을 방지합니다.
-const createDummyClient = (initError) => {
+const createDummyClient = (initError: unknown): AnchorSupabaseClient => {
   const dummyQueryBuilder = {
     select: function() { return this; },
     insert: function() { return this; },
@@ -23,7 +26,7 @@ const createDummyClient = (initError) => {
     delete: function() { return this; },
     eq: function() { return this; },
     single: function() { return this; },
-    then: function(resolve) {
+    then: function(resolve: (result: { data: null; error: unknown }) => void) {
       // Promise처럼 작동하여 await 호출 시 에러 정보와 빈 결과를 리턴합니다.
       resolve({ data: null, error: initError });
     }
@@ -38,14 +41,14 @@ const createDummyClient = (initError) => {
       updateUser: () => Promise.resolve({ data: { user: null }, error: initError }),
       signOut: () => Promise.resolve({ error: null })
     }
-  };
+  } as unknown as AnchorSupabaseClient;
 };
 
 // 4. Supabase 클라이언트 생성 시도
-let supabaseInstance;
+let supabaseInstance: AnchorSupabaseClient;
 try {
   if (supabaseUrl && supabaseAnonKey) {
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey, {
+    supabaseInstance = createClient<Database>(supabaseUrl, supabaseAnonKey, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,

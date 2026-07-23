@@ -7,8 +7,54 @@ import {
 import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient";
 
+interface PmProfessor {
+  dept: string;
+  name: string;
+  courses: string;
+  totalStudents: number;
+  uniqueStudents: number;
+  note: string;
+}
+
+interface OrderlyCourse {
+  id: string;
+  type: string;
+  dept: string;
+  name: string;
+  professor: string;
+  students: number;
+  budget: number;
+  year: number;
+  isForeign?: boolean;
+}
+
+type CourseStatus = "미참여" | "진행중" | "이수완료";
+type CourseStatusKey = "capstone" | "pbl" | "omnibus" | "ai";
+
+interface StudentRecord {
+  id: string;
+  name: string;
+  dept: string;
+  capstone: CourseStatus;
+  pbl: CourseStatus;
+  omnibus: CourseStatus;
+  ai: CourseStatus;
+}
+
+interface SeminarRecord {
+  id: number;
+  date: string;
+  speaker: string;
+  title: string;
+  attendees: number;
+  mainCost: number;
+  carryCost: number;
+  satisfaction: number;
+  etc: string;
+}
+
 // 💡 주문식 교육과정 전체 54개 교과목 실 정산 데이터 정의
-const ORDERLY_COURSES = [
+const ORDERLY_COURSES: OrderlyCourse[] = [
   { id: "cap_1", type: "캡스톤디자인", dept: "기계공학부", name: "전공종합설계", professor: "이진우", students: 109, budget: 1440000, year: 2 },
   { id: "cap_2", type: "캡스톤디자인", dept: "기계공학부", name: "챌린지프로젝트 (종합설계및창업)(2)", professor: "김민갑", students: 40, budget: 4700000, year: 2 },
   { id: "cap_3", type: "캡스톤디자인", dept: "실내건축디자인과", name: "실내건축캡스톤디자인", professor: "김동욱", students: 15, budget: 3200000, year: 2 },
@@ -74,7 +120,7 @@ const ORDERLY_COURSES = [
 // 이 데이터셋은 학과별 PM교수 매핑 정보와 함께 각 학과가 실제로 운영 중인 주문식 교육과정명(courses), 
 // 교육에 참여하는 총학생수(totalStudents), 중복 수강생을 제외한 순수 참여학생수(uniqueStudents), 
 // 그리고 해당 학과의 교육과정 특징을 기술한 비고(note) 정보까지 통합하여 담고 있습니다.
-const PM_PROFESSORS = [
+const PM_PROFESSORS: PmProfessor[] = [
   { 
     dept: "간호학부", 
     name: "공경란", 
@@ -479,8 +525,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   // 네트워크 장애 등으로 DB 쿼리가 불가능할 경우를 대비해, 
   // 파일 최상단에 선언해 둔 로컬 백업 상수(PM_PROFESSORS, ORDERLY_COURSES)를 초기값으로 갖게 하여 
   // 시스템 안전성을 확보합니다.
-  const [pmProfessors, setPmProfessors] = useState(PM_PROFESSORS);
-  const [orderlyCourses, setOrderlyCourses] = useState(ORDERLY_COURSES);
+  const [pmProfessors, setPmProfessors] = useState<PmProfessor[]>(PM_PROFESSORS);
+  const [orderlyCourses, setOrderlyCourses] = useState<OrderlyCourse[]>(ORDERLY_COURSES);
   const [dbLoading, setDbLoading] = useState(true);
 
   // 💡 Supabase 데이터 페치 로직
@@ -513,9 +559,9 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
             dept: d.dept,
             name: d.pm_name,
             courses: d.courses,
-            totalStudents: d.total_students,
-            uniqueStudents: d.unique_students,
-            note: d.note
+            totalStudents: d.total_students ?? 0,
+            uniqueStudents: d.unique_students ?? 0,
+            note: d.note ?? ""
           }));
           setPmProfessors(mappedDepts);
         }
@@ -527,10 +573,10 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
             dept: c.dept,
             name: c.name,
             professor: c.professor,
-            students: c.students,
+            students: c.students ?? 0,
             budget: Number(c.budget),
-            year: c.year,
-            isForeign: c.is_foreign
+            year: c.year ?? 0,
+            isForeign: c.is_foreign ?? false
           }));
           setOrderlyCourses(mappedCourses);
         }
@@ -548,11 +594,11 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   const [selectedResultDeptFilter, setSelectedResultDeptFilter] = useState("all");
 
   // 💡 가상 이수학생 데이터 및 상태 관리 (학생 단위 마스터 대장 구조)
-  const [studentMasterList, setStudentMasterList] = useState(() => {
+  const [studentMasterList, setStudentMasterList] = useState<StudentRecord[]>(() => {
     const saved = localStorage.getItem("anchor_student_master_list");
     if (saved) {
       try {
-        return JSON.parse(saved);
+        return JSON.parse(saved) as StudentRecord[];
       } catch (e) {
         console.error("이수학생 마스터 데이터 파싱 에러:", e);
       }
@@ -576,11 +622,11 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   const [newStudentDept, setNewStudentDept] = useState("");
 
   // 💡 지산학 이음 세미나 결과보고 리스트 상태 (1~3차 초기 데이터 제공 및 로컬스토리지 연동)
-  const [seminarList, setSeminarList] = useState(() => {
+  const [seminarList, setSeminarList] = useState<SeminarRecord[]>(() => {
     const saved = localStorage.getItem("anchor_seminar_list");
     if (saved) {
       try {
-        return JSON.parse(saved);
+        return JSON.parse(saved) as SeminarRecord[];
       } catch (e) {
         console.error("세미나 결과 대장 파싱 에러:", e);
       }
@@ -727,7 +773,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
             mainCost: Number(item.main_cost),
             carryCost: Number(item.carry_cost),
             satisfaction: Number(item.satisfaction),
-            etc: item.etc
+            etc: item.etc ?? ""
           }));
           setSeminarList(mappedList);
         } else {
@@ -834,7 +880,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   const [isEditMode, setIsEditMode] = useState(false);
 
   // 종합 이수 상태 판정 알고리즘
-  const getOverallStatus = (student) => {
+  const getOverallStatus = (student: StudentRecord): CourseStatus => {
     const statuses = [student.capstone, student.pbl, student.omnibus, student.ai];
     if (statuses.includes("진행중")) return "진행중";
     if (statuses.includes("이수완료")) return "이수완료";
@@ -867,18 +913,18 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   };
 
   // 엑셀 결과 업로드 및 파싱 핸들러
-  const handleExcelUpload = (e) => {
+  const handleExcelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
-        const data = new Uint8Array(evt.target.result);
+        const data = new Uint8Array(evt.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(sheet);
+        const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet);
 
         if (rows.length === 0) {
           alert("엑셀 파일에 데이터가 없습니다.");
@@ -893,7 +939,11 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
           return;
         }
 
-        const validStatuses = ["이수완료", "진행중", "미참여"];
+        const validStatuses: CourseStatus[] = ["이수완료", "진행중", "미참여"];
+        const normalizeCourseStatus = (value: unknown): CourseStatus => {
+          const status = String(value || "").trim() as CourseStatus;
+          return validStatuses.includes(status) ? status : "미참여";
+        };
         const updatedList = [...studentMasterList];
 
         rows.forEach(row => {
@@ -903,18 +953,10 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
           const name = String(row["이름"] || "").trim();
           const dept = String(row["소속학과"] || "").trim();
 
-          const capstone = validStatuses.includes(String(row["캡스톤디자인"] || "").trim())
-            ? String(row["캡스톤디자인"]).trim()
-            : "미참여";
-          const pbl = validStatuses.includes(String(row["기업형PBL"] || "").trim())
-            ? String(row["기업형PBL"]).trim()
-            : "미참여";
-          const omnibus = validStatuses.includes(String(row["옴니버스"] || "").trim())
-            ? String(row["옴니버스"]).trim()
-            : "미참여";
-          const ai = validStatuses.includes(String(row["AI리터러시"] || "").trim())
-            ? String(row["AI리터러시"]).trim()
-            : "미참여";
+          const capstone = normalizeCourseStatus(row["캡스톤디자인"]);
+          const pbl = normalizeCourseStatus(row["기업형PBL"]);
+          const omnibus = normalizeCourseStatus(row["옴니버스"]);
+          const ai = normalizeCourseStatus(row["AI리터러시"]);
 
           const existingIndex = updatedList.findIndex(s => s.id === studentId);
           if (existingIndex > -1) {
@@ -953,8 +995,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   };
 
   // 이수 상태 순환 토글 핸들러
-  const toggleCourseStatus = (studentId, courseType) => {
-    const statusCycle = {
+  const toggleCourseStatus = (studentId: string, courseType: CourseStatusKey) => {
+    const statusCycle: Record<CourseStatus, CourseStatus> = {
       "미참여": "진행중",
       "진행중": "이수완료",
       "이수완료": "미참여"
@@ -977,7 +1019,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     const nextId = seminarList.length + 1;
     
     // 차수에 따른 AI 예측 데이터셋
-    const aiPresetData = {
+    const aiPresetData: Record<number, any> = {
       4: {
         date: "2026. 05. 22. (금) 11:00~13:00",
         speaker: "장동선 (궁금한뇌연구소 대표 / 뇌과학자)",
@@ -1051,7 +1093,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   };
 
   // 💡 마크다운 파일의 실제 텍스트 내용을 실시간으로 파싱하는 클라이언트 사이드 파서
-  const parseMarkdownContent = (text, fileName) => {
+  const parseMarkdownContent = (text: string, fileName: string): SeminarRecord => {
     let parsedId = 1;
     const numMatch = fileName.match(/(?:제\s*(\d+)\s*차)|((\d+)\s*차)/);
     if (numMatch) {
@@ -1146,7 +1188,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   };
 
   // 💡 PDF/MD 파일 업로드 감지 및 GPT-4o 분석 시뮬레이션 핸들러
-  const handleFileUpload = (file) => {
+  const handleFileUpload = (file: File | null | undefined) => {
     if (!file) return;
     
     const fileName = (file.name || "").normalize("NFC");
@@ -1230,7 +1272,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        const textContent = e.target?.result || "";
+        const textContent = String(e.target?.result || "");
         const dynamicParsedData = parseMarkdownContent(textContent, fileName);
 
         setTimeout(() => {
@@ -1261,7 +1303,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   };
 
   // 💡 세미나 결과보고 등록 액션 (수동 및 PDF-AI 공통 등록)
-  const handleSeminarSubmit = async (e) => {
+  const handleSeminarSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formSeminarId.trim()) return alert("차수를 입력해 주세요.");
@@ -1353,7 +1395,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   // 초보 개발자용 설명: 
   // 사용자가 단위과제 배지 위에 마우스를 올렸을 때 어떤 과제인지 식별하고 
   // 은은한 배경색과 테두리 효과를 즉각적으로 보여주기 위해 마우스 호버 상태를 추적합니다.
-  const [hoveredUnit, setHoveredUnit] = useState(null);
+  const [hoveredUnit, setHoveredUnit] = useState<string | null>(null);
 
   // 연도가 변경되면 단위과제 선택 초기화 (단, 새로고침 등으로 로컬스토리지에 현재 연도 데이터가 이미 복원된 경우 리셋 스킵)
   useEffect(() => {
@@ -1403,7 +1445,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   // 더 이상 필요하지 않아 깔끔하게 제거되었습니다.
 
   // 단위과제를 변경했을 때 프로그램 선택
-  const handleUnitChange = (unit) => {
+  const handleUnitChange = (unit: string) => {
     setSelectedUnit(unit);
     const firstProg = yearData[unit]?.programs[0] || null;
     setSelectedProg(firstProg);
@@ -1532,7 +1574,6 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                     style={{
                       padding: "0.6rem 1.25rem",
                       borderRadius: "20px",
-                      border: "none",
                       cursor: "pointer",
                       fontSize: "0.9rem",
                       fontWeight: "700",
@@ -2002,7 +2043,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                     filteredStudents.map((student) => {
                                       const overall = getOverallStatus(student);
 
-                                      const getBadgeStyle = (status) => {
+                                      const getBadgeStyle = (status: CourseStatus): React.CSSProperties => {
                                         if (status === "이수완료") return { background: "rgba(16,185,129,0.12)", color: "#10b981" };
                                         if (status === "진행중") return { background: "rgba(234,179,8,0.12)", color: "#eab308" };
                                         return { background: "rgba(255,255,255,0.05)", color: "var(--text-secondary)" };
@@ -2015,7 +2056,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                           <td style={{ padding: "0.5rem 0.75rem", color: "var(--text-secondary)" }}>{student.dept}</td>
 
                                           {/* 유형별 이수 상태 토글 배지 */}
-                                          {["capstone", "pbl", "omnibus", "ai"].map((type) => {
+                                          {(["capstone", "pbl", "omnibus", "ai"] as CourseStatusKey[]).map((type) => {
                                             const status = student[type] || "미참여";
                                             const badgeStyle = getBadgeStyle(status);
                                             return (

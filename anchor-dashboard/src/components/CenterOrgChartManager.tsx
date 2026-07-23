@@ -18,7 +18,7 @@ export default function CenterOrgChartManager({
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
   // 조직도의 각 노드(부서/기구)에 마우스를 올렸을 때 하단 정보창에 보여줄 상세 설명 데이터입니다.
-  const nodeDetails = {
+  const nodeDetails: Record<string, { title: string; desc: string; tasks: string[] }> = {
     president: {
       title: "울산과학대학교 총장",
       desc: "앵커 사업 총괄 책임자 및 최고 승인 권한자",
@@ -72,7 +72,7 @@ export default function CenterOrgChartManager({
   };
 
   // 마우스가 노드 영역에 들어갔을 때 실행되는 이벤트 핸들러입니다.
-  const handleMouseEnter = (nodeId) => {
+  const handleMouseEnter = (nodeId: string) => {
     setHoveredNode(nodeId);
   };
 

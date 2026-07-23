@@ -9,7 +9,8 @@ import {
   Legend,
   Cell,
   PieChart,
-  Pie
+  Pie,
+  type PieLabelRenderProps
 } from "recharts";
 import { TrendingUp, Activity, Award } from "lucide-react";
 
@@ -32,35 +33,36 @@ const formatToMillionWon = (value: number | undefined | null): string => {
 };
 
 // 도넛 차트 조각 라벨 렌더러 Props 타입
-interface CustomLabelProps {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  percent: number;
-  name: string;
-}
-
 // 도넛 차트 조각 옆에 지시선과 함께 이름(비율%) 라벨을 그리기 위한 커스텀 SVG 렌더러
-const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, name }: CustomLabelProps): React.JSX.Element => {
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  outerRadius,
+  percent,
+  name
+}: PieLabelRenderProps): React.JSX.Element => {
+  const numericCx = Number(cx);
+  const numericCy = Number(cy);
+  const numericMidAngle = Number(midAngle);
+  const numericOuterRadius = Number(outerRadius);
   const RADIAN = Math.PI / 180;
-  const radius = outerRadius * 1.15;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  const pctString = `(${(percent * 100).toFixed(1)}%)`;
+  const radius = numericOuterRadius * 1.15;
+  const x = numericCx + radius * Math.cos(-numericMidAngle * RADIAN);
+  const y = numericCy + radius * Math.sin(-numericMidAngle * RADIAN);
+  const pctString = `(${(Number(percent) * 100).toFixed(1)}%)`;
 
   return (
     <text
       x={x}
       y={y}
       fill="var(--text-primary)"
-      textAnchor={x > cx ? "start" : "end"}
+      textAnchor={x > numericCx ? "start" : "end"}
       dominantBaseline="central"
       fontSize="12px"
       fontWeight="700"
     >
-      <tspan x={x} dy="-0.5em">{name}</tspan>
+      <tspan x={x} dy="-0.5em">{String(name)}</tspan>
       <tspan x={x} dy="1.2em">{pctString}</tspan>
     </text>
   );

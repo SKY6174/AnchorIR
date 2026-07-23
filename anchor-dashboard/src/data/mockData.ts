@@ -1,6 +1,33 @@
 // 앵커 사업비 및 성과지표 통합 Mock 데이터 모델 (본사업비/이월비 분리 및 실명 조직도 매핑)
 
-export const initialProjectsData = [
+/**
+ * 마이그레이션 기간 동안 여러 연차의 서로 다른 데이터 모양을 한 경계에서
+ * 수용하기 위한 호환 타입입니다. 고정 필드는 명시하고 연차별 확장 필드는
+ * 원본 JSON 모양을 보존합니다.
+ */
+export type LegacyDataRecord = Record<string, any>;
+
+export interface ProgramData extends LegacyDataRecord {
+  id: string;
+  title: string;
+  pdca?: LegacyDataRecord;
+  years?: Record<number, LegacyDataRecord>;
+  budget_categories?: LegacyDataRecord[];
+}
+
+export interface UnitData extends LegacyDataRecord {
+  id: string;
+  title: string;
+  programs: ProgramData[];
+}
+
+export interface ProjectData extends LegacyDataRecord {
+  id: string;
+  title: string;
+  units: UnitData[];
+}
+
+export const initialProjectsData: ProjectData[] = [
   {
     id: "A",
     title: "프로젝트 A: 정주형 실전인재 양성",
@@ -10309,7 +10336,7 @@ export const initialProjectsData = [
   }
 ];
 
-export const userRoles = {
+export const userRoles: Record<string, LegacyDataRecord> = {
   "ADMIN": { "id": "ADMIN", "name": "최고 관리자", "rank": 0, "desc": "시스템 모든 메뉴 및 권한 마스터 제어 권한" },
   "G_DIRECTOR": { "id": "G_DIRECTOR", "name": "사업단장 (송경영 교수)", "rank": 1, "desc": "전체 프로젝트 사업비 & KPI 최종 결재 및 연구원 배정 마스터 권한" },
   "HQ_HEAD": { "id": "HQ_HEAD", "name": "총괄본부장 (김현수 교수)", "rank": 2, "desc": "사업단 전체 실적 모니터링 및 AID-X지원센터 실무 총괄" },
@@ -10326,7 +10353,7 @@ export const userRoles = {
   "GUEST": { "id": "GUEST", "name": "게스트 (방문자)", "rank": 9, "desc": "사업단 외 일반 게스트 전용, 읽기 전용 권한 (사업단 관리 조회 불가)" }
 };
 
-export const YEAR_1_PROGRAMS = {
+export const YEAR_1_PROGRAMS: Record<string, ProgramData[]> = {
   "A1가": [
     {
       "id": "A1-S1T1-1",
@@ -18769,7 +18796,7 @@ export const YEAR_1_PROGRAMS = {
   ]
 };
 
-export const Y1_UNIT_META = {
+export const Y1_UNIT_META: Record<string, LegacyDataRecord> = {
   "A1가": { "budget": 2978000000, "national": 2683000000, "city": 295000000, "carry": 0 },
   "A2": { "budget": 900000000, "national": 900000000, "city": 0, "carry": 15500000 },
   "A3": { "budget": 483000000, "national": 362000000, "city": 121000000, "carry": 184000000 },

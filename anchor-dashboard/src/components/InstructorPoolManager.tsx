@@ -4,6 +4,16 @@ import CryptoJS from "crypto-js";
 import { Plus, User, Award, Trash2, ShieldAlert, X, Upload, Download, Edit } from "lucide-react";
 import * as XLSX from "xlsx";
 import { academicYears } from "./OrgChartManager";
+import type { Tables } from "../types/supabase";
+
+type Instructor = Tables<"instructors"> & {
+  decrypted_birth: string;
+  decrypted_account: string;
+};
+type InstructorHistory = Tables<"instructor_histories">;
+
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 // 💡 [보안 수칙 - Rule 8] 개인정보 암복호화를 위한 AES 대칭키 정의
 const SECRET_KEY = "anchor_instructor_secure_encryption_key_2026";
@@ -102,7 +112,7 @@ export const getDepartmentListByYear = (yearStr: number | string = 2026): string
 };
 
 // 💡 [드롭다운 데이터 세트] 단위과제 - 프로그램 매핑 자료
-const PROJECTS_MAP = {
+const PROJECTS_MAP: Record<string, string[]> = {
   A1: ["A1-S1T1-1", "A1-S2T1-2", "A1-S3T1-1"],
   A2: ["A2-S1T1-1", "A2-S2T1-2"],
   B1: ["B1-S1T1-1", "B1-S2T1-2", "B1-S3T1-1"],
@@ -116,12 +126,12 @@ const PROJECTS_MAP = {
 };
 
 // 💡 선택 연도에 속하는 학부/학과/전공 리스트를 유니크하게 추출하는 헬퍼 함수
-const getDeptsByYear = (yearStr) => {
-  const numericYear = parseInt(yearStr) || 2026;
+const getDeptsByYear = (yearStr: number | string): string[] => {
+  const numericYear = typeof yearStr === "number" ? yearStr : (parseInt(yearStr, 10) || 2026);
   const yearData = academicYears[numericYear];
   if (!yearData || !yearData.departments) return [];
   
-  const names = [];
+  const names: string[] = [];
   yearData.departments.forEach(group => {
     if (group.subTeams) {
       group.subTeams.forEach(team => {
@@ -155,8 +165,8 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
   const [searchTerm, setSearchTerm] = useState("");
   
   // 💡 수정 대상 상태 제어 변수 추가
-  const [editingInstructor, setEditingInstructor] = useState(null);
-  const [editingHistory, setEditingHistory] = useState(null);
+  const [editingInstructor, setEditingInstructor] = useState<Instructor | null>(null);
+  const [editingHistory, setEditingHistory] = useState<InstructorHistory | null>(null);
 
   // 모달 제어 상태
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -222,7 +232,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
 
       setInstructors(decryptedList);
     } catch (err) {
-      console.error("교강사 목록 조회 실패:", err.message);
+      console.error("교강사 목록 조회 실패:", getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -233,7 +243,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
   }, []);
 
   // 2. 특정 교∙강사 상세 이력 조회 (변동 정보 테이블 `instructor_histories` 조회)
-  const handleSelectInstructor = async (ins: any) => {
+  const handleSelectInstructor = async (ins: Instructor) => {
     setSelectedInstructor(ins);
     setIsDetailOpen(true);
     
@@ -265,7 +275,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
     });
   };
 
-  const handleEditInstructorClick = (ins: any) => {
+  const handleEditInstructorClick = (ins: Instructor) => {
     setEditingInstructor(ins);
     setNewForm({
       name: ins.name,
@@ -277,7 +287,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
     setIsAddModalOpen(true);
   };
 
-  const handleAddInstructor = async (e: any) => {
+  const handleAddInstructor = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newForm.name || !newForm.birth_date || !newForm.bank_name || !newForm.account_number) {
       alert("모든 인적사항 항목을 채워주세요.");
@@ -329,7 +339,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
       handleCloseAddModal();
       fetchInstructors();
     } catch (err) {
-      alert("저장 실패: " + err.message);
+      alert("저장 실패: " + getErrorMessage(err));
     }
   };
 
@@ -377,18 +387,18 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
   };
 
   // 💡 [엑셀 업로드 (Import)]
-  const handleExcelImport = (e) => {
-    const file = e.target.files[0];
+  const handleExcelImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
-        const data = evt.target.result;
+        const data = evt.target?.result;
         const workbook = XLSX.read(data, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
         const ws = workbook.Sheets[sheetName];
-        const excelRows = XLSX.utils.sheet_to_json(ws);
+        const excelRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws);
 
         if (excelRows.length === 0) {
           alert("엑셀 파일에 데이터가 존재하지 않습니다.");
@@ -451,7 +461,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
         alert(`일괄 업로드가 성공적으로 완료되었습니다.\n- 등록 성공: ${newDataList.length}건\n- 중복/누락 스킵: ${skippedCount}건`);
         fetchInstructors();
       } catch (err) {
-        alert("엑셀 가져오기 실패: " + err.message);
+        alert("엑셀 가져오기 실패: " + getErrorMessage(err));
       }
     };
     reader.readAsBinaryString(file);
@@ -460,7 +470,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
 
   // 4. 교∙강사 삭제
   // 💡 [사용자 비밀번호 검증 헬퍼]
-  const verifyCurrentUserPassword = async (inputPw) => {
+  const verifyCurrentUserPassword = async (inputPw: string): Promise<boolean> => {
     if (currentUser?.email && currentUser?.uuid) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -476,7 +486,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
   };
 
   // 4. 교∙강사 삭제 (비밀번호 확인 필요)
-  const handleDeleteInstructor = async (ins) => {
+  const handleDeleteInstructor = async (ins: Instructor) => {
     const inputPw = prompt("교∙강사 마스터 대장 데이터를 삭제하려면 본인의 비밀번호를 입력해 주세요:");
     if (inputPw === null) return; // 취소
 
@@ -498,7 +508,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
         setSelectedInstructor(null);
       }
     } catch (err) {
-      alert("삭제 실패: " + err.message);
+      alert("삭제 실패: " + getErrorMessage(err));
     }
   };
 
@@ -517,7 +527,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
     });
   };
 
-  const handleEditHistoryClick = (item) => {
+  const handleEditHistoryClick = (item: InstructorHistory) => {
     setEditingHistory(item);
     setNewHistoryForm({
       year: item.year,
@@ -526,12 +536,12 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
       is_internal: item.is_internal,
       unit_id: item.program_id ? item.program_id.split("-")[0] : "B2",
       program_id: item.program_id,
-      amount: item.amount
+      amount: String(item.amount)
     });
     setIsHistoryModalOpen(true);
   };
 
-  const handleAddHistory = async (e) => {
+  const handleAddHistory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedInstructor || !newHistoryForm.amount) return;
     
@@ -541,7 +551,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
         const { error } = await supabase
           .from("instructor_histories")
           .update({
-            year: parseInt(newHistoryForm.year),
+            year: Number(newHistoryForm.year),
             department: newHistoryForm.department,
             position: newHistoryForm.position,
             is_internal: newHistoryForm.is_internal,
@@ -556,7 +566,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
         // 등록 모드
         const { error } = await supabase.from("instructor_histories").insert({
           instructor_id: selectedInstructor.id,
-          year: parseInt(newHistoryForm.year),
+          year: Number(newHistoryForm.year),
           department: newHistoryForm.department,
           position: newHistoryForm.position,
           is_internal: newHistoryForm.is_internal,
@@ -571,18 +581,18 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
       handleCloseHistoryModal();
       handleSelectInstructor(selectedInstructor);
     } catch (err) {
-      alert("이력 저장 실패: " + err.message);
+      alert("이력 저장 실패: " + getErrorMessage(err));
     }
   };
 
   // 6. 변동 정보 이력 삭제
-  const handleDeleteHistory = async (id) => {
+  const handleDeleteHistory = async (id: string) => {
     try {
       const { error } = await supabase.from("instructor_histories").delete().eq("id", id);
       if (error) throw error;
-      handleSelectInstructor(selectedInstructor);
+      if (selectedInstructor) handleSelectInstructor(selectedInstructor);
     } catch (err) {
-      alert("이력 삭제 실패: " + err.message);
+      alert("이력 삭제 실패: " + getErrorMessage(err));
     }
   };
 
@@ -621,16 +631,16 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
         return;
       }
 
-      const insMap = {};
+      const insMap: Record<string, Instructor> = {};
       instructors.forEach(ins => {
         insMap[ins.id] = ins;
       });
 
       const dataToExport = allHistories.map(h => {
-        const ins = insMap[h.instructor_id] || {};
+        const ins = insMap[h.instructor_id];
         return {
-          "성명": ins.name || "알수없음",
-          "생년월일": ins.decrypted_birth || "",
+          "성명": ins?.name || "알수없음",
+          "생년월일": ins?.decrypted_birth || "",
           "사업연도": h.year,
           "교내/교외 구분": h.is_internal ? "교내" : "교외",
           "소속": h.department,
@@ -652,30 +662,30 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
 
       XLSX.writeFile(wb, `UC_ANCHOR_교강사_활동이력_대장.xlsx`);
     } catch (err) {
-      alert("활동이력 엑셀 다운로드 실패: " + err.message);
+      alert("활동이력 엑셀 다운로드 실패: " + getErrorMessage(err));
     }
   };
 
   // 💡 [활동이력 엑셀 업로드 (Import)]
-  const handleHistoryExcelImport = (e) => {
-    const file = e.target.files[0];
+  const handleHistoryExcelImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
-        const data = evt.target.result;
+        const data = evt.target?.result;
         const workbook = XLSX.read(data, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
         const ws = workbook.Sheets[sheetName];
-        const excelRows = XLSX.utils.sheet_to_json(ws);
+        const excelRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws);
 
         if (excelRows.length === 0) {
           alert("엑셀 파일에 데이터가 존재하지 않습니다.");
           return;
         }
 
-        const insLookup = {};
+        const insLookup: Record<string, string> = {};
         instructors.forEach(ins => {
           const key = `${ins.name.trim()}_${ins.decrypted_birth.trim()}`;
           insLookup[key] = ins.id;
@@ -714,12 +724,12 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
 
           newHistList.push({
             instructor_id: instructorId,
-            year: parseInt(rawYear) || 2026,
+            year: parseInt(String(rawYear), 10) || 2026,
             department: String(rawDept).trim(),
             position: String(rawPosition).trim(),
             is_internal: isInternal,
             program_id: String(rawProgram).trim(),
-            amount: parseFloat(rawAmount) || 0
+            amount: parseFloat(String(rawAmount)) || 0
           });
         }
 
@@ -739,7 +749,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
           fetchInstructors();
         }
       } catch (err) {
-        alert("활동이력 엑셀 가져오기 실패: " + err.message);
+        alert("활동이력 엑셀 가져오기 실패: " + getErrorMessage(err));
       }
     };
     reader.readAsBinaryString(file);
@@ -747,7 +757,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
   };
 
   // 총 지급비용 연산
-  const totalPayment = histories.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+  const totalPayment = histories.reduce((sum, item) => sum + item.amount, 0);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", color: "var(--text-color)" }}>
@@ -1188,7 +1198,7 @@ export default function InstructorPoolManager({ currentUser, currentRole }: Inst
                               </span>
                             </td>
                             <td style={{ padding: "0.75rem 0.5rem" }}>{item.program_id}</td>
-                            <td style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "700", color: "var(--accent-color)" }}>{parseInt(item.amount).toLocaleString()}원</td>
+                            <td style={{ padding: "0.75rem 0.5rem", textAlign: "right", fontWeight: "700", color: "var(--accent-color)" }}>{parseInt(String(item.amount), 10).toLocaleString()}원</td>
                             <td style={{ padding: "0.75rem 0.5rem", textAlign: "center" }}>
                               <div style={{ display: "flex", gap: "0.4rem", justifyContent: "center", alignItems: "center" }}>
                                 <button
