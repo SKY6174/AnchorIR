@@ -3717,10 +3717,20 @@ export default function ProcurementManager({
                                 textAlign: "center",
                                 fontWeight: "700"
                               }}
+                              onFocus={(e) => {
+                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
+                                e.currentTarget.style.borderColor = "#1D4ED8";
+                                e.currentTarget.style.color = "#1D4ED8";
+                              }}
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)";
                                 e.currentTarget.style.borderColor = "#1D4ED8";
                                 e.currentTarget.style.color = "#1D4ED8";
+                              }}
+                              onBlur={(e) => {
+                                e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                                e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+                                e.currentTarget.style.color = "#2563EB";
                               }}
                               onMouseOut={(e) => {
                                 e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
@@ -3748,10 +3758,20 @@ export default function ProcurementManager({
                                 textAlign: "center",
                                 fontWeight: "700"
                               }}
+                              onFocus={(e) => {
+                                e.currentTarget.style.background = "rgba(139, 92, 246, 0.25)";
+                                e.currentTarget.style.borderColor = "#6D28D9";
+                                e.currentTarget.style.color = "#6D28D9";
+                              }}
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = "rgba(139, 92, 246, 0.25)";
                                 e.currentTarget.style.borderColor = "#6D28D9";
                                 e.currentTarget.style.color = "#6D28D9";
+                              }}
+                              onBlur={(e) => {
+                                e.currentTarget.style.background = "rgba(139, 92, 246, 0.15)";
+                                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.5)";
+                                e.currentTarget.style.color = "#7C3AED";
                               }}
                               onMouseOut={(e) => {
                                 e.currentTarget.style.background = "rgba(139, 92, 246, 0.15)";
@@ -3779,10 +3799,20 @@ export default function ProcurementManager({
                                 textAlign: "center",
                                 fontWeight: "700"
                               }}
+                              onFocus={(e) => {
+                                e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
+                                e.currentTarget.style.borderColor = "#047857";
+                                e.currentTarget.style.color = "#047857";
+                              }}
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = "rgba(16, 185, 129, 0.25)";
                                 e.currentTarget.style.borderColor = "#047857";
                                 e.currentTarget.style.color = "#047857";
+                              }}
+                              onBlur={(e) => {
+                                e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
+                                e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.5)";
+                                e.currentTarget.style.color = "#059669";
                               }}
                               onMouseOut={(e) => {
                                 e.currentTarget.style.background = "rgba(16, 185, 129, 0.15)";
@@ -3817,10 +3847,20 @@ export default function ProcurementManager({
                                     textAlign: "center",
                                     transition: "all 0.15s ease"
                                   }}
+                                  onFocus={(e) => {
+                                    e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+                                    e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+                                    e.currentTarget.style.color = "var(--accent-color, #2563EB)";
+                                  }}
                                   onMouseOver={(e) => {
                                     e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
                                     e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
                                     e.currentTarget.style.color = "var(--accent-color, #2563EB)";
+                                  }}
+                                  onBlur={(e) => {
+                                    e.currentTarget.style.background = "rgba(107, 114, 128, 0.12)";
+                                    e.currentTarget.style.borderColor = "rgba(107, 114, 128, 0.4)";
+                                    e.currentTarget.style.color = "var(--text-primary)";
                                   }}
                                   onMouseOut={(e) => {
                                     e.currentTarget.style.background = "rgba(107, 114, 128, 0.12)";
@@ -3851,10 +3891,20 @@ export default function ProcurementManager({
                                     textAlign: "center",
                                     transition: "all 0.15s ease"
                                   }}
+                                  onFocus={(e) => {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+                                    e.currentTarget.style.borderColor = "#B91C1C";
+                                    e.currentTarget.style.color = "#B91C1C";
+                                  }}
                                   onMouseOver={(e) => {
                                     e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
                                     e.currentTarget.style.borderColor = "#B91C1C";
                                     e.currentTarget.style.color = "#B91C1C";
+                                  }}
+                                  onBlur={(e) => {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.12)";
+                                    e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.45)";
+                                    e.currentTarget.style.color = "#DC2626";
                                   }}
                                   onMouseOut={(e) => {
                                     e.currentTarget.style.background = "rgba(239, 68, 68, 0.12)";
@@ -4512,9 +4562,17 @@ export default function ProcurementManager({
                                   width: "34px",
                                   fontWeight: "700"
                                 }}
+                                onFocus={(e) => {
+                                  e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.28)" : "#dbeafe";
+                                  e.currentTarget.style.borderColor = darkMode ? "#60a5fa" : "#2563eb";
+                                }}
                                 onMouseOver={(e) => {
                                   e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.28)" : "#dbeafe";
                                   e.currentTarget.style.borderColor = darkMode ? "#60a5fa" : "#2563eb";
+                                }}
+                                onBlur={(e) => {
+                                  e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.18)" : "#eff6ff";
+                                  e.currentTarget.style.borderColor = darkMode ? "rgba(59, 130, 246, 0.4)" : "rgba(37, 99, 235, 0.4)";
                                 }}
                                 onMouseOut={(e) => {
                                   e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.18)" : "#eff6ff";
@@ -4540,9 +4598,17 @@ export default function ProcurementManager({
                                   width: "34px",
                                   fontWeight: "700"
                                 }}
+                                onFocus={(e) => {
+                                  e.currentTarget.style.background = darkMode ? "rgba(167, 139, 250, 0.28)" : "#ede9fe";
+                                  e.currentTarget.style.borderColor = darkMode ? "#c084fc" : "#7c3aed";
+                                }}
                                 onMouseOver={(e) => {
                                   e.currentTarget.style.background = darkMode ? "rgba(167, 139, 250, 0.28)" : "#ede9fe";
                                   e.currentTarget.style.borderColor = darkMode ? "#c084fc" : "#7c3aed";
+                                }}
+                                onBlur={(e) => {
+                                  e.currentTarget.style.background = darkMode ? "rgba(167, 139, 250, 0.18)" : "#f5f3ff";
+                                  e.currentTarget.style.borderColor = darkMode ? "rgba(167, 139, 250, 0.4)" : "rgba(109, 40, 217, 0.4)";
                                 }}
                                 onMouseOut={(e) => {
                                   e.currentTarget.style.background = darkMode ? "rgba(167, 139, 250, 0.18)" : "#f5f3ff";
@@ -4568,9 +4634,17 @@ export default function ProcurementManager({
                                   width: "34px",
                                   fontWeight: "700"
                                 }}
+                                onFocus={(e) => {
+                                  e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.28)" : "#d1fae5";
+                                  e.currentTarget.style.borderColor = darkMode ? "#34d399" : "#059669";
+                                }}
                                 onMouseOver={(e) => {
                                   e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.28)" : "#d1fae5";
                                   e.currentTarget.style.borderColor = darkMode ? "#34d399" : "#059669";
+                                }}
+                                onBlur={(e) => {
+                                  e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.18)" : "#ecfdf5";
+                                  e.currentTarget.style.borderColor = darkMode ? "rgba(16, 185, 129, 0.4)" : "rgba(5, 150, 105, 0.4)";
                                 }}
                                 onMouseOut={(e) => {
                                   e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.18)" : "#ecfdf5";
@@ -4602,10 +4676,20 @@ export default function ProcurementManager({
                                       whiteSpace: "nowrap",
                                       width: "34px"
                                     }}
+                                    onFocus={(e) => {
+                                      e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                                      e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.6)";
+                                      e.currentTarget.style.color = darkMode ? "#60a5fa" : "#1d4ed8";
+                                    }}
                                     onMouseOver={(e) => {
                                       e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
                                       e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.6)";
                                       e.currentTarget.style.color = darkMode ? "#60a5fa" : "#1d4ed8";
+                                    }}
+                                    onBlur={(e) => {
+                                      e.currentTarget.style.background = darkMode ? "rgba(255, 255, 255, 0.08)" : "#f4f4f5";
+                                      e.currentTarget.style.borderColor = darkMode ? "rgba(255, 255, 255, 0.15)" : "#d4d4d8";
+                                      e.currentTarget.style.color = darkMode ? "#e4e4e7" : "#27272a";
                                     }}
                                     onMouseOut={(e) => {
                                       e.currentTarget.style.background = darkMode ? "rgba(255, 255, 255, 0.08)" : "#f4f4f5";
@@ -4647,10 +4731,20 @@ export default function ProcurementManager({
                                       whiteSpace: "nowrap",
                                       width: "34px"
                                     }}
+                                    onFocus={(e) => {
+                                      e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+                                      e.currentTarget.style.borderColor = "#ef4444";
+                                      e.currentTarget.style.color = "#ef4444";
+                                    }}
                                     onMouseOver={(e) => {
                                       e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
                                       e.currentTarget.style.borderColor = "#ef4444";
                                       e.currentTarget.style.color = "#ef4444";
+                                    }}
+                                    onBlur={(e) => {
+                                      e.currentTarget.style.background = darkMode ? "rgba(239, 68, 68, 0.15)" : "#fef2f2";
+                                      e.currentTarget.style.borderColor = darkMode ? "rgba(239, 68, 68, 0.45)" : "rgba(239, 68, 68, 0.4)";
+                                      e.currentTarget.style.color = darkMode ? "#f87171" : "#b91c1c";
                                     }}
                                     onMouseOut={(e) => {
                                       e.currentTarget.style.background = darkMode ? "rgba(239, 68, 68, 0.15)" : "#fef2f2";
@@ -5142,9 +5236,17 @@ export default function ProcurementManager({
                                 textAlign: "center",
                                 fontWeight: "700"
                               }}
+                              onFocus={(e) => {
+                                e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.28)" : "#dbeafe";
+                                e.currentTarget.style.borderColor = darkMode ? "#60a5fa" : "#2563eb";
+                              }}
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.28)" : "#dbeafe";
                                 e.currentTarget.style.borderColor = darkMode ? "#60a5fa" : "#2563eb";
+                              }}
+                              onBlur={(e) => {
+                                e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.18)" : "#eff6ff";
+                                e.currentTarget.style.borderColor = darkMode ? "rgba(59, 130, 246, 0.4)" : "rgba(37, 99, 235, 0.4)";
                               }}
                               onMouseOut={(e) => {
                                 e.currentTarget.style.background = darkMode ? "rgba(59, 130, 246, 0.18)" : "#eff6ff";
@@ -5171,9 +5273,17 @@ export default function ProcurementManager({
                                 textAlign: "center",
                                 fontWeight: "700"
                               }}
+                              onFocus={(e) => {
+                                e.currentTarget.style.background = darkMode ? "rgba(139, 92, 246, 0.28)" : "#ede9fe";
+                                e.currentTarget.style.borderColor = darkMode ? "#a78bfa" : "#7c3aed";
+                              }}
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = darkMode ? "rgba(139, 92, 246, 0.28)" : "#ede9fe";
                                 e.currentTarget.style.borderColor = darkMode ? "#a78bfa" : "#7c3aed";
+                              }}
+                              onBlur={(e) => {
+                                e.currentTarget.style.background = darkMode ? "rgba(139, 92, 246, 0.18)" : "#f5f3ff";
+                                e.currentTarget.style.borderColor = darkMode ? "rgba(139, 92, 246, 0.4)" : "rgba(109, 40, 217, 0.4)";
                               }}
                               onMouseOut={(e) => {
                                 e.currentTarget.style.background = darkMode ? "rgba(139, 92, 246, 0.18)" : "#f5f3ff";
@@ -5200,9 +5310,17 @@ export default function ProcurementManager({
                                 textAlign: "center",
                                 fontWeight: "700"
                               }}
+                              onFocus={(e) => {
+                                e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.28)" : "#d1fae5";
+                                e.currentTarget.style.borderColor = darkMode ? "#34d399" : "#059669";
+                              }}
                               onMouseOver={(e) => {
                                 e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.28)" : "#d1fae5";
                                 e.currentTarget.style.borderColor = darkMode ? "#34d399" : "#059669";
+                              }}
+                              onBlur={(e) => {
+                                e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.18)" : "#ecfdf5";
+                                e.currentTarget.style.borderColor = darkMode ? "rgba(16, 185, 129, 0.4)" : "rgba(5, 150, 105, 0.4)";
                               }}
                               onMouseOut={(e) => {
                                 e.currentTarget.style.background = darkMode ? "rgba(16, 185, 129, 0.18)" : "#ecfdf5";
@@ -5236,10 +5354,20 @@ export default function ProcurementManager({
                                     textAlign: "center",
                                     transition: "all 0.15s ease"
                                   }}
+                                  onFocus={(e) => {
+                                    e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
+                                    e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.6)";
+                                    e.currentTarget.style.color = darkMode ? "#60a5fa" : "#1d4ed8";
+                                  }}
                                   onMouseOver={(e) => {
                                     e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)";
                                     e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.6)";
                                     e.currentTarget.style.color = darkMode ? "#60a5fa" : "#1d4ed8";
+                                  }}
+                                  onBlur={(e) => {
+                                    e.currentTarget.style.background = darkMode ? "rgba(255, 255, 255, 0.08)" : "#f4f4f5";
+                                    e.currentTarget.style.borderColor = darkMode ? "rgba(255, 255, 255, 0.15)" : "#d4d4d8";
+                                    e.currentTarget.style.color = darkMode ? "#e4e4e7" : "#27272a";
                                   }}
                                   onMouseOut={(e) => {
                                     e.currentTarget.style.background = darkMode ? "rgba(255, 255, 255, 0.08)" : "#f4f4f5";
@@ -5269,10 +5397,20 @@ export default function ProcurementManager({
                                     textAlign: "center",
                                     transition: "all 0.15s ease"
                                   }}
+                                  onFocus={(e) => {
+                                    e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
+                                    e.currentTarget.style.borderColor = "#ef4444";
+                                    e.currentTarget.style.color = "#ef4444";
+                                  }}
                                   onMouseOver={(e) => {
                                     e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
                                     e.currentTarget.style.borderColor = "#ef4444";
                                     e.currentTarget.style.color = "#ef4444";
+                                  }}
+                                  onBlur={(e) => {
+                                    e.currentTarget.style.background = darkMode ? "rgba(239, 68, 68, 0.15)" : "#fef2f2";
+                                    e.currentTarget.style.borderColor = darkMode ? "rgba(239, 68, 68, 0.45)" : "rgba(239, 68, 68, 0.4)";
+                                    e.currentTarget.style.color = darkMode ? "#f87171" : "#b91c1c";
                                   }}
                                   onMouseOut={(e) => {
                                     e.currentTarget.style.background = darkMode ? "rgba(239, 68, 68, 0.15)" : "#fef2f2";
@@ -5968,10 +6106,20 @@ export default function ProcurementManager({
                                           transition: "all 0.15s",
                                           fontWeight: "700"
                                         }}
+                                        onFocus={(e) => {
+                                          e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
+                                          e.currentTarget.style.borderColor = "#3b82f6";
+                                          e.currentTarget.style.color = "#3b82f6";
+                                        }}
                                         onMouseOver={(e) => {
                                           e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
                                           e.currentTarget.style.borderColor = "#3b82f6";
                                           e.currentTarget.style.color = "#3b82f6";
+                                        }}
+                                        onBlur={(e) => {
+                                          e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                                          e.currentTarget.style.borderColor = "var(--border-color)";
+                                          e.currentTarget.style.color = "var(--text-secondary)";
                                         }}
                                         onMouseOut={(e) => {
                                           e.currentTarget.style.background = "rgba(255,255,255,0.06)";
@@ -6076,10 +6224,20 @@ export default function ProcurementManager({
                                           transition: "all 0.15s",
                                           fontWeight: "700"
                                         }}
+                                        onFocus={(e) => {
+                                          e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
+                                          e.currentTarget.style.borderColor = "#a78bfa";
+                                          e.currentTarget.style.color = "#a78bfa";
+                                        }}
                                         onMouseOver={(e) => {
                                           e.currentTarget.style.background = "rgba(167, 139, 250, 0.12)";
                                           e.currentTarget.style.borderColor = "#a78bfa";
                                           e.currentTarget.style.color = "#a78bfa";
+                                        }}
+                                        onBlur={(e) => {
+                                          e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                                          e.currentTarget.style.borderColor = "var(--border-color)";
+                                          e.currentTarget.style.color = "var(--text-secondary)";
                                         }}
                                         onMouseOut={(e) => {
                                           e.currentTarget.style.background = "rgba(255,255,255,0.06)";
@@ -6184,10 +6342,20 @@ export default function ProcurementManager({
                                           transition: "all 0.15s",
                                           fontWeight: "700"
                                         }}
+                                        onFocus={(e) => {
+                                          e.currentTarget.style.background = "rgba(52, 211, 153, 0.12)";
+                                          e.currentTarget.style.borderColor = "#34d399";
+                                          e.currentTarget.style.color = "#34d399";
+                                        }}
                                         onMouseOver={(e) => {
                                           e.currentTarget.style.background = "rgba(52, 211, 153, 0.12)";
                                           e.currentTarget.style.borderColor = "#34d399";
                                           e.currentTarget.style.color = "#34d399";
+                                        }}
+                                        onBlur={(e) => {
+                                          e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                                          e.currentTarget.style.borderColor = "var(--border-color)";
+                                          e.currentTarget.style.color = "var(--text-secondary)";
                                         }}
                                         onMouseOut={(e) => {
                                           e.currentTarget.style.background = "rgba(255,255,255,0.06)";
@@ -6292,10 +6460,20 @@ export default function ProcurementManager({
                                           transition: "all 0.15s",
                                           fontWeight: "700"
                                         }}
+                                        onFocus={(e) => {
+                                          e.currentTarget.style.background = "rgba(251, 113, 133, 0.12)";
+                                          e.currentTarget.style.borderColor = "#FB7185";
+                                          e.currentTarget.style.color = "#FB7185";
+                                        }}
                                         onMouseOver={(e) => {
                                           e.currentTarget.style.background = "rgba(251, 113, 133, 0.12)";
                                           e.currentTarget.style.borderColor = "#FB7185";
                                           e.currentTarget.style.color = "#FB7185";
+                                        }}
+                                        onBlur={(e) => {
+                                          e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                                          e.currentTarget.style.borderColor = "var(--border-color)";
+                                          e.currentTarget.style.color = "var(--text-secondary)";
                                         }}
                                         onMouseOut={(e) => {
                                           e.currentTarget.style.background = "rgba(255,255,255,0.06)";

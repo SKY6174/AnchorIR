@@ -4622,7 +4622,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                     background: "var(--accent-color, #3B82F6)", border: "none", color: "#FFFFFF", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer",
                     transition: "background 0.15s"
                   }}
+                  onFocus={(e) => e.currentTarget.style.background = "#2563EB"}
                   onMouseOver={(e) => e.currentTarget.style.background = "#2563EB"}
+                  onBlur={(e) => e.currentTarget.style.background = "var(--accent-color, #3B82F6)"}
                   onMouseOut={(e) => e.currentTarget.style.background = "var(--accent-color, #3B82F6)"}
                 >
                   <Plus size={16} />
@@ -4635,7 +4637,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                     background: "#8B5CF6", border: "none", color: "#FFFFFF", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer",
                     transition: "background 0.15s"
                   }}
+                  onFocus={(e) => e.currentTarget.style.background = "#7C3AED"}
                   onMouseOver={(e) => e.currentTarget.style.background = "#7C3AED"}
+                  onBlur={(e) => e.currentTarget.style.background = "#8B5CF6"}
                   onMouseOut={(e) => e.currentTarget.style.background = "#8B5CF6"}
                 >
                   <Plus size={16} />
@@ -4648,7 +4652,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                     background: "#EF4444", border: "none", color: "#FFFFFF", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer",
                     transition: "background 0.15s"
                   }}
+                  onFocus={(e) => e.currentTarget.style.background = "#DC2626"}
                   onMouseOver={(e) => e.currentTarget.style.background = "#DC2626"}
+                  onBlur={(e) => e.currentTarget.style.background = "#EF4444"}
                   onMouseOut={(e) => e.currentTarget.style.background = "#EF4444"}
                 >
                   <Plus size={16} />
@@ -4715,8 +4721,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                         fontWeight: isActive ? "800" : "500",
                         transition: "all 0.15s ease",
                       }}
+                      onFocus={(e) => {
+                        if (!isActive) e.currentTarget.style.borderColor = "var(--text-secondary)";
+                      }}
                       onMouseOver={(e) => {
                         if (!isActive) e.currentTarget.style.borderColor = "var(--text-secondary)";
+                      }}
+                      onBlur={(e) => {
+                        if (!isActive) e.currentTarget.style.borderColor = "var(--border-color)";
                       }}
                       onMouseOut={(e) => {
                         if (!isActive) e.currentTarget.style.borderColor = "var(--border-color)";
@@ -4841,7 +4853,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 onClick={() => handleEditSchedule(sched)}
                                 title="수정"
                                 style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                                onFocus={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                                 onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                                onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                 onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                               >
                                 <Edit size={14} />
@@ -4850,7 +4864,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 onClick={() => handleDeleteSchedule(sched.id)}
                                 title="삭제"
                                 style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                                onFocus={(e) => e.currentTarget.style.color = "#EF4444"}
                                 onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                                onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                 onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                               >
                                 <Trash2 size={14} />
@@ -4914,9 +4930,17 @@ Gemini 피드백: \n${geminiCritiqueText}
                                   cursor: "pointer",
                                   transition: "all 0.15s ease"
                                 }}
+                                onFocus={(e) => {
+                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.2)";
+                                  e.currentTarget.style.borderColor = "#34D399";
+                                }}
                                 onMouseOver={(e) => {
                                   e.currentTarget.style.background = "rgba(16, 185, 129, 0.2)";
                                   e.currentTarget.style.borderColor = "#34D399";
+                                }}
+                                onBlur={(e) => {
+                                  e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)";
+                                  e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.25)";
                                 }}
                                 onMouseOut={(e) => {
                                   e.currentTarget.style.background = "rgba(16, 185, 129, 0.12)";
@@ -4948,9 +4972,17 @@ Gemini 피드백: \n${geminiCritiqueText}
                                   cursor: "pointer",
                                   transition: "all 0.15s ease"
                                 }}
+                                onFocus={(e) => {
+                                  e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
+                                  e.currentTarget.style.borderColor = "#60A5FA";
+                                }}
                                 onMouseOver={(e) => {
                                   e.currentTarget.style.background = "rgba(59, 130, 246, 0.2)";
                                   e.currentTarget.style.borderColor = "#60A5FA";
+                                }}
+                                onBlur={(e) => {
+                                  e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
+                                  e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.25)";
                                 }}
                                 onMouseOut={(e) => {
                                   e.currentTarget.style.background = "rgba(59, 130, 246, 0.12)";
@@ -5074,7 +5106,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                             onClick={() => handleEditEvent(event)}
                             title="수정"
                             style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                            onFocus={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                             onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                            onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                             onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                           >
                             <Edit size={14} />
@@ -5083,7 +5117,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                             onClick={() => handleDeleteEvent(event.id)}
                             title="삭제"
                             style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                            onFocus={(e) => e.currentTarget.style.color = "#EF4444"}
                             onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                            onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                             onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                           >
                             <Trash2 size={14} />
@@ -6024,7 +6060,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                   flexDirection: "column",
                                   gap: "0.25rem"
                                 }}
+                                onFocus={(e) => { if (!isSelected) e.currentTarget.style.background = darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.03)"; }}
                                 onMouseOver={(e) => { if (!isSelected) e.currentTarget.style.background = darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.03)"; }}
+                                onBlur={(e) => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
                                 onMouseOut={(e) => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
                               >
                                 <span style={{ fontSize: "0.8rem", fontWeight: "700", color: isSelected ? (darkMode ? "#60A5FA" : "var(--accent-color)") : "var(--text-primary)", wordBreak: "break-all" }}>
@@ -6234,7 +6272,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                           onClick={() => handleEditMeeting(selectedMeeting)}
                                           title="수정"
                                           style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
+                                          onFocus={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                                           onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                                          onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                           onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                         >
                                           <Edit size={16} />
@@ -6244,7 +6284,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                             onClick={() => handleDeleteMeeting(selectedMeeting.id)}
                                             title="삭제"
                                             style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
+                                            onFocus={(e) => e.currentTarget.style.color = "#EF4444"}
                                             onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                                            onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                             onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                           >
                                             <Trash2 size={16} />
@@ -6476,7 +6518,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                         onClick={() => handleEditMeeting(selectedMeeting)}
                                         title="수정"
                                         style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
+                                        onFocus={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                                         onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                                        onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                         onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                       >
                                         <Edit size={16} />
@@ -6486,7 +6530,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                           onClick={() => handleDeleteMeeting(selectedMeeting.id)}
                                           title="삭제"
                                           style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.35rem", borderRadius: "4px" }}
+                                          onFocus={(e) => e.currentTarget.style.color = "#EF4444"}
                                           onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                                          onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                           onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                         >
                                           <Trash2 size={16} />
@@ -6623,7 +6669,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 cursor: "pointer",
                                 transition: "all 0.15s ease"
                               }}
+                              onFocus={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)"}
                               onMouseOver={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.25)"}
+                              onBlur={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)"}
                               onMouseOut={(e) => e.currentTarget.style.background = "rgba(59, 130, 246, 0.15)"}
                             >
                               ➕ 테스트용 가상 회의록 10건 일괄 생성
@@ -6684,7 +6732,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                     onClick={() => handleEditMeeting(meeting)}
                                     title="수정"
                                     style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                                    onFocus={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                                     onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                                    onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                     onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                   >
                                     <Edit size={14} />
@@ -6693,7 +6743,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                     onClick={() => handleDeleteMeeting(meeting.id)}
                                     title="삭제"
                                     style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem", transition: "color 0.15s" }}
+                                    onFocus={(e) => e.currentTarget.style.color = "#EF4444"}
                                     onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                                    onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                     onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                   >
                                     <Trash2 size={14} />
@@ -6977,7 +7029,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                   onClick={() => handleEditPress(press)}
                                   title="수정"
                                   style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem" }}
+                                  onFocus={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                                   onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                                  onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                   onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                 >
                                   <Edit size={13} />
@@ -6987,7 +7041,9 @@ Gemini 피드백: \n${geminiCritiqueText}
                                   onClick={() => handleDeletePress(press.id)}
                                   title="삭제"
                                   style={{ background: "transparent", border: "none", color: "var(--text-secondary)", cursor: "pointer", padding: "0.2rem" }}
+                                  onFocus={(e) => e.currentTarget.style.color = "#EF4444"}
                                   onMouseOver={(e) => e.currentTarget.style.color = "#EF4444"}
+                                  onBlur={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                   onMouseOut={(e) => e.currentTarget.style.color = "var(--text-secondary)"}
                                 >
                                   <Trash2 size={13} />

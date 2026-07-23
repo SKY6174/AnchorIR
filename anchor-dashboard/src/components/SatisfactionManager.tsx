@@ -2058,7 +2058,9 @@ ${commentList || "(없음)"}
                               cursor: "pointer",
                               transition: "color 0.15s ease"
                             }}
+                            onFocus={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                             onMouseOver={(e) => e.currentTarget.style.color = "var(--accent-color)"}
+                            onBlur={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                             onMouseOut={(e) => e.currentTarget.style.color = "var(--text-primary)"}
                             title="상세보기 / 관리"
                           >
@@ -2951,7 +2953,9 @@ ${commentList || "(없음)"}
                       alignItems: "center",
                       gap: "0.6rem"
                     }}
+                    onFocus={(e) => e.currentTarget.style.borderColor = "var(--accent-color)"}
                     onMouseOver={(e) => e.currentTarget.style.borderColor = "var(--accent-color)"}
+                    onBlur={(e) => e.currentTarget.style.borderColor = "var(--border-color)"}
                     onMouseOut={(e) => e.currentTarget.style.borderColor = "var(--border-color)"}
                   >
                     <input
