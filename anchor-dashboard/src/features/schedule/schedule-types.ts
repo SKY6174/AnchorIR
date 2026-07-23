@@ -13,6 +13,19 @@ export type ScheduleCommitteeMember = Record<string, any> & {
 
 export type ScheduleFormData = Record<string, any>;
 
+export interface ScheduleMemberFormData {
+  type: string;
+  name: string;
+  org: string;
+  dept: string;
+  rank: string;
+  location: string;
+  term: string;
+  termStart: string;
+  termEnd: string;
+  note: string;
+}
+
 export interface AgendaResultPair {
   agenda: string;
   result: string;
