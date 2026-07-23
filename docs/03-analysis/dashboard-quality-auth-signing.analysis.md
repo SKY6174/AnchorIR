@@ -5,9 +5,9 @@
 
 ---
 
-## Match Rate: 67%
+## Match Rate: 86%
 
-총 42개 검증 항목 중 28개가 구현·검증되었다. TypeScript, JSX 접근성 lint, 위원회 회귀시험, 초기 번들 개선, 공통 승인 프로필 resolver와 provider-neutral OTP 경계가 완료됐다. 운영 SMTP/SMS provider E2E와 PAdES 서명 스키마·서버 경계·검증은 아직 남아 있다.
+총 42개 검증 항목 중 36개가 구현·검증되었다. TypeScript, JSX 접근성 lint, 위원회 회귀시험, 초기 번들 개선, 공통 승인 프로필 resolver, provider-neutral OTP와 PAdES 서버 경계가 완료됐다. 운영 SMTP/SMS E2E, 실제 인증서/HSM/TSA provider adapter, 자동 시각 회귀는 아직 남아 있다.
 
 외부 사업자와 인증서가 필요한 항목은 임의 구현하지 않은 것이 설계와 일치하지만, provider 미설정 상태를 안전하게 표현하는 서버 adapter와 데이터 경계까지 아직 없으므로 구현 완료로 계산하지 않았다.
 
@@ -16,7 +16,7 @@
 - 설계의 Workstream A~E와 Test/Operations 요구를 42개 독립 항목으로 분해했다.
 - 구현 코드, 설정, migration, Edge Function, 테스트 파일이 존재하고 현재 검사로 확인된 항목만 완료로 계산했다.
 - 일부 구현 또는 수동 확인만 있는 항목은 완료 점수에 포함하지 않았다.
-- 계산식: `28 / 42 × 100 = 66.67%`, 반올림하여 67%.
+- 계산식: `36 / 42 × 100 = 85.71%`, 반올림하여 86%.
 
 ## Workstream Results
 
@@ -26,9 +26,9 @@
 | B. Lint and accessibility | 5 | 5 | 100% | Match |
 | C. Bundle and performance | 6 | 7 | 86% | Partial |
 | D. Supabase OTP | 9 | 10 | 90% | Partial |
-| E. Certificate PDF signature | 1 | 10 | 10% | Missing |
+| E. Certificate PDF signature | 9 | 10 | 90% | Partial |
 | Tests and operations | 2 | 5 | 40% | Partial |
-| **Total** | **28** | **42** | **67%** | **Act required** |
+| **Total** | **36** | **42** | **86%** | **Act required** |
 
 ## Implemented Items
 
@@ -99,31 +99,34 @@ Evidence:
 - feature flag와 provider readiness flag는 모두 기본 false이며 UI에는 아직 연결되지 않는다.
 - OTP 단위시험 6건이 통과한다. 운영 SMTP/SMS provider 구성 환경 E2E가 없으므로 마지막 항목은 완료로 계산하지 않았다.
 
-### E. Certificate PDF signature — 1/10
+### E. Certificate PDF signature — 9/10
 
 - [x] 기존 위원회 결과 snapshot에 SHA-256과 서버 HMAC 봉인·검증이 유지된다.
-- [ ] `committee_report_signatures` migration이 없다.
-- [ ] `committee-report-staging`, `committee-signed-reports` private bucket과 정책이 없다.
-- [ ] 일반 클라이언트 변경을 차단하는 signature RLS·상태 전이 경계가 없다.
-- [ ] `committee-report-sign` Edge Function이 없다.
-- [ ] 요청자 역할, snapshot 무효화, unsigned PDF digest 검증이 없다.
-- [ ] provider-neutral PAdES adapter가 없다.
-- [ ] `provider_not_configured` 안전 실패 경로가 없다.
-- [ ] 인증서·알고리즘·TSA·validation audit 저장이 없다.
-- [ ] signed PDF immutable 저장과 단기 signed URL 발급이 없다.
+- [x] `committee_report_signatures` additive migration이 있다.
+- [x] `committee-report-staging`, `committee-signed-reports` private bucket이 있다.
+- [x] 일반 클라이언트 변경을 차단하는 signature RLS·상태 전이 경계가 있다.
+- [x] `committee-report-sign` Edge Function이 있다.
+- [x] 요청자 역할, snapshot 무효화, object path와 unsigned PDF digest를 검증한다.
+- [ ] provider-neutral interface는 있으나 승인된 HSM/서명 사업자의 concrete PAdES adapter는 없다.
+- [x] `provider_not_configured` 안전 실패 경로가 있다.
+- [x] 인증서·알고리즘·TSA·validation audit 저장 필드와 상태 응답이 있다.
+- [x] signed PDF immutable private 저장 경계와 5분 signed URL 발급 경로가 있다.
 
 Evidence:
 
-- 현재 최신 migration은 099이며 signature 테이블이나 전용 bucket migration이 없다.
-- 현재 Supabase Function은 `committee-vote`이며 PAdES signing Function은 없다.
-- `CommitteeManager.tsx`는 HMAC 봉인을 명시하지만 PKI/PAdES 상태를 표시하거나 요청하지 않는다.
+- migration 100은 signature audit table, service-role-only request RPC, RLS, update guard와 두 private bucket을 추가한다.
+- `committee-report-sign`은 승인 역할, invalidated snapshot, PDF magic bytes, SHA-256, 경로를 검사한다.
+- client signing service와 Edge Function 모두 기본 비활성이고 provider가 없으면 `provider_not_configured`로 종료한다.
+- signing core 단위시험 5건과 적용 후 catalog를 점검하는 `committee-signing-verification.sql`이 있다.
+- migration 100은 아직 운영 DB에 적용하지 않았으며 Edge Function도 배포하지 않았다.
+- `CommitteeManager.tsx`는 기존 HMAC PDF 흐름만 사용하므로 현재 UI와 결과보고서 출력은 변하지 않는다.
 
 ### Tests and operations — 2/5
 
 - [x] production build가 성공하고 500KB warning이 없다.
 - [x] 위원회 표결·정족수 시험 6개가 통과한다.
 - [ ] 이메일·SMS OTP adapter 단위시험과 구성된 환경 E2E가 없다.
-- [ ] signing 권한·digest·idempotency·PAdES 검증 시험이 없다.
+- [ ] client의 profile·digest·path·provider 안전 실패 단위시험은 있으나, 적용 DB의 권한·idempotency와 실제 PAdES 독립 검증 시험은 없다.
 - [ ] 로그인·관리 화면·위원회·PDF의 자동 시각 회귀 기준이 없다.
 
 ## Changed Items and Deviations
@@ -137,7 +140,7 @@ Evidence:
 
 | Priority | Gap | Risk |
 |---|---|---|
-| P0 | PAdES schema·RLS·서버 경계 부재 | 공인 서명 기능을 안전하게 추가할 기반이 없음 |
+| P0 | 승인된 PAdES provider/HSM/TSA 미결정 | 실제 공인 서명과 독립 검증을 활성화할 수 없음 |
 | P1 | OTP abuse control·feature flag 부재 | provider 연결 시 사용자 열거, 비용·재전송 남용 위험 |
 | P2 | 자동 시각 회귀 부재 | UI 완전 보존을 정적 diff와 수동 확인에 의존 |
 | P2 | 음성 자막 데이터 계약 부재 | 녹음 재생은 가능하지만 청각 접근성 대체 수단이 없음 |
@@ -158,8 +161,8 @@ Evidence:
 - [x] Act 2: JSX 접근성 검사 gate 정상화
 - [x] Act 3: 이메일 OTP adapter·feature flag·단위시험
 - [x] Act 4: SMS OTP adapter·provider preflight·단위시험
-- [ ] Act 5: signature schema/storage/RLS migration
-- [ ] Act 6: provider-neutral signing Function과 client adapter
+- [x] Act 5: signature schema/storage/RLS migration 작성
+- [x] Act 6: provider-neutral signing Function과 client adapter
 - [ ] Act 7: 외부 인증서/TSA 결정 후 PAdES 검증
 - [ ] 각 Act batch 후 TypeScript, lint, build, 위원회 시험과 UI diff audit
 
