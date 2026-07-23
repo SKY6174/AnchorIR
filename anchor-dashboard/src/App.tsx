@@ -50,7 +50,8 @@ import { deleteRiseMember, fetchRiseMembers, insertRiseMember, upsertRiseMember,
 import { saveMenuVisibility } from "./features/management/services/portal-config-service";
 import { useApprovalDataRefresh, useRegisteredUsersRefresh } from "./features/management/hooks/use-management-refresh";
 import { usePortalMenuVisibility } from "./features/management/hooks/use-portal-menu-visibility";
-import { deleteEnvironmentRecordsByYear, deleteEquipmentRecordsByYear, deleteServiceRecordsByYear, insertEnvironmentRecords, insertEquipmentRecords, insertServiceRecords, probeProcurementAdvancedColumns, upsertEquipmentAssets } from "./features/procurement/services/procurement-data-service";
+import { useEnvironmentAutosave } from "./features/procurement/hooks/use-environment-autosave";
+import { deleteEquipmentRecordsByYear, deleteServiceRecordsByYear, insertEquipmentRecords, insertServiceRecords, probeProcurementAdvancedColumns, upsertEquipmentAssets } from "./features/procurement/services/procurement-data-service";
 import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
 import { useProjectAutosave } from "./features/projects/hooks/use-project-autosave";
@@ -3388,118 +3389,16 @@ export default function App() {
   });
 
   // 4) Procurement Env 자동 저장 디바운스 훅
-  useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
-    if (!currentUser || currentRole?.id === "GUEST") return;
-
-    // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
-    if (!envData || envData.length === 0) return;
-
-    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
-    const currentCleanStr = JSON.stringify(envData);
-    if (!fetchedEnvDataRef.current || fetchedEnvDataRef.current === currentCleanStr) {
-      safeSetLocalStorage(`anchor_cache_env_y${selectedYear}`, currentCleanStr, selectedYear);
-      return;
-    }
-
-    safeSetLocalStorage(`anchor_cache_env_y${selectedYear}`, currentCleanStr, selectedYear);
-    setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
-      try {
-        await deleteEnvironmentRecordsByYear(selectedYear);
-        if (envData.length > 0) {
-          const insertPayload = envData.map(e => ({
-            year: selectedYear,
-            title: e.title,
-            unit: e.unit,
-            plan: e.plan,
-            meeting_result: e.meetingResult,
-            progress: e.progress,
-            budget_plan: e.budgetPlan,
-            budget_spent: e.budgetSpent,
-            location: e.location,
-            purpose: e.purpose,
-            birdseye_view: e.birdseyeView,
-            blueprints: e.blueprints,
-            utilization: e.utilization,
-            dept_name: e.deptName || "",
-            division_name: e.divisionName || "",
-            date_p: e.dateP || null,
-            date_a: e.dateA || null,
-            date_b: e.dateB || null,
-            date_pr: e.datePr || null,
-            date_i: e.dateI || null,
-            doc_plan: e.docPlan || "",
-            doc_purchase: e.docPurchase || "",
-            doc_bid: e.docBid || "",
-            doc_plan_file_name: e.docPlanFileName || "",
-            doc_purchase_file_name: e.docPurchaseFileName || "",
-            doc_bid_file_name: e.docBidFileName || "",
-            doc_plan_file_size: Number(e.docPlanFileSize) || 0,
-            doc_purchase_file_size: Number(e.docPurchaseFileSize) || 0,
-            doc_bid_file_size: Number(e.docBidFileSize) || 0,
-            doc_plan_file_url: e.docPlanFileUrl || "",
-            doc_purchase_file_url: e.docPurchaseFileUrl || "",
-            doc_bid_file_url: e.docBidFileUrl || "",
-            ai_proposal_data: e.aiProposalData || null,
-            ai_purchase_data: e.aiPurchaseData || null,
-            ai_bid_data: e.aiBidData || null,
-            related_docs: e.relatedDocs || ""
-          }));
-
-          let error = null;
-
-          if (window.__HAS_NO_ADVANCED_ENV_COLUMNS__) {
-            const safePayload = insertPayload.map(item => {
-              const {
-                dept_name: _dept_name, division_name: _division_name,
-                date_p: _date_p, date_a: _date_a, date_b: _date_b, date_pr: _date_pr, date_i: _date_i,
-                doc_plan: _doc_plan, doc_purchase: _doc_purchase, doc_bid: _doc_bid,
-                doc_plan_file_name: _doc_plan_file_name, doc_purchase_file_name: _doc_purchase_file_name, doc_bid_file_name: _doc_bid_file_name,
-                doc_plan_file_size: _doc_plan_file_size, doc_purchase_file_size: _doc_purchase_file_size, doc_bid_file_size: _doc_bid_file_size,
-                doc_plan_file_url: _doc_plan_file_url, doc_purchase_file_url: _doc_purchase_file_url, doc_bid_file_url: _doc_bid_file_url,
-                ai_proposal_data: _ai_proposal_data, ai_purchase_data: _ai_purchase_data, ai_bid_data: _ai_bid_data, related_docs: _related_docs,
-                ...rest
-              } = item;
-              return rest;
-            });
-            const { error: retryErr } = await insertEnvironmentRecords(safePayload);
-            error = retryErr;
-          } else {
-            const { error: firstErr } = await insertEnvironmentRecords(insertPayload);
-            error = firstErr;
-
-            if (error) {
-              console.warn("DB에 procurement_env 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
-              window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = true;
-              const safePayload = insertPayload.map(item => {
-                const {
-                  dept_name: _dept_name, division_name: _division_name,
-                  date_p: _date_p, date_a: _date_a, date_b: _date_b, date_pr: _date_pr, date_i: _date_i,
-                  doc_plan: _doc_plan, doc_purchase: _doc_purchase, doc_bid: _doc_bid,
-                  doc_plan_file_name: _doc_plan_file_name, doc_purchase_file_name: _doc_purchase_file_name, doc_bid_file_name: _doc_bid_file_name,
-                  doc_plan_file_size: _doc_plan_file_size, doc_purchase_file_size: _doc_purchase_file_size, doc_bid_file_size: _doc_bid_file_size,
-                  doc_plan_file_url: _doc_plan_file_url, doc_purchase_file_url: _doc_purchase_file_url, doc_bid_file_url: _doc_bid_file_url,
-                  ai_proposal_data: _ai_proposal_data, ai_purchase_data: _ai_purchase_data, ai_bid_data: _ai_bid_data, related_docs: _related_docs,
-                  ...rest
-                } = item;
-                return rest;
-              });
-              const { error: retryErr } = await insertEnvironmentRecords(safePayload);
-              error = retryErr;
-            }
-          }
-
-          if (error) throw error;
-        }
-        setSyncStatus("synced");
-      } catch {
-        setSyncStatus("error");
-      }
-    }, 150);
-    return () => clearTimeout(timer);
-  // oxlint-disable-next-line react/exhaustive-deps -- environment data, year, and load guards own synchronization; auth restoration is a permission check, not a write trigger.
-  }, [envData, selectedYear, isDbLoaded, isFetchCompleted]);
+  useEnvironmentAutosave({
+    envData,
+    selectedYear,
+    isDbLoaded,
+    isFetchCompleted,
+    canWrite: Boolean(currentUser && currentRole?.id !== "GUEST"),
+    fetchedEnvDataRef,
+    safeSetLocalStorage,
+    setSyncStatus
+  });
 
   // 5) Procurement Equipment 자동 저장 디바운스 훅
   useEffect(() => {
