@@ -77,7 +77,7 @@ const formatAssignee = (assigneeText?: string): string => {
 
 
 // 초기에 적재해 둘 기자재 목록 모의 데이터셋 (Supabase 최초 시딩용)
-const defaultEquipmentsSeed = [
+const _defaultEquipmentsSeed = [
   {
     id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "교과목(정규)", password: "1234",
     dateP: "2025-03-10", dateA: "2025-04-15", dateB: "2025-06-12", datePr: "2025-07-20", dateI: "2025-09-05"
@@ -2358,7 +2358,7 @@ export default function App() {
     return rawProjects.map((strat: LegacyAppRecord) => ({
       ...strat,
       units: strat.units?.map((unit: LegacyAppRecord) => {
-        const { budgetDetails, kpis, ...restUnit } = unit;
+        const { budgetDetails: _budgetDetails, kpis: _kpis, ...restUnit } = unit;
         return {
           ...restUnit,
           programs: unit.programs?.map((prog: LegacyAppRecord) => {
@@ -2447,7 +2447,7 @@ export default function App() {
     }
   };
 
-  const removeIndexedDBCache = async (key: string): Promise<boolean | void> => {
+  const _removeIndexedDBCache = async (key: string): Promise<boolean | void> => {
     try {
       const db = await initIndexedDB();
       return new Promise<boolean>((resolve, reject) => {
@@ -3368,7 +3368,7 @@ export default function App() {
 
     try {
       // 2. Supabase DB에서 가입된 회원 로드
-      const { data, error } = await supabase
+      const { data, error: _error } = await supabase
         .from("rise_users")
         .select("id, name, role_key, created_at");
       const dbUsers = data || [];
@@ -5585,7 +5585,7 @@ export default function App() {
 
             let singleInsertErr = null;
             if (window.__HAS_NO_ADVANCED_PRESS_COLUMNS__) {
-              const { press_content, ...rest } = insertPayload;
+              const { press_content: _press_content, ...rest } = insertPayload;
               const { error } = await supabase.from("press_releases").insert(rest);
               singleInsertErr = error;
             } else {
@@ -5594,7 +5594,7 @@ export default function App() {
               if (singleInsertErr) {
                 console.warn("DB에 press_releases 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", singleInsertErr);
                 window.__HAS_NO_ADVANCED_PRESS_COLUMNS__ = true;
-                const { press_content, ...rest } = insertPayload;
+                const { press_content: _press_content, ...rest } = insertPayload;
                 const { error: fallbackErr } = await supabase.from("press_releases").insert(rest);
                 singleInsertErr = fallbackErr;
               }
@@ -5663,7 +5663,7 @@ export default function App() {
           let insertErr = null;
           if (window.__HAS_NO_ADVANCED_PRESS_COLUMNS__) {
             const safePayload = insertPayload.map(item => {
-              const { press_content, ...rest } = item;
+              const { press_content: _press_content, ...rest } = item;
               return rest;
             });
             const { error } = await supabase.from("press_releases").insert(safePayload);
@@ -5675,7 +5675,7 @@ export default function App() {
               console.warn("DB에 press_releases 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", insertErr);
               window.__HAS_NO_ADVANCED_PRESS_COLUMNS__ = true;
               const safePayload = insertPayload.map(item => {
-                const { press_content, ...rest } = item;
+                const { press_content: _press_content, ...rest } = item;
                 return rest;
               });
               const { error: fallbackErr } = await supabase.from("press_releases").insert(safePayload);
@@ -7386,7 +7386,7 @@ export default function App() {
   };
 
   // 엑셀 업로드로 데이터 실시간 갱신 (본사업비/이월비 구분 갱신 및 다년도 연쇄 이월 반영)
-  const handleUpdateData = (excelJson: LegacyAppRecord[], type: string) => {
+  const _handleUpdateData = (excelJson: LegacyAppRecord[], type: string) => {
     setProjects((prevProjects) => {
       const updated = JSON.parse(JSON.stringify(prevProjects)) as LegacyAppRecord[];
 
@@ -7620,7 +7620,7 @@ export default function App() {
   // 결재 변경 승인요청 DB 조회 및 갱신 API 연동
   const fetchVersionRequests = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error: _error } = await supabase
         .from("program_version_requests")
         .select("*")
         .order("requested_at", { ascending: false });
@@ -7634,7 +7634,7 @@ export default function App() {
   const fetchReservations = async () => {
     try {
       if (!supabase) return;
-      const { data, error } = await supabase
+      const { data, error: _error } = await supabase
         .from("asset_reservations")
         .select("*")
         .order("reserved_date", { ascending: false })
@@ -8606,7 +8606,7 @@ export default function App() {
     setShowProgramEditor(true);
   };
 
-  const handleOpenEditProgram = (unitId: string, prog: LegacyAppRecord) => {
+  const _handleOpenEditProgram = (unitId: string, prog: LegacyAppRecord) => {
     setEditingProgram(prog);
     setProgramForm({ unitId, id: prog.id, title: prog.title, dept: prog.dept || "사업운영팀" });
     setShowProgramEditor(true);
@@ -8651,7 +8651,7 @@ export default function App() {
     setShowProgramEditor(false);
   };
 
-  const handleDeleteProgram = (unitId: string, progId: string) => {
+  const _handleDeleteProgram = (unitId: string, progId: string) => {
     if (!window.confirm("정말 이 프로그램을 삭제하시겠습니까? 관련 KPI 및 예산 내역이 있다면 함께 영향 받을 수 있습니다.")) return;
     setProjects((prev) => {
       const updated = JSON.parse(JSON.stringify(prev)) as LegacyAppRecord[];
@@ -14301,7 +14301,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
       XLSX.writeFile(wb, filename);
   };
 
-  const renderExcelDownload = () => {
+  const _renderExcelDownload = () => {
     return (
       <div className="glass-card" style={{ padding: "2.5rem", maxWidth: "600px", margin: "2rem auto", textAlign: "center", border: "1px solid var(--border-color)" }}>
         <div style={{ display: "inline-flex", padding: "1.2rem", borderRadius: "50%", background: "rgba(16, 185, 129, 0.1)", color: "#10b981", marginBottom: "1.5rem" }}>
