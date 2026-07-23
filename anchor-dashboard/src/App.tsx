@@ -5361,6 +5361,7 @@ export default function App() {
     return () => {
       active = false;
     };
+  // oxlint-disable-next-line react/exhaustive-deps -- selectedYear and currentUser own dashboard loading; role restoration must not start a second full fetch.
   }, [selectedYear, currentUser]);
 
   // 2) Projects 자동 저장 디바운스 훅
@@ -5395,6 +5396,7 @@ export default function App() {
       }
     }, 500); // 1.5초에서 0.5초로 변경
     return () => clearTimeout(timer);
+  // oxlint-disable-next-line react/exhaustive-deps -- project changes and load guards own autosave; user or role restoration must not enqueue a database write.
   }, [projects, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 💡 DB 동기화 중(syncStatus === "syncing") 새로고침 및 페이지 탈출 방어 훅
@@ -5503,6 +5505,7 @@ export default function App() {
       }
     };
     syncImmediate();
+  // oxlint-disable-next-line react/exhaustive-deps -- agreement changes and load guards own synchronization; year and auth restoration must not overwrite remote data.
   }, [agreements, isDbLoaded, isFetchCompleted, isAgreementsLoaded]);
 
   // 10) Press Releases (언론보도) 자동 저장 디바운스 훅 (타 연차 기사 지능형 즉시 분배 저장 탑재)
@@ -5714,6 +5717,7 @@ export default function App() {
       }
     };
     syncPressImmediate();
+  // oxlint-disable-next-line react/exhaustive-deps -- press changes, year, and load guards own synchronization; auth and active-year restoration are safety checks, not write triggers.
   }, [pressReleases, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 3-2) Unified Certificates 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
