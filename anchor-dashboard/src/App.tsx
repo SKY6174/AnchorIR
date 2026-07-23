@@ -8,7 +8,6 @@ const BudgetExecutionManager = React.lazy(() => import("./components/BudgetExecu
 const PartnerManager = React.lazy(() => import("./components/PartnerManager"));
 import BudgetItemsManager from "./components/BudgetItemsManager";
 import SurveyResponder from "./components/SurveyResponder";
-import LLMWiki from "./components/LLMWiki";
 import OrgChartManager from "./components/OrgChartManager";
 import CenterOrgChartManager from "./components/CenterOrgChartManager";
 import PortalConfigManager from "./components/PortalConfigManager";
@@ -61,6 +60,7 @@ import { useEventScheduleAutosave } from "./features/schedule/hooks/use-event-sc
 import { useMeetingScheduleAutosave } from "./features/schedule/hooks/use-meeting-schedule-autosave";
 import { useMonthlyScheduleAutosave } from "./features/schedule/hooks/use-monthly-schedule-autosave";
 import { ScheduleScreen } from "./features/schedule/screens/schedule-screen";
+import { LLMWikiScreen } from "./features/wiki/screens/llm-wiki-screen";
 import { useDashboardCache } from "./shared/hooks/use-dashboard-cache";
 import { useDashboardCacheMaintenance } from "./shared/hooks/use-dashboard-cache-maintenance";
 import { useActiveTabPersistence, useLocalStorageJson, useLocalStorageValue, useOptionalLocalStorageJson, useOptionalLocalStorageValue } from "./shared/hooks/use-local-storage-persistence";
@@ -6867,7 +6867,7 @@ export default function App() {
         )}
 
         {activeTab === "llm_wiki" && (
-          <LLMWiki selectedYear={selectedYear} darkMode={darkMode} />
+          <LLMWikiScreen selectedYear={selectedYear} darkMode={darkMode} />
         )}
       </main>
 
