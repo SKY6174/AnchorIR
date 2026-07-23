@@ -2,6 +2,8 @@ import React from "react";
 import BudgetItemsManager from "../../../components/BudgetItemsManager";
 import type { BudgetItemsManagerProps } from "../../../components/BudgetItemsManager";
 import type { BudgetExecutionManagerProps } from "../../../components/BudgetExecutionManager";
+import { TotalInvestmentManager } from "../components/total-investment-manager";
+import type { TotalInvestmentManagerProps } from "../components/total-investment-manager";
 
 const BudgetExecutionManager = React.lazy(
   () => import("../../../components/BudgetExecutionManager")
@@ -10,7 +12,9 @@ const BudgetExecutionManager = React.lazy(
 interface BudgetScreenProps {
   subTab: string;
   onChangeSubTab: (subTab: string) => void;
-  totalInvestmentContent: React.ReactNode;
+  investmentSubTab: TotalInvestmentManagerProps["investmentSubTab"];
+  onChangeInvestmentSubTab: TotalInvestmentManagerProps["onChangeInvestmentSubTab"];
+  investmentProjects: TotalInvestmentManagerProps["projects"];
   darkMode: boolean;
   selectedYear: number;
   projects: NonNullable<BudgetItemsManagerProps["projects"]>;
@@ -22,7 +26,9 @@ interface BudgetScreenProps {
 export const BudgetScreen = ({
   subTab,
   onChangeSubTab,
-  totalInvestmentContent,
+  investmentSubTab,
+  onChangeInvestmentSubTab,
+  investmentProjects,
   darkMode,
   selectedYear,
   projects,
@@ -85,7 +91,13 @@ export const BudgetScreen = ({
 
     {/* 본문 콘텐츠 스위칭 */}
     {subTab === "total_investment" ? (
-      totalInvestmentContent
+      <TotalInvestmentManager
+        investmentSubTab={investmentSubTab}
+        onChangeInvestmentSubTab={onChangeInvestmentSubTab}
+        projects={investmentProjects}
+        selectedYear={selectedYear}
+        darkMode={darkMode}
+      />
     ) : subTab === "budget_categories" ? (
       <BudgetItemsManager
         key={`budget-items-${darkMode}-${selectedYear}`}

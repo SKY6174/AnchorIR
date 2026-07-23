@@ -21,7 +21,7 @@ const normalizeCategoryName = (name: string) => {
 type InvestmentValue = { main: number; carry: number };
 type InvestmentCategory = { name: string; values: InvestmentValue[] };
 type AnnualInvestmentCategory = { name: string; values: number[] };
-type TotalInvestmentManagerProps = {
+export type TotalInvestmentManagerProps = {
   investmentSubTab: string;
   onChangeInvestmentSubTab: (tab: string) => void;
   projects: LegacyAppRecord[];

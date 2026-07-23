@@ -35,7 +35,6 @@ import { AgreementsScreen } from "./features/agreements/screens/agreements-scree
 import { AssetScreen } from "./features/assets/screens/asset-screen";
 import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
 import { BudgetScreen } from "./features/budget/screens/budget-screen";
-import { TotalInvestmentManager } from "./features/budget/components/total-investment-manager";
 import { DashboardScreen } from "./features/dashboard/screens/dashboard-screen";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
 import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
@@ -6712,15 +6711,9 @@ export default function App() {
           <BudgetScreen
             subTab={budgetSubTab}
             onChangeSubTab={setBudgetSubTab}
-            totalInvestmentContent={
-              <TotalInvestmentManager
-                investmentSubTab={investmentSubTab}
-                onChangeInvestmentSubTab={setInvestmentSubTab}
-                projects={projects}
-                selectedYear={selectedYear}
-                darkMode={darkMode}
-              />
-            }
+            investmentSubTab={investmentSubTab}
+            onChangeInvestmentSubTab={setInvestmentSubTab}
+            investmentProjects={projects}
             darkMode={darkMode}
             selectedYear={selectedYear}
             projects={displayProjects as ProjectData[]}
