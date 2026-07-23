@@ -101,7 +101,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       if (rawStr.includes("%22") || rawStr.includes("%5B")) {
         try {
           rawStr = decodeURIComponent(rawStr);
-        } catch (e) { }
+        } catch { }
       }
       rawStr = rawStr.trim();
       if (rawStr.startsWith('"') || rawStr.startsWith("'") || rawStr.startsWith('[')) {
@@ -115,8 +115,8 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           } else {
             break;
           }
-        } catch (e) {
-          rawStr = rawStr.replace(/^["'\[]+/, "").replace(/["'\]]+$/, "").trim();
+        } catch {
+          rawStr = rawStr.replace(/^["'\x5B]+/, "").replace(/["'\]]+$/, "").trim();
           break;
         }
       } else {
@@ -132,7 +132,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
       try {
         const safeUrl = rawStr.startsWith("http") ? encodeURI(decodeURI(rawStr)) : rawStr;
         setCurrentBlobUrl(safeUrl);
-      } catch (e) {
+      } catch {
         setCurrentBlobUrl(rawStr);
       }
       return;
@@ -159,7 +159,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           if (base64Content.includes("%")) {
             base64Content = decodeURIComponent(base64Content);
           }
-        } catch (e) { }
+        } catch { }
 
         base64Content = base64Content.replace(/[^A-Za-z0-9+/=]/g, "");
 
@@ -910,7 +910,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                     const memName = authMember?.name || "guest";
                     localStorage.setItem(`local_meeting_draft_${targetMId}_${memName}`, JSON.stringify(agendaInputs));
                     alert("💾 안건별 의결 표결 내역이 임시 저장되었습니다.\n(언제든지 작성 중이던 내용으로 다시 불러와 수정 후 최종 제출하실 수 있습니다.)");
-                  } catch (e) {
+                  } catch {
                     alert("임시 저장에 실패하였습니다.");
                   }
                 }}
