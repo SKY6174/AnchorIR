@@ -39,11 +39,16 @@ import { parseCommitteeVotePath } from "./utils/committee-short-link";
 import type { AssetReservation, Html2PdfFactory, LegacyAppRecord, LegacyYearRecord, ProgramVersionRequest, RiseMemberInsert, ScheduleEventInsert, ScheduleMeetingInsert, ScheduleMonthlyInsert } from "./app/app-types";
 import { INITIAL_AGREEMENTS, INITIAL_MEMBERS } from "./app/app-seed-data";
 import { formatAssignee, formatDataToMultiYear, formatToMillionWon, getCalculatedYearFromDate, getErrorMessage, getNormalizedKpi, getRealUnitId, mergeProjectsWithInitial, migrateProgramIds, recalculateCarryOver } from "./app/app-data-utils";
+import { deleteAgreementsByYear, insertAgreements } from "./features/agreements/services/agreement-service";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchPendingVersionRequests, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
 import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
+import { deleteScholarshipsByYear, deleteUnifiedCertificatesByYear, insertScholarships, insertUnifiedCertificates } from "./features/management/services/management-record-service";
 import { deleteRiseMember, fetchRiseMembers, insertRiseMember, upsertRiseMember, upsertRiseMembers } from "./features/management/services/member-service";
 import { fetchMenuVisibility, saveMenuVisibility } from "./features/management/services/portal-config-service";
+import { deleteEnvironmentRecordsByYear, deleteEquipmentRecordsByYear, deleteServiceRecordsByYear, insertEnvironmentRecords, insertEquipmentRecords, insertServiceRecords, probeProcurementAdvancedColumns, upsertEquipmentAssets } from "./features/procurement/services/procurement-data-service";
+import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
+import { deleteMonthlySchedulesByIds, deleteMonthlySchedulesByYear, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, fetchStandaloneMonthlyScheduleIds, insertMonthlySchedules, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertMonthlySchedules, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
 import "./styles/dashboard.css";
 
 
@@ -2548,23 +2553,23 @@ export default function App() {
         (async () => {
           try {
             // 1) 회의록 연도 정합성 보정
-            const { data: dbMeets } = await supabase.from("schedule_meetings").select("id, datetime, year");
+            const { data: dbMeets } = await fetchScheduleMeetingsForYearRepair();
             if (dbMeets && dbMeets.length > 0) {
               for (const m of dbMeets) {
                 const correctYear = getCalculatedYearFromDate(m.datetime ? m.datetime.substring(0, 10) : null, m.year);
                 if (Number(m.year) !== correctYear) {
-                  await supabase.from("schedule_meetings").update({ year: correctYear }).eq("id", m.id);
+                  await updateScheduleMeetingYear(m.id, correctYear);
                   console.log(`[DB보정] 회의록 id ${m.id}의 연도를 ${m.year} -> ${correctYear}로 자가 보정 완료`);
                 }
               }
             }
             // 2) 행사 연도 정합성 보정
-            const { data: dbEvents } = await supabase.from("schedule_events").select("id, datetime, year");
+            const { data: dbEvents } = await fetchScheduleEventsForYearRepair();
             if (dbEvents && dbEvents.length > 0) {
               for (const e of dbEvents) {
                 const correctYear = getCalculatedYearFromDate(e.datetime ? e.datetime.substring(0, 10) : null, e.year);
                 if (Number(e.year) !== correctYear) {
-                  await supabase.from("schedule_events").update({ year: correctYear }).eq("id", e.id);
+                  await updateScheduleEventYear(e.id, correctYear);
                   console.log(`[DB보정] 행사 id ${e.id}의 연도를 ${e.year} -> ${correctYear}로 자가 보정 완료`);
                 }
               }
@@ -2576,11 +2581,7 @@ export default function App() {
 
         // 0-0. 원격 DB 040 고도화 컬럼 실존 여부 조용히 선제 노크 (콘솔 400 에러 원천 차단 목적, Promise.all 병렬화)
         try {
-          const [chkServRes, chkEnvRes, chkEquipRes] = await Promise.all([
-            supabase.from("procurement_services").select("date_b").limit(1),
-            supabase.from("procurement_env").select("date_b").limit(1),
-            supabase.from("procurement_equipment").select("date_b").limit(1)
-          ]);
+          const [chkServRes, chkEnvRes, chkEquipRes] = await probeProcurementAdvancedColumns();
           if (!active) return;
           window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = !!chkServRes.error;
           window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = !!chkEnvRes.error;
@@ -3261,7 +3262,7 @@ export default function App() {
           const dirtyLinkedItems = sMonth.filter(x => x.event_id !== null || x.meeting_id !== null);
           if (dirtyLinkedItems.length > 0) {
             const dirtyIds = dirtyLinkedItems.map(d => d.id);
-            await supabase.from("schedule_monthly").delete().in("id", dirtyIds);
+            await deleteMonthlySchedulesByIds(dirtyIds);
             console.log(`[Self-Healing] Cleaned up ${dirtyIds.length} duplicate/redundant sync records from schedule_monthly.`);
           }
         }
@@ -3523,10 +3524,10 @@ export default function App() {
       try {
         const activeYears = Array.from(new Set([selectedYear, ...agreements.map(a => a.year)]));
         for (const yr of activeYears) {
-          await supabase.from("agreements").delete().eq("year", yr);
+          await deleteAgreementsByYear(yr);
           const filtered = agreements.filter(a => a.year === yr);
           if (filtered.length > 0) {
-            const { error } = await supabase.from("agreements").insert(
+            const { error } = await insertAgreements(
               filtered.map(a => {
                 // 💡 날짜 데이터가 깨져서(예: '610-98-81' 등) DB 400 에러를 유발하는 것을 방지하는 현장 정화 필터
                 let rawDate = String(a.date || "").trim();
@@ -3672,16 +3673,16 @@ export default function App() {
             let singleInsertErr = null;
             if (window.__HAS_NO_ADVANCED_PRESS_COLUMNS__) {
               const { press_content: _press_content, ...rest } = insertPayload;
-              const { error } = await supabase.from("press_releases").insert(rest);
+              const { error } = await insertPressRelease(rest);
               singleInsertErr = error;
             } else {
-              const { error } = await supabase.from("press_releases").insert(insertPayload);
+              const { error } = await insertPressRelease(insertPayload);
               singleInsertErr = error;
               if (singleInsertErr) {
                 console.warn("DB에 press_releases 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", singleInsertErr);
                 window.__HAS_NO_ADVANCED_PRESS_COLUMNS__ = true;
                 const { press_content: _press_content, ...rest } = insertPayload;
-                const { error: fallbackErr } = await supabase.from("press_releases").insert(rest);
+                const { error: fallbackErr } = await insertPressRelease(rest);
                 singleInsertErr = fallbackErr;
               }
             }
@@ -3721,11 +3722,10 @@ export default function App() {
         const startDateStr = `${targetYearNum}-03-01T00:00:00+09:00`;
         const endDateStr = `${targetYearNum + 1}-03-01T00:00:00+09:00`;
 
-        const { data: currentDbItems, error: fetchErr } = await supabase
-          .from("press_releases")
-          .select("id")
-          .gte("broadcast_date", startDateStr)
-          .lt("broadcast_date", endDateStr);
+        const { data: currentDbItems, error: fetchErr } = await fetchPressReleaseIds(
+          startDateStr,
+          endDateStr
+        );
 
         if (fetchErr) {
           console.error("Failed to fetch current press releases to rollback backup:", fetchErr);
@@ -3752,10 +3752,10 @@ export default function App() {
               const { press_content: _press_content, ...rest } = item;
               return rest;
             });
-            const { error } = await supabase.from("press_releases").insert(safePayload);
+            const { error } = await insertPressReleases(safePayload);
             insertErr = error;
           } else {
-            const { error } = await supabase.from("press_releases").insert(insertPayload);
+            const { error } = await insertPressReleases(insertPayload);
             insertErr = error;
             if (insertErr) {
               console.warn("DB에 press_releases 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", insertErr);
@@ -3764,7 +3764,7 @@ export default function App() {
                 const { press_content: _press_content, ...rest } = item;
                 return rest;
               });
-              const { error: fallbackErr } = await supabase.from("press_releases").insert(safePayload);
+              const { error: fallbackErr } = await insertPressReleases(safePayload);
               insertErr = fallbackErr;
             }
           }
@@ -3778,10 +3778,7 @@ export default function App() {
         }
 
         if (oldIds.length > 0) {
-          const { error: deleteErr } = await supabase
-            .from("press_releases")
-            .delete()
-            .in("id", oldIds);
+          const { error: deleteErr } = await deletePressReleasesByIds(oldIds);
 
           if (deleteErr) {
             console.error("Failed to clean up old press releases:", deleteErr);
@@ -3837,10 +3834,10 @@ export default function App() {
       try {
         const activeYears = Array.from(new Set([selectedYear, ...unifiedCertificates.map(c => c.year)]));
         for (const yr of activeYears) {
-          await supabase.from("unified_certificates").delete().eq("year", yr);
+          await deleteUnifiedCertificatesByYear(yr);
           const filtered = unifiedCertificates.filter(c => c.year === yr);
           if (filtered.length > 0) {
-            const { error } = await supabase.from("unified_certificates").insert(
+            const { error } = await insertUnifiedCertificates(
               filtered.map(c => ({
                 year: c.year,
                 manager_dept: c.managerDept,
@@ -3904,7 +3901,7 @@ export default function App() {
       try {
         const activeYears = Array.from(new Set([selectedYear, ...scholarships.map(c => c.year)]));
         for (const yr of activeYears) {
-          await supabase.from("scholarships_view").delete().eq("year", yr);
+          await deleteScholarshipsByYear(yr);
           const filtered = scholarships.filter(c => c.year === yr);
           if (filtered.length > 0) {
             const payload = filtered.map(item => ({
@@ -3924,7 +3921,7 @@ export default function App() {
               account_holder: item.accountHolder,
               approval_date: item.approvalDate
             }));
-            const { error } = await supabase.from("scholarships_view").insert(payload);
+            const { error } = await insertScholarships(payload);
             if (error) throw error;
           }
         }
@@ -3958,7 +3955,7 @@ export default function App() {
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
-        await supabase.from("procurement_env").delete().eq("year", selectedYear);
+        await deleteEnvironmentRecordsByYear(selectedYear);
         if (envData.length > 0) {
           const insertPayload = envData.map(e => ({
             year: selectedYear,
@@ -4015,10 +4012,10 @@ export default function App() {
               } = item;
               return rest;
             });
-            const { error: retryErr } = await supabase.from("procurement_env").insert(safePayload);
+            const { error: retryErr } = await insertEnvironmentRecords(safePayload);
             error = retryErr;
           } else {
-            const { error: firstErr } = await supabase.from("procurement_env").insert(insertPayload);
+            const { error: firstErr } = await insertEnvironmentRecords(insertPayload);
             error = firstErr;
 
             if (error) {
@@ -4037,7 +4034,7 @@ export default function App() {
                 } = item;
                 return rest;
               });
-              const { error: retryErr } = await supabase.from("procurement_env").insert(safePayload);
+              const { error: retryErr } = await insertEnvironmentRecords(safePayload);
               error = retryErr;
             }
           }
@@ -4072,7 +4069,7 @@ export default function App() {
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
-        await supabase.from("procurement_equipment").delete().eq("year", selectedYear);
+        await deleteEquipmentRecordsByYear(selectedYear);
         if (equipData.length > 0) {
           const insertPayload = equipData.map(e => ({
             year: selectedYear,
@@ -4118,9 +4115,7 @@ export default function App() {
             }));
 
           if (assetsPayload.length > 0) {
-            const { error: assetSyncErr } = await supabase
-              .from("equipment_assets")
-              .upsert(assetsPayload, { onConflict: "barcode_id" });
+            const { error: assetSyncErr } = await upsertEquipmentAssets(assetsPayload);
             if (assetSyncErr) {
               console.error("equipment_assets 자산 동기화 실패:", assetSyncErr.message);
             }
@@ -4137,10 +4132,10 @@ export default function App() {
               } = item;
               return rest;
             });
-            const { error: retryErr } = await supabase.from("procurement_equipment").insert(safePayload);
+            const { error: retryErr } = await insertEquipmentRecords(safePayload);
             error = retryErr;
           } else {
-            const { error: firstErr } = await supabase.from("procurement_equipment").insert(insertPayload);
+            const { error: firstErr } = await insertEquipmentRecords(insertPayload);
             error = firstErr;
 
             if (error) {
@@ -4154,7 +4149,7 @@ export default function App() {
                 } = item;
                 return rest;
               });
-              const { error: retryErr } = await supabase.from("procurement_equipment").insert(safePayload);
+              const { error: retryErr } = await insertEquipmentRecords(safePayload);
               error = retryErr;
             }
           }
@@ -4190,7 +4185,7 @@ export default function App() {
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
-        await supabase.from("procurement_services").delete().eq("year", selectedYear);
+        await deleteServiceRecordsByYear(selectedYear);
         if (serviceData.length > 0) {
           const insertPayload = serviceData.map(s => ({
             year: selectedYear,
@@ -4245,10 +4240,10 @@ export default function App() {
               budget_spent: item.budget_spent,
               op_result: item.op_result
             }));
-            const { error: retryErr } = await supabase.from("procurement_services").insert(safePayload);
+            const { error: retryErr } = await insertServiceRecords(safePayload);
             error = retryErr;
           } else {
-            const { error: firstErr } = await supabase.from("procurement_services").insert(insertPayload);
+            const { error: firstErr } = await insertServiceRecords(insertPayload);
             error = firstErr;
 
             if (error) {
@@ -4262,7 +4257,7 @@ export default function App() {
                 budget_spent: item.budget_spent,
                 op_result: item.op_result
               }));
-              const { error: retryErr } = await supabase.from("procurement_services").insert(safePayload);
+              const { error: retryErr } = await insertServiceRecords(safePayload);
               error = retryErr;
             }
           }
@@ -4309,7 +4304,7 @@ export default function App() {
 
         // 1. 모든 일정이 삭제된 상태면 원격 DB 해당 연도 전체 삭제
         if (schedulesToSync.length === 0) {
-          const { error } = await supabase.from("schedule_monthly").delete().eq("year", targetYear);
+          const { error } = await deleteMonthlySchedulesByYear(targetYear);
           if (error) throw error;
           fetchedMonthlySchedulesRef.current = JSON.stringify([]);
           setSyncStatus("synced");
@@ -4353,18 +4348,12 @@ export default function App() {
 
         // [A] 기존 수정 일정 (upsert)
         if (updateItems.length > 0) {
-          const { data: upData, error: upError } = await supabase
-            .from("schedule_monthly")
-            .upsert(updateItems, { onConflict: "id" })
-            .select();
+          const { data: upData, error: upError } = await upsertMonthlySchedules(updateItems);
 
           if (upError) {
             if (upError.code === "42703") {
               const fallbackItems = updateItems.map(({ event_id: _event_id, meeting_id: _meeting_id, ...rest }) => rest);
-              const { data: fbData, error: fbError } = await supabase
-                .from("schedule_monthly")
-                .upsert(fallbackItems, { onConflict: "id" })
-                .select();
+              const { data: fbData, error: fbError } = await upsertMonthlySchedules(fallbackItems);
               if (fbError) throw fbError;
               if (fbData) upsertedData.push(...fbData);
             } else {
@@ -4377,18 +4366,12 @@ export default function App() {
 
         // [B] 신규 추가 일정 (insert)
         if (newItems.length > 0) {
-          const { data: insData, error: insError } = await supabase
-            .from("schedule_monthly")
-            .insert(newItems)
-            .select();
+          const { data: insData, error: insError } = await insertMonthlySchedules(newItems);
 
           if (insError) {
             if (insError.code === "42703") {
               const fallbackItems = newItems.map(({ event_id: _event_id, meeting_id: _meeting_id, ...rest }) => rest);
-              const { data: fbData, error: fbError } = await supabase
-                .from("schedule_monthly")
-                .insert(fallbackItems)
-                .select();
+              const { data: fbData, error: fbError } = await insertMonthlySchedules(fallbackItems);
               if (fbError) throw fbError;
               if (fbData) upsertedData.push(...fbData);
             } else {
@@ -4442,12 +4425,7 @@ export default function App() {
 
         // 5. 사용자가 삭제한 아이템들 DB 반영 (Diff Delete)
         // 💡 중요: 주요 행사(event_id) 또는 회의록(meeting_id)에 연동된 자동 입력 일정은 월간일정 훅이 삭제하지 않고 각 소스 탭의 라이프사이클에 맡겨 격리함.
-        const { data: currentDbItems } = await supabase
-          .from("schedule_monthly")
-          .select("id")
-          .eq("year", targetYear)
-          .is("event_id", null)
-          .is("meeting_id", null);
+        const { data: currentDbItems } = await fetchStandaloneMonthlyScheduleIds(targetYear);
 
         if (currentDbItems) {
           const dbIds = currentDbItems.map(x => x.id);
@@ -4458,10 +4436,7 @@ export default function App() {
 
           const idsToDelete = dbIds.filter(id => !localRealIds.includes(id));
           if (idsToDelete.length > 0) {
-            const { error: delError } = await supabase
-              .from("schedule_monthly")
-              .delete()
-              .in("id", idsToDelete);
+            const { error: delError } = await deleteMonthlySchedulesByIds(idsToDelete);
             if (delError) throw delError;
           }
         }
@@ -4642,7 +4617,7 @@ export default function App() {
 
         // 1. 모든 일정이 삭제된 상태면 원격 DB 해당 연도 전체 삭제
         if (schedulesToSync.length === 0) {
-          const { error } = await supabase.from("schedule_events").delete().eq("year", targetYear);
+          const { error } = await deleteScheduleEventsByYear(targetYear);
           if (error) throw error;
           fetchedEventSchedulesRef.current = JSON.stringify([]);
           setSyncStatus("synced");
@@ -4681,20 +4656,14 @@ export default function App() {
 
         // [A] 기존 수정 일정 (upsert)
         if (updateItems.length > 0) {
-          const { data: upData, error: upError } = await supabase
-            .from("schedule_events")
-            .upsert(updateItems, { onConflict: "id" })
-            .select();
+          const { data: upData, error: upError } = await upsertScheduleEvents(updateItems);
           if (upError) throw upError;
           if (upData) upsertedData.push(...upData);
         }
 
         // [B] 신규 추가 일정 (insert)
         if (newItems.length > 0) {
-          const { data: insData, error: insError } = await supabase
-            .from("schedule_events")
-            .insert(newItems)
-            .select();
+          const { data: insData, error: insError } = await insertScheduleEvents(newItems);
           if (insError) throw insError;
           if (insData) upsertedData.push(...insData);
         }
@@ -4739,10 +4708,7 @@ export default function App() {
         }
 
         // 5. 사용자가 삭제한 아이템들 DB 반영 (Diff Delete)
-        const { data: currentDbItems } = await supabase
-          .from("schedule_events")
-          .select("id")
-          .eq("year", targetYear);
+        const { data: currentDbItems } = await fetchScheduleEventIds(targetYear);
 
         if (currentDbItems) {
           const dbIds = currentDbItems.map(x => x.id);
@@ -4752,10 +4718,7 @@ export default function App() {
 
           const idsToDelete = dbIds.filter(id => !localRealIds.includes(id));
           if (idsToDelete.length > 0) {
-            const { error: delError } = await supabase
-              .from("schedule_events")
-              .delete()
-              .in("id", idsToDelete);
+            const { error: delError } = await deleteScheduleEventsByIds(idsToDelete);
             if (delError) throw delError;
           }
         }
@@ -4813,7 +4776,7 @@ export default function App() {
 
         // 1. 모든 일정이 삭제된 상태면 원격 DB 해당 연도 전체 삭제
         if (schedulesToSync.length === 0) {
-          const { error } = await supabase.from("schedule_meetings").delete().eq("year", targetYear);
+          const { error } = await deleteScheduleMeetingsByYear(targetYear);
           if (error) throw error;
           fetchedMeetingSchedulesRef.current = JSON.stringify([]);
           setSyncStatus("synced");
@@ -4854,20 +4817,14 @@ export default function App() {
 
         // [A] 기존 수정 일정 (upsert)
         if (updateItems.length > 0) {
-          const { data: upData, error: upError } = await supabase
-            .from("schedule_meetings")
-            .upsert(updateItems, { onConflict: "id" })
-            .select();
+          const { data: upData, error: upError } = await upsertScheduleMeetings(updateItems);
           if (upError) throw upError;
           if (upData) upsertedData.push(...upData);
         }
 
         // [B] 신규 추가 일정 (insert)
         if (newItems.length > 0) {
-          const { data: insData, error: insError } = await supabase
-            .from("schedule_meetings")
-            .insert(newItems)
-            .select();
+          const { data: insData, error: insError } = await insertScheduleMeetings(newItems);
           if (insError) throw insError;
           if (insData) upsertedData.push(...insData);
         }
@@ -4908,10 +4865,7 @@ export default function App() {
         }
 
         // 5. 사용자가 삭제한 아이템들 DB 반영 (Diff Delete)
-        const { data: currentDbItems } = await supabase
-          .from("schedule_meetings")
-          .select("id")
-          .eq("year", targetYear);
+        const { data: currentDbItems } = await fetchScheduleMeetingIds(targetYear);
 
         if (currentDbItems) {
           const dbIds = currentDbItems.map(x => x.id);
@@ -4921,10 +4875,7 @@ export default function App() {
 
           const idsToDelete = dbIds.filter(id => !localRealIds.includes(id));
           if (idsToDelete.length > 0) {
-            const { error: delError } = await supabase
-              .from("schedule_meetings")
-              .delete()
-              .in("id", idsToDelete);
+            const { error: delError } = await deleteScheduleMeetingsByIds(idsToDelete);
             if (delError) throw delError;
           }
         }
