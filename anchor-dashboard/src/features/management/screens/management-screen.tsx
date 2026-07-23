@@ -26,8 +26,6 @@ interface ManagementScreenProps {
   renderRoleBadge: (role: string, isRetired: boolean) => React.ReactNode;
   setEditingMember: React.Dispatch<React.SetStateAction<LegacyAppRecord | null>>;
   setIsMemberModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  assignFilterUnitId: string;
-  setAssignFilterUnitId: React.Dispatch<React.SetStateAction<string>>;
   displayProjects: LegacyAppRecord[];
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   jointPrograms: Record<string, boolean>;
@@ -84,8 +82,6 @@ export const ManagementScreen = ({
   renderRoleBadge,
   setEditingMember,
   setIsMemberModalOpen,
-  assignFilterUnitId,
-  setAssignFilterUnitId,
   displayProjects,
   fileInputRef,
   jointPrograms,
@@ -127,6 +123,7 @@ export const ManagementScreen = ({
   renderBudgetCategoriesDiff,
   renderTimelineDiff
 }: ManagementScreenProps) => {
+  const [assignFilterUnitId, setAssignFilterUnitId] = React.useState("all");
   const {
     getSortedMembers,
     memberFilter,

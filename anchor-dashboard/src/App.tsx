@@ -771,8 +771,6 @@ export default function App() {
     () => selectedYear
   );
 
-  const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
-
   // 프로그램 CRUD 상태
   const [showProgramEditor, setShowProgramEditor] = useState(false);
   const [editingProgram, setEditingProgram] = useState<LegacyAppRecord | null>(null);
@@ -4000,8 +3998,6 @@ export default function App() {
           renderRoleBadge={renderRoleBadge}
           setEditingMember={setEditingMember}
           setIsMemberModalOpen={setIsMemberModalOpen}
-          assignFilterUnitId={assignFilterUnitId}
-          setAssignFilterUnitId={setAssignFilterUnitId}
           displayProjects={displayProjects}
           fileInputRef={fileInputRef}
           jointPrograms={jointPrograms}
