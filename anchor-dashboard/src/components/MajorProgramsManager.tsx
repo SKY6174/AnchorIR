@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
-  Award, BookOpen, Layers, Settings, Compass, Share2, ShieldAlert,
-  Calendar, Activity, CheckCircle, Search, User, Users, Plus, Trash2, ArrowRight,
-  FileSpreadsheet, Download, Check, Pencil
+  BookOpen, Settings, Compass,
+  Calendar, Activity, CheckCircle, Search, Plus, Trash2, ArrowRight,
+  FileSpreadsheet, Download, Pencil
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient";

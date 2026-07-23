@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { ChangeEvent, FormEvent, MouseEvent as ReactMouseEvent } from "react";
-import { Plus, Trash2, Info, ListFilter, ArrowUpDown, Edit, X } from "lucide-react";
+import { Plus, Trash2, ListFilter, ArrowUpDown, X } from "lucide-react";
 import { supabase } from "../supabaseClient"; // Supabase 클라이언트 연동 (요건 3 반영)
 import * as pdfjsLib from "pdfjs-dist";
 

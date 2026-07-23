@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { Plus, Trash2, Edit, FileText, Search, Download, Upload, X, Shield, Globe, Award, Database, Filter, ArrowUpDown } from "lucide-react";
+import { Plus, Trash2, Edit, Search, Download, Upload, X, Globe, ArrowUpDown } from "lucide-react";
 import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient";
 import type { TablesInsert } from "../types/supabase";

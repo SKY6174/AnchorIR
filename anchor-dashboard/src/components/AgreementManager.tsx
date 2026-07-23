@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { createPortal } from "react-dom";
-import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download, Award as AwardIcon, FileCheck } from "lucide-react";
+import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download, FileCheck } from "lucide-react";
 import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient"; // Supabase 클라이언트 연동 추가
 

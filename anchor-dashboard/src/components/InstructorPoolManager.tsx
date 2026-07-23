@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
-import { Plus, User, Award, Trash2, ShieldAlert, X, Upload, Download, Edit } from "lucide-react";
+import { Plus, User, Trash2, ShieldAlert, X, Upload, Download, Edit } from "lucide-react";
 import * as XLSX from "xlsx";
 import { academicYears } from "./OrgChartManager";
 import type { Tables } from "../types/supabase";

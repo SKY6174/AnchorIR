@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Info, Award, Layout, GitFork, ArrowRight, List } from "lucide-react";
+import { Info, Layout, GitFork, ArrowRight } from "lucide-react";
 import STRATEGY_TASK_MAPPING_Y1 from "../data/extracted_1st_year.json";
 import {
   initialProjectsData,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Calendar, User, Wallet, ClipboardList } from "lucide-react";
+import { User, ClipboardList } from "lucide-react";
 import type { ProgramData, ProjectData } from "../data/mockData";
 
 // 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)

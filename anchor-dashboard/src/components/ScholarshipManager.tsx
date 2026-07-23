@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { Plus, Edit, Trash, Upload, X, Download, DollarSign } from "lucide-react";
 import * as XLSX from "xlsx";
 import { getAllValidDepartments } from "./OrgChartManager";

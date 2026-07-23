@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { supabase } from "../supabaseClient";
-import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp, Upload, Download, X } from "lucide-react";
+import { Plus, Trash2, Edit2, Calendar, Search, Check, Clock, TrendingUp, Upload, Download, X } from "lucide-react";
 import * as XLSX from "xlsx";
 
 type LegacyAssetRecord = Record<string, any>;

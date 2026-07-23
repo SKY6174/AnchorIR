@@ -1,5 +1,4 @@
 import React from "react";
-import { userRoles } from "../data/mockData";
 import {
   LayoutDashboard,
   Users,
@@ -8,7 +7,6 @@ import {
   Award,
   Landmark,
   ClipboardList,
-  BookOpen,
   Briefcase,
   Calendar,
   Package

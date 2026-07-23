@@ -9,7 +9,6 @@ import {
   Edit, Trash2, X, Download, Upload
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as pdfjsLib from "pdfjs-dist";
 import * as XLSX from "xlsx";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import * as XLSX from "xlsx";
@@ -6,8 +6,8 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine 
 } from "recharts";
 import { 
-  FileSpreadsheet, QrCode, ClipboardCheck, Plus, Trash2, CheckCircle2, 
-  Send, BarChart3, HelpCircle, Calendar, Users, Briefcase, FileText, Check, Download, RefreshCw,
+  FileSpreadsheet, QrCode, ClipboardCheck, Plus, Trash2,
+  Send, BarChart3, FileText, Check, Download, RefreshCw,
   Compass, Sparkles
 } from "lucide-react";
 import { supabase } from "../supabaseClient"; // Supabase 클라이언트 의존성 주입

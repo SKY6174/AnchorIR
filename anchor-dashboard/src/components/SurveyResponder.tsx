@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
-import { ClipboardCheck, Check, Send, AlertCircle, Compass } from "lucide-react";
+import { Check, Send, AlertCircle, Compass } from "lucide-react";
 
 export interface SurveyResponderProps {
   darkMode?: boolean;

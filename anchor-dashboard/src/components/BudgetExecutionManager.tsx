@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Upload, AlertTriangle, CheckCircle2, TrendingUp, DollarSign, Calendar, FileText, Download, Trash2, ShieldCheck } from "lucide-react";
+import { AlertTriangle, CheckCircle2, TrendingUp, DollarSign, Calendar, Download, Trash2, ShieldCheck } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from "recharts";
 import * as XLSX from "xlsx";
 import type { ProjectData } from "../data/mockData";

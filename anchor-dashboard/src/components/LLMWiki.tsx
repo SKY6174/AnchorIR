@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { BookOpen, Send, Sparkles, AlertCircle, Bookmark, RefreshCw, MessageSquare } from "lucide-react";
+import { BookOpen, Send, Sparkles, Bookmark, RefreshCw } from "lucide-react";
 import {
   simulateRAGQuery,
   WIKI_CHUNKS,

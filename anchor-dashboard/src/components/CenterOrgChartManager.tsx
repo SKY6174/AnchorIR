@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Network, Users, ChevronRight, Info, ShieldAlert, Award, ArrowRightLeft } from "lucide-react";
+import { Network, Users, Info } from "lucide-react";
 
 export interface CenterOrgChartManagerProps {
   darkMode?: boolean;

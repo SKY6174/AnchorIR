@@ -19,16 +19,13 @@ import {
   FileText,
   Vote,
   Award,
-  Clock,
   Cpu,
   Trash2,
   Edit,
   Edit3,
   Lock,
-  ChevronRight,
   UserCheck,
   Copy,
-  Link,
   RefreshCw
 } from "lucide-react";
 

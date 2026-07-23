@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from "recharts";
-import { Wallet, Info, FileEdit, CheckCircle } from "lucide-react";
+import { Wallet, Info, CheckCircle } from "lucide-react";
 import type { ProjectData } from "../data/mockData";
 
 type BudgetField = "budget_main" | "budget_carry";

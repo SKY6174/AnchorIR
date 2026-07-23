@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { createPortal } from "react-dom";
-import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download, FileCheck, Award } from "lucide-react";
+import { Plus, Trash2, Edit, FileText, Upload, X, AlertTriangle, Download } from "lucide-react";
 import * as XLSX from "xlsx";
-import { supabase } from "../supabaseClient";
 
 const formatDateString = (dateStr: unknown): string => {
   if (!dateStr) return "";

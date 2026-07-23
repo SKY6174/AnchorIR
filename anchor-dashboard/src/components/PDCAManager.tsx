@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { FormEvent } from "react";
-import { Check, ClipboardList, PenTool, Layers, LayoutList, Info, HelpCircle, FileSpreadsheet, FileText, Download } from "lucide-react";
+import { Check, ClipboardList, PenTool, Layers, LayoutList, FileSpreadsheet, FileText, Download } from "lucide-react";
 import * as XLSX from "xlsx";
 
 type LegacyPdcaRecord = Record<string, any>;
