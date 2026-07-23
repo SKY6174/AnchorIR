@@ -35,7 +35,7 @@ import type { ScheduleCommitteeMember } from "./components/ScheduleManager";
 import { Sun, Moon, LogOut, HelpCircle, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen, FileSpreadsheet } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import { parseCommitteeVotePath } from "./utils/committee-short-link";
-import type { AssetReservation, Html2PdfFactory, LegacyAppRecord, LegacyYearRecord, ProgramVersionRequest, RiseMemberInsert, ScheduleEventInsert, ScheduleMeetingInsert } from "./app/app-types";
+import type { AssetReservation, Html2PdfFactory, LegacyAppRecord, LegacyYearRecord, ProgramVersionRequest, RiseMemberInsert, ScheduleMeetingInsert } from "./app/app-types";
 import { INITIAL_AGREEMENTS, INITIAL_MEMBERS } from "./app/app-seed-data";
 import { formatAssignee, formatDataToMultiYear, formatToMillionWon, getCalculatedYearFromDate, getCleanProjectsForStorage, getErrorMessage, getNormalizedKpi, getRealUnitId, mergeProjectsWithInitial, migrateProgramIds, recalculateCarryOver } from "./app/app-data-utils";
 import { useDashboardScroll } from "./app/hooks/use-dashboard-scroll";
@@ -60,8 +60,9 @@ import { useProjectAutosave } from "./features/projects/hooks/use-project-autosa
 import { useKpiSelection, useVisibleKpiSubTabGuard } from "./features/projects/hooks/use-kpi-selection-lifecycle";
 import { useProjectLocalBackup } from "./features/projects/hooks/use-project-local-backup";
 import { useJointProgramDetection, useProjectFetchReset, useProjectNormalization } from "./features/projects/hooks/use-project-state-lifecycle";
+import { useEventScheduleAutosave } from "./features/schedule/hooks/use-event-schedule-autosave";
 import { useMonthlyScheduleAutosave } from "./features/schedule/hooks/use-monthly-schedule-autosave";
-import { deleteMonthlySchedulesByIds, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
+import { deleteMonthlySchedulesByIds, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
 import { useDashboardCache } from "./shared/hooks/use-dashboard-cache";
 import { useDashboardCacheMaintenance } from "./shared/hooks/use-dashboard-cache-maintenance";
 import { useActiveTabPersistence, useLocalStorageJson, useLocalStorageValue, useOptionalLocalStorageJson, useOptionalLocalStorageValue } from "./shared/hooks/use-local-storage-persistence";
@@ -3246,12 +3247,6 @@ export default function App() {
     setSyncStatus
   });
 
-  // 최신 eventSchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
-  const latestEventSchedulesRef = useRef<LegacyAppRecord[] | null>(null);
-  useEffect(() => {
-    latestEventSchedulesRef.current = eventSchedules;
-  }, [eventSchedules]);
-
   // 주요 행사와 월간 일정을 단방향으로 강제 Reactive 동기화하는 함수
   const syncEventsToMonthly = (latestEvents: LegacyAppRecord[]) => {
     if (!latestEvents) return;
@@ -3377,157 +3372,18 @@ export default function App() {
   };
 
   // 8) Schedule Events 자동 저장 디바운스 훅 (원자적 Upsert + Diff Delete 적용)
-  useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
-    if (!currentUser || currentRole?.id === "GUEST") return;
-    if (!eventSchedules) return;
-
-    // 💡 안전 가드 0: 원격 DB에서 가져온 최초 데이터 또는 직전 동기화 데이터와 로컬 상태가 100% 동일하다면 불필요한 쿼리 전송 및 유실 사고 방지를 위해 즉시 리턴함.
-    if (fetchedEventSchedulesRef.current === JSON.stringify(eventSchedules)) return;
-
-    // 💡 안전 가드 1: 필수값(title, datetime)이 비어있다면 동기화 스킵하여 증발 방지
-    const hasInvalidItem = eventSchedules.some(s => !s.title?.trim() || !s.datetime);
-    if (hasInvalidItem) {
-      console.warn("Event schedule sync aborted: detected invalid event item with missing title or datetime.", eventSchedules);
-      return;
-    }
-
-    safeSetLocalStorage(`anchor_cache_event_y${selectedYear}`, JSON.stringify(eventSchedules), selectedYear);
-    setSyncStatus("syncing");
-
-    const performSync = async (schedulesToSync: LegacyAppRecord[], targetYear: number) => {
-      try {
-        if (!schedulesToSync) return;
-
-        // 1. 모든 일정이 삭제된 상태면 원격 DB 해당 연도 전체 삭제
-        if (schedulesToSync.length === 0) {
-          const { error } = await deleteScheduleEventsByYear(targetYear);
-          if (error) throw error;
-          fetchedEventSchedulesRef.current = JSON.stringify([]);
-          setSyncStatus("synced");
-          syncEventsToMonthly([]);
-          return;
-        }
-
-        // 2. 신규 생성(id가 없음)과 기존 수정(id가 존재)을 분리하여 Not-Null primary key Violate 방지
-        const newItems: ScheduleEventInsert[] = [];
-        const updateItems: ScheduleEventInsert[] = [];
-
-        schedulesToSync.forEach((s: LegacyAppRecord) => {
-          const item: ScheduleEventInsert = {
-            year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, targetYear),
-            month: s.month,
-            title: s.title,
-            department: s.department || "",
-            location: s.location || "",
-            attendees_internal: s.attendeesInternal || "",
-            attendees_external: s.attendeesExternal || "",
-            program: s.program || "",
-            purpose: s.purpose || "",
-            result: s.result || "",
-            datetime: s.datetime
-          };
-          if (s.id && typeof s.id === "number" && s.id < 2000000000) {
-            item.id = s.id;
-            updateItems.push(item);
-          } else {
-            newItems.push(item);
-          }
-        });
-
-        // 3. 분할 전송 수행 및 새로 발행된 sequence id 결과 조회
-        const upsertedData: LegacyAppRecord[] = [];
-
-        // [A] 기존 수정 일정 (upsert)
-        if (updateItems.length > 0) {
-          const { data: upData, error: upError } = await upsertScheduleEvents(updateItems);
-          if (upError) throw upError;
-          if (upData) upsertedData.push(...upData);
-        }
-
-        // [B] 신규 추가 일정 (insert)
-        if (newItems.length > 0) {
-          const { data: insData, error: insError } = await insertScheduleEvents(newItems);
-          if (insError) throw insError;
-          if (insData) upsertedData.push(...insData);
-        }
-
-        // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지 (날짜 substring 10자리 비교 및 camelCase 규격 정형화)
-        let finalLocalEvents = schedulesToSync;
-        if (upsertedData && upsertedData.length > 0) {
-          const normalizedUpserted: LegacyAppRecord[] = upsertedData.map((x: LegacyAppRecord) => ({
-            id: Number(x.id),
-            year: Number(x.year),
-            month: Number(x.month),
-            title: x.title,
-            department: x.department || "",
-            location: x.location || "",
-            attendeesInternal: x.attendees_internal || "",
-            attendeesExternal: x.attendees_external || "",
-            program: x.program || "",
-            purpose: x.purpose || "",
-            result: x.result || "",
-            datetime: x.datetime
-          }));
-
-          finalLocalEvents = schedulesToSync.map(s => {
-            if (s.id && typeof s.id === "number" && s.id < 2000000000) {
-              return s;
-            }
-            const dbMatch = normalizedUpserted.find((x: LegacyAppRecord) => {
-              const matchTitle = x.title === s.title;
-              const xDate = x.datetime ? x.datetime.substring(0, 10) : "";
-              const sDate = s.datetime ? s.datetime.substring(0, 10) : "";
-              return matchTitle && xDate === sDate;
-            });
-            if (dbMatch) {
-              return dbMatch;
-            }
-            return s;
-          });
-
-          fetchedEventSchedulesRef.current = JSON.stringify(finalLocalEvents);
-          setEventSchedules(finalLocalEvents);
-          safeSetLocalStorage(`anchor_cache_event_y${targetYear}`, JSON.stringify(finalLocalEvents), targetYear);
-        }
-
-        // 5. 사용자가 삭제한 아이템들 DB 반영 (Diff Delete)
-        const { data: currentDbItems } = await fetchScheduleEventIds(targetYear);
-
-        if (currentDbItems) {
-          const dbIds = currentDbItems.map(x => x.id);
-          const localRealIds = finalLocalEvents
-            .map(s => s.id)
-            .filter(id => typeof id === "number" && id < 2000000000);
-
-          const idsToDelete = dbIds.filter(id => !localRealIds.includes(id));
-          if (idsToDelete.length > 0) {
-            const { error: delError } = await deleteScheduleEventsByIds(idsToDelete);
-            if (delError) throw delError;
-          }
-        }
-
-        fetchedEventSchedulesRef.current = JSON.stringify(finalLocalEvents);
-        setSyncStatus("synced");
-        syncEventsToMonthly(finalLocalEvents);
-      } catch (e) {
-        console.error("Failed to sync event schedules:", e);
-        setSyncStatus("error");
-      }
-    };
-
-    const timer = setTimeout(() => {
-      performSync(eventSchedules, selectedYear);
-    }, 300);
-
-    return () => {
-      clearTimeout(timer);
-      if (latestEventSchedulesRef.current) {
-        performSync(latestEventSchedulesRef.current, selectedYear);
-      }
-    };
-  // oxlint-disable-next-line react/exhaustive-deps -- event data, year, and load guards own synchronization; auth restoration must not flush or delete events.
-  }, [eventSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
+  useEventScheduleAutosave({
+    eventSchedules,
+    setEventSchedules,
+    selectedYear,
+    isDbLoaded,
+    isFetchCompleted,
+    canWrite: Boolean(currentUser && currentRole?.id !== "GUEST"),
+    fetchedEventSchedulesRef,
+    safeSetLocalStorage,
+    setSyncStatus,
+    syncEventsToMonthly
+  });
 
   // 최신 meetingSchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
   const latestMeetingSchedulesRef = useRef<LegacyAppRecord[] | null>(null);
