@@ -48,6 +48,7 @@ import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/managem
 import { deleteScholarshipsByYear, deleteUnifiedCertificatesByYear, insertScholarships, insertUnifiedCertificates } from "./features/management/services/management-record-service";
 import { deleteRiseMember, fetchRiseMembers, insertRiseMember, upsertRiseMember, upsertRiseMembers } from "./features/management/services/member-service";
 import { saveMenuVisibility } from "./features/management/services/portal-config-service";
+import { useApprovalDataRefresh, useRegisteredUsersRefresh } from "./features/management/hooks/use-management-refresh";
 import { usePortalMenuVisibility } from "./features/management/hooks/use-portal-menu-visibility";
 import { deleteEnvironmentRecordsByYear, deleteEquipmentRecordsByYear, deleteServiceRecordsByYear, insertEnvironmentRecords, insertEquipmentRecords, insertServiceRecords, probeProcurementAdvancedColumns, upsertEquipmentAssets } from "./features/procurement/services/procurement-data-service";
 import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
@@ -1414,13 +1415,13 @@ export default function App() {
     }
   };
 
-  // 관리자 탭 활성화 시 또는 주소록(members)이 변경되었을 때 대기 목록 로드 및 갱신
-  useEffect(() => {
-    if (activeTab === "management" && currentUser && currentUser.role?.rank <= 2) {
-      fetchRegisteredUsers();
-    }
-  // oxlint-disable-next-line react/exhaustive-deps -- tab, user, and member changes own this refresh; the render-local fetcher must not trigger repeated account queries.
-  }, [activeTab, currentUser, members]);
+  // 관리자 탭 활성화 시 또는 주소록 변경 시 사용자 계정 목록 갱신
+  useRegisteredUsersRefresh(
+    activeTab,
+    currentUser,
+    members,
+    fetchRegisteredUsers
+  );
 
   // 성과지표 상세 조회용 상태 및 다년도 성과관리 연도 선택 상태
   const [selectedKpi, setSelectedKpi] = useState<LegacyAppRecord | null>(() => {
@@ -5128,12 +5129,12 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    if (activeTab === "management" && mgmtSubTab === "approvals") {
-      fetchVersionRequests();
-      fetchReservations();
-    }
-  }, [activeTab, mgmtSubTab]);
+  useApprovalDataRefresh(
+    activeTab,
+    mgmtSubTab,
+    fetchVersionRequests,
+    fetchReservations
+  );
 
   // 💡 [교육용 한글 주석] 통합 승인처리 화면에서 시설 사용 승인 요청을 확정하는 함수입니다.
   const handleApproveReservation = async (res: AssetReservation) => {
