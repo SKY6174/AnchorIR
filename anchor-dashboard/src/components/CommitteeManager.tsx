@@ -7,7 +7,6 @@ import type {
 } from "react";
 import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
-import ScheduleManager from "./ScheduleManager";
 import {
   createCommitteeReportSnapshot,
   deleteCommitteeDocuments,
@@ -18,6 +17,7 @@ import { CommitteeVoteApiError } from "../types/committee-vote";
 import { buildValidatedVoteItems, createIdempotencyKey } from "../utils/committee-vote-validation";
 import { buildCommitteeVotePath } from "../utils/committee-short-link";
 import { buildCommitteeHumanCode } from "../utils/committee-code";
+import { CommitteeRosterTab } from "../features/committee/components/committee-roster-tab";
 import { CommitteeSubtabNavigation } from "../features/committee/components/committee-subtab-navigation";
 import {
   Users,
@@ -3989,26 +3989,22 @@ ${selectedMeetingAgendas.map((a, idx) => {
       {/* 탭 C: 위원회 명단 관리 (예전 사업단 관리의 위원회 관리) */}
       {/* ======================================================== */}
       {activeSubTab === "committees" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "0.5rem" }}>
-          <ScheduleManager
-            key={`schedule-committee-integrated-${darkMode}-${selectedYear}`}
-            currentUser={currentUser}
-            currentRole={currentRole}
-            selectedYear={selectedYear}
-            darkMode={darkMode}
-            subTab="committees"
-            onChangeSubTab={onChangeSubTab}
-            monthlySchedules={monthlySchedules}
-            setMonthlySchedules={setMonthlySchedules}
-            eventSchedules={eventSchedules}
-            setEventSchedules={setEventSchedules}
-            meetingSchedules={meetingSchedules}
-            setMeetingSchedules={setMeetingSchedules}
-            pressReleases={pressReleases}
-            setPressReleases={setPressReleases}
-            members={allMembers}
-          />
-        </div>
+        <CommitteeRosterTab
+          allMembers={allMembers}
+          currentRole={currentRole}
+          currentUser={currentUser}
+          darkMode={darkMode}
+          eventSchedules={eventSchedules}
+          meetingSchedules={meetingSchedules}
+          monthlySchedules={monthlySchedules}
+          onChangeSubTab={onChangeSubTab}
+          pressReleases={pressReleases}
+          selectedYear={selectedYear}
+          setEventSchedules={setEventSchedules}
+          setMeetingSchedules={setMeetingSchedules}
+          setMonthlySchedules={setMonthlySchedules}
+          setPressReleases={setPressReleases}
+        />
       )}
 
       {/* ======================================================== */}
