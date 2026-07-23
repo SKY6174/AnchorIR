@@ -467,7 +467,7 @@ export default function CommitteeManager({
                 }
               }
             }
-          } catch (e) {
+          } catch {
             localStorage.removeItem(key);
             console.log(`[Self-Healing] Removed corrupted localStorage key: ${key}`);
           }
@@ -831,7 +831,7 @@ export default function CommitteeManager({
                 if (Array.isArray(parsed)) tempArr.push(...parsed);
                 else if (parsed && typeof parsed === "object") tempArr.push(parsed);
               }
-            } catch (e) { }
+            } catch { }
           });
 
           if (tempArr.length > 0) {
@@ -841,7 +841,7 @@ export default function CommitteeManager({
             loadedMeetings = Array.from(map.values());
           }
         }
-      } catch (err) {
+      } catch {
         loadedMeetings = [];
       }
     }
@@ -1504,7 +1504,7 @@ export default function CommitteeManager({
     if (meeting.attachment_data && String(meeting.attachment_data).startsWith("[")) {
       try {
         parsedDatasArray = JSON.parse(String(meeting.attachment_data));
-      } catch (e) { }
+      } catch { }
     }
 
     setMeetingForm({
@@ -1675,7 +1675,7 @@ export default function CommitteeManager({
             }
           });
           localStorage.setItem("global_attachment_map", JSON.stringify(globalMap));
-        } catch (e) { }
+        } catch { }
 
         const { error: credentialError } = await committeeDb.rpc("issue_committee_meeting_credentials", {
           p_meeting_id: String(editingMeetingId),
@@ -1714,7 +1714,7 @@ export default function CommitteeManager({
               }
             });
             localStorage.setItem("global_attachment_map", JSON.stringify(globalMap));
-          } catch (e) { }
+          } catch { }
         }
 
         const { error: credentialError } = await committeeDb.rpc("issue_committee_meeting_credentials", {
@@ -1835,7 +1835,7 @@ export default function CommitteeManager({
       await supabase.from("meeting_agendas").delete().eq("meeting_id", normalizedMeetingId);
       await supabase.from("meeting_responses").delete().eq("meeting_id", normalizedMeetingId);
       await supabase.from("meeting_results").delete().eq("meeting_id", normalizedMeetingId);
-    } catch (e) { }
+    } catch { }
 
     // 2. [메인 회의 테이블 삭제]
     try {
@@ -1869,7 +1869,7 @@ export default function CommitteeManager({
       localStorage.removeItem(`local_meeting_agendas_${meetingId}`);
       localStorage.removeItem(`local_meeting_agenda_votes_${meetingId}`);
       localStorage.removeItem(`local_meeting_responses_${meetingId}`);
-    } catch (e) { }
+    } catch { }
 
     alert("회의가 정상적으로 취소(삭제)되었습니다.");
     setSelectedMeeting(null);
@@ -2521,7 +2521,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
               document.head.appendChild(script);
             });
             if (pdfWindow.html2pdf) return pdfWindow.html2pdf;
-          } catch (e) {
+          } catch {
             console.warn(`CDN URL 로드 실패 (${url}), 다음 미러로 전환합니다.`);
           }
         }
@@ -3027,7 +3027,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                                 if (parsedArr[idx] && parsedArr[idx].length > 0) {
                                   agData = parsedArr[idx];
                                 }
-                              } catch (e) { }
+                              } catch { }
                             } else if (idx === 0) {
                               agData = selectedMeeting.attachment_data;
                             }
@@ -3045,7 +3045,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                                   if (!agData && found.attachment_data) agData = found.attachment_data;
                                 }
                               }
-                            } catch (e) { }
+                            } catch { }
                           }
 
                           // 3차 영구 복원: 파일명 기준 글로벌 바이너리 맵에서 즉시 수합
@@ -3056,7 +3056,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                               if (globalMap[agName.trim()]) {
                                 agData = globalMap[agName.trim()];
                               }
-                            } catch (e) { }
+                            } catch { }
                           }
 
                           return (
@@ -4286,7 +4286,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                                   fileName = res.name;
                                   fileDataUrl = res.dataUrl;
                                 }
-                              } catch (err) { }
+                              } catch { }
                             }
 
                             // 💡 2순위: 기본 FileReader 무손실 데이터 읽기
