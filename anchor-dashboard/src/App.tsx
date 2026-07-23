@@ -29,7 +29,7 @@ import UnitSystemView from "./components/UnitSystemView";
 import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import { Sun, Moon, LogOut, HelpCircle, ArrowUpRight, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen, FileSpreadsheet } from "lucide-react";
 import { supabase } from "./supabaseClient";
-import type { TablesInsert } from "./types/supabase";
+import type { Tables, TablesInsert } from "./types/supabase";
 import * as XLSX from "xlsx";
 import "./styles/dashboard.css";
 
@@ -39,6 +39,10 @@ type RiseMemberInsert = TablesInsert<"rise_members">;
 type ScheduleMonthlyInsert = TablesInsert<"schedule_monthly">;
 type ScheduleEventInsert = TablesInsert<"schedule_events">;
 type ScheduleMeetingInsert = TablesInsert<"schedule_meetings">;
+type AssetReservation = Tables<"asset_reservations">;
+type ProgramVersionRequest = Omit<Tables<"program_version_requests">, "changes"> & {
+  changes: LegacyAppRecord;
+};
 type Html2PdfFactory = () => LegacyAppRecord;
 
 declare global {
@@ -2520,8 +2524,8 @@ export default function App() {
   });
 
   // 결재 변경 승인요청 상태 및 상세 보기 모달 제어용
-  const [versionRequests, setVersionRequests] = useState([]);
-  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [versionRequests, setVersionRequests] = useState<ProgramVersionRequest[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<ProgramVersionRequest | null>(null);
   const [approvalsTab, setApprovalsTab] = useState(() => {
     const savedLogged = localStorage.getItem("anchor_logged_in_user");
     if (savedLogged) {
@@ -2535,11 +2539,11 @@ export default function App() {
     }
     return localStorage.getItem("anchor_approvals_tab") || "budget";
   });
-  const [reservations, setReservations] = useState([]);
+  const [reservations, setReservations] = useState<AssetReservation[]>([]);
 
   // 💡 [교육용 한글 주석] 승인자 전용의 공간 예약 일시 조율용 상태변수들입니다.
   const [isEditTimeModalOpen, setIsEditTimeModalOpen] = useState(false);
-  const [editingRes, setEditingRes] = useState(null);
+  const [editingRes, setEditingRes] = useState<AssetReservation | null>(null);
   const [editResFormData, setEditResFormData] = useState({
     reserved_date: "",
     start_time: "",
@@ -7613,7 +7617,7 @@ export default function App() {
         .from("program_version_requests")
         .select("*")
         .order("requested_at", { ascending: false });
-      if (data) setVersionRequests(data);
+      if (data) setVersionRequests(data as ProgramVersionRequest[]);
     } catch (e) {
       console.error("Failed to fetch version requests:", e);
     }
@@ -7642,11 +7646,11 @@ export default function App() {
   }, [activeTab, mgmtSubTab]);
 
   // 💡 [교육용 한글 주석] 통합 승인처리 화면에서 시설 사용 승인 요청을 확정하는 함수입니다.
-  const handleApproveReservation = async (res) => {
-    const isTimeOverlapping = (newStart, newEnd, existStart, existEnd) => {
-      const parseTimeToMinutes = (t) => {
+  const handleApproveReservation = async (res: AssetReservation) => {
+    const isTimeOverlapping = (newStart: string, newEnd: string, existStart: string, existEnd: string) => {
+      const parseTimeToMinutes = (t: string) => {
         const parts = t.split(":");
-        return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || 0, 10);
+        return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
       };
       const ns = parseTimeToMinutes(newStart);
       const ne = parseTimeToMinutes(newEnd);
@@ -7656,7 +7660,7 @@ export default function App() {
     };
 
     // 중복 시간 겹침 엄격 검증
-    const duplicate = reservations.find((r) => {
+    const duplicate = reservations.find((r: AssetReservation) => {
       return (
         r.id !== res.id &&
         r.status === "승인완료" &&
@@ -7683,12 +7687,12 @@ export default function App() {
       alert("✨ 해당 공간 사용 예약이 최종 승인 처리되었습니다.");
       fetchReservations();
     } catch (err) {
-      alert("예약 승인 도중 데이터베이스 오류가 발생했습니다: " + err.message);
+      alert("예약 승인 도중 데이터베이스 오류가 발생했습니다: " + getErrorMessage(err));
     }
   };
 
   // 💡 [교육용 한글 주석] 시설 사용 예약을 반려(삭제)하는 함수입니다.
-  const handleRejectReservation = async (res) => {
+  const handleRejectReservation = async (res: AssetReservation) => {
     if (!window.confirm("정말 이 예약을 반려(삭제) 처리하시겠습니까?")) {
       return;
     }
@@ -7702,12 +7706,12 @@ export default function App() {
       alert("🗑️ 예약이 성공적으로 반려 및 삭제 처리되었습니다.");
       fetchReservations();
     } catch (err) {
-      alert("예약 반려 도중 데이터베이스 오류가 발생했습니다: " + err.message);
+      alert("예약 반려 도중 데이터베이스 오류가 발생했습니다: " + getErrorMessage(err));
     }
   };
 
   // 💡 [교육용 한글 주석] 승인자 전용의 예약 일시 수정/조정 모달을 기동하는 함수입니다.
-  const handleOpenEditTime = (res) => {
+  const handleOpenEditTime = (res: AssetReservation) => {
     setEditingRes(res);
     setEditResFormData({
       reserved_date: res.reserved_date,
@@ -7718,13 +7722,14 @@ export default function App() {
   };
 
   // 💡 [교육용 한글 주석] 승인자가 조정한 예약을 충돌검증 후 DB에 영구 저장하는 함수입니다.
-  const handleSaveEditedTime = async (e) => {
+  const handleSaveEditedTime = async (e?: FormEvent<HTMLFormElement>) => {
     if (e) e.preventDefault();
+    if (!editingRes) return;
 
-    const isTimeOverlapping = (newStart, newEnd, existStart, existEnd) => {
-      const parseTimeToMinutes = (t) => {
+    const isTimeOverlapping = (newStart: string, newEnd: string, existStart: string, existEnd: string) => {
+      const parseTimeToMinutes = (t: string) => {
         const parts = t.split(":");
-        return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || 0, 10);
+        return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
       };
       const ns = parseTimeToMinutes(newStart);
       const ne = parseTimeToMinutes(newEnd);
@@ -7739,7 +7744,7 @@ export default function App() {
     }
 
     // 중복 시간 겹침 엄격 검증
-    const duplicate = reservations.find((r) => {
+    const duplicate = reservations.find((r: AssetReservation) => {
       return (
         r.id !== editingRes.id &&
         r.status === "승인완료" &&
@@ -7772,11 +7777,11 @@ export default function App() {
       setEditingRes(null);
       fetchReservations();
     } catch (err) {
-      alert("일시 조정 실패: " + err.message);
+      alert("일시 조정 실패: " + getErrorMessage(err));
     }
   };
 
-  const handleApproveRequest = async (req) => {
+  const handleApproveRequest = async (req: ProgramVersionRequest) => {
     try {
       const approverName = currentUser ? currentUser.name : "승인자";
       const { error: updateErr } = await supabase
@@ -7795,16 +7800,16 @@ export default function App() {
       const targetUnitId = getRealUnitId(req.unit_id, selectedYear);
 
       setProjects((prevProjects) => {
-        const updated = JSON.parse(JSON.stringify(prevProjects));
+        const updated = JSON.parse(JSON.stringify(prevProjects)) as LegacyAppRecord[];
         let dataUpdated = false;
 
-        updated.forEach((p) => {
+        updated.forEach((p: LegacyAppRecord) => {
           // p.year 매칭 확인
           const pYearVal = p.year === 2024 + selectedYear || p.year === selectedYear;
           if (pYearVal) {
-            p.units.forEach((u) => {
+            p.units.forEach((u: LegacyAppRecord) => {
               if (u.id === targetUnitId) {
-                u.programs.forEach((prog) => {
+                u.programs.forEach((prog: LegacyAppRecord) => {
                   if (String(prog.id) === String(req.program_id)) {
                     // 예산, 기획, 추진실적, 환류방안, KPI 등 changes.after의 정보를 전체 병합
                     Object.keys(afterFields).forEach((key) => {
@@ -7852,7 +7857,7 @@ export default function App() {
     }
   };
 
-  const handleRejectRequest = async (req) => {
+  const handleRejectRequest = async (req: ProgramVersionRequest) => {
     try {
       const approverName = currentUser ? currentUser.name : "승인자";
       const { error } = await supabase
@@ -7875,7 +7880,7 @@ export default function App() {
     }
   };
 
-  const handleDeleteRequest = async (req) => {
+  const handleDeleteRequest = async (req: ProgramVersionRequest) => {
     // 1) 권한 검사
     if (!isSongDirector) {
       alert("⚠️ 결재 내역 삭제 권한은 송경영 사업단장 및 관리자에게 있습니다.");
@@ -7901,15 +7906,15 @@ export default function App() {
         const targetUnitId = getRealUnitId(req.unit_id, selectedYear);
 
         setProjects((prevProjects) => {
-          const updated = JSON.parse(JSON.stringify(prevProjects));
+          const updated = JSON.parse(JSON.stringify(prevProjects)) as LegacyAppRecord[];
           let dataUpdated = false;
 
-          updated.forEach((p) => {
+          updated.forEach((p: LegacyAppRecord) => {
             const pYearVal = p.year === 2024 + selectedYear || p.year === selectedYear;
             if (pYearVal) {
-              p.units.forEach((u) => {
+              p.units.forEach((u: LegacyAppRecord) => {
                 if (u.id === targetUnitId) {
-                  u.programs.forEach((prog) => {
+                  u.programs.forEach((prog: LegacyAppRecord) => {
                     if (String(prog.id) === String(req.program_id)) {
                       // 이전 계획 스냅샷(beforeFields)의 정보를 전체 병합
                       Object.keys(beforeFields).forEach((key) => {
@@ -7959,14 +7964,14 @@ export default function App() {
   };
 
   // 실무진 수동 갱신 (프로그램 PDCA 및 실적 등록)
-  const handleUpdateProgramDetails = (unitId, progId, updatedFields) => {
+  const handleUpdateProgramDetails = (unitId: string, progId: string, updatedFields: LegacyAppRecord) => {
     const realUnitId = getRealUnitId(unitId, selectedYear);
     setProjects((prevProjects) => {
-      const updated = JSON.parse(JSON.stringify(prevProjects));
-      updated.forEach((p) => {
-        p.units.forEach((u) => {
+      const updated = JSON.parse(JSON.stringify(prevProjects)) as LegacyAppRecord[];
+      updated.forEach((p: LegacyAppRecord) => {
+        p.units.forEach((u: LegacyAppRecord) => {
           if (u.id === realUnitId) {
-            u.programs.forEach((prog) => {
+            u.programs.forEach((prog: LegacyAppRecord) => {
               if (prog.id === progId) {
                 // PDCA 상태 갱신
                 if (updatedFields.pdca !== undefined) prog.pdca = updatedFields.pdca;
@@ -8101,7 +8106,7 @@ export default function App() {
             });
 
             // 해당 단위과제에 소속된 세부 프로그램들의 비목별 배정계획을 10대 표준비목으로 쪼개서 실시간 롤업 동기화
-            const categorySums = {
+            const categorySums: Record<string, LegacyAppRecord> = {
               "인건비": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
               "장학금": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
               "교육∙연구 프로그램 개발∙운영비": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
@@ -8114,7 +8119,7 @@ export default function App() {
               "간접비": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }
             };
 
-            u.programs.forEach(prog => {
+            u.programs.forEach((prog: LegacyAppRecord) => {
               const py = prog.years?.[selectedYear] || {};
               const progTotalMain = py.budget_main || 0;
               const progTotalCarry = py.budget_carry || 0;
@@ -8127,7 +8132,7 @@ export default function App() {
               let allocatedSpentCarry = 0;
 
               if (py.budget_categories && Array.isArray(py.budget_categories)) {
-                py.budget_categories.forEach(catItem => {
+                py.budget_categories.forEach((catItem: LegacyAppRecord) => {
                   const catName = catItem.category;
                   if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
                     const mainVal = parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0;
@@ -8160,7 +8165,7 @@ export default function App() {
             });
 
             // 계산 결과를 u.budgetDetails 의 selectedYear 에 주입
-            Object.keys(categorySums).forEach(catName => {
+            Object.keys(categorySums).forEach((catName: string) => {
               if (!u.budgetDetails[catName]) {
                 u.budgetDetails[catName] = { years: {} };
               }
@@ -8179,7 +8184,7 @@ export default function App() {
               let totalProgSpent = 0;
               let totalProgSpentNational = 0;
 
-              u.programs.forEach((prog) => {
+              u.programs.forEach((prog: LegacyAppRecord) => {
                 const py = prog.years?.[selectedYear] || {};
                 totalProgMain += py.budget_main || 0;
                 totalProgNational += py.budget_national || 0;
@@ -8205,17 +8210,18 @@ export default function App() {
             });
 
             // 모든 비목의 이월 잔액 재계산
-            Object.keys(u.budgetDetails).forEach(key => {
+            Object.keys(u.budgetDetails).forEach((key: string) => {
               recalculateCarryOver(u.budgetDetails[key].years);
             });
 
             // 단위과제 연도별 전체 집행액/예산 재집계 및 이월 연쇄 재계산
             [1, 2, 3, 4, 5].forEach(yr => {
               const uYear = u.years[yr] || {};
-              uYear.spent_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_main || 0), 0);
-              uYear.spent_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_carry || 0), 0);
-              uYear.budget_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_main || 0), 0);
-              uYear.budget_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_carry || 0), 0);
+              const budgetDetailValues = Object.values(u.budgetDetails as Record<string, LegacyAppRecord>);
+              uYear.spent_main = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.spent_main || 0), 0);
+              uYear.spent_carry = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.spent_carry || 0), 0);
+              uYear.budget_main = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.budget_main || 0), 0);
+              uYear.budget_carry = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.budget_carry || 0), 0);
 
               // 💡 [교육용 한글 주석] 프로그램 단위 재원 롤업 연산 시 A1나인 경우 국비 100% 강제 동기화
               if (u.id === "A1나") {
@@ -8226,12 +8232,12 @@ export default function App() {
                 uYear.spent_city = 0;
                 uYear.spent_external = 0;
               } else {
-                uYear.budget_national = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.budget_national || 0), 0);
-                uYear.budget_city = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.budget_city || 0), 0);
-                uYear.budget_external = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.budget_external || 0), 0);
-                uYear.spent_national = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.spent_national || 0), 0);
-                uYear.spent_city = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.spent_city || 0), 0);
-                uYear.spent_external = u.programs.reduce((sum, prog) => sum + (prog.years?.[yr]?.spent_external || 0), 0);
+                uYear.budget_national = u.programs.reduce((sum: number, prog: LegacyAppRecord) => sum + (prog.years?.[yr]?.budget_national || 0), 0);
+                uYear.budget_city = u.programs.reduce((sum: number, prog: LegacyAppRecord) => sum + (prog.years?.[yr]?.budget_city || 0), 0);
+                uYear.budget_external = u.programs.reduce((sum: number, prog: LegacyAppRecord) => sum + (prog.years?.[yr]?.budget_external || 0), 0);
+                uYear.spent_national = u.programs.reduce((sum: number, prog: LegacyAppRecord) => sum + (prog.years?.[yr]?.spent_national || 0), 0);
+                uYear.spent_city = u.programs.reduce((sum: number, prog: LegacyAppRecord) => sum + (prog.years?.[yr]?.spent_city || 0), 0);
+                uYear.spent_external = u.programs.reduce((sum: number, prog: LegacyAppRecord) => sum + (prog.years?.[yr]?.spent_external || 0), 0);
               }
             });
             recalculateCarryOver(u.years);
@@ -8243,8 +8249,8 @@ export default function App() {
         });
 
         // 프로젝트 전체 집행액/예산 총합 갱신
-        p.spent = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.spent_main || 0) + (un.years[selectedYear]?.spent_carry || 0), 0);
-        p.budget = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.budget_main || 0) + (un.years[selectedYear]?.budget_carry || 0), 0);
+        p.spent = p.units.reduce((sum: number, un: LegacyAppRecord) => sum + (un.years[selectedYear]?.spent_main || 0) + (un.years[selectedYear]?.spent_carry || 0), 0);
+        p.budget = p.units.reduce((sum: number, un: LegacyAppRecord) => sum + (un.years[selectedYear]?.budget_main || 0) + (un.years[selectedYear]?.budget_carry || 0), 0);
       });
       // 💡 [DB 실시간 연동 가드] 프로그램 기획/예산 상세 변경 시, 원격 Supabase DB에도 즉각 동기화 저장합니다.
       if (supabase && currentUser && currentRole?.id !== "GUEST") {
@@ -8259,11 +8265,11 @@ export default function App() {
   };
 
   // 프로그램 신규 추가 핸들러
-  const handleAddProgram = (unitId, title, assignee, budget2026, carryBudget) => {
+  const handleAddProgram = (unitId: string, title: string, assignee: string, budget2026: string | number, carryBudget: string | number) => {
     setProjects((prevProjects) => {
-      const updated = JSON.parse(JSON.stringify(prevProjects));
-      updated.forEach((p) => {
-        p.units.forEach((u) => {
+      const updated = JSON.parse(JSON.stringify(prevProjects)) as LegacyAppRecord[];
+      updated.forEach((p: LegacyAppRecord) => {
+        p.units.forEach((u: LegacyAppRecord) => {
           if (u.id === unitId) {
             // 새 프로그램 ID 자동 연산
             let nextNum = 1;
@@ -8275,10 +8281,10 @@ export default function App() {
             }
             const newId = `${unitId}-${String(nextNum).padStart(2, '0')}`;
 
-            const bMain = Math.round((parseFloat(budget2026) || 0) * 1000000);
-            const bCarry = Math.round((parseFloat(carryBudget) || 0) * 1000000);
+            const bMain = Math.round((parseFloat(String(budget2026)) || 0) * 1000000);
+            const bCarry = Math.round((parseFloat(String(carryBudget)) || 0) * 1000000);
 
-            const yearsObj = {};
+            const yearsObj: LegacyYearRecord = {};
             [1, 2, 3, 4, 5].forEach((yr) => {
               const baseMain = yr === 2 ? bMain : Math.round(bMain * (yr === 1 ? 0.9 : yr === 3 ? 1.1 : yr === 4 ? 1.2 : 1.3));
               const baseCarry = yr === 2 ? bCarry : 0;
@@ -8323,7 +8329,7 @@ export default function App() {
             u.programs.push(newProg);
 
             // 해당 단위과제 롤업 및 이월 재계산
-            const categorySums = {
+            const categorySums: Record<string, LegacyAppRecord> = {
               "인건비": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
               "장학금": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
               "교육∙연구 프로그램 개발∙운영비": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 },
@@ -8336,7 +8342,7 @@ export default function App() {
               "간접비": { main: 0, carry: 0, spent_main: 0, spent_carry: 0 }
             };
 
-            u.programs.forEach(prog => {
+            u.programs.forEach((prog: LegacyAppRecord) => {
               const py = prog.years?.[selectedYear] || {};
               const progTotalMain = py.budget_main || 0;
               const progTotalCarry = py.budget_carry || 0;
@@ -8349,7 +8355,7 @@ export default function App() {
               let allocatedSpentCarry = 0;
 
               if (py.budget_categories && Array.isArray(py.budget_categories)) {
-                py.budget_categories.forEach(catItem => {
+                py.budget_categories.forEach((catItem: LegacyAppRecord) => {
                   const catName = catItem.category;
                   if (catName && categorySums[catName] && catName !== "교육∙연구 프로그램 개발∙운영비") {
                     const mainVal = parseInt(String(catItem.budget || "0").replace(/,/g, ""), 10) || 0;
@@ -8381,7 +8387,7 @@ export default function App() {
               categorySums["교육∙연구 프로그램 개발∙운영비"].spent_carry += remainSpentCarry;
             });
 
-            Object.keys(categorySums).forEach(catName => {
+            Object.keys(categorySums).forEach((catName: string) => {
               if (!u.budgetDetails[catName]) {
                 u.budgetDetails[catName] = { years: {} };
               }
@@ -8397,16 +8403,17 @@ export default function App() {
               tgt.spent_carry = categorySums[catName].spent_carry;
             });
 
-            Object.keys(u.budgetDetails).forEach(key => {
+            Object.keys(u.budgetDetails).forEach((key: string) => {
               recalculateCarryOver(u.budgetDetails[key].years);
             });
 
             [1, 2, 3, 4, 5].forEach(yr => {
               const uYear = u.years[yr] || {};
-              uYear.spent_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_main || 0), 0);
-              uYear.spent_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_carry || 0), 0);
-              uYear.budget_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_main || 0), 0);
-              uYear.budget_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_carry || 0), 0);
+              const budgetDetailValues = Object.values(u.budgetDetails as Record<string, LegacyAppRecord>);
+              uYear.spent_main = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.spent_main || 0), 0);
+              uYear.spent_carry = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.spent_carry || 0), 0);
+              uYear.budget_main = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.budget_main || 0), 0);
+              uYear.budget_carry = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.budget_carry || 0), 0);
             });
             recalculateCarryOver(u.years);
 
@@ -8415,8 +8422,8 @@ export default function App() {
           }
         });
 
-        p.spent = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.spent_main || 0) + (un.years[selectedYear]?.spent_carry || 0), 0);
-        p.budget = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.budget_main || 0) + (un.years[selectedYear]?.budget_carry || 0), 0);
+        p.spent = p.units.reduce((sum: number, un: LegacyAppRecord) => sum + (un.years[selectedYear]?.spent_main || 0) + (un.years[selectedYear]?.spent_carry || 0), 0);
+        p.budget = p.units.reduce((sum: number, un: LegacyAppRecord) => sum + (un.years[selectedYear]?.budget_main || 0) + (un.years[selectedYear]?.budget_carry || 0), 0);
       });
       // 💡 [DB 실시간 연동 가드] 프로그램 추가 시, 원격 Supabase DB에도 즉각 동기화 저장합니다.
       if (supabase && currentUser && currentRole?.id !== "GUEST") {
@@ -8431,7 +8438,7 @@ export default function App() {
   };
 
   // 협약서 신규 등록 핸들러
-  const handleAddAgreement = (newAgr) => {
+  const handleAddAgreement = (newAgr: LegacyAppRecord) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -8446,7 +8453,7 @@ export default function App() {
   };
 
   // 협약서 수정 핸들러
-  const handleUpdateAgreement = (id, updatedFields) => {
+  const handleUpdateAgreement = (id: string | number, updatedFields: LegacyAppRecord) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -8457,7 +8464,7 @@ export default function App() {
   };
 
   // 협약서 삭제 핸들러
-  const handleDeleteAgreement = (id) => {
+  const handleDeleteAgreement = (id: string | number) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -8466,7 +8473,7 @@ export default function App() {
   };
 
   // 통합 상장/이수증 신규 등록 핸들러
-  const handleAddUnifiedCertificate = (newCert) => {
+  const handleAddUnifiedCertificate = (newCert: LegacyAppRecord) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -8481,7 +8488,7 @@ export default function App() {
   };
 
   // 통합 상장/이수증 수정 핸들러
-  const handleUpdateUnifiedCertificate = (id, updatedFields) => {
+  const handleUpdateUnifiedCertificate = (id: string | number, updatedFields: LegacyAppRecord) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -8492,7 +8499,7 @@ export default function App() {
   };
 
   // 통합 상장/이수증 삭제 핸들러
-  const handleDeleteUnifiedCertificate = (id) => {
+  const handleDeleteUnifiedCertificate = (id: string | number) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -8501,18 +8508,18 @@ export default function App() {
   };
 
   // 성과지표 목표치/실적치 직접 수정 핸들러
-  const handleUpdateKpiValue = (subItemId, field, value) => {
+  const handleUpdateKpiValue = (subItemId: string, field: string, value: unknown) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
     }
     setProjects((prevProjects) => {
-      const updated = JSON.parse(JSON.stringify(prevProjects));
-      updated.forEach((p) => {
-        p.units.forEach((u) => {
-          u.kpis.forEach((k) => {
+      const updated = JSON.parse(JSON.stringify(prevProjects)) as LegacyAppRecord[];
+      updated.forEach((p: LegacyAppRecord) => {
+        p.units.forEach((u: LegacyAppRecord) => {
+          u.kpis.forEach((k: LegacyAppRecord) => {
             if (k.subItems) {
-              k.subItems.forEach((sub) => {
+              k.subItems.forEach((sub: LegacyAppRecord) => {
                 if (sub.id === subItemId) {
                   if (!sub.years) sub.years = {};
                   if (!sub.years[selectedYear]) {
@@ -8530,24 +8537,24 @@ export default function App() {
   };
 
   // 비목 예산 세부 조율 갱신 핸들러 (5개년 연쇄 이월 계산 연계)
-  const handleUpdateBudgetDetails = (unitId, updatedBudgetDetails) => {
+  const handleUpdateBudgetDetails = (unitId: string, updatedBudgetDetails: Record<string, LegacyAppRecord>) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
     }
     const realUnitId = getRealUnitId(unitId, selectedYear);
-    setProjects(prevProjects => {
-      const updated = JSON.parse(JSON.stringify(prevProjects));
-      updated.forEach(p => {
-        p.units.forEach(u => {
+    setProjects((prevProjects) => {
+      const updated = JSON.parse(JSON.stringify(prevProjects)) as LegacyAppRecord[];
+      updated.forEach((p: LegacyAppRecord) => {
+        p.units.forEach((u: LegacyAppRecord) => {
           if (u.id === realUnitId) {
             // 비목 예산 배정 수정분 반영
-            Object.keys(updatedBudgetDetails).forEach(key => {
+            Object.keys(updatedBudgetDetails).forEach((key: string) => {
               if (!u.budgetDetails[key]) {
                 u.budgetDetails[key] = { years: {} };
               }
               const yearsUpdate = updatedBudgetDetails[key].years || {};
-              Object.keys(yearsUpdate).forEach(yr => {
+              Object.keys(yearsUpdate).forEach((yr: string) => {
                 if (!u.budgetDetails[key].years) {
                   u.budgetDetails[key].years = {};
                 }
@@ -8560,17 +8567,18 @@ export default function App() {
             });
 
             // 모든 비목의 이월 잔액 5개년 연쇄 재계산
-            Object.keys(u.budgetDetails).forEach(key => {
+            Object.keys(u.budgetDetails).forEach((key: string) => {
               recalculateCarryOver(u.budgetDetails[key].years);
             });
 
             // 단위과제 연도별 전체 집행액/예산 재집계 및 이월 연쇄 재계산
             [1, 2, 3, 4, 5].forEach(yr => {
               const uYear = u.years[yr] || {};
-              uYear.spent_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_main || 0), 0);
-              uYear.spent_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.spent_carry || 0), 0);
-              uYear.budget_main = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_main || 0), 0);
-              uYear.budget_carry = Object.values(u.budgetDetails).reduce((sum, b) => sum + (b.years?.[yr]?.budget_carry || 0), 0);
+              const budgetDetailValues = Object.values(u.budgetDetails as Record<string, LegacyAppRecord>);
+              uYear.spent_main = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.spent_main || 0), 0);
+              uYear.spent_carry = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.spent_carry || 0), 0);
+              uYear.budget_main = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.budget_main || 0), 0);
+              uYear.budget_carry = budgetDetailValues.reduce((sum: number, b: LegacyAppRecord) => sum + (b.years?.[yr]?.budget_carry || 0), 0);
             });
             recalculateCarryOver(u.years);
 
@@ -8579,8 +8587,8 @@ export default function App() {
           }
         });
 
-        p.spent = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.spent_main || 0) + (un.years[selectedYear]?.spent_carry || 0), 0);
-        p.budget = p.units.reduce((sum, un) => sum + (un.years[selectedYear]?.budget_main || 0) + (un.years[selectedYear]?.budget_carry || 0), 0);
+        p.spent = p.units.reduce((sum: number, un: LegacyAppRecord) => sum + (un.years[selectedYear]?.spent_main || 0) + (un.years[selectedYear]?.spent_carry || 0), 0);
+        p.budget = p.units.reduce((sum: number, un: LegacyAppRecord) => sum + (un.years[selectedYear]?.budget_main || 0) + (un.years[selectedYear]?.budget_carry || 0), 0);
       });
       return updated;
     });
