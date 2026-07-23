@@ -52,6 +52,7 @@ import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, ins
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
 import { useProjectAutosave } from "./features/projects/hooks/use-project-autosave";
 import { useProjectLocalBackup } from "./features/projects/hooks/use-project-local-backup";
+import { useJointProgramDetection, useProjectFetchReset } from "./features/projects/hooks/use-project-state-lifecycle";
 import { deleteMonthlySchedulesByIds, deleteMonthlySchedulesByYear, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, fetchStandaloneMonthlyScheduleIds, insertMonthlySchedules, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertMonthlySchedules, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
 import { useDashboardCache } from "./shared/hooks/use-dashboard-cache";
 import { useDashboardCacheMaintenance } from "./shared/hooks/use-dashboard-cache-maintenance";
@@ -1480,25 +1481,7 @@ export default function App() {
   const [jointPrograms, setJointPrograms] = useState<Record<string, boolean>>({});
 
   // projects 데이터 로딩 시 2명 이상으로 배정된 과제를 자동 스캔하여 체크 상태 설정
-  useEffect(() => {
-    if (!projects || !Array.isArray(projects)) return;
-    const initialJoint: Record<string, boolean> = {};
-    projects.forEach((p) => {
-      if (p.units && Array.isArray(p.units)) {
-        p.units.forEach((u) => {
-          if (u.programs && Array.isArray(u.programs)) {
-            u.programs.forEach((prog: LegacyAppRecord) => {
-              const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-              if (currentVal && (currentVal.includes(",") || currentVal.includes("/"))) {
-                initialJoint[prog.id] = true;
-              }
-            });
-          }
-        });
-      }
-    });
-    setJointPrograms((prev) => ({ ...initialJoint, ...prev }));
-  }, [projects, selectedYear]);
+  useJointProgramDetection(projects, selectedYear, setJointPrograms);
 
   const [kpiSubTab, setKpiSubTab] = useState(() => {
     return localStorage.getItem("anchor_kpi_sub_tab") || "공통";
@@ -2013,11 +1996,12 @@ export default function App() {
   const fetchedMeetingSchedulesRef = useRef("");
   const fetchedPressReleasesRef = useRef("");
 
-  // selectedYear가 변경될 때 fetch 완료 플래그를 false로 초기화
-  useEffect(() => {
-    setIsFetchCompleted(false);
-    fetchedProjectsRef.current = ""; // 💡 [보안 가드] 연도 변경 시 원격 데이터 동기화 대기 레퍼런스를 리셋합니다.
-  }, [selectedYear]);
+  // selectedYear가 변경될 때 fetch 완료 플래그와 원격 데이터 기준 ref를 초기화
+  useProjectFetchReset(
+    selectedYear,
+    setIsFetchCompleted,
+    fetchedProjectsRef
+  );
 
   // 💡 [비즈니스 룰 규격화 엔진]
   // 3, 4, 5차년도 예산 계획을 2차년도(2026년) 예산 계획과 강제로 동기화하고,
