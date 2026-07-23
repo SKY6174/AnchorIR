@@ -68,7 +68,7 @@ const getErrorMessage = (error: unknown): string =>
 // 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
 const formatAssignee = (assigneeText?: string): string => {
   if (!assigneeText) return "미배정";
-  const parts = assigneeText.split(/[,\/]/).map((p) => p.trim()).filter(Boolean);
+  const parts = assigneeText.split(/[,/]/).map((p) => p.trim()).filter(Boolean);
   if (parts.length === 2) {
     return `${parts[0]}(정), ${parts[1]}(부)`;
   }
@@ -2323,7 +2323,7 @@ export default function App() {
           parsed.committee_report = true;
         }
         return { ...defaultVisibility, ...parsed };
-      } catch (e) {
+      } catch {
         return defaultVisibility;
       }
     }
@@ -2540,7 +2540,7 @@ export default function App() {
         if (["이규상", "임은애", "황수진", "최주명"].some(n => name.includes(n))) {
           return "facility";
         }
-      } catch (err) { }
+      } catch { }
     }
     return localStorage.getItem("anchor_approvals_tab") || "budget";
   });
@@ -3037,7 +3037,7 @@ export default function App() {
     if (cached) {
       try {
         return JSON.parse(cached);
-      } catch (e) {
+      } catch {
         return INITIAL_AGREEMENTS;
       }
     }
@@ -3078,7 +3078,7 @@ export default function App() {
     if (cached) {
       try {
         return JSON.parse(cached);
-      } catch (e) {
+      } catch {
         return [];
       }
     }
@@ -3090,7 +3090,7 @@ export default function App() {
     if (cached) {
       try {
         return JSON.parse(cached);
-      } catch (e) {
+      } catch {
         return [];
       }
     }
@@ -3575,7 +3575,7 @@ export default function App() {
   const [selectedKpi, setSelectedKpi] = useState<LegacyAppRecord | null>(() => {
     const saved = localStorage.getItem("anchor_selected_kpi");
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { return null; }
+      try { return JSON.parse(saved); } catch { return null; }
     }
     return null;
   });
@@ -4487,7 +4487,7 @@ export default function App() {
           window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = !!chkServRes.error;
           window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = !!chkEnvRes.error;
           window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__ = !!chkEquipRes.error;
-        } catch (e) {
+        } catch {
           if (!active) return;
           window.__HAS_NO_ADVANCED_SERVICES_COLUMNS__ = true;
           window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = true;
@@ -5386,7 +5386,7 @@ export default function App() {
         // 💡 [저장 완료 동기화] DB 업로드가 성공적으로 완료되었으므로 레퍼런스 값을 현재 값으로 갱신하여 중복 업로드를 차단합니다.
         fetchedProjectsRef.current = currentCleanStr;
         setSyncStatus("synced");
-      } catch (e) {
+      } catch {
         setSyncStatus("error");
       }
     }, 500); // 1.5초에서 0.5초로 변경
@@ -5954,7 +5954,7 @@ export default function App() {
           if (error) throw error;
         }
         setSyncStatus("synced");
-      } catch (e) {
+      } catch {
         setSyncStatus("error");
       }
     }, 150);
@@ -6177,7 +6177,7 @@ export default function App() {
           if (error) throw error;
         }
         setSyncStatus("synced");
-      } catch (e) {
+      } catch {
         setSyncStatus("error");
       }
     }, 150);
@@ -10101,7 +10101,7 @@ export default function App() {
                                               // 체크 해제 시에는 단일 연구원으로 변경할 수 있도록 현재 값의 첫 번째 연구원을 기본값으로 넘김
                                               if (!isChecked) {
                                                 const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                const parts = currentVal.split(/[,\/]/).map((p: string) => p.trim()).filter(Boolean);
+                                                const parts = currentVal.split(/[,/]/).map((p: string) => p.trim()).filter(Boolean);
                                                 handleAssignChange(u.id, prog.id, parts[0] || "");
                                               }
                                             }}
@@ -10119,12 +10119,12 @@ export default function App() {
                                                 style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
                                                 value={(() => {
                                                   const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                  const parts = currentVal.split(/[,\/]/).map((p: string) => p.trim()).filter(Boolean);
+                                                  const parts = currentVal.split(/[,/]/).map((p: string) => p.trim()).filter(Boolean);
                                                   return parts[0] || "";
                                                 })()}
                                                 onChange={(e) => {
                                                   const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                  const parts = currentVal.split(/[,\/]/).map((p: string) => p.trim()).filter(Boolean);
+                                                  const parts = currentVal.split(/[,/]/).map((p: string) => p.trim()).filter(Boolean);
                                                   const first = e.target.value;
                                                   const second = parts[1] || "";
                                                   const combined = second ? `${first}, ${second}` : first;
@@ -10149,12 +10149,12 @@ export default function App() {
                                                 style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
                                                 value={(() => {
                                                   const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                  const parts = currentVal.split(/[,\/]/).map((p: string) => p.trim()).filter(Boolean);
+                                                  const parts = currentVal.split(/[,/]/).map((p: string) => p.trim()).filter(Boolean);
                                                   return parts[1] || "";
                                                 })()}
                                                 onChange={(e) => {
                                                   const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                  const parts = currentVal.split(/[,\/]/).map((p: string) => p.trim()).filter(Boolean);
+                                                  const parts = currentVal.split(/[,/]/).map((p: string) => p.trim()).filter(Boolean);
                                                   const first = parts[0] || "";
                                                   const second = e.target.value;
                                                   const combined = second ? `${first}, ${second}` : first;
