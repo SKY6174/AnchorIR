@@ -49,6 +49,8 @@ import { deleteEnvironmentRecordsByYear, deleteEquipmentRecordsByYear, deleteSer
 import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
 import { deleteMonthlySchedulesByIds, deleteMonthlySchedulesByYear, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, fetchStandaloneMonthlyScheduleIds, insertMonthlySchedules, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertMonthlySchedules, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
+import { useDashboardCache } from "./shared/hooks/use-dashboard-cache";
+import { useDashboardCacheMaintenance } from "./shared/hooks/use-dashboard-cache-maintenance";
 import "./styles/dashboard.css";
 
 
@@ -269,98 +271,8 @@ const renderBudgetCategoriesDiff = (categories?: LegacyAppRecord[]) => {
 };
 
 export default function App() {
-  // [이전 캐시 자동 청소 로직]
-  // 구버전 캐시(v1~v19 등)가 쌓여 QuotaExceededError(용량 초과)를 내는 현상을 원천 방지하기 위해 v20 이외의 옛날 데이터를 즉시 제거합니다.
-  useEffect(() => {
-    try {
-      // 💡 [주소록 캐시 리셋 가드] 송경영 단장, 김현수 본부장 주소록 노출 보정을 위해 기존 오염된 anchor_members 캐시를 즉시 파기합니다.
-      localStorage.removeItem("anchor_members");
-
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v56") {
-          localStorage.removeItem(key);
-        }
-        // 💡 [연도별 복구 캐시 청소 가드] 캐시 버전 상향 시 연도별 가공 복구 캐시와 구버전 구매용역 캐시(기자재, 환경개선, 주요용역)도 깨끗하게 동시 청소하여 구버전 예산 꼬임을 방지합니다.
-        if (key.startsWith("anchor_cache_proj_") ||
-          key.startsWith("anchor_cache_equip_") ||
-          key.startsWith("anchor_cache_env_") ||
-          key.startsWith("anchor_cache_serv_")) {
-          localStorage.removeItem(key);
-        }
-      });
-    } catch (e) {
-      console.warn("구버전 캐시 청소 실패:", e);
-    }
-  }, []);
-
-  // [전역 자가 치유 에러 핸들러]
-  // 캐시 오염 등으로 렌더링 에러가 날 경우, 화이트스크린 방지를 위해 로컬 세션을 비우고 클린 샌드박스로 자동 복원합니다.
-  useEffect(() => {
-    const handleGlobalError = (event: Event) => {
-      // 비동기 API 통신 오류(unhandledrejection)는 렌더링 화이트스크린 유발 주범이 아니므로 자가치유에서 전면 제외
-      if (event.type === "unhandledrejection") {
-        return;
-      }
-
-      const err = (event as Event & LegacyAppRecord).error;
-      if (!err) return;
-
-      const errMsg = String(err.message || err);
-
-      // 렌더링을 완전히 멈추게 만드는 치명적인 자바스크립트 오류(TypeError, undefined/null 속성 에러 등)만 선별합니다.
-      const isCriticalRenderError =
-        errMsg.includes("TypeError") ||
-        errMsg.includes("Cannot read properties") ||
-        errMsg.includes("undefined") ||
-        errMsg.includes("null") ||
-        errMsg.includes("is not a function");
-
-      // Supabase 통신, DB 쿼리, RLS 정책, 네트워크 연결 실패 등의 에러 메시지는 자가치유 튕김 대상에서 완벽히 배제
-      const isNetworkOrDbError =
-        errMsg.includes("PostgrestError") ||
-        errMsg.includes("supabase") ||
-        errMsg.includes("FetchError") ||
-        errMsg.includes("NetworkError") ||
-        errMsg.includes("Failed to fetch") ||
-        errMsg.includes("constraint") ||
-        errMsg.includes("violation") ||
-        errMsg.includes("violates") ||
-        errMsg.includes("not-null") ||
-        errMsg.includes("database") ||
-        errMsg.includes("query") ||
-        errMsg.includes("RLS") ||
-        errMsg.includes("policy");
-
-      if (!isCriticalRenderError || isNetworkOrDbError) {
-        return; // API 요청 실패, CORS, 406 에러 등의 네트워크 지연/차단 오류는 자가치유 리로드를 타지 않고 넘어갑니다.
-      }
-
-      console.error("Critical rendering error caught by Self-Healing. Resetting cache:", errMsg);
-      const lastReset = localStorage.getItem("anchor_last_self_healing_reset");
-      const now = Date.now();
-      if (lastReset && now - parseInt(lastReset, 10) < 3000) {
-        return;
-      }
-      localStorage.setItem("anchor_last_self_healing_reset", String(now));
-      // 로그인 세션(anchor_logged_in_user)은 리셋하지 않고 보존하여 튕김(로그아웃) 방지!
-      localStorage.removeItem("anchor_projects_data_v56");
-      localStorage.removeItem("anchor_selected_kpi");
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("anchor_cache_proj_")) {
-          localStorage.removeItem(key);
-        }
-      });
-      window.location.reload();
-    };
-
-    window.addEventListener("error", handleGlobalError);
-    window.addEventListener("unhandledrejection", handleGlobalError);
-
-    return () => {
-      window.removeEventListener("error", handleGlobalError);
-      window.removeEventListener("unhandledrejection", handleGlobalError);
-    };
-  }, []);
+  const { getIndexedDBCache, safeSetLocalStorage } = useDashboardCache();
+  useDashboardCacheMaintenance();
 
   const [isScrollRestored, setIsScrollRestored] = useState(false);
 
@@ -501,82 +413,6 @@ export default function App() {
         };
       })
     })) as unknown as T;
-  };
-
-  // 💡 [HTML5 IndexedDB 대용량 캐시 솔루션] 브라우저의 5MB 용량 한계를 극복하기 위해 IndexedDB 기반 비동기 Key-Value 저장소를 선언합니다.
-  const initIndexedDB = (): Promise<IDBDatabase> => {
-    return new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open("anchor_ir_db", 1);
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        if (!db.objectStoreNames.contains("kv_store")) {
-          db.createObjectStore("kv_store");
-        }
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  };
-
-  const getIndexedDBCache = async (key: string): Promise<string | null> => {
-    try {
-      const db = await initIndexedDB();
-      return new Promise<string | null>((resolve, reject) => {
-        const transaction = db.transaction("kv_store", "readonly");
-        const store = transaction.objectStore("kv_store");
-        const request = store.get(key);
-        request.onsuccess = () => resolve(typeof request.result === "string" ? request.result : null);
-        request.onerror = () => reject(request.error);
-      });
-    } catch (err) {
-      console.warn("IndexedDB 읽기 실패, localStorage 폴백 시도:", err);
-      return localStorage.getItem(key);
-    }
-  };
-
-  const setIndexedDBCache = async (key: string, valueStr: string): Promise<boolean | void> => {
-    try {
-      const db = await initIndexedDB();
-      return new Promise<boolean>((resolve, reject) => {
-        const transaction = db.transaction("kv_store", "readwrite");
-        const store = transaction.objectStore("kv_store");
-        const request = store.put(valueStr, key);
-        request.onsuccess = () => {
-          // 용량 정리를 위해 localStorage에 있는 동일한 키는 지워주어 공간을 비웁니다.
-          localStorage.removeItem(key);
-          resolve(true);
-        };
-        request.onerror = () => reject(request.error);
-      });
-    } catch (err) {
-      console.warn("IndexedDB 쓰기 실패, localStorage 폴백 저장 시도:", err);
-      try {
-        localStorage.setItem(key, valueStr);
-      } catch (e) {
-        console.error("localStorage 폴백 저장마저 실패했습니다 (브라우저 용량 한계 초과):", e);
-      }
-    }
-  };
-
-  const _removeIndexedDBCache = async (key: string): Promise<boolean | void> => {
-    try {
-      const db = await initIndexedDB();
-      return new Promise<boolean>((resolve, reject) => {
-        const transaction = db.transaction("kv_store", "readwrite");
-        const store = transaction.objectStore("kv_store");
-        const request = store.delete(key);
-        request.onsuccess = () => resolve(true);
-        request.onerror = () => reject(request.error);
-      });
-    } catch (err) {
-      console.warn("IndexedDB 삭제 실패, localStorage 폴백 시도:", err);
-      localStorage.removeItem(key);
-    }
-  };
-
-  // 💡 [안전한 로컬스토리지/IndexedDB 저장 헬퍼] QuotaExceededError 차단을 위해 내부적으로 IndexedDB 백엔드를 사용합니다.
-  const safeSetLocalStorage = (key: string, valueStr: string, _currentYear: number) => {
-    setIndexedDBCache(key, valueStr);
   };
 
   // 로그인 성공 혹은 세션 로드 시 Supabase DB로부터 마스터 포털 노출 설정 수신
