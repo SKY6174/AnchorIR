@@ -279,8 +279,37 @@ type SignatureCanvasEvent =
   | ReactMouseEvent<HTMLCanvasElement>
   | ReactTouchEvent<HTMLCanvasElement>;
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : String(error);
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  if (error && typeof error === "object" && "message" in error) {
+    return String((error as { message?: unknown }).message || "");
+  }
+  return String(error);
+};
+
+const isPersistedCommitteeMeeting = (meeting: unknown): meeting is CommitteeMeeting => {
+  if (!meeting || typeof meeting !== "object") return false;
+  const id = String((meeting as CommitteeMeeting).id || "");
+  return id.length > 0 && !id.startsWith("local-meeting-");
+};
+
+const getCommitteeMeetingSaveErrorMessage = (error: unknown): string => {
+  const message = getErrorMessage(error).toLowerCase();
+
+  if (message.includes("public_code") && (message.includes("null") || message.includes("not-null"))) {
+    return "회의 공개코드 생성 설정이 DB에 적용되지 않았습니다. 관리자에게 DB 마이그레이션 적용을 요청해 주세요.";
+  }
+  if (message.includes("issue_committee_meeting_credentials") || message.includes("schema cache")) {
+    return "외부위원 인증 발급 기능이 DB에 적용되지 않았습니다. 관리자에게 보안 함수 마이그레이션 적용을 요청해 주세요.";
+  }
+  if (message.includes("forbidden") || message.includes("permission") || message.includes("row-level security")) {
+    return "회의 생성 권한 또는 로그인 세션을 확인할 수 없습니다. 다시 로그인한 뒤 재시도해 주세요.";
+  }
+  if (message.includes("fetch") || message.includes("network") || message.includes("timeout")) {
+    return "DB 서버에 연결하지 못했습니다. 네트워크 상태를 확인한 뒤 다시 시도해 주세요.";
+  }
+  return "회의를 DB에 저장하지 못했습니다. 입력 내용은 유지되므로 잠시 후 다시 시도하거나 관리자에게 문의해 주세요.";
+};
 
 export interface CurrentUser {
   id?: string | number;
@@ -452,7 +481,7 @@ export default function CommitteeManager({
   // 💡 [로컬 캐시 Quota 초과 자가치유] 대용량 base64 PDF 데이터 캐시로 가득 찬 localStorage를 안전하게 정리
   useEffect(() => {
     try {
-      for (let i = 0; i < localStorage.length; i++) {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
         const key = localStorage.key(i);
         if (key && (key.startsWith("local_committee_meetings_") || key.startsWith("local_meeting_agendas_"))) {
           try {
@@ -460,11 +489,21 @@ export default function CommitteeManager({
             if (raw) {
               const list = JSON.parse(raw);
               if (Array.isArray(list)) {
+                const hasLocalMeetingAgenda = key.startsWith("local_meeting_agendas_")
+                  && list.some(item => String(item?.meeting_id || "").startsWith("local-meeting-"));
+                if (hasLocalMeetingAgenda) {
+                  localStorage.removeItem(key);
+                  continue;
+                }
+
                 const hasLargeData = list.some(item => item.attachment_data);
-                if (hasLargeData) {
-                  const cleaned = list.map(item => ({ ...item, attachment_data: null }));
+                const hasLocalOnlyMeeting = list.some(item => String(item?.id || "").startsWith("local-meeting-"));
+                if (hasLargeData || hasLocalOnlyMeeting) {
+                  const cleaned = key.startsWith("local_committee_meetings_")
+                    ? list.filter(isPersistedCommitteeMeeting).map(item => ({ ...item, attachment_data: null }))
+                    : list.map(item => ({ ...item, attachment_data: null }));
                   localStorage.setItem(key, JSON.stringify(cleaned));
-                  console.log(`[Self-Healing] Cleaned up large base64 attachments in localStorage key: ${key}`);
+                  console.log(`[Self-Healing] Cleaned unofficial meeting cache in localStorage key: ${key}`);
                 }
               }
             }
@@ -794,6 +833,7 @@ export default function CommitteeManager({
     if (!committeeId) return;
 
     let loadedMeetings: any[] = [];
+    let dbQuerySucceeded = false;
 
     // 1. [1순위] Supabase DB 쿼리 발송 (ecc <-> ecc_op 유연 매칭)
     try {
@@ -809,9 +849,11 @@ export default function CommitteeManager({
 
       const { data, error } = await query.order("created_at", { ascending: false });
 
-      if (!error && data && data.length > 0) {
-        loadedMeetings = data;
-        const cleanMeetings = data.map((m: any) => ({ ...m, attachment_data: null }));
+      if (error) throw error;
+      dbQuerySucceeded = true;
+      loadedMeetings = (data || []).filter(isPersistedCommitteeMeeting);
+      {
+        const cleanMeetings = loadedMeetings.map((m: any) => ({ ...m, attachment_data: null }));
         localStorage.setItem(`local_committee_meetings_${committeeId}`, JSON.stringify(cleanMeetings));
       }
     } catch (err: any) {
@@ -819,11 +861,11 @@ export default function CommitteeManager({
     }
 
     // 2. DB 데이터가 없거나 에러 발생 시 로컬 캐시 스토리지에서 복원
-    if (loadedMeetings.length === 0) {
+    if (!dbQuerySucceeded) {
       try {
         const localData = localStorage.getItem(`local_committee_meetings_${committeeId}`);
         if (localData) {
-          loadedMeetings = JSON.parse(localData);
+          loadedMeetings = JSON.parse(localData).filter(isPersistedCommitteeMeeting);
         } else {
           // 전체 로컬 회의 수합 키 검색
           const allLocalKeys = Object.keys(localStorage).filter(k => k.startsWith("local_committee_meetings"));
@@ -833,8 +875,8 @@ export default function CommitteeManager({
               const item = localStorage.getItem(k);
               if (item) {
                 const parsed = JSON.parse(item);
-                if (Array.isArray(parsed)) tempArr.push(...parsed);
-                else if (parsed && typeof parsed === "object") tempArr.push(parsed);
+                if (Array.isArray(parsed)) tempArr.push(...parsed.filter(isPersistedCommitteeMeeting));
+                else if (isPersistedCommitteeMeeting(parsed)) tempArr.push(parsed);
               }
             } catch { }
           });
@@ -1632,8 +1674,9 @@ export default function CommitteeManager({
       })
     );
 
+    let createdMeeting: CommitteeMeeting | null = null;
+
     try {
-      let createdMeeting: CommitteeMeeting | null = null;
 
       if (isEditMode && editingMeetingId) {
         // 1-A. 회의 정보 업데이트
@@ -1765,65 +1808,19 @@ export default function CommitteeManager({
         await fetchMeetingAgendasAndVotes(createdMeeting.id);
       }
     } catch (err: unknown) {
-      console.warn("DB 회의 처리 실패, 로컬 스토리지에 모의 저장합니다:", getErrorMessage(err));
+      console.error("공식 회의 DB 저장 실패:", err);
 
-      const targetMeetingId = String(isEditMode && editingMeetingId ? editingMeetingId : `local-meeting-${Date.now()}`);
-      const localMeetings = JSON.parse(localStorage.getItem(`local_committee_meetings_${selectedCommittee.id}`) || "[]");
-      let updatedMeetings: CommitteeMeeting[];
-      const localPayload = {
-        ...payload,
-        id: targetMeetingId,
-        agendas: meetingForm.agendas,
-        created_at: new Date().toISOString()
-      };
-
-      if (isEditMode) {
-        updatedMeetings = localMeetings.map((m: CommitteeMeeting) => String(m.id) === targetMeetingId ? localPayload : m);
-      } else {
-        updatedMeetings = [localPayload, ...localMeetings];
+      if (!isEditMode && createdMeeting?.id) {
+        const { error: rollbackError } = await supabase
+          .from("committee_meetings")
+          .delete()
+          .eq("id", String(createdMeeting.id));
+        if (rollbackError) {
+          console.error("부분 생성된 회의 롤백 실패:", rollbackError);
+        }
       }
 
-      // 첨부파일 무손실 저장
-      localStorage.setItem(`local_committee_meetings_${selectedCommittee.id}`, JSON.stringify(updatedMeetings));
-
-      // 로컬 스토리지용 의안 정보 모의 적재 (첨부파일 무손실 보존)
-      const localAgendas = meetingForm.agendas.map((a, idx) => ({
-        id: a.id || `local-agenda-${Date.now()}-${idx}`,
-        meeting_id: targetMeetingId,
-        title: a.title.trim(),
-        description: a.description || null,
-        is_evaluation: !!a.is_evaluation,
-        sort_order: idx + 1,
-        attachment_name: a.attachment_name || null,
-        attachment_data: a.attachment_data || null
-      }));
-
-      localStorage.setItem(`local_meeting_agendas_${targetMeetingId}`, JSON.stringify(localAgendas));
-      const shortCode = String(targetMeetingId).includes("-") ? String(targetMeetingId).split("-")[0] : targetMeetingId;
-      localStorage.setItem(`local_meeting_agendas_${shortCode}`, JSON.stringify(localAgendas));
-
-      if (isEditMode) {
-        alert("회의 정보 및 심의 안건이 수정되었습니다. (오프라인 캐시 모드)");
-      } else {
-        alert(`⚠️ [오프라인 모드 경고]\nDB 연결 상태가 원활하지 않아 로컬 브라우저에 임시 저장되었습니다.\n새로고침 후 안정적인 네트워크 상태에서 회의를 다시 개설하셔야 외부 위원 투표가 실시간으로 집계 연동됩니다.\n[외부 위원용 임시 PIN]: ${generatedPin}`);
-      }
-
-      setIsMeetingModalOpen(false);
-      setIsEditMode(false);
-      setEditingMeetingId(null);
-      setMeetingForm({
-        title: "",
-        meeting_date: "",
-        meeting_type: "ONLINE_WRITTEN",
-        agenda: "",
-        attachment_name: "",
-        attachment_data: "",
-        access_pin: "",
-        agendas: [{ title: "", description: "", is_evaluation: false }]
-      });
-      setMeetings(updatedMeetings);
-      setSelectedMeeting(localPayload as CommitteeMeeting);
-      await fetchMeetingAgendasAndVotes(targetMeetingId);
+      alert(`회의 생성에 실패했습니다.\n\n${getCommitteeMeetingSaveErrorMessage(err)}\n\n로컬 임시 회의와 외부위원 링크는 생성되지 않았습니다.`);
     } finally {
       setIsSubmittingMeeting(false);
     }
@@ -3121,8 +3118,18 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
                   {/* 💡 [외부 위원 전용 접속 링크 및 보안 PIN 배너 - 구글 폼 스타일 단축 URL 적용] */}
                   {(() => {
-                    const shortMeetingCode = selectedMeeting.public_code || selectedMeeting.id;
-                    const shortVoteUrl = `${window.location.origin}${window.location.pathname}?v=${shortMeetingCode}`;
+                    const shortMeetingCode = selectedMeeting.public_code?.trim();
+                    const shortVoteUrl = shortMeetingCode
+                      ? `${window.location.origin}${window.location.pathname}?v=${shortMeetingCode}`
+                      : "";
+
+                    if (!shortVoteUrl) {
+                      return (
+                        <div style={{ marginTop: "0.75rem", padding: "0.75rem", background: "rgba(239, 68, 68, 0.08)", borderRadius: "6px", border: "1px solid rgba(239, 68, 68, 0.3)", color: "#f87171", fontSize: "0.8rem", fontWeight: "700" }}>
+                          외부위원 링크를 발급할 수 없는 비공식 회의입니다. 회의를 삭제한 뒤 DB 연결이 정상인 상태에서 다시 생성해 주세요.
+                        </div>
+                      );
+                    }
 
                     return (
                       <div style={{ marginTop: "0.75rem", padding: "0.75rem", background: "rgba(16, 185, 129, 0.05)", borderRadius: "6px", border: "1px solid rgba(16, 185, 129, 0.2)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
@@ -3161,13 +3168,13 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                           <span style={{ fontSize: "0.75rem", background: "rgba(245, 158, 11, 0.15)", color: "#fbbf24", padding: "0.25rem 0.5rem", borderRadius: "4px", fontWeight: "bold" }}>
-                            보안 PIN: {selectedMeeting.access_pin || "123456"}
+                            보안 PIN: {selectedMeeting.access_pin || "미발급"}
                           </span>
                           <button
                             className="btn btn-primary"
                             style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: "0.25rem" }}
                             onClick={() => {
-                              const copyText = `안녕하세요, RISE 위원회 위원님.\n\n개설된 회의 심의 의결 안내 드립니다.\n\n■ 회의 안건: ${selectedMeeting.title}\n■ 접속 단축 링크: ${shortVoteUrl}\n■ 보안 PIN코드: ${selectedMeeting.access_pin || "123456"}\n\n위 단축 링크로 접속하신 후 위원 성명과 보안 PIN코드를 입력하시고 의결 및 전자서명을 제출해 주시기 바랍니다.`;
+                              const copyText = `안녕하세요, RISE 위원회 위원님.\n\n개설된 회의 심의 의결 안내 드립니다.\n\n■ 회의 안건: ${selectedMeeting.title}\n■ 접속 단축 링크: ${shortVoteUrl}\n■ 보안 PIN코드: ${selectedMeeting.access_pin || "미발급"}\n\n위 단축 링크로 접속하신 후 위원 성명과 보안 PIN코드를 입력하시고 의결 및 전자서명을 제출해 주시기 바랍니다.`;
                               navigator.clipboard.writeText(copyText);
                               alert("외부 위원 안내문 및 단축 접속 링크가 클립보드에 복사되었습니다!");
                             }}
@@ -4372,16 +4379,21 @@ ${selectedMeetingAgendas.map((a, idx) => {
                   </small>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label htmlFor="a11y-committee-manager-17" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 보안 PIN코드 (선택)</label>
+                  <label htmlFor="a11y-committee-manager-17" style={{ fontSize: "0.85rem", color: "var(--text-primary)", display: "block", marginBottom: "0.25rem" }}>회의 보안 PIN코드 (필수)</label>
                   <input id="a11y-committee-manager-17"
                     type="text"
-                    maxLength={10}
-                    placeholder="미지정 시 기본 123456"
+                    inputMode="numeric"
+                    pattern="[0-9]{6}"
+                    maxLength={6}
+                    placeholder="123456을 제외한 6자리 숫자"
                     value={meetingForm.access_pin}
                     onChange={(e) => setMeetingForm({ ...meetingForm, access_pin: e.target.value })}
                     className="form-input"
                     style={{ width: "100%", padding: "0.5rem", borderRadius: "6px" }}
                   />
+                  <small style={{ color: "#f59e0b", fontSize: "0.7rem", marginTop: "0.25rem", display: "block" }}>
+                    * 보안상 123456은 사용할 수 없습니다.
+                  </small>
                 </div>
               </div>
 
