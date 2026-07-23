@@ -4,11 +4,11 @@
 
 ---
 
-## Match Rate: 47%
+## Match Rate: 55%
 
 ## Summary
 
-설계된 12개 구현 batch 가운데 정적 데이터, App 타입·seed·주요 utility, Supabase service, lazy/bundle 검증을 완료했다. App lifecycle batch는 캐시·인증·상태 영속화·스크롤·프로젝트·협약·통합증명서·장학금에 이어 언론보도와 조달 3종 자동저장까지 분리했다. 전체 DB 로드와 일정 자동저장 등이 남아 있고 JSX와 manager 분리는 아직 시작 전이므로 전체 일치율은 47%로 평가한다.
+설계된 12개 구현 batch 가운데 정적 데이터, App 타입·seed·주요 utility, Supabase service, lazy/bundle 검증을 완료했다. App lifecycle은 캐시·인증·상태 영속화·전체 DB 로드·구성원 복원과 모든 도메인 자동저장 훅 분리를 완료했고, 다년도 프로젝트 정규화 엔진도 독립 모듈로 이동했다. JSX와 manager 분리는 아직 시작 전이므로 전체 일치율은 55%로 평가한다.
 
 ## Implemented Items
 
@@ -24,6 +24,9 @@
 - [x] Supabase Auth + 승인된 `rise_users` 세션 복원 hook 분리
 - [x] 프로젝트·협약서·통합증명서·장학금 자동저장 hook 분리
 - [x] 언론보도·환경개선·기자재·용역 자동저장 hook 분리
+- [x] 월간·행사·회의 일정 자동저장과 cleanup flush hook 분리
+- [x] 전체 DB 로드와 구성원 DB 복원 hook 분리
+- [x] 프로젝트 다년도 정규화 순수 엔진 본체 분리
 - [x] 스크롤·다크모드·메뉴 접근·탭/연차 상태 영속화 hook 분리
 - [x] KPI 선택·프로젝트 fetch reset·정규화 lifecycle 분리
 - [x] lazy boundary 유지 및 production bundle 재측정
@@ -31,10 +34,6 @@
 
 ## Missing Items
 
-- [ ] App 전체 DB 로드 hook 분리
-- [ ] 일정 자동저장 hook 분리
-- [ ] 구성원 DB 복원 hook 분리
-- [ ] 프로젝트 다년도 정규화 순수 엔진 본체 분리
 - [ ] App 탭별 JSX component 분리
 - [ ] `ScheduleManager` 도메인 분리
 - [ ] `ProcurementManager` 도메인 분리
@@ -50,11 +49,11 @@
 ## Evidence
 
 - `mockData.ts`: 18,812줄 → 6줄
-- `App.tsx`: 14,462줄 → 11,219줄
-- App 내부 `useEffect`: 55개 → 8개
+- `App.tsx`: 14,462줄 → 9,568줄
+- App 내부 `useEffect`: 55개 → 0개
 - App 내부 직접 Supabase `.from(...)`: 0개
 - 도메인 service: agreements, management, procurement, press, projects, schedule
-- lifecycle/autosave hook: 20개 파일
+- lifecycle/autosave hook: 25개 파일
 - mock 데이터 직렬화: 323,982 bytes exact match
 - TypeScript: 0 errors
 - lint: 0 diagnostics
@@ -63,10 +62,9 @@
 
 ## Recommendations
 
-1. 일정 월간·행사·회의 자동저장을 flush ref와 삭제 순서를 보존하며 순차 이동한다.
-2. 전체 DB 로드는 payload normalization을 분리한 뒤 마지막 lifecycle batch로 이동한다.
-3. lifecycle 완료 후 App 탭별 JSX를 DOM 변경 없이 1:1 이동한다.
-4. `CommitteeManager`는 강화된 회귀시험을 통과한 뒤 마지막으로 분리한다.
+1. App 탭별 JSX를 DOM·className 변경 없이 1:1 이동한다.
+2. 화면 분리 패턴이 안정되면 `ScheduleManager`부터 manager를 순차 분리한다.
+3. `CommitteeManager`는 강화된 회귀시험을 통과한 뒤 마지막으로 분리한다.
 
 ## Next Steps
 
