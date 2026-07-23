@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
+import type {
+  ChangeEvent,
+  FormEvent
+} from "react";
 import {
   Calendar as CalendarIcon, Clock, MapPin, Users,
   FileText, Award, Layers, Plus, CheckCircle, Info, ChevronLeft, ChevronRight,
@@ -9,6 +13,35 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as pdfjsLib from "pdfjs-dist";
 import * as XLSX from "xlsx";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+type ScheduleItem = Record<string, any> & {
+  id?: number | string;
+  title?: string;
+  date?: string;
+  year?: number | string;
+};
+
+type CommitteeMember = Record<string, any> & {
+  id?: number | string;
+  name: string;
+  type?: string | null;
+};
+
+type ScheduleFormData = Record<string, any>;
+
+interface AgendaResultPair {
+  agenda: string;
+  result: string;
+}
+
+interface AiDebateLog {
+  role: string;
+  text: string;
+}
+
+const scheduleDb = supabase as any;
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 // 💡 [디자인 가드] 위원회 ID별 고유 Lucide 아이콘 리턴 (특색있는 디스플레이 구현)
 const getCommitteeIcon = (id: string): React.JSX.Element => {
@@ -329,15 +362,15 @@ export interface ScheduleManagerProps {
   darkMode?: boolean;
   subTab?: string;
   onChangeSubTab?: (subTab: string) => void;
-  monthlySchedules?: any[];
-  setMonthlySchedules?: React.Dispatch<React.SetStateAction<any[]>>;
-  eventSchedules?: any[];
-  setEventSchedules?: React.Dispatch<React.SetStateAction<any[]>>;
-  meetingSchedules?: any[];
-  setMeetingSchedules?: React.Dispatch<React.SetStateAction<any[]>>;
-  pressReleases?: any[];
-  setPressReleases?: React.Dispatch<React.SetStateAction<any[]>>;
-  members?: any[];
+  monthlySchedules?: ScheduleItem[];
+  setMonthlySchedules?: React.Dispatch<React.SetStateAction<ScheduleItem[]>>;
+  eventSchedules?: ScheduleItem[];
+  setEventSchedules?: React.Dispatch<React.SetStateAction<ScheduleItem[]>>;
+  meetingSchedules?: ScheduleItem[];
+  setMeetingSchedules?: React.Dispatch<React.SetStateAction<ScheduleItem[]>>;
+  pressReleases?: ScheduleItem[];
+  setPressReleases?: React.Dispatch<React.SetStateAction<ScheduleItem[]>>;
+  members?: CommitteeMember[];
 }
 
 export default function ScheduleManager({
@@ -348,13 +381,13 @@ export default function ScheduleManager({
   subTab,
   onChangeSubTab,
   monthlySchedules = [],
-  setMonthlySchedules,
+  setMonthlySchedules = () => undefined,
   eventSchedules = [],
-  setEventSchedules,
+  setEventSchedules = () => undefined,
   meetingSchedules = [],
-  setMeetingSchedules,
+  setMeetingSchedules = () => undefined,
   pressReleases = [],
-  setPressReleases,
+  setPressReleases = () => undefined,
   members = []
 }: ScheduleManagerProps) {
   // 선택 연차에 동조하는 회계연도 연도 구하기 (1차년도: 2025, 2차년도: 2026 등)
@@ -364,10 +397,10 @@ export default function ScheduleManager({
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [modalType, setModalType] = useState("monthly"); // "monthly", "event", "meeting", "press"
   const [isEditMode, setIsEditMode] = useState(false);   // 수정 모드 활성화 여부
-  const [editingItemId, setEditingItemId] = useState(null); // 편집 대상 일정 ID
+  const [editingItemId, setEditingItemId] = useState<number | string | null>(null); // 편집 대상 일정 ID
 
   // 교원의 경우 직급/직위를 '센터장', '팀장교수'로 이원화 표기 및 심현미 운영팀장 표기 헬퍼 함수
-  const getFormattedMemberGrade = (m) => {
+  const getFormattedMemberGrade = (m: CommitteeMember | null | undefined, _includeProfessors?: boolean) => {
     if (!m) return "연구원";
 
     // 송경영의 경우 직위를 '단장'으로 강제 표기하여 목록 노출을 보정합니다.
@@ -394,7 +427,7 @@ export default function ScheduleManager({
 
     if (isProfessorType) {
       // 5대 센터장 정보 매핑 (김현수 교수는 본부장으로 표시되며 센터장 매핑에서 삭제됨)
-      const centerHeads = {
+      const centerHeads: Record<string, string> = {
         "이동은": "ECC센터",
         "김기범": "ICC센터",
         "현용환": "RCC센터",
@@ -428,7 +461,7 @@ export default function ScheduleManager({
   };
 
   // 회의록 작성자에서 센터장, 교수진(팀장교수 포함), 운영팀장을 배제하는 판별 함수
-  const isWriterExcluded = (m) => {
+  const isWriterExcluded = (m: CommitteeMember | null | undefined) => {
     if (!m) return true;
     const displayRole = getFormattedMemberGrade(m);
 
@@ -448,7 +481,7 @@ export default function ScheduleManager({
   };
 
   // 선택 연차의 실제 회계연도 사업기간(3/1 ~ 이듬해 2/28 또는 29) 부합 여부 판별 함수
-  const isDateInSelectedYear = (dateStr, yearVal) => {
+  const isDateInSelectedYear = (dateStr: string | undefined, yearVal: number | string | undefined) => {
     if (!dateStr) return false;
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return false;
@@ -465,7 +498,7 @@ export default function ScheduleManager({
   };
 
   // 날짜 문자열을 기반으로 공식 회계연도(3/1 ~ 이듬해 2/28) 1~5차년도 값을 동적으로 리턴하는 함수
-  const getCalculatedYearFromDate = (dateStr) => {
+  const getCalculatedYearFromDate = (dateStr?: string) => {
     if (!dateStr) return selectedYear;
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return selectedYear;
@@ -517,14 +550,14 @@ export default function ScheduleManager({
   }, [selectedCommitteeId]);
 
   // 위원회 및 위원 명단 상태 (초기값은 하드코딩 백업 데이터)
-  const [committees, setCommittees] = useState(COMMITTEES_DATA);
+  const [committees, setCommittees] = useState<any[]>(COMMITTEES_DATA);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState(null); // 수정할 위원 정보 (null 이면 신규 추가)
+  const [editingMember, setEditingMember] = useState<CommitteeMember | null>(null); // 수정할 위원 정보 (null 이면 신규 추가)
 
   // 💡 [위원 직분별 우선순위 정렬 헬퍼] 위원장 -> 위원 -> 간사 순서 출력
-  const sortMembersByRole = (membersList) => {
+  const sortMembersByRole = (membersList: CommitteeMember[], _context?: unknown) => {
     if (!Array.isArray(membersList)) return [];
-    const getRolePriority = (typeStr) => {
+    const getRolePriority = (typeStr?: string | null) => {
       if (!typeStr) return 2;
       if (typeStr.includes("위원장")) return 1;
       if (typeStr.includes("간사")) return 3;
@@ -546,11 +579,11 @@ export default function ScheduleManager({
 
 
   // 위원회 종류 필터 상태
-  const [selectedCommitteeFilters, setSelectedCommitteeFilters] = useState([]);
+  const [selectedCommitteeFilters, setSelectedCommitteeFilters] = useState<string[]>([]);
 
   // AI 언론 기사 크롤링 시뮬레이션 상태
   const [isCrawlerModalOpen, setIsCrawlerModalOpen] = useState(false);
-  const [crawlerLogs, setCrawlerLogs] = useState([]);
+  const [crawlerLogs, setCrawlerLogs] = useState<string[]>([]);
   const [crawlerProgress, setCrawlerProgress] = useState(0);
 
   // Gemini API 단일 URL 기사 분석 로딩 상태
@@ -597,7 +630,7 @@ export default function ScheduleManager({
 
       if (comms && comms.length > 0) {
         // 공식 거버넌스 중요도 순 정렬 매핑 (알파벳순 정렬 오류 차단)
-        const orderMap = {
+        const orderMap: Record<string, number> = {
           "total": 1,      // RISE총괄위원회
           "planning": 2,   // RISE기획위원회
           "budget": 3,     // RISE사업비관리위원회
@@ -615,17 +648,17 @@ export default function ScheduleManager({
         const { data: mems, error: memsErr } = await supabase
           .from("committee_members")
           .select("*")
-          .eq("year", selectedYear)
+          .eq("year", String(selectedYear || ""))
           .order("sort_order", { ascending: true })
           .order("id", { ascending: true });
         if (memsErr) throw memsErr;
 
         const combined = sortedComms.map(c => {
-          const localMaster = COMMITTEES_DATA.find(lc => lc.id === c.id) || {};
+          const localMaster: any = COMMITTEES_DATA.find(lc => lc.id === c.id) || {};
           return {
             ...localMaster, // 로컬 마스터 데이터의 예쁜 디스플레이 디자인 속성(color, badge, purpose, cycle 등) 선주입
             ...c,           // Supabase 실시간 DB 값(name, total_quorum 등) 최종 병합
-            desc: c.description || localMaster.desc,
+            desc: (c as any).description || localMaster.desc,
             members: (mems || [])
               .filter(m => m.committee_id === c.id)
               .map(m => ({
@@ -699,20 +732,21 @@ export default function ScheduleManager({
   };
 
   // 💡 [교육용 한글 주석] 업로드된 .xlsx 포맷의 파일 바이트 데이터를 로드하여 파싱하고 DB에 insert합니다.
-  const handleExcelUpload = (e) => {
-    const file = e.target.files[0];
+  const handleExcelUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
+        if (!(evt.target?.result instanceof ArrayBuffer)) return;
         const data = new Uint8Array(evt.target.result);
         const workbook = XLSX.read(data, { type: "array" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         
         // 2차원 배열 구조로 엑셀 데이터 변환
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const jsonData = XLSX.utils.sheet_to_json<unknown[]>(worksheet, { header: 1 });
         if (jsonData.length <= 1) {
           alert("업로드할 위원 데이터가 존재하지 않습니다.");
           return;
@@ -724,7 +758,7 @@ export default function ScheduleManager({
           return;
         }
         
-        const newMembers = [];
+        const newMembers: any[] = [];
         const currentMembersCount = activeComm.members ? activeComm.members.length : 0;
         
         // 헤더 다음인 첫 번째 행부터 시작
@@ -751,16 +785,16 @@ export default function ScheduleManager({
           return;
         }
         
-        const { error } = await supabase
+        const { error } = await scheduleDb
           .from("committee_members")
           .insert(newMembers);
         if (error) throw error;
         
         alert(`총 ${newMembers.length}명의 위원이 성공적으로 일괄 등록되었습니다!`);
         await loadCommitteesData();
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("엑셀 파싱/업로드 중 에러:", err);
-        alert("엑셀 일괄 업로드 실패: " + err.message);
+        alert("엑셀 일괄 업로드 실패: " + getErrorMessage(err));
       } finally {
         e.target.value = ""; // 파일 재선택 가능하게 클리어
       }
@@ -769,10 +803,11 @@ export default function ScheduleManager({
   };
 
   // 위원 삭제 처리 함수
-  const handleDeleteMember = async (memberId) => {
+  const handleDeleteMember = async (memberId: number | string | undefined) => {
+    if (memberId === undefined) return;
     if (!window.confirm("이 위원을 명단에서 정말 삭제하시겠습니까?")) return;
     try {
-      const { error } = await supabase
+      const { error } = await scheduleDb
         .from("committee_members")
         .delete()
         .eq("id", memberId);
@@ -780,14 +815,14 @@ export default function ScheduleManager({
 
       // DB 삭제 후 화면 데이터 실시간 갱신
       await loadCommitteesData();
-    } catch (e) {
+    } catch (e: unknown) {
       console.error("위원을 삭제하는 데 실패했습니다:", e);
-      alert("삭제 중 오류가 발생했습니다: " + e.message);
+      alert("삭제 중 오류가 발생했습니다: " + getErrorMessage(e));
     }
   };
 
   // 위원 추가/수정 저장 처리 함수
-  const handleSaveMember = async (e) => {
+  const handleSaveMember = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!memberFormData.name.trim()) {
       alert("성명을 입력해 주세요.");
@@ -805,7 +840,7 @@ export default function ScheduleManager({
     try {
       if (editingMember) {
         // 기존 멤버 정보 업데이트 (UPDATE)
-        const { error } = await supabase
+        const { error } = await scheduleDb
           .from("committee_members")
           .update({
             type: memberFormData.type,
@@ -824,7 +859,7 @@ export default function ScheduleManager({
         const currentMembers = committees.find(c => c.id === selectedCommitteeId)?.members || [];
         const nextSortOrder = currentMembers.length + 1;
 
-        const { error } = await supabase
+        const { error } = await scheduleDb
           .from("committee_members")
           .insert({
             committee_id: selectedCommitteeId,
@@ -834,7 +869,7 @@ export default function ScheduleManager({
             dept: memberFormData.dept,
             rank: memberFormData.rank,
             location: memberFormData.location,
-            year: selectedYear,
+            year: String(selectedYear || ""),
             term: combinedTerm,
             note: memberFormData.note,
             sort_order: nextSortOrder
@@ -848,9 +883,9 @@ export default function ScheduleManager({
 
       // DB 반영 후 화면 데이터 실시간 갱신
       await loadCommitteesData();
-    } catch (e) {
+    } catch (e: unknown) {
       console.error("위원을 저장하는 데 실패했습니다:", e);
-      alert("저장 중 오류가 발생했습니다: " + e.message);
+      alert("저장 중 오류가 발생했습니다: " + getErrorMessage(e));
     }
   };
 
@@ -884,7 +919,7 @@ export default function ScheduleManager({
 
   // 언론보도 세부 구분 필터 상태 ("all", "방송", "신문", "기타")
   const [selectedPressType, setSelectedPressType] = useState("all");
-  const [activePressId, setActivePressId] = useState(null);
+  const [activePressId, setActivePressId] = useState<number | string | null>(null);
 
   // 회의 대분류 상태 ("operating": 사업운영위원회, "center": 센터별 회의, "committee": 각종 위원회 회의)
   const [activeMeetingCat, setActiveMeetingCat] = useState(() => {
@@ -897,7 +932,7 @@ export default function ScheduleManager({
   }, [activeMeetingCat]);
 
   // 월간일정 상세 링킹 기능 (행사, 회의록 연계 이동)
-  const handleLinkToDetail = (sched) => {
+  const handleLinkToDetail = (sched: ScheduleItem) => {
     if (!sched) return;
 
     // 일정 시작일자에서 월 파싱
@@ -919,7 +954,7 @@ export default function ScheduleManager({
       // 2. 행사 매칭 및 스크롤
       const matchedEvent = eventSchedules.find(e => e.id === sched.eventId) || eventSchedules.find(e => {
         const dateMatch = e.datetime && e.datetime.includes(sched.startAt.split(" ")[0]);
-        const titleMatch = e.title && (e.title.includes(sched.title) || sched.title.includes(e.title));
+        const titleMatch = e.title && (e.title.includes(sched.title || "") || (sched.title || "").includes(e.title));
         return dateMatch || titleMatch;
       });
 
@@ -946,7 +981,7 @@ export default function ScheduleManager({
       // 1. 회의록 검색
       const matchedMeeting = meetingSchedules.find(m => m.id === sched.meetingId) || meetingSchedules.find(m => {
         const dateMatch = m.datetime && m.datetime.includes(sched.startAt.split(" ")[0]);
-        const titleMatch = m.title && (m.title.includes(sched.title) || sched.title.includes(m.title));
+        const titleMatch = m.title && (m.title.includes(sched.title || "") || (sched.title || "").includes(m.title));
         return dateMatch || titleMatch;
       });
 
@@ -956,7 +991,7 @@ export default function ScheduleManager({
         if (matchedMeeting.category) {
           setActiveMeetingCat(matchedMeeting.category);
         }
-        setSelectedMeetingId(matchedMeeting.id);
+        setSelectedMeetingId(matchedMeeting.id ?? null);
 
         if (onChangeSubTab) {
           onChangeSubTab("meetings");
@@ -987,7 +1022,7 @@ export default function ScheduleManager({
   };
 
   // 4. 입력 폼 임시 State
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ScheduleFormData>({
     title: "",
     type: "행사",
     dept: "사업운영팀",
@@ -1020,7 +1055,7 @@ export default function ScheduleManager({
   });
 
   // 의제-결과 1:1 매핑 상태 추가
-  const [agendaResultPairs, setAgendaResultPairs] = useState([{ agenda: "", result: "" }]);
+  const [agendaResultPairs, setAgendaResultPairs] = useState<AgendaResultPair[]>([{ agenda: "", result: "" }]);
 
   // AI 기획서 자동완성 상태 관리
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -1028,7 +1063,7 @@ export default function ScheduleManager({
   const [aiRawText, setAiRawText] = useState(""); // 기획서 원본 텍스트 직접 입력/저장용
   const [aiResultFileName, setAiResultFileName] = useState(""); // [추가] 결과보고서 파일명
   const [aiResultRawText, setAiResultRawText] = useState(""); // [추가] 결과보고서 원본 텍스트 직접 입력/저장용
-  const [aiDebateLogs, setAiDebateLogs] = useState([]); // [추가] 실시간 AI 토론 로그
+  const [aiDebateLogs, setAiDebateLogs] = useState<AiDebateLog[]>([]); // [추가] 실시간 AI 토론 로그
   const [isDebating, setIsDebating] = useState(false); // [추가] AI 토론 진행 상태 플래그
   const [aiPlanApplied, setAiPlanApplied] = useState(false); // [추가] AI 기획 데이터 반영 여부
   const [aiResultApplied, setAiResultApplied] = useState(false); // [추가] AI 결과 데이터 반영 여부
@@ -1037,8 +1072,8 @@ export default function ScheduleManager({
   const [aiEngine, setAiEngine] = useState("gpt"); // "gemini" or "gpt"
   const [includeProfessors, setIncludeProfessors] = useState(false); // 팀장교수 포함 여부
   const [selectedDeptFilter, setSelectedDeptFilter] = useState("전체"); // 부서 필터 상태
-  const [draggingId, setDraggingId] = useState(null); // 드래그 중인 일정 ID
-  const [dragOverDate, setDragOverDate] = useState(null); // 드래그 호버 중인 날짜 셀 YYYY-MM-DD
+  const [draggingId, setDraggingId] = useState<number | string | null>(null); // 드래그 중인 일정 ID
+  const [dragOverDate, setDragOverDate] = useState<string | null>(null); // 드래그 호버 중인 날짜 셀 YYYY-MM-DD
 
 
   // 샘플 파일 로드
@@ -1067,7 +1102,7 @@ export default function ScheduleManager({
   };
 
   // 💡 [교육용 한글 주석] PDF 날것의 텍스트를 요약 없이 마크다운 문서 포맷으로 가꾸어주는 GPT-4o 헬퍼 함수입니다.
-  const convertRawTextToMarkdown = async (rawText) => {
+  const convertRawTextToMarkdown = async (rawText: string): Promise<string> => {
     let apiKey = import.meta.env.VITE_OPENAI_API_KEY || "";
     if (!apiKey || apiKey.startsWith("sk-") === false) {
       apiKey = localStorage.getItem("user_openai_api_key") || "";
@@ -1119,7 +1154,10 @@ ${rawText}
   };
 
   // 실제 파일 선택 핸들러
-  const handleAiFileChange = async (e, type = "plan") => {
+  const handleAiFileChange = async (
+    e: ChangeEvent<HTMLInputElement>,
+    type: "plan" | "result" = "plan"
+  ) => {
     if (e.target.files && e.target.files.length > 0) {
       const files = Array.from(e.target.files);
       const fileNames = files.map(f => f.name).join(", ");
@@ -1130,7 +1168,7 @@ ${rawText}
         setAiResultFileName(fileNames);
       }
 
-      const updateText = (text) => {
+      const updateText = (text: string) => {
         if (type === "plan") {
           setAiRawText(text);
         } else {
@@ -1151,9 +1189,11 @@ ${rawText}
 
           // 1. 텍스트 파일인 경우
           if (file.type.match('text.*') || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
-            fileText = await new Promise((resolve) => {
+            fileText = await new Promise<string>((resolve) => {
               const reader = new FileReader();
-              reader.onload = (event) => resolve(event.target.result);
+              reader.onload = (event) => resolve(
+                typeof event.target?.result === "string" ? event.target.result : ""
+              );
               reader.readAsText(file);
             });
           }
@@ -1167,7 +1207,7 @@ ${rawText}
             for (let i = 1; i <= pdf.numPages; i++) {
               const page = await pdf.getPage(i);
               const textContent = await page.getTextContent();
-              const pageText = textContent.items.map(item => item.str).join(" ");
+              const pageText = textContent.items.map((item: any) => item.str || "").join(" ");
               pdfText += `[Page ${i}]\n${pageText}\n\n`;
             }
             fileText = pdfText;
@@ -1187,15 +1227,18 @@ ${rawText}
         } else {
           updateText("선택한 파일들에서 텍스트를 추출하지 못했습니다. 본문이 비어있습니다.");
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("다중 파일 텍스트 추출 실패:", err);
-        updateText(`❌ 파일 텍스트 추출에 실패했습니다. 에러: ${err.message}\n본문 내용을 복사해서 직접 입력해 주세요.`);
+        updateText(`❌ 파일 텍스트 추출에 실패했습니다. 에러: ${getErrorMessage(err)}\n본문 내용을 복사해서 직접 입력해 주세요.`);
       }
     }
   };
 
     // AI 분석 결과 폼 자동 보정 및 지능형 매핑 헬퍼 함수
-  const applyMeetingAiDataRules = (aiData, prevFormData) => {
+  const applyMeetingAiDataRules = (
+    aiData: ScheduleFormData,
+    prevFormData: ScheduleFormData
+  ): ScheduleFormData => {
     const title = aiData.title || prevFormData.title;
     const location = aiData.location || prevFormData.location;
     
@@ -1265,15 +1308,18 @@ ${rawText}
   };
 
   // 💡 [교육용 한글 주석] 회의록 분석 결과인 의제/결과 리스트를 8대 부서에 지능적으로 자동 분배하여 입력 폼에 기입합니다.
-  const distributeOperatingAgendas = (agendaResultPairs, currentCategory) => {
+  const distributeOperatingAgendas = (
+    agendaResultPairs: AgendaResultPair[],
+    currentCategory: string
+  ): ScheduleFormData => {
     const isOperating = currentCategory === "operating" || formData.category === "operating";
     if (!isOperating || !agendaResultPairs || agendaResultPairs.length === 0) {
       return {};
     }
 
     const depts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
-    const newAgendas = {};
-    const newResults = {};
+    const newAgendas: Record<string, string> = {};
+    const newResults: Record<string, string> = {};
     
     depts.forEach(d => {
       newAgendas[d] = "";
@@ -1649,7 +1695,7 @@ ${targetText}
           // AI가 축약어나 비표준 부서명(예: "ECC", "늘봄")으로 반환할 수 있으므로, 표준 7개 부서명으로 완벽하게 정규화(Normalization)하여 머지합니다.
           const hasOperatingData = cleanJson.operatingAgendas || cleanJson.operatingResults;
           if (hasOperatingData) {
-            const normalizeDeptName = (key) => {
+            const normalizeDeptName = (key: string) => {
               if (!key) return "사업운영팀";
               const trimmed = key.trim();
               if (trimmed.includes("ECC") || trimmed === "ecc") return "ECC센터";
@@ -2211,10 +2257,10 @@ Gemini 피드백: \n${geminiCritiqueText}
       }, 1000);
     }, 1000);
   };
-  const handleToggleAttendee = (name, gradeSuffix = "") => {
+  const handleToggleAttendee = (name: string, gradeSuffix = "") => {
     setFormData(prev => {
       const current = prev.attendees || "";
-      let list = current.split(",").map(x => x.trim()).filter(Boolean);
+      let list: string[] = current.split(",").map((x: string) => x.trim()).filter(Boolean);
 
       // 해당 이름이거나 해당 이름으로 시작하는 기존 항목 찾기
       const existingItem = list.find(x => x === name || x.startsWith(name + " ") || x.startsWith(name + "("));
@@ -2236,7 +2282,10 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 날짜/시간 포맷 정밀 파싱 헬퍼 함수
-  const parseDateTime = (dateTimeStr, defaultVal = [`${targetYearNum}-07-15`, "10:00"]) => {
+  const parseDateTime = (
+    dateTimeStr: string | undefined,
+    defaultVal: [string, string] = [`${targetYearNum}-07-15`, "10:00"]
+  ): [string, string] => {
     if (!dateTimeStr) return defaultVal;
     let date = "";
     let time = "";
@@ -2257,10 +2306,10 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 관련 부서 멀티 체크박스 토글 핸들러
-  const handleDeptCheckboxChange = (deptName) => {
+  const handleDeptCheckboxChange = (deptName: string) => {
     const ALL_DEPTS = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
     setFormData(prev => {
-      let currentDepts = prev.dept ? prev.dept.split(",").map(x => x.trim()).filter(Boolean) : [];
+      let currentDepts: string[] = prev.dept ? prev.dept.split(",").map((x: string) => x.trim()).filter(Boolean) : [];
 
       if (deptName === "전체") {
         const hasAll = currentDepts.includes("전체");
@@ -2291,7 +2340,7 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 캘린더 일정 드래그 앤 드롭 이동 핸들러
-  const handleScheduleDrop = (schedId, targetDateStr) => {
+  const handleScheduleDrop = (schedId: number | string, targetDateStr: string) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -2387,8 +2436,11 @@ Gemini 피드백: \n${geminiCritiqueText}
   const [isAnalyzingAI, setIsAnalyzingAI] = useState(false); // AI 의제/결과 분석 상태
 
   // 회의록 음성 녹음 파일(MP3) 및 문서(PDF) 개별 업로드 핸들러
-  const handleMinutesFileUpload = async (e, type) => {
-    const file = e.target.files[0];
+  const handleMinutesFileUpload = async (
+    e: ChangeEvent<HTMLInputElement>,
+    type: "audio" | "pdf"
+  ) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     // MIME 타입 유효성 검사 및 파일 크기 제한 (5MB)
@@ -2473,9 +2525,9 @@ Gemini 피드백: \n${geminiCritiqueText}
         setIsAnalyzingAI(false);
         alert(`✨ AI Debate 분석 완료: 업로드된 ${sourceInfo}를 분석·조합하여 회의 의제와 결과를 자동 생성 및 하단 리스트에 반영하였습니다.`);
       }, 1800);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("File upload error:", err);
-      alert("파일 업로드 실패: " + err.message);
+      alert("파일 업로드 실패: " + getErrorMessage(err));
     } finally {
       setIsUploadingFile(false);
     }
@@ -2510,7 +2562,7 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 유튜브 임베드용 ID 추출 헬퍼
-  const getYoutubeEmbedUrl = (url) => {
+  const getYoutubeEmbedUrl = (url: string | undefined) => {
     if (!url) return null;
     const trimmed = url.trim();
     let videoId = "";
@@ -2539,8 +2591,8 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 회의록 관리 부서별 필터 및 선택 상태 추가
-  const [selectedDeptFilters, setSelectedDeptFilters] = useState([]);
-  const [selectedMeetingId, setSelectedMeetingId] = useState(null);
+  const [selectedDeptFilters, setSelectedDeptFilters] = useState<string[]>([]);
+  const [selectedMeetingId, setSelectedMeetingId] = useState<number | string | null>(null);
 
   // 필터링된 회의 목록의 첫 번째 아이템을 기본 선택 상태로 유지하는 이펙트 훅
   useEffect(() => {
@@ -2562,7 +2614,7 @@ Gemini 피드백: \n${geminiCritiqueText}
 
       if (filteredList.length > 0) {
         if (!selectedMeetingId || !filteredList.some(m => m.id === selectedMeetingId)) {
-          setSelectedMeetingId(filteredList[0].id);
+          setSelectedMeetingId(filteredList[0].id ?? null);
         }
       } else {
         setSelectedMeetingId(null);
@@ -2579,7 +2631,7 @@ Gemini 피드백: \n${geminiCritiqueText}
         .sort((a, b) => {
           const dateA = a.broadcastDate ? new Date(a.broadcastDate) : new Date(0);
           const dateB = b.broadcastDate ? new Date(b.broadcastDate) : new Date(0);
-          return dateB - dateA;
+          return dateB.getTime() - dateA.getTime();
         })
         .map(p => [
           p.type,
@@ -2611,11 +2663,11 @@ Gemini 피드백: \n${geminiCritiqueText}
       .sort((a, b) => {
         const dateA = a.broadcastDate ? new Date(a.broadcastDate) : new Date(0);
         const dateB = b.broadcastDate ? new Date(b.broadcastDate) : new Date(0);
-        return dateB - dateA;
+        return dateB.getTime() - dateA.getTime();
       });
     if (filtered.length > 0) {
       if (!activePressId || !filtered.some(p => p.id === activePressId)) {
-        setActivePressId(filtered[0].id);
+        setActivePressId(filtered[0].id ?? null);
       }
     } else {
       setActivePressId(null);
@@ -2623,7 +2675,7 @@ Gemini 피드백: \n${geminiCritiqueText}
   }, [pressReleases, selectedPressType, activePressId, selectedYear]);
 
   // 시작시간 기준으로 1시간 경과된 시간 문자열을 반환하는 헬퍼 함수
-  const getOneHourLater = (timeStr) => {
+  const getOneHourLater = (timeStr: string) => {
     if (!timeStr) return "";
     const parts = timeStr.split(":");
     if (parts.length < 2) return "";
@@ -2635,10 +2687,10 @@ Gemini 피드백: \n${geminiCritiqueText}
     return `${hh}:${mm}`;
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => {
-      const updated = { ...prev, [name]: value };
+      const updated: ScheduleFormData = { ...prev, [name]: value };
 
       // 시작시간 입력 시 종료시간을 자동으로 1시간 뒤로 자동완성
       if (name === "startTime" && value) {
@@ -2722,12 +2774,12 @@ Gemini 피드백: \n${geminiCritiqueText}
     });
   };
 
-  const handleCheckboxChange = (e) => {
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFormData(prev => ({ ...prev, [name]: checked }));
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
@@ -2743,7 +2795,7 @@ Gemini 피드백: \n${geminiCritiqueText}
     const endRange = new Date(`${endYear}-02-${endDay}T23:59:59+09:00`);
 
     // 날짜 유효성 검사 헬퍼 함수
-    const isDateInActiveYear = (dateStr) => {
+    const isDateInActiveYear = (dateStr: string) => {
       if (!dateStr) return false;
       const d = new Date(dateStr);
       return !isNaN(d.getTime()) && d >= startRange && d <= endRange;
@@ -2970,7 +3022,7 @@ Gemini 피드백: \n${geminiCritiqueText}
       if (formData.category === "committee") {
         let cName = formData.dept || "";
         if ((formData.committeeType || "agency") === "center") {
-          const deptToCommittee = {
+          const deptToCommittee: Record<string, string> = {
             "ECC센터": "ECC센터위원회",
             "ICC센터": "ICC센터위원회",
             "RCC센터": "RCC센터위원회",
@@ -3158,7 +3210,8 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 일정 삭제 핸들러
-  const handleDeleteSchedule = (id) => {
+  const handleDeleteSchedule = (id?: number | string) => {
+    if (id === undefined) return;
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -3169,9 +3222,9 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 일정 수정 모달 트리거
-  const handleEditSchedule = (sched) => {
+  const handleEditSchedule = (sched: ScheduleItem) => {
     setIsEditMode(true);
-    setEditingItemId(sched.id);
+    setEditingItemId(sched.id ?? null);
     setModalType(sched.isDeadline ? "deadline" : (sched.isTask ? "task" : "monthly"));
 
     const startParts = parseDateTime(sched.startAt, [`${targetYearNum}-07-15`, "10:00"]);
@@ -3204,7 +3257,8 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 할일 완료 상태 토글
-  const handleToggleTaskCompleted = (id) => {
+  const handleToggleTaskCompleted = (id?: number | string) => {
+    if (id === undefined) return;
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -3215,7 +3269,8 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 행사 및 결과 기획 삭제 핸들러
-  const handleDeleteEvent = (id) => {
+  const handleDeleteEvent = (id?: number | string) => {
+    if (id === undefined) return;
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -3226,9 +3281,9 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 행사 및 결과 기획 수정 모달 트리거
-  const handleEditEvent = (event) => {
+  const handleEditEvent = (event: ScheduleItem) => {
     setIsEditMode(true);
-    setEditingItemId(event.id);
+    setEditingItemId(event.id ?? null);
     setModalType("event");
 
     // datetime 파싱 ("2026-07-25 13:00 ~ 15:00" 형식)
@@ -3280,7 +3335,8 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 회의록 삭제 핸들러
-  const handleDeleteMeeting = (id) => {
+  const handleDeleteMeeting = (id?: number | string) => {
+    if (id === undefined) return;
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -3344,6 +3400,7 @@ Gemini 피드백: \n${geminiCritiqueText}
 
     try {
       // [1] 외부 AI 교차 검증 및 합의 분석 엔진 실행
+      // @ts-expect-error 레거시 JavaScript 분석기는 런타임 동적 로딩 경계를 유지합니다.
       const { analyzePressUrlWithAiConsensus } = await import("../utils/pressAnalyzer");
       const { parsed, usedModel } = await analyzePressUrlWithAiConsensus({
         url,
@@ -3413,7 +3470,7 @@ Gemini 피드백: \n${geminiCritiqueText}
         pressContent: "울산과학대학교가 추진하는 RISE 앵커사업의 일환으로 실시된 지산학 연계 세부 성과와 지역 기업 협업을 심도 있게 다룬 뉴스 기사입니다."
       }));
 
-      alert(`✨ [엔진 비상 전환] 로컬 안전 지능 엔진으로 카드를 대체 보완 완성했습니다.\n(원인: ${err.message})`);
+      alert(`✨ [엔진 비상 전환] 로컬 안전 지능 엔진으로 카드를 대체 보완 완성했습니다.\n(원인: ${getErrorMessage(err)})`);
       setIsAnalyzingUrl(false);
       return;
     }
@@ -3543,8 +3600,8 @@ Gemini 피드백: \n${geminiCritiqueText}
 
     // 중복 제거 연산 (유사성 및 동일 제목 검출)
     const existingTitles = pressReleases.map(p => (p.title || "").replace(/\s+/g, "").trim());
-    const uniqueNewPress = [];
-    const duplicatedTitles = [];
+    const uniqueNewPress: ScheduleItem[] = [];
+    const duplicatedTitles: string[] = [];
 
     mockPress.forEach(item => {
       const cleanTitle = (item.title || "").replace(/\s+/g, "").trim();
@@ -4017,9 +4074,9 @@ Gemini 피드백: \n${geminiCritiqueText}
       ];
 
       // 각 데이터에 year 필드를 동적으로 결합
-      const mockMeetingsWithYear = mockMeetings.map(m => ({ ...m, year: selectedYear }));
+      const mockMeetingsWithYear = mockMeetings.map(m => ({ ...m, year: Number(selectedYear || 1) }));
 
-      const { data: insertedData, error } = await supabase
+      const { data: insertedData, error } = await scheduleDb
         .from("schedule_meetings")
         .insert(mockMeetingsWithYear)
         .select();
@@ -4027,7 +4084,7 @@ Gemini 피드백: \n${geminiCritiqueText}
       if (error) throw error;
 
       if (insertedData && insertedData.length > 0) {
-        const formatted = insertedData.map(x => ({
+        const formatted = insertedData.map((x: any) => ({
           ...x,
           id: Number(x.id),
           month: Number(x.month),
@@ -4041,14 +4098,14 @@ Gemini 피드백: \n${geminiCritiqueText}
       }
     } catch (err) {
       console.error("Failed to generate mock meetings:", err);
-      alert("데이터 생성 중 오류가 발생했습니다: " + err.message);
+      alert("데이터 생성 중 오류가 발생했습니다: " + getErrorMessage(err));
     }
   };
 
   // 회의록 수정 모달 트리거
-  const handleEditMeeting = (meeting) => {
+  const handleEditMeeting = (meeting: ScheduleItem) => {
     setIsEditMode(true);
-    setEditingItemId(meeting.id);
+    setEditingItemId(meeting.id ?? null);
     setModalType("meeting");
 
     // datetime 파싱 ("2026-07-25 13:00 ~ 15:00" 형식 또는 "2026-07-25" 형식)
@@ -4097,7 +4154,7 @@ Gemini 피드백: \n${geminiCritiqueText}
       // 만약 '위원회: ' 태그가 포함되어 있다면 dept 정보도 그에 맞게 교정하여 세팅
       if (ext.includes("위원회:")) {
         const parts = ext.split("|");
-        const committeePart = parts.find(x => x.includes("위원회:"));
+        const committeePart = parts.find((x: string) => x.includes("위원회:"));
         if (committeePart) {
           const rawCName = committeePart.replace("위원회:", "").trim();
           if (committeeType === "center") {
@@ -4119,7 +4176,7 @@ Gemini 피드백: \n${geminiCritiqueText}
     const agendaLines = (meeting.agenda || "").split("\n").filter(Boolean);
     const resultLines = (meeting.result || "").split("\n").filter(Boolean);
     const maxLen = Math.max(agendaLines.length, resultLines.length, 1);
-    const initialPairs = [];
+    const initialPairs: AgendaResultPair[] = [];
     for (let i = 0; i < maxLen; i++) {
       initialPairs.push({
         agenda: agendaLines[i] || "",
@@ -4129,8 +4186,8 @@ Gemini 피드백: \n${geminiCritiqueText}
     setAgendaResultPairs(initialPairs);
 
     // 💡 [교육용 한글 주석] 사업운영위원회(operating)인 경우, 줄바꿈으로 나열된 의제/결과 텍스트를 각 부서별 데이터로 역직렬화(복원)합니다.
-    const restoredAgendas = {};
-    const restoredResults = {};
+    const restoredAgendas: Record<string, string> = {};
+    const restoredResults: Record<string, string> = {};
     if (meeting.category === "operating") {
       const depts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
       depts.forEach(d => {
@@ -4139,7 +4196,7 @@ Gemini 피드백: \n${geminiCritiqueText}
       });
 
       // 💡 [교육용 한글 주석] 3단계 지능형 분류기를 이용해 줄바꿈 텍스트를 적합한 부서별 입력 박스로 복원합니다.
-      const getHeuristicDept = (line) => {
+      const getHeuristicDept = (line: string) => {
         let matched = depts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`) || line.includes(d));
         if (matched) return matched;
 
@@ -4168,7 +4225,7 @@ Gemini 피드백: \n${geminiCritiqueText}
         return "사업운영팀";
       };
 
-      agendaLines.forEach(line => {
+      agendaLines.forEach((line: string) => {
         const matchedDept = getHeuristicDept(line);
         let cleanLine = line.trim();
         depts.forEach(d => {
@@ -4177,7 +4234,7 @@ Gemini 피드백: \n${geminiCritiqueText}
         restoredAgendas[matchedDept] = (restoredAgendas[matchedDept] ? restoredAgendas[matchedDept] + "\n" : "") + cleanLine;
       });
 
-      resultLines.forEach(line => {
+      resultLines.forEach((line: string) => {
         const matchedDept = getHeuristicDept(line);
         let cleanLine = line.trim();
         depts.forEach(d => {
@@ -4223,7 +4280,8 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 언론보도 삭제 핸들러
-  const handleDeletePress = (id) => {
+  const handleDeletePress = (id?: number | string) => {
+    if (id === undefined) return;
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
@@ -4237,9 +4295,9 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 언론보도 수정 모달 트리거
-  const handleEditPress = (press) => {
+  const handleEditPress = (press: ScheduleItem) => {
     setIsEditMode(true);
-    setEditingItemId(press.id);
+    setEditingItemId(press.id ?? null);
     setModalType("press");
 
     let pDate = "2026-07-15";
@@ -4283,7 +4341,7 @@ Gemini 피드백: \n${geminiCritiqueText}
     setIsAddModalOpen(true);
   };
 
-  const openAddModal = (type, defaultDateStr = null) => {
+  const openAddModal = (type: string, defaultDateStr: string | null = null) => {
     setModalType(type);
     setIsEditMode(false);
     setEditingItemId(null);
@@ -4369,12 +4427,12 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   // 캘린더 드로잉 헬퍼
-  const getDaysInMonth = (year, month) => {
+  const getDaysInMonth = (year: number, month: number) => {
     // JavaScript Date 객체를 사용하여 해당 연도와 월의 총 일수를 동적으로 구합니다 (month는 1-indexed)
     return new Date(year, month, 0).getDate();
   };
 
-  const getStartDayOfWeek = (year, month) => {
+  const getStartDayOfWeek = (year: number, month: number) => {
     // JavaScript Date 객체를 사용하여 해당 연도와 월의 1일 시작 요일을 구합니다 (0: 일요일, ..., 6: 토요일)
     return new Date(year, month - 1, 1).getDay();
   };
@@ -4388,10 +4446,10 @@ Gemini 피드백: \n${geminiCritiqueText}
     // 부서 필터링을 루프 밖에서 단 한 번만 수행하여 공통 필터링 결과 생성
     const filtered = selectedDeptFilter === "전체"
       ? monthlySchedules
-      : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map(x => x.trim()).includes(selectedDeptFilter)));
+      : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map((x: string) => x.trim()).includes(selectedDeptFilter)));
 
     // 날짜별로 일정을 그룹화하는 해시 맵 빌드
-    const mapped = {};
+    const mapped: Record<string, ScheduleItem[]> = {};
     filtered.forEach(s => {
       if (s.startAt && s.year === selectedYear) {
         const dateKey = s.startAt.substring(0, 10);
@@ -4407,7 +4465,7 @@ Gemini 피드백: \n${geminiCritiqueText}
   const renderCalendar = () => {
     const daysInMonth = getDaysInMonth(displayYear, currentMonth);
     const startDay = getStartDayOfWeek(displayYear, currentMonth);
-    const cells = [];
+    const cells: React.ReactNode[] = [];
 
     // 빈 셀 채우기 (라이트/다크모드 유동적 border 적용 및 최소 높이 확보)
     for (let i = 0; i < startDay; i++) {
@@ -4459,7 +4517,7 @@ Gemini 피드백: \n${geminiCritiqueText}
             {day}
           </span>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem", maxHeight: "115px", overflowY: "auto", flex: 1, scrollbarWidth: "none", width: "100%", maxWidth: "100%", boxSizing: "border-box" }}>
-            {daySchedules.map(sched => {
+            {daySchedules.map((sched: ScheduleItem) => {
               const isTask = sched.isTask || false;
               const isDeadline = sched.isDeadline || false;
               const isCompleted = sched.completed || false;
@@ -4478,7 +4536,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                   key={sched.id}
                   draggable={true}
                   onDragStart={(e) => {
-                    setDraggingId(sched.id);
+                    setDraggingId(sched.id ?? null);
                     e.dataTransfer.setData("text/plain", String(sched.id));
                   }}
                   onDragEnd={() => {
@@ -4692,7 +4750,7 @@ Gemini 피드백: \n${geminiCritiqueText}
 
               {getSelectedDaySchedules().length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                  {getSelectedDaySchedules().map(sched => {
+                  {getSelectedDaySchedules().map((sched: ScheduleItem) => {
                     const isTask = sched.isTask || false;
                     const isDeadline = sched.isDeadline || false;
                     const isCompleted = sched.completed || false;
@@ -4960,7 +5018,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                   fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.15s ease"
                 }}
               >
-                {m === 3 ? `'${24 + selectedYear}.3월` : m === 1 ? `'${25 + selectedYear}.1월` : `${m}월`}
+                {m === 3 ? `'${24 + Number(selectedYear || 0)}.3월` : m === 1 ? `'${25 + Number(selectedYear || 0)}.1월` : `${m}월`}
               </button>
             ))}
           </div>
@@ -5315,7 +5373,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                             {/* 엑셀 업로드 버튼 */}
                             <button
                               type="button"
-                              onClick={() => document.getElementById("excel-upload-input-file").click()}
+                              onClick={() => document.getElementById("excel-upload-input-file")?.click()}
                               style={{
                                 display: "flex",
                                 alignItems: "center",
@@ -5488,7 +5546,7 @@ Gemini 피드백: \n${geminiCritiqueText}
 
                                               setEditingMember(member);
                                               setMemberFormData({
-                                                type: member.type,
+                                                type: member.type || "",
                                                 name: member.name,
                                                 org: member.org,
                                                 dept: member.dept || "",
@@ -5576,7 +5634,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                             주요 기능 및 심의 사항
                           </h4>
                           <ul style={{ margin: 0, paddingLeft: "1.2rem", fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.4rem", lineHeight: "1.5" }}>
-                            {activeComm.functions.map((fn, i) => (
+                            {activeComm.functions.map((fn: string, i: number) => (
                               <li key={i}>{fn}</li>
                             ))}
                           </ul>
@@ -5886,7 +5944,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                     let committeeName = "";
                     if (ext.includes("위원회:")) {
                       const parts = ext.split("|");
-                      const committeePart = parts.find(p => p.includes("위원회:"));
+                      const committeePart = parts.find((p: string) => p.includes("위원회:"));
                       if (committeePart) {
                         committeeName = committeePart.replace("위원회:", "").trim();
                       }
@@ -5950,7 +6008,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                               <div
                                 key={meeting.id}
                                 id={`meeting-item-${meeting.id}`}
-                                onClick={() => setSelectedMeetingId(meeting.id)}
+                                onClick={() => setSelectedMeetingId(meeting.id ?? null)}
                                 style={{
                                   padding: "0.65rem 0.85rem",
                                   borderRadius: "6px",
@@ -6023,8 +6081,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                               const operatingDepts = ["사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"];
 
                               // JSON 파싱 및 폴백 매핑
-                              let parsedAgendas = {};
-                              let parsedResults = {};
+                              let parsedAgendas: Record<string, string> = {};
+                              let parsedResults: Record<string, string> = {};
 
                               operatingDepts.forEach(d => {
                                 parsedAgendas[d] = "";
@@ -6039,7 +6097,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                               // 1단계: 말머리 대괄호 [부서명] 또는 부서 풀 네임 포함 여부 검증
                               // 2단계: 부서의 축약 명칭 (ECC, ICC, RCC 등) 매칭 검증
                               // 3단계: 텍스트 내의 지산학 핵심 키워드 유추 매칭
-                              const getHeuristicDept = (line) => {
+                              const getHeuristicDept = (line: string) => {
                                 // 1단계 판정
                                 let matched = operatingDepts.find(d => line.startsWith(`[${d}]`) || line.includes(`[${d}]`) || line.includes(d));
                                 if (matched) return matched;
@@ -6073,7 +6131,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 return "사업운영팀";
                               };
 
-                              agendaLines.forEach(line => {
+                              agendaLines.forEach((line: string) => {
                                 const matchedDept = getHeuristicDept(line);
                                 // 말머리가 대괄호 형식으로 있을 경우만 텍스트에서 떼어내어 본문을 보기 좋게 만듭니다.
                                 let cleanLine = line.trim();
@@ -6083,7 +6141,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 parsedAgendas[matchedDept] = (parsedAgendas[matchedDept] ? parsedAgendas[matchedDept] + "\n" : "") + cleanLine;
                               });
 
-                              resultLines.forEach(line => {
+                              resultLines.forEach((line: string) => {
                                 const matchedDept = getHeuristicDept(line);
                                 let cleanLine = line.trim();
                                 operatingDepts.forEach(d => {
@@ -6092,7 +6150,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 parsedResults[matchedDept] = (parsedResults[matchedDept] ? parsedResults[matchedDept] + "\n" : "") + cleanLine;
                               });
 
-                              const getDeptData = (deptName, dataObj) => {
+                              const getDeptData = (deptName: string, dataObj: Record<string, string>) => {
                                 if (!dataObj) return "";
                                 const keys = Object.keys(dataObj);
                                 const matchedKey = keys.find(k => k.includes(deptName) || deptName.includes(k));
@@ -6100,17 +6158,17 @@ Gemini 피드백: \n${geminiCritiqueText}
                               };
 
                               // 💡 [교육용 한글 주석] 의제 데이터를 심의/의결/선정 등의 [의제] 그룹과 공유/공지/보고 등의 [전달사항] 그룹으로 지능적으로 쪼갭니다.
-                              const parseAgendaIntoGroups = (val) => {
+                              const parseAgendaIntoGroups = (val: string) => {
                                 if (!val) return { agendas: [], notices: [] };
-                                let lines = val.split("\n").map(l => l.trim()).filter(Boolean);
+                                let lines = val.split("\n").map((l: string) => l.trim()).filter(Boolean);
                                 if (lines.length <= 1 && val.includes(",")) {
-                                  lines = val.split(",").map(l => l.trim()).filter(Boolean);
+                                  lines = val.split(",").map((l: string) => l.trim()).filter(Boolean);
                                 }
                                 
-                                const agendas = [];
-                                const notices = [];
+                                const agendas: string[] = [];
+                                const notices: string[] = [];
 
-                                lines.forEach(line => {
+                                lines.forEach((line: string) => {
                                   const text = line.toLowerCase();
                                   if (text.includes("심의") || text.includes("의결") || text.includes("안건") || text.includes("선정") || text.includes("제출") || text.includes("결정")) {
                                     agendas.push(line);
@@ -6125,17 +6183,17 @@ Gemini 피드백: \n${geminiCritiqueText}
                               };
 
                               // 💡 [교육용 한글 주석] 결과 데이터를 완료/개최/배포 등의 [추진상황] 그룹과 보류/지연/애로/요청 등의 [애로사항] 그룹으로 지능적으로 쪼갭니다.
-                              const parseResultIntoGroups = (val) => {
+                              const parseResultIntoGroups = (val: string) => {
                                 if (!val) return { results: [], difficulties: [] };
-                                let lines = val.split("\n").map(l => l.trim()).filter(Boolean);
+                                let lines = val.split("\n").map((l: string) => l.trim()).filter(Boolean);
                                 if (lines.length <= 1 && val.includes(",")) {
-                                  lines = val.split(",").map(l => l.trim()).filter(Boolean);
+                                  lines = val.split(",").map((l: string) => l.trim()).filter(Boolean);
                                 }
 
-                                const results = [];
-                                const difficulties = [];
+                                const results: string[] = [];
+                                const difficulties: string[] = [];
 
-                                lines.forEach(line => {
+                                lines.forEach((line: string) => {
                                   const text = line.toLowerCase();
                                   if (text.includes("보류") || text.includes("미정") || text.includes("애로") || text.includes("지연") || text.includes("어려움") || text.includes("요청") || text.includes("필요") || text.includes("의견수렴") || text.includes("논의 예정") || text.includes("문제")) {
                                     difficulties.push(line);
@@ -6363,7 +6421,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                         <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>음성 파일이 등록되어 있지 않습니다.</span>
                                       )}
                                     </div>
-                                    <div style={{ background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifycontent: "space-between" }}>
+                                    <div style={({ background: "rgba(255,255,255,0.02)", padding: "0.6rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifycontent: "space-between" } as React.CSSProperties)}>
                                       <div>
                                         <span style={{ fontSize: "0.72rem", fontWeight: "700", color: "var(--text-secondary)", display: "block" }}>
                                           📄 회의자료 문서 (PDF)
@@ -6454,7 +6512,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "1rem" }}>
                                   <span style={{ color: "var(--text-secondary)", display: "block", fontSize: "0.825rem", marginBottom: "0.4rem" }}>📋 주요 의제 및 논의 사항</span>
                                   <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", fontSize: "0.825rem", color: "var(--text-primary)" }}>
-                                    {(selectedMeeting.agenda || "").split("\n").filter(Boolean).map((agendaItem, idx) => (
+                                    {(selectedMeeting.agenda || "").split("\n").filter(Boolean).map((agendaItem: string, idx: number) => (
                                       <span key={idx} style={{ display: "block", lineHeight: "1.4" }}>
                                         의제 {idx + 1}. {agendaItem}
                                       </span>
@@ -6478,7 +6536,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                     주요 결정 및 조치 사항 (요점 정리)
                                   </span>
                                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.8rem", color: "var(--text-primary)", lineHeight: "1.45" }}>
-                                    {(selectedMeeting.result || "").split("\n").filter(Boolean).map((resultItem, idx) => (
+                                    {(selectedMeeting.result || "").split("\n").filter(Boolean).map((resultItem: string, idx: number) => (
                                       <div key={idx} style={{ borderBottom: idx < (selectedMeeting.result || "").split("\n").filter(Boolean).length - 1 ? "1px dashed var(--border-color)" : "none", paddingBottom: "0.3rem" }}>
                                         <strong>결과 {idx + 1}.</strong> {resultItem}
                                       </div>
@@ -6670,7 +6728,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                               <div>
                                 <span style={{ color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>📝 회의 의제 (주요 안건)</span>
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", margin: "0.1rem 0 0 0", color: "var(--text-primary)" }}>
-                                  {meeting.agenda && meeting.agenda.split("\n").filter(Boolean).map((agendaItem, idx) => (
+                                  {meeting.agenda && meeting.agenda.split("\n").filter(Boolean).map((agendaItem: string, idx: number) => (
                                     <span key={idx} style={{ display: "block", lineHeight: "1.3" }}>
                                       의제 {idx + 1}. {agendaItem}
                                     </span>
@@ -6691,7 +6749,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                   회의 결정 결과
                                 </span>
                                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", fontSize: "0.75rem", color: "var(--text-primary)", lineHeight: "1.45" }}>
-                                  {(meeting.result || "").split("\n").filter(Boolean).map((resultItem, idx) => (
+                                  {(meeting.result || "").split("\n").filter(Boolean).map((resultItem: string, idx: number) => (
                                     <div key={idx} style={{ borderBottom: idx < (meeting.result || "").split("\n").filter(Boolean).length - 1 ? "1px dashed var(--border-color)" : "none", paddingBottom: "0.3rem" }}>
                                       <strong>결과 {idx + 1}.</strong> {resultItem}
                                     </div>
@@ -6870,14 +6928,14 @@ Gemini 피드백: \n${geminiCritiqueText}
                   .sort((a, b) => {
                     const dateA = a.broadcastDate ? new Date(a.broadcastDate) : new Date(0);
                     const dateB = b.broadcastDate ? new Date(b.broadcastDate) : new Date(0);
-                    return dateB - dateA;
+                    return dateB.getTime() - dateA.getTime();
                   })
                   .map((press) => {
                     const isActive = activePressId === press.id;
                     return (
                       <div
                         key={press.id}
-                        onClick={() => setActivePressId(press.id)}
+                        onClick={() => setActivePressId(press.id ?? null)}
                         className="glass-card"
                         style={{
                           padding: "1.0rem",
@@ -7577,7 +7635,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem" }}>관련 부서 (중복 선택 가능)</label>
                       <div style={{ display: "flex", gap: "0.5rem 0.75rem", flexWrap: "wrap", padding: "0.5rem", background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "6px" }}>
                         {["전체", "사업운영팀", "ECC센터", "ICC센터", "RCC센터", "AID-X지원센터", "울산늘봄누리센터", "신산업특화센터"].map(d => {
-                          const checked = formData.dept ? formData.dept.split(",").map(x => x.trim()).includes(d) : false;
+                          const checked = formData.dept ? formData.dept.split(",").map((x: string) => x.trim()).includes(d) : false;
                           return (
                             <label key={d} style={{ display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.78rem", color: "var(--text-primary)", cursor: "pointer", userSelect: "none" }}>
                               <input
@@ -7633,7 +7691,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                       </label>
                     </div>
                     {(() => {
-                      const ROLE_PRIORITY = {
+                      const ROLE_PRIORITY: Record<string, number> = {
                         "사업단장": 1,
                         "단장": 1, // 송경영 단장 정렬 최우선순위 보장
                         "총괄본부장": 2,
@@ -7643,7 +7701,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                         "팀장교수": 5,
                         "연구원": 6
                       };
-                      const DEPT_PRIORITY = {
+                      const DEPT_PRIORITY: Record<string, number> = {
                         "ECC센터": 1,
                         "ICC센터": 2,
                         "RCC센터": 3,
@@ -7652,7 +7710,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                         "신산업특화센터": 6,
                         "사업운영팀": 7
                       };
-                      const GRADE_PRIORITY = {
+                      const GRADE_PRIORITY: Record<string, number> = {
                         "책임연구원": 1,
                         "선임연구원": 2,
                         "연구원": 3
@@ -7696,8 +7754,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                             const displayRole = getFormattedMemberGrade(m, includeProfessors);
                             const isSelected = (formData.attendees || "")
                               .split(",")
-                              .map(x => x.trim())
-                              .some(x => x.includes(m.name));
+                              .map((x: string) => x.trim())
+                              .some((x: string) => x.includes(m.name));
 
                             return (
                               <button
@@ -8665,8 +8723,8 @@ Gemini 피드백: \n${geminiCritiqueText}
                                     {g.list.map(m => {
                                       const isSelected = (formData.attendees || "")
                                         .split(",")
-                                        .map(x => x.trim())
-                                        .some(x => x.includes(m.name));
+                                        .map((x: string) => x.trim())
+                                        .some((x: string) => x.includes(m.name));
 
                                       return (
                                         <button
@@ -8720,7 +8778,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                         });
 
                         const commMembers = targetCommittee ? (targetCommittee.members || []) : [];
-                        displayMembers = commMembers.map(m => ({
+                        displayMembers = commMembers.map((m: CommitteeMember) => ({
                           name: m.name,
                           role: `${m.type}(${m.rank || m.org || ''})`,
                           key: m.id || m.name
@@ -8788,11 +8846,11 @@ Gemini 피드백: \n${geminiCritiqueText}
                               borderRadius: "6px", 
                               border: darkMode ? "1px solid rgba(255,255,255,0.04)" : "1px solid rgba(0,0,0,0.08)" 
                             }}>
-                              {displayMembers.map(m => {
+                              {displayMembers.map((m: { name: string; role: string; key: number | string }) => {
                                 const isSelected = (formData.attendees || "")
                                   .split(",")
-                                  .map(x => x.trim())
-                                  .some(x => x.includes(m.name));
+                                  .map((x: string) => x.trim())
+                                  .some((x: string) => x.includes(m.name));
 
                                 return (
                                   <button
