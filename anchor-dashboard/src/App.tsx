@@ -35,7 +35,7 @@ import type { ScheduleCommitteeMember } from "./components/ScheduleManager";
 import { Sun, Moon, LogOut, HelpCircle, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen, FileSpreadsheet } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import { parseCommitteeVotePath } from "./utils/committee-short-link";
-import type { AssetReservation, Html2PdfFactory, LegacyAppRecord, LegacyYearRecord, ProgramVersionRequest, RiseMemberInsert, ScheduleEventInsert, ScheduleMeetingInsert, ScheduleMonthlyInsert } from "./app/app-types";
+import type { AssetReservation, Html2PdfFactory, LegacyAppRecord, LegacyYearRecord, ProgramVersionRequest, RiseMemberInsert, ScheduleEventInsert, ScheduleMeetingInsert } from "./app/app-types";
 import { INITIAL_AGREEMENTS, INITIAL_MEMBERS } from "./app/app-seed-data";
 import { formatAssignee, formatDataToMultiYear, formatToMillionWon, getCalculatedYearFromDate, getCleanProjectsForStorage, getErrorMessage, getNormalizedKpi, getRealUnitId, mergeProjectsWithInitial, migrateProgramIds, recalculateCarryOver } from "./app/app-data-utils";
 import { useDashboardScroll } from "./app/hooks/use-dashboard-scroll";
@@ -60,7 +60,8 @@ import { useProjectAutosave } from "./features/projects/hooks/use-project-autosa
 import { useKpiSelection, useVisibleKpiSubTabGuard } from "./features/projects/hooks/use-kpi-selection-lifecycle";
 import { useProjectLocalBackup } from "./features/projects/hooks/use-project-local-backup";
 import { useJointProgramDetection, useProjectFetchReset, useProjectNormalization } from "./features/projects/hooks/use-project-state-lifecycle";
-import { deleteMonthlySchedulesByIds, deleteMonthlySchedulesByYear, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, fetchStandaloneMonthlyScheduleIds, insertMonthlySchedules, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertMonthlySchedules, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
+import { useMonthlyScheduleAutosave } from "./features/schedule/hooks/use-monthly-schedule-autosave";
+import { deleteMonthlySchedulesByIds, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
 import { useDashboardCache } from "./shared/hooks/use-dashboard-cache";
 import { useDashboardCacheMaintenance } from "./shared/hooks/use-dashboard-cache-maintenance";
 import { useActiveTabPersistence, useLocalStorageJson, useLocalStorageValue, useOptionalLocalStorageJson, useOptionalLocalStorageValue } from "./shared/hooks/use-local-storage-persistence";
@@ -3232,194 +3233,18 @@ export default function App() {
     setSyncStatus
   });
 
-  // 최신 monthlySchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
-  const latestMonthlySchedulesRef = useRef<LegacyAppRecord[] | null>(null);
-  useEffect(() => {
-    latestMonthlySchedulesRef.current = monthlySchedules;
-  }, [monthlySchedules]);
-
   // 7) Schedule Monthly 자동 저장 디바운스 훅 (원자적 Upsert + Diff Delete 적용)
-  useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
-    if (!currentUser || currentRole?.id === "GUEST") return;
-    if (!monthlySchedules) return;
-
-    // 💡 안전 가드 0: 원격 DB에서 가져온 최초 데이터 또는 직전 동기화 데이터와 로컬 상태가 100% 동일하다면 불필요한 쿼리 전송 및 유실 사고 방지를 위해 즉시 리턴함.
-    if (fetchedMonthlySchedulesRef.current === JSON.stringify(monthlySchedules)) return;
-
-    // 💡 안전 가드 1: 데이터 형식이 비정상적이거나 날짜/제목 누락 시 동기화 스킵하여 증발 방지
-    const hasInvalidItem = monthlySchedules.some(s => !s.title?.trim() || !s.startAt || !s.endAt);
-    if (hasInvalidItem) {
-      console.warn("Schedule sync aborted: detected invalid schedule item with missing title or dates.", monthlySchedules);
-      return;
-    }
-
-    safeSetLocalStorage(`anchor_cache_month_y${selectedYear}`, JSON.stringify(monthlySchedules), selectedYear);
-    setSyncStatus("syncing");
-
-    const performSync = async (schedulesToSync: LegacyAppRecord[], targetYear: number) => {
-      try {
-        if (!schedulesToSync) return;
-
-        // 1. 모든 일정이 삭제된 상태면 원격 DB 해당 연도 전체 삭제
-        if (schedulesToSync.length === 0) {
-          const { error } = await deleteMonthlySchedulesByYear(targetYear);
-          if (error) throw error;
-          fetchedMonthlySchedulesRef.current = JSON.stringify([]);
-          setSyncStatus("synced");
-          return;
-        }
-
-        // 💡 [중복 방지] 주요 행사(eventId) 또는 회의록(meetingId) 연동 일정은 schedule_monthly DB에 저장하지 않고,
-        // 오직 화면단에서만 실시간 병합/표시합니다. 이를 통해 DB 중복 저장을 원천 차단합니다.
-        const pureSchedulesToSync = schedulesToSync.filter(s => !s.eventId && !s.meetingId);
-
-        // 2. 신규 생성(id가 없음)과 기존 수정(id가 존재)을 분리하여 Not-Null primary key Violate 방지
-        const newItems: ScheduleMonthlyInsert[] = [];
-        const updateItems: ScheduleMonthlyInsert[] = [];
-
-        pureSchedulesToSync.forEach(s => {
-          const item: ScheduleMonthlyInsert = {
-            year: targetYear,
-            title: s.title,
-            type: s.type || "기타",
-            dept: s.dept || "사업운영팀",
-            start_at: s.startAt,
-            end_at: s.endAt,
-            location: s.location || "",
-            is_task: s.isTask || false,
-            is_deadline: s.isDeadline || false,
-            completed: s.completed || false,
-            attendees: s.attendees || "",
-            event_id: s.eventId || null,
-            meeting_id: s.meetingId || null
-          };
-          if (s.id && typeof s.id === "number" && s.id < 2000000000) {
-            item.id = s.id;
-            updateItems.push(item);
-          } else {
-            newItems.push(item);
-          }
-        });
-
-        // 3. 분할 전송 수행 및 새로 발행된 sequence id 결과 조회
-        const upsertedData: LegacyAppRecord[] = [];
-
-        // [A] 기존 수정 일정 (upsert)
-        if (updateItems.length > 0) {
-          const { data: upData, error: upError } = await upsertMonthlySchedules(updateItems);
-
-          if (upError) {
-            if (upError.code === "42703") {
-              const fallbackItems = updateItems.map(({ event_id: _event_id, meeting_id: _meeting_id, ...rest }) => rest);
-              const { data: fbData, error: fbError } = await upsertMonthlySchedules(fallbackItems);
-              if (fbError) throw fbError;
-              if (fbData) upsertedData.push(...fbData);
-            } else {
-              throw upError;
-            }
-          } else if (upData) {
-            upsertedData.push(...upData);
-          }
-        }
-
-        // [B] 신규 추가 일정 (insert)
-        if (newItems.length > 0) {
-          const { data: insData, error: insError } = await insertMonthlySchedules(newItems);
-
-          if (insError) {
-            if (insError.code === "42703") {
-              const fallbackItems = newItems.map(({ event_id: _event_id, meeting_id: _meeting_id, ...rest }) => rest);
-              const { data: fbData, error: fbError } = await insertMonthlySchedules(fallbackItems);
-              if (fbError) throw fbError;
-              if (fbData) upsertedData.push(...fbData);
-            } else {
-              throw insError;
-            }
-          } else if (insData) {
-            upsertedData.push(...insData);
-          }
-        }
-
-        // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지 (날짜 substring 10자리 비교 및 camelCase 규격 정형화)
-        let finalLocalSchedules = schedulesToSync;
-        if (upsertedData && upsertedData.length > 0) {
-          const normalizedUpserted: LegacyAppRecord[] = upsertedData.map(x => ({
-            id: Number(x.id),
-            year: Number(x.year),
-            title: x.title,
-            type: x.type,
-            dept: x.dept,
-            startAt: x.start_at,
-            endAt: x.end_at,
-            location: x.location,
-            isTask: x.is_task || false,
-            isDeadline: x.is_deadline || false,
-            completed: x.completed || false,
-            attendees: x.attendees || "",
-            eventId: x.event_id ? Number(x.event_id) : null,
-            meetingId: x.meeting_id ? Number(x.meeting_id) : null
-          }));
-
-          finalLocalSchedules = schedulesToSync.map(s => {
-            if (s.id && typeof s.id === "number" && s.id < 2000000000) {
-              return s;
-            }
-            const dbMatch = normalizedUpserted.find(x => {
-              const matchTitle = x.title === s.title;
-              const xDate = x.startAt ? x.startAt.substring(0, 10) : "";
-              const sDate = s.startAt ? s.startAt.substring(0, 10) : "";
-              return matchTitle && xDate === sDate;
-            });
-            if (dbMatch) {
-              return dbMatch;
-            }
-            return s;
-          });
-
-          fetchedMonthlySchedulesRef.current = JSON.stringify(finalLocalSchedules);
-          setMonthlySchedules(finalLocalSchedules);
-          safeSetLocalStorage(`anchor_cache_month_y${targetYear}`, JSON.stringify(finalLocalSchedules), targetYear);
-        }
-
-        // 5. 사용자가 삭제한 아이템들 DB 반영 (Diff Delete)
-        // 💡 중요: 주요 행사(event_id) 또는 회의록(meeting_id)에 연동된 자동 입력 일정은 월간일정 훅이 삭제하지 않고 각 소스 탭의 라이프사이클에 맡겨 격리함.
-        const { data: currentDbItems } = await fetchStandaloneMonthlyScheduleIds(targetYear);
-
-        if (currentDbItems) {
-          const dbIds = currentDbItems.map(x => x.id);
-          const localRealIds = finalLocalSchedules
-            .filter(s => !s.eventId && !s.meetingId)
-            .map(s => s.id)
-            .filter(id => typeof id === "number" && id < 2000000000);
-
-          const idsToDelete = dbIds.filter(id => !localRealIds.includes(id));
-          if (idsToDelete.length > 0) {
-            const { error: delError } = await deleteMonthlySchedulesByIds(idsToDelete);
-            if (delError) throw delError;
-          }
-        }
-
-        fetchedMonthlySchedulesRef.current = JSON.stringify(finalLocalSchedules);
-        setSyncStatus("synced");
-      } catch (e) {
-        console.error("Failed to sync monthly schedules:", e);
-        setSyncStatus("error");
-      }
-    };
-
-    const timer = setTimeout(() => {
-      performSync(monthlySchedules, selectedYear);
-    }, 300);
-
-    return () => {
-      clearTimeout(timer);
-      if (latestMonthlySchedulesRef.current) {
-        performSync(latestMonthlySchedulesRef.current, selectedYear);
-      }
-    };
-  // oxlint-disable-next-line react/exhaustive-deps -- schedule data, year, and load guards own synchronization; auth restoration must not flush or delete schedules.
-  }, [monthlySchedules, selectedYear, isDbLoaded, isFetchCompleted]);
+  useMonthlyScheduleAutosave({
+    monthlySchedules,
+    setMonthlySchedules,
+    selectedYear,
+    isDbLoaded,
+    isFetchCompleted,
+    canWrite: Boolean(currentUser && currentRole?.id !== "GUEST"),
+    fetchedMonthlySchedulesRef,
+    safeSetLocalStorage,
+    setSyncStatus
+  });
 
   // 최신 eventSchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
   const latestEventSchedulesRef = useRef<LegacyAppRecord[] | null>(null);
