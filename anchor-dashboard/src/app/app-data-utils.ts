@@ -5,6 +5,52 @@ import { NEW_A1GA_SPEC_TITLES, PROGRAM_ID_MIGRATION_MAP, REVERSE_UNIT_MAPPING_Y1
 export const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
 
+// 로컬 캐시 용량을 줄이기 위해 런타임에 재계산 가능한 프로젝트 파생 필드를 제거합니다.
+export const getCleanProjectsForStorage = <
+  T extends LegacyAppRecord[] | null | undefined,
+>(
+  rawProjects: T
+): T => {
+  if (!rawProjects || !Array.isArray(rawProjects)) return rawProjects;
+  return rawProjects.map((strat: LegacyAppRecord) => ({
+    ...strat,
+    units: strat.units?.map((unit: LegacyAppRecord) => {
+      const { budgetDetails: _budgetDetails, kpis: _kpis, ...restUnit } = unit;
+      return {
+        ...restUnit,
+        programs: unit.programs?.map((prog: LegacyAppRecord) => {
+          const { years, ...restProg } = prog;
+          const cleanedYears: Record<string, LegacyAppRecord> = {};
+          if (years) {
+            Object.keys(years).forEach((yr) => {
+              const yearData = years[yr];
+              if (yearData) {
+                const { budget_categories, ...restYearData } = yearData;
+                cleanedYears[yr] = {
+                  ...restYearData,
+                  budget_categories: budget_categories?.map(
+                    (category: LegacyAppRecord) => ({
+                      category: category.category,
+                      budget: category.budget,
+                      budget_carry: category.budget_carry,
+                      spent: category.spent,
+                      spent_carry: category.spent_carry
+                    })
+                  )
+                };
+              }
+            });
+          }
+          return {
+            ...restProg,
+            years: cleanedYears
+          };
+        })
+      };
+    })
+  })) as unknown as T;
+};
+
 // 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
 export const formatAssignee = (assigneeText?: string): string => {
   if (!assigneeText) return "미배정";

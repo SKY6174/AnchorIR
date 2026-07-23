@@ -38,7 +38,7 @@ import { resolveApprovedRiseUser } from "./services/auth-service";
 import { parseCommitteeVotePath } from "./utils/committee-short-link";
 import type { AssetReservation, Html2PdfFactory, LegacyAppRecord, LegacyYearRecord, ProgramVersionRequest, RiseMemberInsert, ScheduleEventInsert, ScheduleMeetingInsert, ScheduleMonthlyInsert } from "./app/app-types";
 import { INITIAL_AGREEMENTS, INITIAL_MEMBERS } from "./app/app-seed-data";
-import { formatAssignee, formatDataToMultiYear, formatToMillionWon, getCalculatedYearFromDate, getErrorMessage, getNormalizedKpi, getRealUnitId, mergeProjectsWithInitial, migrateProgramIds, recalculateCarryOver } from "./app/app-data-utils";
+import { formatAssignee, formatDataToMultiYear, formatToMillionWon, getCalculatedYearFromDate, getCleanProjectsForStorage, getErrorMessage, getNormalizedKpi, getRealUnitId, mergeProjectsWithInitial, migrateProgramIds, recalculateCarryOver } from "./app/app-data-utils";
 import { deleteAgreementsByYear, insertAgreements } from "./features/agreements/services/agreement-service";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchPendingVersionRequests, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
 import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
@@ -48,9 +48,11 @@ import { fetchMenuVisibility, saveMenuVisibility } from "./features/management/s
 import { deleteEnvironmentRecordsByYear, deleteEquipmentRecordsByYear, deleteServiceRecordsByYear, insertEnvironmentRecords, insertEquipmentRecords, insertServiceRecords, probeProcurementAdvancedColumns, upsertEquipmentAssets } from "./features/procurement/services/procurement-data-service";
 import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
+import { useProjectAutosave } from "./features/projects/hooks/use-project-autosave";
 import { deleteMonthlySchedulesByIds, deleteMonthlySchedulesByYear, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, fetchStandaloneMonthlyScheduleIds, insertMonthlySchedules, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertMonthlySchedules, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
 import { useDashboardCache } from "./shared/hooks/use-dashboard-cache";
 import { useDashboardCacheMaintenance } from "./shared/hooks/use-dashboard-cache-maintenance";
+import { useSyncBeforeUnload } from "./shared/hooks/use-sync-before-unload";
 import "./styles/dashboard.css";
 
 
@@ -372,47 +374,6 @@ export default function App() {
     } catch (err: any) {
       console.warn("DB save error (로컬 전담):", err.message);
     }
-  };
-
-  // 💡 [초경량 캐시 다이어트 함수] 로컬스토리지 용량 초과(QuotaExceededError)를 근본적으로 방지하기 위해
-  // 런타임에 언제든 재계산이 가능한 파생 집계 필드(budgetDetails, kpis)와 중복 무거운 텍스트를 제거하여 데이터 용량을 85% 이상 감량합니다.
-  const getCleanProjectsForStorage = <T extends LegacyAppRecord[] | null | undefined,>(rawProjects: T): T => {
-    if (!rawProjects || !Array.isArray(rawProjects)) return rawProjects;
-    return rawProjects.map((strat: LegacyAppRecord) => ({
-      ...strat,
-      units: strat.units?.map((unit: LegacyAppRecord) => {
-        const { budgetDetails: _budgetDetails, kpis: _kpis, ...restUnit } = unit;
-        return {
-          ...restUnit,
-          programs: unit.programs?.map((prog: LegacyAppRecord) => {
-            const { years, ...restProg } = prog;
-            const cleanedYears: Record<string, LegacyAppRecord> = {};
-            if (years) {
-              Object.keys(years).forEach(yr => {
-                const y = years[yr];
-                if (y) {
-                  const { budget_categories, ...restY } = y;
-                  cleanedYears[yr] = {
-                    ...restY,
-                    budget_categories: budget_categories?.map((cat: LegacyAppRecord) => ({
-                      category: cat.category,
-                      budget: cat.budget,
-                      budget_carry: cat.budget_carry,
-                      spent: cat.spent,
-                      spent_carry: cat.spent_carry
-                    }))
-                  };
-                }
-              });
-            }
-            return {
-              ...restProg,
-              years: cleanedYears
-            };
-          })
-        };
-      })
-    })) as unknown as T;
   };
 
   // 로그인 성공 혹은 세션 로드 시 Supabase DB로부터 마스터 포털 노출 설정 수신
@@ -3279,56 +3240,19 @@ export default function App() {
   }, [selectedYear, currentUser]);
 
   // 2) Projects 자동 저장 디바운스 훅
-  useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
-    if (!currentUser || currentRole?.id === "GUEST") return;
-
-    // 💡 [Race Condition 안전 가드]
-    // 1. 원격 Supabase DB로부터 최신 데이터 조회 결과가 한 번도 들어오지 않은 경우(fetchedProjectsRef.current가 빈 문자열)
-    // 2. 혹은 현재 로컬의 projects 상태 정보가 원격 DB에서 막 조회해 온 데이터(fetchedProjectsRef.current)와 내용상 완벽히 일치하는 경우
-    // 위 두 경우(최초 페이지 마운트, 연도 전환 직후, 혹은 단순한 화면 기동)에는 Supabase DB로의 불필요한 역-업로드(덮어쓰기 오염)를 스킵합니다.
-    const currentCleanStr = JSON.stringify(getCleanProjectsForStorage(projects));
-    if (!fetchedProjectsRef.current || fetchedProjectsRef.current === currentCleanStr) {
-      safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}_v56`, currentCleanStr, selectedYear);
-      return;
-    }
-
-    safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}_v56`, currentCleanStr, selectedYear);
-    setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
-      try {
-        const { error } = await upsertProjectData(
-          selectedYear,
-          projects,
-          new Date().toISOString()
-        );
-        if (error) throw error;
-
-        // 💡 [저장 완료 동기화] DB 업로드가 성공적으로 완료되었으므로 레퍼런스 값을 현재 값으로 갱신하여 중복 업로드를 차단합니다.
-        fetchedProjectsRef.current = currentCleanStr;
-        setSyncStatus("synced");
-      } catch {
-        setSyncStatus("error");
-      }
-    }, 500); // 1.5초에서 0.5초로 변경
-    return () => clearTimeout(timer);
-  // oxlint-disable-next-line react/exhaustive-deps -- project changes and load guards own autosave; user or role restoration must not enqueue a database write.
-  }, [projects, selectedYear, isDbLoaded, isFetchCompleted]);
+  useProjectAutosave({
+    projects,
+    selectedYear,
+    isDbLoaded,
+    isFetchCompleted,
+    canWrite: Boolean(currentUser && currentRole?.id !== "GUEST"),
+    fetchedProjectsRef,
+    safeSetLocalStorage,
+    setSyncStatus
+  });
 
   // 💡 DB 동기화 중(syncStatus === "syncing") 새로고침 및 페이지 탈출 방어 훅
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (syncStatus === "syncing") {
-        e.preventDefault();
-        e.returnValue = "현재 변경 사항을 데이터베이스에 저장하는 중입니다. 저장 완료 후 새로고침해주세요.";
-        return e.returnValue;
-      }
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [syncStatus]);
+  useSyncBeforeUnload(syncStatus);
 
   // 3) Agreements 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
   useEffect(() => {
