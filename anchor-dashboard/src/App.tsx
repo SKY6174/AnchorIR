@@ -49,6 +49,7 @@ import { deleteEnvironmentRecordsByYear, deleteEquipmentRecordsByYear, deleteSer
 import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
 import { useProjectAutosave } from "./features/projects/hooks/use-project-autosave";
+import { useProjectLocalBackup } from "./features/projects/hooks/use-project-local-backup";
 import { deleteMonthlySchedulesByIds, deleteMonthlySchedulesByYear, deleteScheduleEventsByIds, deleteScheduleEventsByYear, deleteScheduleMeetingsByIds, deleteScheduleMeetingsByYear, fetchScheduleEventIds, fetchScheduleEventsForYearRepair, fetchScheduleMeetingIds, fetchScheduleMeetingsForYearRepair, fetchStandaloneMonthlyScheduleIds, insertMonthlySchedules, insertScheduleEvents, insertScheduleMeetings, updateScheduleEventYear, updateScheduleMeetingYear, upsertMonthlySchedules, upsertScheduleEvents, upsertScheduleMeetings } from "./features/schedule/services/schedule-data-service";
 import { useDashboardCache } from "./shared/hooks/use-dashboard-cache";
 import { useDashboardCacheMaintenance } from "./shared/hooks/use-dashboard-cache-maintenance";
@@ -5073,33 +5074,7 @@ export default function App() {
   }, [activeTab, menuVisibility, isSongDirector]);
 
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
-  useEffect(() => {
-    try {
-      localStorage.setItem("anchor_projects_data_v56", JSON.stringify(getCleanProjectsForStorage(projects)));
-    } catch (e) {
-      const storageError = e as LegacyAppRecord;
-      const isQuotaError = storageError.name === "QuotaExceededError" || storageError.code === 22 || storageError.number === -2147024882;
-      if (isQuotaError) {
-        console.warn("로컬 스토리지 공간이 부족합니다. 이전 구버전 캐시를 청소하고 재시도합니다...");
-        try {
-          Object.keys(localStorage).forEach((key) => {
-            if (key.startsWith("anchor_projects_data_") && key !== "anchor_projects_data_v56") {
-              localStorage.removeItem(key);
-            }
-            if (key.startsWith("anchor_cache_proj_")) {
-              localStorage.removeItem(key);
-            }
-          });
-          localStorage.setItem("anchor_projects_data_v56", JSON.stringify(getCleanProjectsForStorage(projects)));
-          console.log("이전 캐시 청소 및 데이터 재저장 성공");
-        } catch (retryError) {
-          console.error("이전 캐시 QR 청소 후에도 로컬 스토리지 기입 실패:", retryError);
-        }
-      } else {
-        console.error("로컬 스토리지 기입 중 알 수 없는 예외 발생:", e);
-      }
-    }
-  }, [projects]);
+  useProjectLocalBackup(projects);
 
   /*
    * [성과지표 자동 연계 UX 로직]
