@@ -35,6 +35,7 @@ import {
   convertRawTextToMarkdown,
   extractScheduleFilesText
 } from "../features/schedule/services/schedule-ai-document-service";
+import { fetchScheduleCommittees } from "../features/schedule/services/schedule-committee-service";
 import {
   applyMeetingAiDataRules,
   buildOperatingAgendaDistribution
@@ -177,58 +178,8 @@ export default function ScheduleManager({
   // Supabase 실시간 위원회 명단 조회 함수
   const loadCommitteesData = async () => {
     try {
-      const { data: comms, error: commsErr } = await supabase
-        .from("committees")
-        .select("*")
-        .order("id");
-      if (commsErr) throw commsErr;
-
-      if (comms && comms.length > 0) {
-        // 공식 거버넌스 중요도 순 정렬 매핑 (알파벳순 정렬 오류 차단)
-        const orderMap: Record<string, number> = {
-          "total": 1,      // RISE총괄위원회
-          "planning": 2,   // RISE기획위원회
-          "budget": 3,     // RISE사업비관리위원회
-          "evaluation": 4, // RISE사업자체평가위원회
-          "advisory": 5,   // RISE사업자문회의
-          "ecc_op": 11,    // ECC운영위원회
-          "icc_op": 12,    // ICC운영위원회
-          "rcc_op": 13,    // RCC운영위원회
-          "aidx_op": 14,   // AID-X운영위원회
-          "neulbom_op": 15,// 울산늘봄운영위원회
-          "newind_op": 16  // 신산업특화운영위원회
-        };
-        const sortedComms = [...comms].sort((a, b) => (orderMap[a.id] || 99) - (orderMap[b.id] || 99));
-
-        const { data: mems, error: memsErr } = await supabase
-          .from("committee_members")
-          .select("*")
-          .eq("year", String(selectedYear || ""))
-          .order("sort_order", { ascending: true })
-          .order("id", { ascending: true });
-        if (memsErr) throw memsErr;
-
-        const combined = sortedComms.map(c => {
-          const localMaster: any = COMMITTEES_DATA.find(lc => lc.id === c.id) || {};
-          return {
-            ...localMaster, // 로컬 마스터 데이터의 예쁜 디스플레이 디자인 속성(color, badge, purpose, cycle 등) 선주입
-            ...c,           // Supabase 실시간 DB 값(name, total_quorum 등) 최종 병합
-            desc: (c as any).description || localMaster.desc,
-            members: (mems || [])
-              .filter(m => m.committee_id === c.id)
-              .map(m => ({
-                id: m.id,
-                type: m.type,
-                name: m.name,
-                org: m.org,
-                dept: m.dept,
-                rank: m.rank,
-                location: m.location,
-                term: m.term,
-                note: m.note
-              }))
-          };
-        });
+      const combined = await fetchScheduleCommittees(selectedYear);
+      if (combined) {
         setCommittees(combined);
       }
     } catch (e) {
