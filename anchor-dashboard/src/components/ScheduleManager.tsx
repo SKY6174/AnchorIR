@@ -9,7 +9,6 @@ import {
   Edit, Trash2, X, Download, Upload
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
-import * as pdfjsLib from "pdfjs-dist";
 import { COMMITTEES_DATA, dashToDotDate, dotToDashDate, getCommitteeIcon } from "../features/schedule/data/schedule-committee-data";
 import type {
   AgendaResultPair,
@@ -31,13 +30,14 @@ import {
   getStartDayOfWeek,
   getYoutubeEmbedUrl
 } from "../features/schedule/utils/schedule-display-utils";
-import { convertRawTextToMarkdown } from "../features/schedule/services/schedule-ai-document-service";
+import {
+  convertRawTextToMarkdown,
+  extractScheduleFilesText
+} from "../features/schedule/services/schedule-ai-document-service";
 import {
   applyMeetingAiDataRules,
   buildOperatingAgendaDistribution
 } from "../features/schedule/utils/schedule-ai-form-utils";
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-
 const scheduleDb = supabase as any;
 const ENABLE_AI_PRESS_RELEASE_GENERATION = false;
 const getErrorMessage = (error: unknown): string =>
@@ -685,46 +685,7 @@ export default function ScheduleManager({
       updateText(`📄 총 ${files.length}개의 파일을 분석 중... (본문 텍스트 추출 중)`);
 
       try {
-        let combinedRawText = "";
-
-        for (let idx = 0; idx < files.length; idx++) {
-          const file = files[idx];
-          let fileText = "";
-
-          updateText(`📄 [${idx + 1}/${files.length}] ${file.name} 텍스트 추출 중...`);
-
-          // 1. 텍스트 파일인 경우
-          if (file.type.match('text.*') || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
-            fileText = await new Promise<string>((resolve) => {
-              const reader = new FileReader();
-              reader.onload = (event) => resolve(
-                typeof event.target?.result === "string" ? event.target.result : ""
-              );
-              reader.readAsText(file);
-            });
-          }
-          // 2. PDF 파일인 경우
-          else if (file.type === "application/pdf" || file.name.endsWith('.pdf')) {
-            const arrayBuffer = await file.arrayBuffer();
-            const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-            const pdf = await loadingTask.promise;
-            let pdfText = "";
-
-            for (let i = 1; i <= pdf.numPages; i++) {
-              const page = await pdf.getPage(i);
-              const textContent = await page.getTextContent();
-              const pageText = textContent.items.map((item: any) => item.str || "").join(" ");
-              pdfText += `[Page ${i}]\n${pageText}\n\n`;
-            }
-            fileText = pdfText;
-          }
-          // 3. 그 외 바이너리 포맷 (HWP 등)
-          else {
-            fileText = `[⚠️ ${file.name}은 직접 텍스트 추출이 불가능한 파일 포맷입니다. 본문을 복사하여 직접 입력란에 보충해 주세요.]`;
-          }
-
-          combinedRawText += `--- 파일 ${idx + 1}: ${file.name} ---\n${fileText.trim()}\n\n`;
-        }
+        const combinedRawText = await extractScheduleFilesText(files, updateText);
 
         if (combinedRawText.trim()) {
           updateText("⏳ 추출된 전체 텍스트를 마크다운 문서로 정밀 정돈 중...");

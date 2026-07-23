@@ -1,3 +1,59 @@
+import * as pdfjsLib from "pdfjs-dist";
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+export const extractScheduleFilesText = async (
+  files: File[],
+  onProgress: (message: string) => void
+) => {
+  let combinedRawText = "";
+
+  for (let index = 0; index < files.length; index++) {
+    const file = files[index];
+    let fileText = "";
+
+    onProgress(`📄 [${index + 1}/${files.length}] ${file.name} 텍스트 추출 중...`);
+
+    if (
+      file.type.match("text.*") ||
+      file.name.endsWith(".txt") ||
+      file.name.endsWith(".csv")
+    ) {
+      fileText = await new Promise<string>(resolve => {
+        const reader = new FileReader();
+        reader.onload = event =>
+          resolve(typeof event.target?.result === "string" ? event.target.result : "");
+        reader.readAsText(file);
+      });
+    } else if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
+      const arrayBuffer = await file.arrayBuffer();
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+      let pdfText = "";
+
+      for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+        const page = await pdf.getPage(pageNumber);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str || "")
+          .join(" ");
+        pdfText += `[Page ${pageNumber}]\n${pageText}\n\n`;
+      }
+      fileText = pdfText;
+    } else {
+      fileText =
+        `[⚠️ ${file.name}은 직접 텍스트 추출이 불가능한 파일 포맷입니다. ` +
+        "본문을 복사하여 직접 입력란에 보충해 주세요.]";
+    }
+
+    combinedRawText +=
+      `--- 파일 ${index + 1}: ${file.name} ---\n${fileText.trim()}\n\n`;
+  }
+
+  return combinedRawText;
+};
+
 export const convertRawTextToMarkdown = async (rawText: string): Promise<string> => {
   let apiKey = import.meta.env.VITE_OPENAI_API_KEY || "";
   if (!apiKey || !apiKey.startsWith("sk-")) {
