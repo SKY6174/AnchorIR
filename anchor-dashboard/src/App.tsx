@@ -760,7 +760,6 @@ export default function App() {
   const [showProgramEditor, setShowProgramEditor] = useState(false);
   const [editingProgram, setEditingProgram] = useState<LegacyAppRecord | null>(null);
   const [programForm, setProgramForm] = useState({ unitId: "", id: "", title: "", dept: "사업운영팀" });
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [mgmtSubTab, setMgmtSubTab] = useState(() => {
     return localStorage.getItem("anchor_mgmt_sub_tab") || "approvals";
   }); // "approvals", "members", "programs", "users"
@@ -3546,6 +3545,7 @@ export default function App() {
   };
 
   const handleUploadExcel = (e: ChangeEvent<HTMLInputElement>) => {
+    const input = e.currentTarget;
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
@@ -3585,7 +3585,7 @@ export default function App() {
         return updated;
       });
       alert("엑셀 데이터가 성공적으로 반영되었습니다.");
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      input.value = "";
     };
     reader.readAsBinaryString(file);
   };
@@ -3984,7 +3984,6 @@ export default function App() {
           setEditingMember={setEditingMember}
           setIsMemberModalOpen={setIsMemberModalOpen}
           displayProjects={displayProjects}
-          fileInputRef={fileInputRef}
           jointPrograms={jointPrograms}
           setJointPrograms={setJointPrograms}
           registeredUsers={registeredUsers}

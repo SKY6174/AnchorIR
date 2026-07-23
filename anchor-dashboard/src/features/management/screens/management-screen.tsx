@@ -28,7 +28,6 @@ interface ManagementScreenProps {
   setEditingMember: React.Dispatch<React.SetStateAction<LegacyAppRecord | null>>;
   setIsMemberModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   displayProjects: LegacyAppRecord[];
-  fileInputRef: React.RefObject<HTMLInputElement | null>;
   jointPrograms: Record<string, boolean>;
   setJointPrograms: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   registeredUsers: LegacyAppRecord[];
@@ -82,7 +81,6 @@ export const ManagementScreen = ({
   setEditingMember,
   setIsMemberModalOpen,
   displayProjects,
-  fileInputRef,
   jointPrograms,
   setJointPrograms,
   registeredUsers,
@@ -120,6 +118,7 @@ export const ManagementScreen = ({
   renderBudgetCategoriesDiff,
   renderTimelineDiff
 }: ManagementScreenProps) => {
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [assignFilterUnitId, setAssignFilterUnitId] = React.useState("all");
   const [approvalsTab, setApprovalsTab] = React.useState(() => {
     const savedLogged = localStorage.getItem("anchor_logged_in_user");
