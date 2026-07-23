@@ -31,6 +31,7 @@ import {
 
 // 💡 [Rule 8] 개인정보 및 서명 데이터 암복호화용 대칭키 정의
 const SIGNATURE_SECRET_KEY = "anchor_signature_encryption_key_secure_2026";
+const ENABLE_INTERNAL_COMMITTEE_VOTE_FORM = false;
 // Generated DB types lag several committee migrations; constrain the escape hatch
 // to committee-only RPCs and columns already present in the deployed schema.
 const committeeDb = supabase as any;
@@ -3262,7 +3263,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                 </div>
 
                 {/* 💡 [교육용 한글 주석] 의결서 온라인 제출은 별도 외부로그인을 통해 처리하므로 대시보드 내부 폼은 노출하지 않습니다. */}
-                {false && isUserCommitteeMember && selectedMeeting?.status === "ACTIVE" && (
+                {ENABLE_INTERNAL_COMMITTEE_VOTE_FORM && isUserCommitteeMember && selectedMeeting?.status === "ACTIVE" && (
                   <div className="card" style={{ padding: "1.25rem", border: "1px solid var(--accent-color)", background: "rgba(var(--accent-color-rgb), 0.03)" }}>
                     <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.25rem" }}>
                       <Vote size={18} style={{ color: "var(--accent-color)" }} />
