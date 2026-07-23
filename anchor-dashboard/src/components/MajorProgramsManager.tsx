@@ -1399,6 +1399,8 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
 
   // 연도가 변경되면 단위과제 선택 초기화 (단, 새로고침 등으로 로컬스토리지에 현재 연도 데이터가 이미 복원된 경우 리셋 스킵)
   useEffect(() => {
+    const selectedYearData: Record<string, MajorUnitData> = (majorProgramsData as any)[selectedYear] || {};
+    const selectedYearUnitKeys = Object.keys(selectedYearData);
     const savedYear = localStorage.getItem("anchor_selected_year");
     const savedUnit = localStorage.getItem("anchor_selected_unit");
     const savedProg = localStorage.getItem("anchor_selected_prog");
@@ -1414,11 +1416,11 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
 
     // 그렇지 않고 실제로 연도가 바뀌었거나 초기 실행이라면 첫 번째 항목으로 설정
     localStorage.setItem("anchor_selected_year", String(selectedYear));
-    if (unitKeys.length > 0) {
-      setSelectedUnit(unitKeys[0]);
-      localStorage.setItem("anchor_selected_unit", unitKeys[0]);
+    if (selectedYearUnitKeys.length > 0) {
+      setSelectedUnit(selectedYearUnitKeys[0]);
+      localStorage.setItem("anchor_selected_unit", selectedYearUnitKeys[0]);
       
-      const defaultProg = yearData[unitKeys[0]]?.programs[0] || null;
+      const defaultProg = selectedYearData[selectedYearUnitKeys[0]]?.programs[0] || null;
       setSelectedProg(defaultProg);
       if (defaultProg) {
         localStorage.setItem("anchor_selected_prog", JSON.stringify(defaultProg));

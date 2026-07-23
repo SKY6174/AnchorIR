@@ -216,19 +216,19 @@ export default function UnifiedCertificateManager({
   }, [members]);
 
   useEffect(() => {
-    if (issueDate && certNo) {
+    if (issueDate) {
       const acYear = getAcademicYear(issueDate);
-      const match = certNo.match(/^제\d*-(.*호)$/);
-      if (match) {
-        setCertNo(`제${acYear}-${match[1]}`);
-      }
+      setCertNo(currentCertNo => {
+        const match = currentCertNo.match(/^제\d*-(.*호)$/);
+        return match ? `제${acYear}-${match[1]}` : currentCertNo;
+      });
     }
     
     const newDynamicName = getDynamicTeamName(issueDate);
     const oldDynamicName = newDynamicName === "RISE사업단" ? "앵커사업단" : "RISE사업단";
-    if (projectGroup === oldDynamicName || !projectGroup) {
-      setProjectGroup(newDynamicName);
-    }
+    setProjectGroup(currentProjectGroup =>
+      currentProjectGroup === oldDynamicName || !currentProjectGroup ? newDynamicName : currentProjectGroup
+    );
   }, [issueDate]);
 
   useEffect(() => {
