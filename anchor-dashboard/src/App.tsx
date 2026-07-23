@@ -40,6 +40,7 @@ import { INITIAL_AGREEMENTS, INITIAL_MEMBERS } from "./app/app-seed-data";
 import { formatAssignee, formatDataToMultiYear, formatToMillionWon, getCalculatedYearFromDate, getCleanProjectsForStorage, getErrorMessage, getNormalizedKpi, getRealUnitId, mergeProjectsWithInitial, migrateProgramIds, recalculateCarryOver } from "./app/app-data-utils";
 import { useDashboardScroll } from "./app/hooks/use-dashboard-scroll";
 import { useDashboardUiLifecycle } from "./app/hooks/use-dashboard-ui-lifecycle";
+import { useAgreementLocalCache, useScholarshipLocalCache, useUnifiedCertificateLocalCache } from "./app/hooks/use-record-local-cache";
 import { deleteAgreementsByYear, insertAgreements } from "./features/agreements/services/agreement-service";
 import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchPendingVersionRequests, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
@@ -920,21 +921,12 @@ export default function App() {
     return INITIAL_AGREEMENTS;
   });
 
-  useEffect(() => {
-    try {
-      // 용량이 큰 fileData(Base64 파일 데이터)는 로컬스토리지 5MB Quota 초과 방지를 위해 캐싱 항목에서 배제합니다.
-      // 인메모리 상에서는 새로고침 전까지 fileData가 온전히 유지됩니다.
-      const agreementsForStorage = agreements.map((item) => {
-        const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
-        const cleanFileData = isUrl ? item.fileData : null;
-        return { ...item, fileData: cleanFileData };
-      });
-      safeSetLocalStorage("anchor_agreements_data_v1", JSON.stringify(agreementsForStorage), selectedYear);
-    } catch (e) {
-      console.error("Failed to save agreements to localStorage:", e);
-    }
-  // oxlint-disable-next-line react/exhaustive-deps -- agreement changes own persistence; selectedYear is only quota-recovery context and must not cause duplicate writes.
-  }, [agreements]);
+  // Base64 첨부를 제외한 협약서 캐시를 저장합니다.
+  useAgreementLocalCache(
+    agreements,
+    safeSetLocalStorage,
+    () => selectedYear
+  );
 
   // 협약∙발급 관리 서브탭 및 추가 데이터군(이수증, 상장) 상태 선언
   const [agreementsSubTab, setAgreementsSubTab] = useState(() => {
@@ -972,29 +964,17 @@ export default function App() {
     return [];
   });
 
-  useEffect(() => {
-    try {
-      const unifiedCertsForStorage = unifiedCertificates.map((item) => {
-        const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
-        const cleanFileData = isUrl ? item.fileData : null;
-        return { ...item, fileData: cleanFileData };
-      });
-      safeSetLocalStorage("anchor_unified_certificates_data_v1", JSON.stringify(unifiedCertsForStorage), selectedYear);
-    } catch (e) {
-      console.error("Failed to save unified certificates to localStorage:", e);
-    }
-  // oxlint-disable-next-line react/exhaustive-deps -- certificate changes own persistence; selectedYear is only quota-recovery context and must not cause duplicate writes.
-  }, [unifiedCertificates]);
+  useUnifiedCertificateLocalCache(
+    unifiedCertificates,
+    safeSetLocalStorage,
+    () => selectedYear
+  );
 
-  useEffect(() => {
-    try {
-      const clean = scholarships.map((item) => ({ ...item }));
-      safeSetLocalStorage("anchor_cache_scholarships_all", JSON.stringify(clean), selectedYear);
-    } catch (e) {
-      console.error("Failed to save scholarships to localStorage:", e);
-    }
-  // oxlint-disable-next-line react/exhaustive-deps -- scholarship changes own persistence; selectedYear is only quota-recovery context and must not cause duplicate writes.
-  }, [scholarships]);
+  useScholarshipLocalCache(
+    scholarships,
+    safeSetLocalStorage,
+    () => selectedYear
+  );
 
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
 
