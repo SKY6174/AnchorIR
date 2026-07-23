@@ -38,6 +38,7 @@ import { parseCommitteeVotePath } from "./utils/committee-short-link";
 import type { AssetReservation, Html2PdfFactory, LegacyAppRecord, LegacyYearRecord, ProgramVersionRequest, RiseMemberInsert, ScheduleEventInsert, ScheduleMeetingInsert, ScheduleMonthlyInsert } from "./app/app-types";
 import { INITIAL_AGREEMENTS, INITIAL_MEMBERS } from "./app/app-seed-data";
 import { formatAssignee, formatDataToMultiYear, formatToMillionWon, getCalculatedYearFromDate, getCleanProjectsForStorage, getErrorMessage, getNormalizedKpi, getRealUnitId, mergeProjectsWithInitial, migrateProgramIds, recalculateCarryOver } from "./app/app-data-utils";
+import { useDashboardScroll } from "./app/hooks/use-dashboard-scroll";
 import { useDashboardUiLifecycle } from "./app/hooks/use-dashboard-ui-lifecycle";
 import { deleteAgreementsByYear, insertAgreements } from "./features/agreements/services/agreement-service";
 import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
@@ -4974,81 +4975,16 @@ export default function App() {
   }, [activeTab, menuVisibility, kpiSubTab, displayProjects, isSongDirector]);
 
 
-  // 새로고침 시 스크롤 위치 영속성 복원 훅 (.main-content 컨테이너 대상) - 마운트 시 1회 작동
-  useEffect(() => {
-    const mainEl = document.querySelector(".main-content");
-    if (!mainEl) {
-      setIsScrollRestored(true);
-      return;
-    }
-
-    // 의존성 변경에 따라 렌더링이 튈 때 임시로 투명도를 낮추어 스크롤 튐을 감춤
-    setIsScrollRestored(false);
-
-    // 1. 페이지를 벗어나거나 새로고침할 때 현재 메인 영역 스크롤 위치 저장
-    const handleSaveScroll = () => {
-      localStorage.setItem("anchor_scroll_y", String(mainEl.scrollTop));
-    };
-
-    // 2. 실시간 스크롤 움직임 추적 (디바운스 적용)
-    let scrollTimeout: ReturnType<typeof setTimeout> | undefined;
-    const handleScroll = () => {
-      if (scrollTimeout) clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        if (mainEl.scrollTop > 0) {
-          localStorage.setItem("anchor_scroll_y", String(mainEl.scrollTop));
-        }
-      }, 150);
-    };
-
-    window.addEventListener("beforeunload", handleSaveScroll);
-    mainEl.addEventListener("scroll", handleScroll);
-
-    // 3. 마운트 완료 후 이전 스크롤 위치 복원 (지연 복원 보장)
-    const savedScrollY = localStorage.getItem("anchor_scroll_y");
-    let hasSavedScroll = false;
-
-    if (savedScrollY) {
-      const scrollY = parseInt(savedScrollY, 10);
-      if (scrollY > 0) {
-        hasSavedScroll = true;
-        // 복원 및 페이드인 타이밍 정합성 통제
-        setTimeout(() => {
-          if (mainEl) mainEl.scrollTop = scrollY;
-          setIsScrollRestored(true); // 첫 스크롤 복원 직후 투명도를 켜서 페이드인
-        }, 120);
-        setTimeout(() => {
-          if (mainEl) mainEl.scrollTop = scrollY;
-        }, 350);
-        setTimeout(() => {
-          if (mainEl) mainEl.scrollTop = scrollY;
-        }, 600);
-      }
-    }
-
-    // 복원할 스크롤 정보가 없으면 즉시 투명도 복원
-    if (!hasSavedScroll) {
-      setTimeout(() => {
-        setIsScrollRestored(true);
-      }, 50);
-    }
-
-    return () => {
-      window.removeEventListener("beforeunload", handleSaveScroll);
-      if (mainEl) {
-        mainEl.removeEventListener("scroll", handleScroll);
-      }
-      if (scrollTimeout) clearTimeout(scrollTimeout);
-    };
-  }, []); // 빈 의존성 배열로 마운트 시 1회만 스크롤 복원 수행
-
-  // 💡 [탭/서브탭/관리 서브탭 전환 시 메인 영역 스크롤 최상단 리셋 훅]
-  useEffect(() => {
-    const mainEl = document.querySelector(".main-content");
-    if (mainEl) {
-      mainEl.scrollTop = 0;
-    }
-  }, [activeTab, projectsSubTab, mgmtSubTab, kpiSubTab, selectedProgId, committeeSubTab]);
+  // 새로고침 시 스크롤 위치를 복원하고 탭 전환 시 최상단으로 이동합니다.
+  useDashboardScroll({
+    activeTab,
+    projectsSubTab,
+    mgmtSubTab,
+    kpiSubTab,
+    selectedProgId,
+    committeeSubTab,
+    setIsScrollRestored
+  });
 
   // Supabase Auth 세션을 기준으로 rise_users 업무 프로필을 복원합니다.
   useApprovedAuthSession({ setCurrentUser });
