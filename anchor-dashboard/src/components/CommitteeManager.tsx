@@ -2414,7 +2414,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
             🛡️ 울산과학대학교 앵커사업단 디지털 기록 봉인 적용
           </div>
           <div style="font-size: 11.5px; font-weight: 800; color: #047857; font-family: 'Courier New', monospace; background: #e0f2fe; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-bottom: 0.4rem; border: 1px solid #bae6fd; letter-spacing: 0.5px;">
-            [디지털 서명 검증 코드: ${sealHash} (${sealTimestampStr})]
+            [서버 봉인 검증 코드: ${sealHash} (${sealTimestampStr})]
           </div>
           <div style="font-size: 10.5px; color: #475569; line-height: 1.5;">
             본 문서는 확정 데이터 스냅샷의 SHA-256(${snapshot.payload_sha256})과 서버 HMAC 검증값으로 봉인되었습니다.<br/>
@@ -2520,7 +2520,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
 
     } catch (err) {
       console.error("PDF 생성 에러:", err);
-      alert(`의결 결과보고서 디지털 서명 및 다운로드 처리 중 안내:\n${err.message}`);
+      alert(`의결 결과보고서 서버 봉인 및 다운로드 처리 중 안내:\n${err.message}`);
     } finally {
       setIsDownloadingPdf(null);
     }

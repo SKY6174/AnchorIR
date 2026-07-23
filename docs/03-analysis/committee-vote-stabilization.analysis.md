@@ -4,11 +4,11 @@
 
 ---
 
-## Match Rate: 94%
+## Match Rate: 95%
 
 ## Summary
 
-외부위원과 로그인 위원의 인증·제출 신뢰 경계, 정규화·원자적 저장, 공개 RLS 제거, 간사 제외 공식 정족수, private storage 첨부/서명, legacy 변환, 서버 보고서 스냅샷과 HMAC 봉인까지 구현·운영 반영되었다. Supabase Auth를 유일한 로그인 신원으로 하고 `rise_users.uuid = auth.uid()`를 업무 권한 근거로 삼도록 기존 터널·데모 자동가입·자체 비밀번호 검증도 제거했다. 091~097은 운영 DB에 적용되었고, 원격 anon probe에서 `rise_users`와 위원회 핵심 테이블·RPC가 모두 `401/42501`로 차단됨을 확인했다. `committee-vote` Edge Function과 HMAC/CORS 비밀값도 운영 배포되어 공개 오류·origin 차단·봉인 검증 라우트 smoke test를 통과했다. 운영 E2E에서 명단 조회가 fallback 명단의 자동 DELETE/INSERT를 유발하던 경로를 추가 발견해 제거했고, 일반 `RESEARCHER`를 관리 권한에서 제외했다. 후속 Vercel 배포와 게스트 재로그인, 신규 탭 위원 명단 조회, DB/Edge 관리자 차단까지 검증했으며 경고 로그는 0건이었다. 대시보드 JSX 태그·className·스타일은 변경하지 않았고 프론트 빌드와 핵심 순수 함수 6개 시험은 통과했다. 남은 항목은 10명 이상 동시 제출, 전체 역할 CRUD 매트릭스, PDF 시각 비교 및 장기 모니터링이다.
+외부위원과 로그인 위원의 인증·제출 신뢰 경계, 정규화·원자적 저장, 공개 RLS 제거, 간사 제외 공식 정족수, private storage 첨부/서명, legacy 변환, 서버 보고서 스냅샷과 HMAC 봉인까지 구현·운영 반영되었다. Supabase Auth를 유일한 로그인 신원으로 하고 `rise_users.uuid = auth.uid()`를 업무 권한 근거로 삼도록 기존 터널·데모 자동가입·자체 비밀번호 검증도 제거했다. 091~097은 운영 DB에 적용되었고, 원격 anon probe에서 `rise_users`와 위원회 핵심 테이블·RPC가 모두 `401/42501`로 차단됨을 확인했다. `committee-vote` Edge Function과 HMAC/CORS 비밀값도 운영 배포되어 공개 오류·origin 차단·봉인 검증 라우트 smoke test를 통과했다. 운영 E2E에서 명단 조회가 fallback 명단의 자동 DELETE/INSERT를 유발하던 경로를 추가 발견해 제거했고, 일반 `RESEARCHER`를 관리 권한에서 제외했다. 후속 Vercel 배포와 게스트 재로그인, 신규 탭 위원 명단 조회, DB/Edge 관리자 차단까지 검증했으며 경고 로그는 0건이었다. 읽기 전용 운영 역할 매트릭스도 통과하여 실제 계정이 존재하는 관리자 역할 9종과 `RESEARCHER` 차단을 런타임에서 확인했고, 계정이 없는 `DIRECTOR`, `CENTER_NURI`는 함수·정책 구조로 검증했다. 대시보드 JSX 태그·className·스타일은 변경하지 않았고 프론트 빌드와 핵심 순수 함수 6개 시험은 통과했다. 남은 항목은 10명 이상 동시 제출, 미보유 역할 실계정 CRUD, PDF 시각 비교 및 장기 모니터링이다.
 
 ## Implemented Items
 
@@ -43,11 +43,14 @@
 - [x] 로그인 성공 시 이전 사용자 탭 상태를 상속하지 않고 대시보드로 초기화
 - [x] Vercel `main` 운영 배포 및 신규 브라우저 위원 명단 조회 경고 0건 확인
 - [x] 게스트 연구원 `is_committee_admin() = false`, Edge 보고서 확정 `403/FORBIDDEN` 확인
+- [x] 읽기 전용 운영 역할 매트릭스 통과: 관리자 역할 9종 런타임 허용, `RESEARCHER` 거부, 서버 소유 테이블 write 정책 부재
+- [x] 제공 PDF Poppler 비교: 이전 3쪽에서 최신 2쪽으로 수렴, A4·한글·표·서명·잘림·겹침 이상 없음
+- [x] PDF의 잔여 `디지털 서명 검증 코드` 표현을 `서버 봉인 검증 코드`로 정정
 
 ## Missing Items
 
 - [ ] 운영 DB point-in-time backup 및 row count/hash 기준선 확보
-- [ ] 관리자 전체 역할별 `rise_users` 및 위원회 CRUD 허용 범위 매트릭스 검증
+- [ ] 운영 계정이 없는 `DIRECTOR`, `CENTER_NURI` 및 관리자별 실제 CRUD 허용 범위 검증
 - [ ] 변환된 legacy 응답과 attachment batch 이관 결과를 staging에서 검토
 - [x] `committee-vote` Edge Function 운영 배포와 HMAC/CORS 비밀값 설정
 - [x] 운영 Edge smoke test: 허용 origin `404/NOT_FOUND`, 비허용 origin `403/FORBIDDEN`, 잘못된 봉인 검증 `200/valid:false`
@@ -56,7 +59,7 @@
 - [ ] SQL 정족수 함수와 TypeScript 결과의 자동 parity test
 - [ ] 유효한 외부위원·간사·관리자 계정을 사용한 전체 브라우저 E2E
 - [x] 신규 인증·위원회 프론트 변경을 `anchor-ir` Vercel 프로덕션에 배포
-- [ ] 기준 PDF와 생성 PDF의 A4 2쪽 Poppler 렌더링 비교
+- [ ] 운영 HMAC 코드로 새로 생성한 PDF에서 A4 2쪽 및 봉인 문구를 최종 재확인
 - [ ] 수정 전후 주요 화면 스크린샷 픽셀 비교
 - [ ] 보고서 verification URL 또는 화면 연결
 - [ ] 운영 배포 후 모니터링과 forward rollback 실행 확인
@@ -73,6 +76,7 @@
 - `rise_users.uuid`가 없거나 이메일이 Supabase Auth와 다른 기존 행은 로그인할 수 없다. 096 preflight에서 중복·불일치·고아 UUID를 먼저 해소하고 `MISSING_AUTH_IDENTITY` 목록은 운영 승인 후 Auth 사용자를 발급해야 한다.
 - 기존 `access_pin` 평문 열은 관리자 UI 호환을 위해 남아 있다. 외부 인증은 hash credential만 사용하지만 후속 단계에서 관리자 재발급 UX와 함께 평문 열을 폐기해야 한다.
 - 운영 E2E에서 발견한 구형 명단 자동복원 경로는 제거했지만, 향후 공식 명단 seed/갱신은 별도 승인된 관리자 작업 또는 migration으로만 수행해야 한다.
+- 최신 제공 PDF는 레이아웃 기준을 통과했지만 보안 전환 이전 생성본이라 `공동인증`, `CA`, `100% 보장` 문구가 남아 있다. 현재 코드는 이 문구를 사용하지 않으므로 운영 HMAC 스냅샷으로 PDF를 다시 생성해 최종 확인해야 한다.
 
 ## Recommendations
 
