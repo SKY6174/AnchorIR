@@ -6,10 +6,11 @@ const CommitteeExternalVote = React.lazy(() => import("./components/CommitteeExt
 const SatisfactionManager = React.lazy(() => import("./components/SatisfactionManager"));
 const ProcurementManager = React.lazy(() => import("./components/ProcurementManager"));
 const ScheduleManager = React.lazy(() => import("./components/ScheduleManager"));
+const AgreementManager = React.lazy(() => import("./components/AgreementManager"));
+const UnifiedCertificateManager = React.lazy(() => import("./components/UnifiedCertificateManager"));
+const ScholarshipManager = React.lazy(() => import("./components/ScholarshipManager"));
+const InstructorPoolManager = React.lazy(() => import("./components/InstructorPoolManager"));
 import PDCAManager from "./components/PDCAManager";
-import AgreementManager from "./components/AgreementManager";
-import UnifiedCertificateManager from "./components/UnifiedCertificateManager";
-import ScholarshipManager from "./components/ScholarshipManager";
 import BudgetItemsManager from "./components/BudgetItemsManager";
 import BudgetExecutionManager from "./components/BudgetExecutionManager";
 import ProgramProgressManager from "./components/ProgramProgressManager";
@@ -20,7 +21,6 @@ import OrgChartManager from "./components/OrgChartManager";
 import CenterOrgChartManager from "./components/CenterOrgChartManager";
 import PartnerManager from "./components/PartnerManager";
 import PortalConfigManager from "./components/PortalConfigManager";
-import InstructorPoolManager from "./components/InstructorPoolManager";
 import AuthManager from "./components/AuthManager";
 import AssetManager from "./components/AssetManager";
 import CommitteeManager from "./components/CommitteeManager";
@@ -10729,7 +10729,9 @@ export default function App() {
               )}
 
               {mgmtSubTab === "instructor_pool" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
-                <InstructorPoolManager key={`instructors-${darkMode}`} currentUser={currentUser} currentRole={currentRole} />
+                <React.Suspense fallback={null}>
+                  <InstructorPoolManager key={`instructors-${darkMode}`} currentUser={currentUser} currentRole={currentRole} />
+                </React.Suspense>
               )}
 
               {mgmtSubTab === "portal_config" && (currentRole?.id === "ADMIN" || currentRole?.id === "G_DIRECTOR") && (
@@ -11615,45 +11617,51 @@ export default function App() {
             <div className="glass-card" style={{ padding: "1.25rem" }}>
               {/* 협약서 서브탭 활성화 시 협약서 단독 매니저 마운트 */}
               {agreementsSubTab === "agreements" && (
-                <AgreementManager
-                  key={`agreement-${darkMode}-${selectedYear}`}
-                  projects={displayProjects}
-                  agreements={agreements as AgreementItem[]}
-                  selectedYear={selectedYear}
-                  onAddAgreement={handleAddAgreement}
-                  onUpdateAgreement={handleUpdateAgreement}
-                  onDeleteAgreement={handleDeleteAgreement}
-                  setAgreements={setAgreements as React.Dispatch<React.SetStateAction<AgreementItem[]>>}
-                  currentRole={currentRole}
-                />
+                <React.Suspense fallback={null}>
+                  <AgreementManager
+                    key={`agreement-${darkMode}-${selectedYear}`}
+                    projects={displayProjects}
+                    agreements={agreements as AgreementItem[]}
+                    selectedYear={selectedYear}
+                    onAddAgreement={handleAddAgreement}
+                    onUpdateAgreement={handleUpdateAgreement}
+                    onDeleteAgreement={handleDeleteAgreement}
+                    setAgreements={setAgreements as React.Dispatch<React.SetStateAction<AgreementItem[]>>}
+                    currentRole={currentRole}
+                  />
+                </React.Suspense>
               )}
 
               {/* 통합 상장/이수증 서브탭 활성화 시 통합 매니저 마운트 */}
               {agreementsSubTab === "unified_certificates" && (
-                <UnifiedCertificateManager
-                  key={`unified-certificate-${darkMode}-${selectedYear}`}
-                  projects={displayProjects}
-                  certificates={unifiedCertificates}
-                  selectedYear={selectedYear}
-                  onAddCertificate={handleAddUnifiedCertificate}
-                  onUpdateCertificate={handleUpdateUnifiedCertificate}
-                  onDeleteCertificate={handleDeleteUnifiedCertificate}
-                  setCertificates={setUnifiedCertificates}
-                  currentRole={currentRole}
-                  members={members}
-                />
+                <React.Suspense fallback={null}>
+                  <UnifiedCertificateManager
+                    key={`unified-certificate-${darkMode}-${selectedYear}`}
+                    projects={displayProjects}
+                    certificates={unifiedCertificates}
+                    selectedYear={selectedYear}
+                    onAddCertificate={handleAddUnifiedCertificate}
+                    onUpdateCertificate={handleUpdateUnifiedCertificate}
+                    onDeleteCertificate={handleDeleteUnifiedCertificate}
+                    setCertificates={setUnifiedCertificates}
+                    currentRole={currentRole}
+                    members={members}
+                  />
+                </React.Suspense>
               )}
 
               {/* 장학금 관리 서브탭 활성화 시 장학금 매니저 마운트 */}
               {agreementsSubTab === "scholarships" && (
-                <ScholarshipManager
-                  key={`scholarship-${darkMode}-${selectedYear}`}
-                  scholarships={scholarships as ScholarshipItem[]}
-                  setScholarships={setScholarships as React.Dispatch<React.SetStateAction<ScholarshipItem[]>>}
-                  selectedYear={selectedYear}
-                  currentRole={currentRole}
-                  members={members}
-                />
+                <React.Suspense fallback={null}>
+                  <ScholarshipManager
+                    key={`scholarship-${darkMode}-${selectedYear}`}
+                    scholarships={scholarships as ScholarshipItem[]}
+                    setScholarships={setScholarships as React.Dispatch<React.SetStateAction<ScholarshipItem[]>>}
+                    selectedYear={selectedYear}
+                    currentRole={currentRole}
+                    members={members}
+                  />
+                </React.Suspense>
               )}
             </div>
           </div>
