@@ -3057,6 +3057,7 @@ export default function App() {
     } catch (e) {
       console.error("Failed to save agreements to localStorage:", e);
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- agreement changes own persistence; selectedYear is only quota-recovery context and must not cause duplicate writes.
   }, [agreements]);
 
   // 협약∙발급 관리 서브탭 및 추가 데이터군(이수증, 상장) 상태 선언
@@ -3108,6 +3109,7 @@ export default function App() {
     } catch (e) {
       console.error("Failed to save unified certificates to localStorage:", e);
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- certificate changes own persistence; selectedYear is only quota-recovery context and must not cause duplicate writes.
   }, [unifiedCertificates]);
 
   useEffect(() => {
@@ -3117,6 +3119,7 @@ export default function App() {
     } catch (e) {
       console.error("Failed to save scholarships to localStorage:", e);
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- scholarship changes own persistence; selectedYear is only quota-recovery context and must not cause duplicate writes.
   }, [scholarships]);
 
   const [assignFilterUnitId, setAssignFilterUnitId] = useState("all");
@@ -3569,6 +3572,7 @@ export default function App() {
     if (activeTab === "management" && currentUser && currentUser.role?.rank <= 2) {
       fetchRegisteredUsers();
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- tab, user, and member changes own this refresh; the render-local fetcher must not trigger repeated account queries.
   }, [activeTab, currentUser, members]);
 
   // 성과지표 상세 조회용 상태 및 다년도 성과관리 연도 선택 상태
