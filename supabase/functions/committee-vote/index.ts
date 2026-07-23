@@ -344,6 +344,9 @@ async function createReportSnapshot(request: Request, meetingId: string) {
   const firstError = meetingResult.error || rosterResult.error || agendaResult.error
     || voteResult.error || responseResult.error || resultRpc.error;
   if (firstError) throw mapDatabaseError(firstError);
+  if (!resultRpc.data || typeof resultRpc.data !== "object" || !("decision_status" in resultRpc.data)) {
+    throw new VoteFunctionError("CONFLICT", "REPORT_RESULT_UNAVAILABLE", 409);
+  }
 
   const responseArtifacts = await Promise.all((responseResult.data ?? []).map(async response => {
     let signatureUrl: string | null = null;
