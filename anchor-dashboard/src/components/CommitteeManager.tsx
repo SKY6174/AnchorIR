@@ -8,7 +8,13 @@ import type {
 import { supabase } from "../supabaseClient";
 import CryptoJS from "crypto-js";
 import ScheduleManager from "./ScheduleManager";
-import { createCommitteeReportSnapshot, submitAuthenticatedCommitteeVote, uploadCommitteeDocument } from "../services/committee-vote-service";
+import {
+  createCommitteeReportSnapshot,
+  deleteCommitteeDocuments,
+  submitAuthenticatedCommitteeVote,
+  uploadCommitteeDocument
+} from "../services/committee-vote-service";
+import { CommitteeVoteApiError } from "../types/committee-vote";
 import { buildValidatedVoteItems, createIdempotencyKey } from "../utils/committee-vote-validation";
 import {
   Users,
@@ -317,17 +323,49 @@ const isPersistedCommitteeMeeting = (meeting: unknown): meeting is CommitteeMeet
 
 type CommitteeMeetingSaveStage = "meeting" | "document" | "agenda" | "credential";
 
+class CommitteeDocumentSaveError extends Error {
+  constructor(
+    readonly documentName: string,
+    readonly originalError: unknown
+  ) {
+    super(getErrorMessage(originalError));
+    this.name = "CommitteeDocumentSaveError";
+  }
+}
+
 const getCommitteeMeetingSaveErrorMessage = (
   error: unknown,
   stage: CommitteeMeetingSaveStage
 ): string => {
-  const message = getErrorMessage(error).toLowerCase();
+  const documentName = error instanceof CommitteeDocumentSaveError ? error.documentName : "";
+  const originalError = error instanceof CommitteeDocumentSaveError ? error.originalError : error;
+  const message = getErrorMessage(originalError).toLowerCase();
+  const errorCode = originalError instanceof CommitteeVoteApiError ? originalError.code : null;
+  const documentPrefix = documentName ? `첨부문서 "${documentName}": ` : "";
 
   if (stage === "document") {
-    if (message.includes("not_found") || message.includes("non-2xx")) {
-      return "첨부문서 업로드 기능이 운영 서버에 배포되지 않았거나 사용할 수 없습니다. 관리자에게 committee-vote 함수 배포 상태를 확인해 달라고 요청해 주세요.";
+    if (errorCode === "FORBIDDEN") {
+      return `${documentPrefix}로그인 세션 또는 회의 관리 권한을 확인할 수 없습니다. 다시 로그인한 뒤 재시도해 주세요.`;
     }
-    return "첨부 PDF를 보안 저장소에 업로드하지 못했습니다. PDF 형식·용량을 확인하고, 관리자에게 보안 저장소 설정을 확인해 달라고 요청해 주세요.";
+    if (errorCode === "INVALID_DOCUMENT") {
+      return `${documentPrefix}올바른 PDF 파일인지 확인한 뒤 다시 첨부해 주세요.`;
+    }
+    if (errorCode === "DOCUMENT_TOO_LARGE") {
+      return `${documentPrefix}파일 용량이 20MB 제한을 초과했습니다. 용량을 줄인 뒤 다시 첨부해 주세요.`;
+    }
+    if (errorCode === "STORAGE_NOT_CONFIGURED") {
+      return `${documentPrefix}운영 서버의 위원회 보안 저장소가 구성되지 않았습니다. 관리자에게 committee-meeting-documents 버킷을 확인해 달라고 요청해 주세요.`;
+    }
+    if (errorCode === "STORAGE_UPLOAD_FAILED") {
+      return `${documentPrefix}보안 저장소가 요청을 처리하지 못했습니다. 잠시 후 다시 시도하고, 반복되면 관리자에게 Edge Function 로그 확인을 요청해 주세요.`;
+    }
+    if (errorCode === "NETWORK_ERROR" || message.includes("fetch") || message.includes("network")) {
+      return `${documentPrefix}보안 저장소 서버에 연결하지 못했습니다. 네트워크 상태를 확인한 뒤 다시 시도해 주세요.`;
+    }
+    if (errorCode === "NOT_FOUND" || message.includes("not_found") || message.includes("non-2xx")) {
+      return `${documentPrefix}첨부문서 업로드 기능이 운영 서버에 배포되지 않았거나 사용할 수 없습니다. 관리자에게 committee-vote 함수 배포 상태를 확인해 달라고 요청해 주세요.`;
+    }
+    return `${documentPrefix}첨부 PDF를 보안 저장소에 업로드하지 못했습니다. 관리자에게 Edge Function 로그 확인을 요청해 주세요.`;
   }
   if (message.includes("public_code") && (message.includes("null") || message.includes("not-null"))) {
     return "회의 공개코드 생성 설정이 DB에 적용되지 않았습니다. 관리자에게 DB 마이그레이션 적용을 요청해 주세요.";
@@ -1667,12 +1705,6 @@ export default function CommitteeManager({
       ? orderedAttachmentNames.join(" | ")
       : (meetingForm.attachment_name || null);
 
-    // 💡 모든 안건의 첨부자료 바이너리/URL 목록을 인덱스 순서(0, 1, 2) 그대로 JSON 배열로 인코딩하여 영구 보존
-    const orderedAttachmentDatas = meetingForm.agendas.map(a => a.attachment_data || "");
-    const combinedAttachmentData = orderedAttachmentDatas.some(d => d.length > 0)
-      ? JSON.stringify(orderedAttachmentDatas)
-      : (meetingForm.agendas.find(a => a.attachment_data)?.attachment_data || meetingForm.attachment_data || null);
-
     const payload = {
       committee_id: selectedCommittee.id,
       title: meetingForm.title,
@@ -1680,22 +1712,29 @@ export default function CommitteeManager({
       meeting_type: meetingForm.meeting_type,
       agenda: summaryAgendaText,
       attachment_name: combinedAttachmentName,
-      attachment_data: combinedAttachmentData,
+      attachment_data: null,
       access_pin: generatedPin,
       public_code: isEditMode ? undefined : generateCommitteePublicCode(),
       status: "ACTIVE"
     };
 
-    const buildAgendaPayloads = async (targetMeetingId: string | number) => Promise.all(
-      meetingForm.agendas.map(async (a, idx) => {
+    const uploadedDocumentPaths: string[] = [];
+    const buildAgendaPayloads = async (targetMeetingId: string | number) => {
+      const agendaPayloads = [];
+      for (const [idx, a] of meetingForm.agendas.entries()) {
         let attachmentPath = (a as any).attachment_path || null;
         if (a.attachment_data?.startsWith("data:application/pdf;base64,") && a.attachment_name) {
-          const uploaded = await uploadCommitteeDocument(
-            String(targetMeetingId), a.attachment_name, a.attachment_data
-          );
-          attachmentPath = uploaded.attachment_path;
+          try {
+            const uploaded = await uploadCommitteeDocument(
+              String(targetMeetingId), a.attachment_name, a.attachment_data
+            );
+            attachmentPath = uploaded.attachment_path;
+            uploadedDocumentPaths.push(attachmentPath);
+          } catch (error) {
+            throw new CommitteeDocumentSaveError(a.attachment_name, error);
+          }
         }
-        return {
+        agendaPayloads.push({
           meeting_id: String(targetMeetingId),
           title: a.title.trim(),
           description: a.description || null,
@@ -1704,9 +1743,10 @@ export default function CommitteeManager({
           attachment_name: a.attachment_name || null,
           attachment_path: attachmentPath,
           attachment_data: attachmentPath ? null : (a.attachment_data || null)
-        };
-      })
-    );
+        });
+      }
+      return agendaPayloads;
+    };
 
     let createdMeeting: CommitteeMeeting | null = null;
     let saveStage: CommitteeMeetingSaveStage = "meeting";
@@ -1773,7 +1813,7 @@ export default function CommitteeManager({
         alert("회의 정보 및 심의 안건이 성공적으로 수정되었습니다.");
       } else {
         // 1-B. 회의 기본 신규 등록
-        const { data, error } = await supabase
+        const { data, error } = await committeeDb
           .from("committee_meetings")
           .insert([payload])
           .select();
@@ -1850,6 +1890,15 @@ export default function CommitteeManager({
       }
     } catch (err: unknown) {
       console.error("공식 회의 DB 저장 실패:", err);
+
+      const rollbackMeetingId = String(createdMeeting?.id || editingMeetingId || "");
+      if (rollbackMeetingId && uploadedDocumentPaths.length > 0) {
+        try {
+          await deleteCommitteeDocuments(rollbackMeetingId, uploadedDocumentPaths);
+        } catch (cleanupError) {
+          console.error("업로드된 첨부문서 보상 삭제 실패:", cleanupError);
+        }
+      }
 
       if (!isEditMode && createdMeeting?.id) {
         const { error: rollbackError } = await supabase

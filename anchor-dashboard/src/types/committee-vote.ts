@@ -8,6 +8,10 @@ export type CommitteeVoteErrorCode =
   | "CONFLICT"
   | "FORBIDDEN"
   | "NOT_FOUND"
+  | "INVALID_DOCUMENT"
+  | "DOCUMENT_TOO_LARGE"
+  | "STORAGE_NOT_CONFIGURED"
+  | "STORAGE_UPLOAD_FAILED"
   | "NETWORK_ERROR"
   | "SERVER_ERROR";
 

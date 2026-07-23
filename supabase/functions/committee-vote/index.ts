@@ -20,6 +20,10 @@ type ErrorCode =
   | "CONFLICT"
   | "FORBIDDEN"
   | "NOT_FOUND"
+  | "INVALID_DOCUMENT"
+  | "DOCUMENT_TOO_LARGE"
+  | "STORAGE_NOT_CONFIGURED"
+  | "STORAGE_UPLOAD_FAILED"
   | "NETWORK_ERROR"
   | "SERVER_ERROR";
 
@@ -89,6 +93,27 @@ function mapDatabaseError(error: { message?: string } | null): VoteFunctionError
   const code = codes.find(candidate => message.includes(candidate)) ?? "SERVER_ERROR";
   const status = code === "FORBIDDEN" ? 403 : code === "LOCKED" ? 429 : code === "SERVER_ERROR" ? 500 : 400;
   return new VoteFunctionError(code, code, status);
+}
+
+function mapStorageError(error: { message?: string; statusCode?: string | number } | null): VoteFunctionError {
+  const message = (error?.message ?? "").toLowerCase();
+  const statusCode = String(error?.statusCode ?? "");
+
+  if (message.includes("bucket") && (message.includes("not found") || statusCode === "404")) {
+    return new VoteFunctionError("STORAGE_NOT_CONFIGURED", "STORAGE_NOT_CONFIGURED", 503);
+  }
+  if (
+    statusCode === "413"
+    || message.includes("maximum allowed size")
+    || message.includes("payload too large")
+    || message.includes("entity too large")
+  ) {
+    return new VoteFunctionError("DOCUMENT_TOO_LARGE", "DOCUMENT_TOO_LARGE", 413);
+  }
+  if (message.includes("mime type") || message.includes("invalid mime")) {
+    return new VoteFunctionError("INVALID_DOCUMENT", "INVALID_DOCUMENT", 400);
+  }
+  return new VoteFunctionError("STORAGE_UPLOAD_FAILED", "STORAGE_UPLOAD_FAILED", 503);
 }
 
 async function getSession(token: string) {
@@ -215,14 +240,15 @@ function decodePng(dataUrl: string): Uint8Array {
 
 function decodePdf(dataUrl: string): Uint8Array {
   const match = /^data:application\/pdf;base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl);
-  if (!match) throw new VoteFunctionError("INCOMPLETE_AGENDAS", "INVALID_DOCUMENT");
+  if (!match) throw new VoteFunctionError("INVALID_DOCUMENT", "INVALID_DOCUMENT");
   const binary = atob(match[1]);
-  if (binary.length === 0 || binary.length > 20 * 1024 * 1024) {
-    throw new VoteFunctionError("INCOMPLETE_AGENDAS", "INVALID_DOCUMENT");
+  if (binary.length === 0) throw new VoteFunctionError("INVALID_DOCUMENT", "INVALID_DOCUMENT");
+  if (binary.length > 20 * 1024 * 1024) {
+    throw new VoteFunctionError("DOCUMENT_TOO_LARGE", "DOCUMENT_TOO_LARGE", 413);
   }
   const bytes = Uint8Array.from(binary, character => character.charCodeAt(0));
   if (new TextDecoder().decode(bytes.slice(0, 5)) !== "%PDF-") {
-    throw new VoteFunctionError("INCOMPLETE_AGENDAS", "INVALID_DOCUMENT");
+    throw new VoteFunctionError("INVALID_DOCUMENT", "INVALID_DOCUMENT");
   }
   return bytes;
 }
@@ -432,8 +458,43 @@ async function uploadDocument(request: Request, meetingId: string, fileName: str
   const objectPath = `${meetingId}/${crypto.randomUUID()}-${safeName}`;
   const { error } = await service.storage.from("committee-meeting-documents")
     .upload(objectPath, pdf, { contentType: "application/pdf", upsert: false });
-  if (error) throw mapDatabaseError(error);
+  if (error) {
+    console.error("committee-vote document upload failed", {
+      meetingId,
+      objectPath,
+      storageStatus: error.statusCode,
+      storageMessage: error.message
+    });
+    throw mapStorageError(error);
+  }
   return { attachment_path: objectPath };
+}
+
+async function deleteDocuments(request: Request, meetingId: string, rawPaths: unknown) {
+  await requireAdmin(request);
+  if (!/^[0-9a-f-]{36}$/i.test(meetingId)) throw new VoteFunctionError("NOT_FOUND", "NOT_FOUND", 404);
+  if (!Array.isArray(rawPaths) || rawPaths.length > 20) {
+    throw new VoteFunctionError("INVALID_DOCUMENT", "INVALID_DOCUMENT");
+  }
+
+  const meetingPrefix = `${meetingId}/`;
+  const paths = [...new Set(rawPaths.map(path => String(path)))];
+  if (paths.some(path => !path.startsWith(meetingPrefix) || path.length > 500)) {
+    throw new VoteFunctionError("FORBIDDEN", "FORBIDDEN", 403);
+  }
+  if (paths.length === 0) return { removed: 0 };
+
+  const { error } = await service.storage.from("committee-meeting-documents").remove(paths);
+  if (error) {
+    console.error("committee-vote document cleanup failed", {
+      meetingId,
+      pathCount: paths.length,
+      storageStatus: error.statusCode,
+      storageMessage: error.message
+    });
+    throw mapStorageError(error);
+  }
+  return { removed: paths.length };
 }
 
 async function migrateAttachments(request: Request, batchSize: number) {
@@ -501,6 +562,9 @@ Deno.serve(async request => {
     );
     else if (action === "upload-document") data = await uploadDocument(
       request, String(body.meeting_id ?? ""), String(body.file_name ?? ""), String(body.data_url ?? "")
+    );
+    else if (action === "delete-documents") data = await deleteDocuments(
+      request, String(body.meeting_id ?? ""), body.attachment_paths
     );
     else if (action === "migrate-attachments") data = await migrateAttachments(request, Number(body.batch_size ?? 10));
     else throw new VoteFunctionError("NOT_FOUND", "NOT_FOUND", 404);
