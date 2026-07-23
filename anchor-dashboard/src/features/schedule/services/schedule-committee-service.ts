@@ -1,6 +1,8 @@
 import { supabase } from "../../../supabaseClient";
 import { COMMITTEES_DATA } from "../data/schedule-committee-data";
 
+const scheduleCommitteeDb = supabase as any;
+
 const COMMITTEE_ORDER: Record<string, number> = {
   total: 1,
   planning: 2,
@@ -64,4 +66,41 @@ export const fetchScheduleCommittees = async (
         }))
     };
   });
+};
+
+export const insertScheduleCommitteeMembers = async (members: any[]) => {
+  const { error } = await scheduleCommitteeDb
+    .from("committee_members")
+    .insert(members);
+  if (error) throw error;
+};
+
+export const deleteScheduleCommitteeMember = async (
+  memberId: number | string
+) => {
+  const { error } = await scheduleCommitteeDb
+    .from("committee_members")
+    .delete()
+    .eq("id", memberId);
+  if (error) throw error;
+};
+
+export const updateScheduleCommitteeMember = async (
+  memberId: number | string | undefined,
+  memberData: Record<string, unknown>
+) => {
+  const { error } = await scheduleCommitteeDb
+    .from("committee_members")
+    .update(memberData)
+    .eq("id", memberId);
+  if (error) throw error;
+};
+
+export const insertScheduleCommitteeMember = async (
+  memberData: Record<string, unknown>
+) => {
+  const { error } = await scheduleCommitteeDb
+    .from("committee_members")
+    .insert(memberData);
+  if (error) throw error;
 };

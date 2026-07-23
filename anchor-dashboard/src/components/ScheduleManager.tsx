@@ -35,7 +35,13 @@ import {
   convertRawTextToMarkdown,
   extractScheduleFilesText
 } from "../features/schedule/services/schedule-ai-document-service";
-import { fetchScheduleCommittees } from "../features/schedule/services/schedule-committee-service";
+import {
+  deleteScheduleCommitteeMember,
+  fetchScheduleCommittees,
+  insertScheduleCommitteeMember,
+  insertScheduleCommitteeMembers,
+  updateScheduleCommitteeMember
+} from "../features/schedule/services/schedule-committee-service";
 import {
   downloadCommitteeMemberList,
   downloadCommitteeRegistrationTemplate,
@@ -251,10 +257,7 @@ export default function ScheduleManager({
         }
         const newMembers = parseResult.members;
 
-        const { error } = await scheduleDb
-          .from("committee_members")
-          .insert(newMembers);
-        if (error) throw error;
+        await insertScheduleCommitteeMembers(newMembers);
 
         alert(`총 ${newMembers.length}명의 위원이 성공적으로 일괄 등록되었습니다!`);
         await loadCommitteesData();
@@ -273,11 +276,7 @@ export default function ScheduleManager({
     if (memberId === undefined) return;
     if (!window.confirm("이 위원을 명단에서 정말 삭제하시겠습니까?")) return;
     try {
-      const { error } = await scheduleDb
-        .from("committee_members")
-        .delete()
-        .eq("id", memberId);
-      if (error) throw error;
+      await deleteScheduleCommitteeMember(memberId);
 
       // DB 삭제 후 화면 데이터 실시간 갱신
       await loadCommitteesData();
@@ -306,41 +305,34 @@ export default function ScheduleManager({
     try {
       if (editingMember) {
         // 기존 멤버 정보 업데이트 (UPDATE)
-        const { error } = await scheduleDb
-          .from("committee_members")
-          .update({
-            type: memberFormData.type,
-            name: memberFormData.name,
-            org: memberFormData.org,
-            dept: memberFormData.dept,
-            rank: memberFormData.rank,
-            location: memberFormData.location,
-            term: combinedTerm,
-            note: memberFormData.note
-          })
-          .eq("id", editingMember.id);
-        if (error) throw error;
+        await updateScheduleCommitteeMember(editingMember.id, {
+          type: memberFormData.type,
+          name: memberFormData.name,
+          org: memberFormData.org,
+          dept: memberFormData.dept,
+          rank: memberFormData.rank,
+          location: memberFormData.location,
+          term: combinedTerm,
+          note: memberFormData.note
+        });
       } else {
         // 신규 멤버 정보 추가 (INSERT)
         const currentMembers = committees.find(c => c.id === selectedCommitteeId)?.members || [];
         const nextSortOrder = currentMembers.length + 1;
 
-        const { error } = await scheduleDb
-          .from("committee_members")
-          .insert({
-            committee_id: selectedCommitteeId,
-            type: memberFormData.type,
-            name: memberFormData.name,
-            org: memberFormData.org,
-            dept: memberFormData.dept,
-            rank: memberFormData.rank,
-            location: memberFormData.location,
-            year: String(selectedYear || ""),
-            term: combinedTerm,
-            note: memberFormData.note,
-            sort_order: nextSortOrder
-          });
-        if (error) throw error;
+        await insertScheduleCommitteeMember({
+          committee_id: selectedCommitteeId,
+          type: memberFormData.type,
+          name: memberFormData.name,
+          org: memberFormData.org,
+          dept: memberFormData.dept,
+          rank: memberFormData.rank,
+          location: memberFormData.location,
+          year: String(selectedYear || ""),
+          term: combinedTerm,
+          note: memberFormData.note,
+          sort_order: nextSortOrder
+        });
       }
 
       // 모달 닫기 및 상태 초기화
