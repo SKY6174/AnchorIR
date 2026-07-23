@@ -1211,7 +1211,7 @@ export default function AgreementManager({
                       </td>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>
                         {agr.fileName ? (
-                          <FileText size={16} style={{ color: "#60a5fa", cursor: "pointer" }} onClick={() => handleViewFile(agr.fileData, agr.fileName)} />
+                          <FileText aria-label={`${agr.fileName} 보기`} role="button" tabIndex={0} size={16} style={{ color: "#60a5fa", cursor: "pointer" }} onClick={() => handleViewFile(agr.fileData, agr.fileName)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.dispatchEvent(new MouseEvent("click", { bubbles: true })); } }} />
                         ) : "-"}
                       </td>
                       {(currentRole.rank <= 2) && (
@@ -1219,7 +1219,7 @@ export default function AgreementManager({
                           <div style={{ display: "flex", gap: "0.25rem", justifyContent: "center" }}>
                             {currentRole.id !== "GUEST" && (
                               <>
-                                <button onClick={() => {
+                                <button aria-label="협약서 수정" onClick={() => {
                                   setEditingId(agr.id ?? null);
                                   setInputDate(agr.date || "");
                                   setInputCenter(agr.center || "ECC센터");
@@ -1253,7 +1253,7 @@ export default function AgreementManager({
                                 }} style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer" }} title="수정">
                                   <Edit size={14} />
                                 </button>
-                                <button onClick={() => { if (confirm("이 협약서를 삭제하시겠습니까?") && agr.id !== undefined) onDeleteAgreement?.(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
+                                <button aria-label="협약서 삭제" onClick={() => { if (confirm("이 협약서를 삭제하시겠습니까?") && agr.id !== undefined) onDeleteAgreement?.(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
                                   <Trash size={14} />
                                 </button>
                               </>
@@ -1276,7 +1276,7 @@ export default function AgreementManager({
           <div style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", borderRadius: "0.75rem", width: "100%", maxWidth: "550px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "var(--text-primary)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "1.1rem", fontWeight: "800" }}>⚓ {editingId ? "협약서 정보 수정" : "신규 등록"}</h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+              <button aria-label="협약서 입력 창 닫기" onClick={() => setIsModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
                 <X size={18} />
               </button>
             </div>
@@ -1308,7 +1308,7 @@ export default function AgreementManager({
                       <input id="a11y-agreement-manager-5" type="text" placeholder={`협약 대상기관 ${index + 1}`} value={org.name || ""} onChange={(e) => handleOrgChange(index, "name", e.target.value)} className="form-input" style={{ flex: 1.3, fontSize: "0.78rem" }} />
                       <input type="text" placeholder="직위/성명 (예: 총장 오연천)" value={org.subject || ""} onChange={(e) => handleOrgChange(index, "subject", e.target.value)} className="form-input" style={{ flex: 1, fontSize: "0.78rem" }} />
                       {inputOrganizations.length > 1 && (
-                        <button type="button" onClick={() => handleRemoveOrgField(index)} style={{ background: "#3f3f46", border: "none", color: "#ef4444", borderRadius: "0.25rem", padding: "0.25rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", minHeight: "30px", minWidth: "30px" }}>
+                        <button aria-label={`협약 대상기관 ${index + 1} 삭제`} type="button" onClick={() => handleRemoveOrgField(index)} style={{ background: "#3f3f46", border: "none", color: "#ef4444", borderRadius: "0.25rem", padding: "0.25rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", minHeight: "30px", minWidth: "30px" }}>
                           <Trash2 size={14} />
                         </button>
                       )}
@@ -1469,7 +1469,7 @@ export default function AgreementManager({
               <h3 style={{ fontSize: "0.9rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                 <FileCheck size={18} style={{ color: "#10B981" }} /> 협약서 사본 일괄 자동 매핑 리포트
               </h3>
-              <button onClick={() => setIsAgreementBatchModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
+              <button aria-label="협약서 일괄 매핑 결과 창 닫기" onClick={() => setIsAgreementBatchModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}>
                 <X size={18} />
               </button>
             </div>

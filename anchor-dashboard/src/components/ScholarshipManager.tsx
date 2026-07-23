@@ -512,10 +512,10 @@ export default function ScholarshipManager({
                   <td style={{ padding: "0.75rem" }}>{item.accountNum || "-"}</td>
                   <td style={{ padding: "0.75rem", textAlign: "center" }}>
                     <div style={{ display: "flex", justifyContent: "center", gap: "0.3rem" }}>
-                      <button onClick={() => openEditModal(item)} style={{ background: "none", border: "none", color: "var(--accent-color)", cursor: "pointer" }}>
+                      <button aria-label="장학금 지급 내역 수정" onClick={() => openEditModal(item)} style={{ background: "none", border: "none", color: "var(--accent-color)", cursor: "pointer" }}>
                         <Edit size={16} />
                       </button>
-                      <button onClick={() => handleDelete(item.id)} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}>
+                      <button aria-label="장학금 지급 내역 삭제" onClick={() => handleDelete(item.id)} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}>
                         <Trash size={16} />
                       </button>
                     </div>

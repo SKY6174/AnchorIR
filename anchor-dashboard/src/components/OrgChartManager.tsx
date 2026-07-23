@@ -670,7 +670,7 @@ export default function OrgChartManager({
                       justifyContent: "space-between",
                       alignItems: "center"
                     }}
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <span style={{ fontWeight: "700" }}>{team.name}</span>
                     {team.rise && (
                       <span style={{
@@ -718,7 +718,7 @@ export default function OrgChartManager({
                         justifyContent: "space-between",
                         alignItems: "center"
                       }}
-                    >
+                     role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                       <span>{dept.name}</span>
                       {team.rise && (
                         <span style={{
@@ -758,7 +758,7 @@ export default function OrgChartManager({
                         fontWeight: "800",
                         background: isExpanded ? "rgba(255,255,255,0.03)" : "transparent"
                       }}
-                    >
+                     role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                       <span style={{ fontSize: "0.95rem" }}>{dept.name}</span>
                       {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                     </div>
@@ -790,7 +790,7 @@ export default function OrgChartManager({
                                     fontSize: "0.85rem",
                                     background: isFacultyExpanded ? "rgba(255,255,255,0.02)" : "transparent"
                                   }}
-                                >
+                                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                                   <span>{team.name}</span>
                                   {isFacultyExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                                 </div>
@@ -815,7 +815,7 @@ export default function OrgChartManager({
                                           alignItems: "center",
                                           marginLeft: "0.4rem"
                                         }}
-                                      >
+                                       role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                                         <span style={{ fontWeight: "700" }}>{major.name}</span>
                                         {major.rise && (
                                           <span style={{
@@ -854,7 +854,7 @@ export default function OrgChartManager({
                                 justifyContent: "space-between",
                                 alignItems: "center"
                               }}
-                            >
+                             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                               <span style={{ fontWeight: "700" }}>{team.name}</span>
                               {team.rise && (
                                 <span style={{

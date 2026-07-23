@@ -100,7 +100,7 @@ export default function Sidebar({
         className="logo-section"
         onClick={() => onChangeTab("dashboard")}
         style={{ cursor: "pointer" }}
-      >
+       role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
         <img src="/logo.png" alt="울산과학대학교 로고" className="logo-img" />
         <span className="logo-text">ANCHOR Portal</span>
       </div>
@@ -111,7 +111,7 @@ export default function Sidebar({
             className={`nav-item ${activeTab === "dashboard" ? "active" : ""}`}
             onClick={() => onChangeTab("dashboard")}
             style={getHiddenStyle("dashboard")}
-          >
+           role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
             <LayoutDashboard size={24} />
             <span>
               IR 대시보드
@@ -142,7 +142,7 @@ export default function Sidebar({
                 }
               }}
               style={getHiddenStyle("projects")}
-            >
+             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
               <FolderKanban size={24} />
               <span>
                 단위과제 관리
@@ -165,7 +165,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("unit_system")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 단위과제 체계
                   {isHidden("unit_system") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -185,7 +185,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("unit_status")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 단위과제 진행상황
                   {isHidden("unit_status") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -205,7 +205,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("program_mgmt")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 프로그램 관리
                   {isHidden("program_mgmt") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -235,7 +235,7 @@ export default function Sidebar({
                 }
               }}
               style={getHiddenStyle("progress")}
-            >
+             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
               <ClipboardList size={24} />
               <span>
                 프로그램 진행
@@ -258,7 +258,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("progress_status")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 프로그램 진행 상황
                   {isHidden("progress_status") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -278,7 +278,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("major_programs")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 주요 프로그램
                   {isHidden("major_programs") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -298,7 +298,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("satisfaction_survey")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 만족도 조사
                   {isHidden("satisfaction_survey") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -329,7 +329,7 @@ export default function Sidebar({
                 }
               }}
               style={getHiddenStyle("budget")}
-            >
+             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
               <Landmark size={24} />
               <span>
                 예산 관리
@@ -350,7 +350,7 @@ export default function Sidebar({
                     onChangeBudgetSubTab("total_investment");
                   }
                 }}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 - 총괄 투자 계획
               </div>
               {(menuVisibility.settlement !== false || isSongDirector) && (
@@ -364,7 +364,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("settlement")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 비목별 관리
                   {isHidden("settlement") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -384,7 +384,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("execution")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 집행률 관리
                   {isHidden("execution") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -415,7 +415,7 @@ export default function Sidebar({
                 }
               }}
               style={getHiddenStyle("kpis")}
-            >
+             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
               <FileBarChart2 size={24} />
               <span>
                 성과지표 관리
@@ -438,7 +438,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("kpi_status")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - (교육부)공통성과지표
                   {isHidden("kpi_status") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -458,7 +458,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("kpi_self")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - (지자체)자율성과지표
                   {isHidden("kpi_self") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -478,7 +478,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("kpi_focus")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - (대학)중점관리지표
                   {isHidden("kpi_focus") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -508,7 +508,7 @@ export default function Sidebar({
                 }
               }}
               style={getHiddenStyle("agreements")}
-            >
+             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
               <Award size={24} />
               <span>
                 협약∙발급 관리
@@ -531,7 +531,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("agreements")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 협약 관리
                   {isHidden("agreements") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -551,7 +551,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("unified_certificates")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 상장∙이수증 관리
                   {isHidden("unified_certificates") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -571,7 +571,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("scholarships")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 장학금 관리
                   {isHidden("scholarships") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -600,7 +600,7 @@ export default function Sidebar({
               }
             }}
             style={getHiddenStyle("procurement")}
-          >
+           role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
             <Briefcase size={24} />
             <span>
               구매∙용역 관리
@@ -623,7 +623,7 @@ export default function Sidebar({
                   }
                 }}
                 style={getHiddenStyle("env_improvement")}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 - 환경개선
                 {isHidden("env_improvement") && (
                   <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -643,7 +643,7 @@ export default function Sidebar({
                   }
                 }}
                 style={getHiddenStyle("equipment_purchase")}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 - 기자재 구매
                 {isHidden("equipment_purchase") && (
                   <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -663,7 +663,7 @@ export default function Sidebar({
                   }
                 }}
                 style={getHiddenStyle("major_services")}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 - 주요 용역
                 {isHidden("major_services") && (
                   <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -692,7 +692,7 @@ export default function Sidebar({
                 }
               }}
               style={getHiddenStyle("asset")}
-            >
+             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
               <Package size={24} />
               <span>
                 자산 관리
@@ -715,7 +715,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("education_env")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 교육환경 사용예약
                   {isHidden("education_env") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -735,7 +735,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("equipment")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 기자재 대장
                   {isHidden("equipment") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -765,7 +765,7 @@ export default function Sidebar({
                 }
               }}
               style={getHiddenStyle("schedule")}
-            >
+             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
               <Calendar size={24} />
               <span>
                 일정∙행사∙회의 관리
@@ -788,7 +788,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("monthly")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 월간 일정
                   {isHidden("monthly") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -808,7 +808,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("events")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 주요 행사
                   {isHidden("events") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -828,7 +828,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("meetings")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 회의결과 등록
                   {isHidden("meetings") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -848,7 +848,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("press")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 보도자료 관리
                   {isHidden("press") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -879,7 +879,7 @@ export default function Sidebar({
                 }
               }}
               style={getHiddenStyle("committee")}
-            >
+             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
               <Briefcase size={24} />
               <span>
                 위원회 관리
@@ -902,7 +902,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("committees")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 위원회 명단 관리
                   {isHidden("committees") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -922,7 +922,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("committee_meeting")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 회의 운영 및 의결
                   {isHidden("committee_meeting") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -942,7 +942,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("committee_report")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 위원회 결과보고 대장
                   {isHidden("committee_report") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -983,7 +983,7 @@ export default function Sidebar({
                 }
               }}
               style={getHiddenStyle("mgmt")}
-            >
+             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
               <Users size={24} />
               <span>
                 사업단 관리
@@ -1006,7 +1006,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("approvals")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 승인처리
                   {isHidden("approvals") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -1026,7 +1026,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("members")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 구성원 관리
                   {isHidden("members") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -1046,7 +1046,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("users")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 회원현황
                   {isHidden("users") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -1066,7 +1066,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("programs")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 프로그램 배정
                   {isHidden("programs") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -1086,7 +1086,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("org_chart")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 대학 조직도
                   {isHidden("org_chart") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -1106,7 +1106,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("center_org_chart")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 사업단 조직도
                   {isHidden("center_org_chart") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -1126,7 +1126,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("partners")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 협업기관 관리
                   {isHidden("partners") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -1146,7 +1146,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("instructor_pool")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 교∙강사 Pool 관리
                   {isHidden("instructor_pool") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>
@@ -1166,7 +1166,7 @@ export default function Sidebar({
                     }
                   }}
                   style={getHiddenStyle("portal_config")}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   - 앵커 포털 관리
                   {isHidden("portal_config") && (
                     <span style={{ fontSize: "0.6rem", color: "#ef4444", textDecoration: "none", marginLeft: "0.2rem" }}>

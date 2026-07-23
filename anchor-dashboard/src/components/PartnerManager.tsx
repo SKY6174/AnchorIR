@@ -455,7 +455,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
               background: filterCategory === cat ? "rgba(59, 130, 246, 0.15)" : "var(--background-card, rgba(255, 255, 255, 0.02))",
               border: filterCategory === cat ? "1px solid var(--accent-color)" : "1px solid var(--border-color, rgba(255, 255, 255, 0.05))"
             }}
-          >
+           role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
             <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", fontWeight: "700" }}>{cat}</span>
             <div style={{ fontSize: "1.5rem", fontWeight: "900", marginTop: "0.25rem", color: filterCategory === cat ? "var(--accent-color)" : "var(--text-primary)" }}>
               {categoryStats[cat] || 0} <span style={{ fontSize: "0.85rem", fontWeight: "700" }}>개소</span>
@@ -581,25 +581,25 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
               <th
                 onClick={() => handleSort("name")}
                 style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 기관명{renderSortIcon("name")}
               </th>
               <th
                 onClick={() => handleSort("category")}
                 style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 분류{renderSortIcon("category")}
               </th>
               <th
                 onClick={() => handleSort("sub_category")}
                 style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 세부분류{renderSortIcon("sub_category")}
               </th>
               <th
                 onClick={() => handleSort("location")}
                 style={{ padding: "0.75rem 1rem", cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 지역{renderSortIcon("location")}
               </th>
               <th style={{ padding: "0.75rem 1rem", textAlign: "center", verticalAlign: "middle" }}>협력 분야</th>
@@ -665,6 +665,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
                   <td style={{ padding: "0.85rem 1rem", textAlign: "center", verticalAlign: "middle" }}>
                     <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
                       <button
+                        aria-label={`${p.name} 협력기관 수정`}
                         onClick={(e) => { e.stopPropagation(); openEditModal(p); }}
                         style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--text-secondary)" }}
                         title="수정"
@@ -672,6 +673,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
                         <Edit size={16} />
                       </button>
                       <button
+                        aria-label={`${p.name} 협력기관 삭제`}
                         onClick={(e) => { e.stopPropagation(); handleDelete(p); }}
                         style={{ border: "none", background: "transparent", cursor: "pointer", color: "#EF4444" }}
                         title="삭제"

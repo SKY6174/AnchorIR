@@ -1792,7 +1792,7 @@ ${commentList || "(없음)"}
                   .map((survey) => {
                     const convertedAvg = getLikertConvertedScore(survey.responses, survey.questions.length);
                   return (
-                    <tr key={survey.id} style={{ cursor: "pointer" }} onClick={() => { setSelectedSurveyId(survey.id); setActiveSurveyTab("detail"); }}>
+                    <tr key={survey.id} style={{ cursor: "pointer" }} onClick={() => { setSelectedSurveyId(survey.id); setActiveSurveyTab("detail"); }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                       <td style={{ fontFamily: "var(--font-data)", fontWeight: "700", textAlign: "center" }}>{survey.id}</td>
                       <td style={{ fontWeight: "700" }}>{survey.title}</td>
                       <td style={{ textAlign: "center" }}>{survey.department}</td>
@@ -1830,6 +1830,7 @@ ${commentList || "(없음)"}
                       <td style={{ textAlign: "center" }}>
                         <div style={{ display: "flex", gap: "0.3rem", justifyContent: "center" }}>
                           <button
+                            aria-label={`${survey.title} 설문 수정`}
                             className="btn-primary"
                             style={{
                               padding: "0.2rem 0.55rem",
@@ -2047,9 +2048,15 @@ ${commentList || "(없음)"}
                             </div>
                           </div>
 
-                          <h4
+                          <button
+                            type="button"
                             onClick={() => { setSelectedSurveyId(survey.id); setActiveSurveyTab("detail"); }}
                             style={{
+                              width: "100%",
+                              padding: 0,
+                              border: "none",
+                              background: "transparent",
+                              textAlign: "left",
                               fontSize: "0.95rem",
                               fontWeight: "800",
                               marginBottom: "0.5rem",
@@ -2065,7 +2072,7 @@ ${commentList || "(없음)"}
                             title="상세보기 / 관리"
                           >
                             {survey.title}
-                          </h4>
+                          </button>
                           <p style={{ fontSize: "0.78rem", color: "var(--text-secondary)", marginBottom: "1rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: "1.4" }}>
                             {survey.purpose}
                           </p>
@@ -2770,11 +2777,11 @@ ${commentList || "(없음)"}
               <span
                 style={{ cursor: "pointer", color: "#0f9d58", fontWeight: "900", display: "inline-flex", alignItems: "center", gap: "0.3rem" }}
                 onClick={() => handleOpenGoogleSheetsDirect(selectedSurvey)}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 田 Google Sheets 웹으로 바로가기 (실제 데이터 자동 복사)
               </span>
               <span style={{ color: "#555" }}>|</span>
-              <span style={{ cursor: "pointer", color: "var(--accent-color)", fontWeight: "700" }} onClick={() => handleExportToExcel(selectedSurvey)}>📥 Excel 파일 다운로드</span>
+              <span style={{ cursor: "pointer", color: "var(--accent-color)", fontWeight: "700" }} onClick={() => handleExportToExcel(selectedSurvey)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>📥 Excel 파일 다운로드</span>
               <span style={{ color: "#555" }}>|</span>
               <span>편집 연동형</span>
               <span style={{ color: "#555" }}>|</span>
@@ -2798,7 +2805,7 @@ ${commentList || "(없음)"}
                 <thead>
                   {/* 시트 고유 A, B, C, D 헤더 */}
                   <tr style={{ background: "#2e2e2e" }}>
-                    <th style={{ width: "40px", border: "1px solid var(--border-color)", textAlign: "center", color: "#888", padding: "0.4rem" }}></th>
+                    <th aria-label="행 번호" style={{ width: "40px", border: "1px solid var(--border-color)", textAlign: "center", color: "#888", padding: "0.4rem" }}></th>
                     <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "50px" }}>A</th>
                     <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "100px" }}>B</th>
                     <th style={{ border: "1px solid var(--border-color)", padding: "0.4rem", color: "#888", textAlign: "center", width: "160px" }}>C</th>
@@ -2957,7 +2964,7 @@ ${commentList || "(없음)"}
                     onMouseOver={(e) => e.currentTarget.style.borderColor = "var(--accent-color)"}
                     onBlur={(e) => e.currentTarget.style.borderColor = "var(--border-color)"}
                     onMouseOut={(e) => e.currentTarget.style.borderColor = "var(--border-color)"}
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <input
                       id="satisfaction-file-input"
                       type="file"

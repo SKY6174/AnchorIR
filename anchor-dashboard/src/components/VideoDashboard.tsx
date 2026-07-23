@@ -136,7 +136,7 @@ export default function VideoDashboard({ initialVideoId }: VideoDashboardProps =
                       cursor: "pointer",
                       transition: "all 0.2s"
                     }}
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
                       <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.4rem", borderRadius: "4px", background: "rgba(59, 130, 246, 0.15)", color: "#60A5FA", fontWeight: "800" }}>
                         교육자료

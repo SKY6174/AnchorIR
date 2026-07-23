@@ -492,7 +492,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
             transition: "all 0.2s ease",
             boxShadow: selectedUnitId === "Total" ? "0 4px 12px rgba(59, 130, 246, 0.15)" : "none"
           }}
-        >
+         role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
           <div style={{ fontSize: "0.7rem", color: selectedUnitId === "Total" ? "var(--accent-color)" : "var(--text-secondary)", fontWeight: "700" }}>{selectedYear}차년도 전체 예산 규모</div>
           <div style={{ fontSize: "1.2rem", fontWeight: "900", color: "var(--text-primary)", marginTop: "0.2rem" }}>
             {formatToMillionWon(totalCombinedBudget)} <span style={{ fontSize: "0.8rem", fontWeight: "normal" }}>백만원</span>
@@ -569,7 +569,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
                             transition: "all 0.2s ease",
                             boxShadow: isSelected ? "0 4px 12px rgba(59, 130, 246, 0.12)" : "none"
                           }}
-                        >
+                         role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: isCommon ? "#ec4899" : (isSelected ? "var(--accent-color)" : "var(--text-secondary)"), fontWeight: "700" }}>
                             <span>{u.id}</span>
                             <span style={{ color: "var(--accent-color)" }}>{spentRate.toFixed(1)}% 집행</span>

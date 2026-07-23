@@ -3293,11 +3293,12 @@ export default function ProcurementManager({
               <thead>
                 <tr style={{ borderBottom: "1px solid var(--border-color)", background: "transparent" }}>
                   <th
+                    aria-label="사업비 기준 정렬"
                     rowSpan={3}
                     onClick={() => handleSort("seq")}
                     style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="순번 기준 정렬"
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
                       순번
                       <ArrowUpDown size={12} style={{ opacity: sortField === "seq" ? 1 : 0.4 }} />
@@ -3308,7 +3309,7 @@ export default function ProcurementManager({
                     onClick={() => handleSort("unit")}
                     style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="단위과제 기준 정렬"
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
                       단위과제
                       <ArrowUpDown size={12} style={{ opacity: sortField === "unit" ? 1 : 0.4 }} />
@@ -3317,11 +3318,12 @@ export default function ProcurementManager({
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "130px", verticalAlign: "middle" }}>학과 / 부서</th>
                   <th rowSpan={3} style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "270px", verticalAlign: "middle" }}>환경구축 명</th>
                   <th
+                    aria-label="사업비 기준 정렬"
                     rowSpan={3}
                     onClick={() => handleSort("unitPrice")}
                     style={{ padding: "0.5rem 0.3rem", textAlign: "center", fontWeight: "800", width: "105px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="사업비 기준 정렬"
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                         사업비
@@ -4204,7 +4206,7 @@ export default function ProcurementManager({
                     onClick={() => handleSort("seq")}
                     style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "55px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="순번 기준 정렬"
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
                       순번
                       <ArrowUpDown size={12} style={{ opacity: sortField === "seq" ? 1 : 0.4 }} />
@@ -4214,7 +4216,7 @@ export default function ProcurementManager({
                     onClick={() => handleSort("unit")}
                     style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "65px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="과제 기준 정렬"
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.2rem" }}>
                       과제
                       <ArrowUpDown size={12} style={{ opacity: sortField === "unit" ? 1 : 0.4 }} />
@@ -4224,10 +4226,11 @@ export default function ProcurementManager({
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "200px", verticalAlign: "middle" }}>품명</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "160px", verticalAlign: "middle" }}>규격</th>
                   <th
+                    aria-label="단가 기준 정렬"
                     onClick={() => handleSort("unitPrice")}
                     style={{ padding: "0.5rem 0.3rem", textAlign: "center", fontWeight: "800", width: "95px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="단가 기준 정렬"
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                         단가
@@ -4239,10 +4242,11 @@ export default function ProcurementManager({
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "45px", verticalAlign: "middle" }}>단위</th>
                   <th style={{ padding: "0.75rem 0.5rem", textAlign: "center", fontWeight: "800", width: "50px", verticalAlign: "middle" }}>수량</th>
                   <th
+                    aria-label="금액 기준 정렬"
                     onClick={() => handleSort("total")}
                     style={{ padding: "0.5rem 0.3rem", textAlign: "center", fontWeight: "800", width: "105px", verticalAlign: "middle", cursor: "pointer", userSelect: "none" }}
                     title="금액 기준 정렬"
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
                         금액
@@ -5097,7 +5101,7 @@ export default function ProcurementManager({
                         style={{ borderBottom: "1px solid var(--border-color)", transition: "background 0.15s ease" }}
                       >
                         {/* 1. 순번 */}
-                        <td style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }}>
+                        <td aria-label={`${equip.name} 용역 목적 및 수행 결과`} style={{ padding: "0.8rem 0.5rem", textAlign: "center", verticalAlign: "middle", color: "var(--text-secondary)" }}>
                           {idx + 1}
                         </td>
 
@@ -6941,6 +6945,10 @@ export default function ProcurementManager({
           <div
             onClick={() => setActivePopover(null)}
             style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 1200, background: "transparent" }}
+            role="button"
+            tabIndex={0}
+            aria-label="팝오버 닫기"
+            onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}
           />
           <div
             style={{
@@ -6982,6 +6990,7 @@ export default function ProcurementManager({
               }
 
               return (
+                // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- 체크박스 라벨 전체의 기존 hover 강조를 유지하며 실제 조작은 내부 input이 담당합니다.
                 <label
                   key={step.val}
                   style={{

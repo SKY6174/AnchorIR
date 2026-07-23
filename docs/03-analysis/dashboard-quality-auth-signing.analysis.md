@@ -1,13 +1,13 @@
 # Gap Analysis: dashboard-quality-auth-signing
 
 > Date: 2026-07-23 | Design: `docs/02-design/features/dashboard-quality-auth-signing.design.md`
-> Implementation baseline: `anchor-dashboard` commit `fc8ca1b` | Iteration: 2
+> Implementation baseline: `anchor-dashboard` commit `4f5d7dd` + current accessibility batch | Iteration: 3
 
 ---
 
-## Match Rate: 48%
+## Match Rate: 55%
 
-총 42개 검증 항목 중 20개가 구현·검증되었다. TypeScript, 일반 lint, 위원회 회귀시험, 초기 번들 개선과 공통 승인 프로필 resolver가 완료됐다. 반면 JSX 접근성 공식 검사, 이메일·SMS OTP, PAdES 서명 스키마·서버 경계·검증은 구현되지 않았다.
+총 42개 검증 항목 중 23개가 구현·검증되었다. TypeScript, JSX 접근성 lint, 위원회 회귀시험, 초기 번들 개선과 공통 승인 프로필 resolver가 완료됐다. 반면 이메일·SMS OTP, PAdES 서명 스키마·서버 경계·검증은 구현되지 않았다.
 
 외부 사업자와 인증서가 필요한 항목은 임의 구현하지 않은 것이 설계와 일치하지만, provider 미설정 상태를 안전하게 표현하는 서버 adapter와 데이터 경계까지 아직 없으므로 구현 완료로 계산하지 않았다.
 
@@ -16,19 +16,19 @@
 - 설계의 Workstream A~E와 Test/Operations 요구를 42개 독립 항목으로 분해했다.
 - 구현 코드, 설정, migration, Edge Function, 테스트 파일이 존재하고 현재 검사로 확인된 항목만 완료로 계산했다.
 - 일부 구현 또는 수동 확인만 있는 항목은 완료 점수에 포함하지 않았다.
-- 계산식: `20 / 42 × 100 = 47.62%`, 반올림하여 48%.
+- 계산식: `23 / 42 × 100 = 54.76%`, 반올림하여 55%.
 
 ## Workstream Results
 
 | Workstream | Implemented | Total | Rate | Result |
 |---|---:|---:|---:|---|
 | A. TypeScript | 5 | 5 | 100% | Match |
-| B. Lint and accessibility | 2 | 5 | 40% | Partial |
+| B. Lint and accessibility | 5 | 5 | 100% | Match |
 | C. Bundle and performance | 6 | 7 | 86% | Partial |
 | D. Supabase OTP | 4 | 10 | 40% | Partial |
 | E. Certificate PDF signature | 1 | 10 | 10% | Missing |
 | Tests and operations | 2 | 5 | 40% | Partial |
-| **Total** | **20** | **42** | **48%** | **Act required** |
+| **Total** | **23** | **42** | **55%** | **Act required** |
 
 ## Implemented Items
 
@@ -40,18 +40,21 @@
 - [x] 애플리케이션 소스를 숨기는 exclude가 추가되지 않았다.
 - [x] `npx tsc --noEmit --pretty false`가 오류 0건으로 통과한다.
 
-### B. Lint and accessibility — 2/5
+### B. Lint and accessibility — 5/5
 
 - [x] oxlint React 플러그인과 hook 검사가 공식 설정에 포함된다.
 - [x] 현재 `npx oxlint . --format=json` 진단이 0건이다.
-- [ ] JSX 접근성 플러그인이 공식 설정에 포함되지 않았다.
-- [ ] label/control, accessible name 검사가 JSX 접근성 규칙으로 검증되지 않았다.
-- [ ] keyboard/focus 동등성이 JSX 접근성 규칙과 화면 회귀시험으로 검증되지 않았다.
+- [x] JSX 접근성 플러그인이 공식 설정에 포함된다.
+- [x] label/control과 accessible name이 JSX 접근성 규칙으로 검증된다.
+- [x] clickable element의 Enter/Space 동작과 mouse/focus 동등성이 정적 검사와 build로 검증된다.
 
 Evidence:
 
-- `anchor-dashboard/.oxlintrc.json`의 plugins는 `react`, `oxc`이며 `jsx-a11y`가 없다.
-- 현재 lint 0건은 활성화된 규칙 범위의 결과이지 설계된 접근성 gate 전체의 결과가 아니다.
+- `anchor-dashboard/.oxlintrc.json`의 plugins에 `jsx-a11y`가 포함된다.
+- `control-has-associated-label`은 복합 표 구조를 검사하도록 공식 옵션 `depth: 10`을 사용한다.
+- `prefer-tag-over-role`은 JSX element 종류를 바꾸지 않는 UI 보존 계약 때문에 끄고, 해당 element에는 role, tabIndex, Enter/Space handler를 함께 적용한다.
+- 업로드된 위원회 음성 파일에는 현재 caption asset/URL 데이터 모델이 없으므로 `media-has-caption`은 가짜 track을 생성하지 않고 예외 처리한다. 자막 데이터 모델이 추가되면 이 예외를 제거해야 한다.
+- `npx oxlint . --format=unix`, `npx tsc --noEmit`, production build와 위원회 시험 6건이 모두 통과한다.
 
 ### C. Bundle and performance — 6/7
 
@@ -123,7 +126,7 @@ Evidence:
 ## Changed Items and Deviations
 
 1. 설계는 JSX element 중첩을 보존하도록 했지만 lazy-loading을 위해 `React.Suspense` 경계가 추가됐다. `fallback={null}`은 렌더 후 DOM을 생성하지 않아 화면 구조와 스타일은 유지되지만, 소스 JSX 중첩은 변경됐다.
-2. 접근성 경고 0건으로 보고된 현재 상태는 JSX 접근성 플러그인이 없는 검사 결과다. 따라서 설계의 accessibility exit gate를 충족했다고 볼 수 없다.
+2. 접근성 gate는 공식 JSX 접근성 플러그인 기준 0건이다. 다만 음성 자막 규칙은 caption asset 부재로 명시적 예외이며, 자막 데이터 계약을 추가할 때 다시 활성화해야 한다.
 3. lazy import 실패는 전역 chunk 오류 감지 후 새로고침으로 대응한다. 명시적인 사용자 재시도 컴포넌트는 없지만 기존 화면 외관 보존 정책과는 일치한다.
 4. OTP와 PAdES는 외부 SMTP/SMS provider/인증서/HSM/TSA 결정 전 운영 활성화하면 안 된다. 다만 provider-neutral adapter와 비활성 flag는 외부 결정 전에도 구현 가능하다.
 
@@ -132,24 +135,24 @@ Evidence:
 | Priority | Gap | Risk |
 |---|---|---|
 | P0 | PAdES schema·RLS·서버 경계 부재 | 공인 서명 기능을 안전하게 추가할 기반이 없음 |
-| P1 | JSX 접근성 gate 미구성 | 접근성 0건이라는 품질 지표가 실제 범위를 반영하지 않음 |
 | P1 | OTP abuse control·feature flag 부재 | provider 연결 시 사용자 열거, 비용·재전송 남용 위험 |
 | P2 | 자동 시각 회귀 부재 | UI 완전 보존을 정적 diff와 수동 확인에 의존 |
+| P2 | 음성 자막 데이터 계약 부재 | 녹음 재생은 가능하지만 청각 접근성 대체 수단이 없음 |
 
 ## Recommendations
 
-1. JSX 접근성 플러그인을 공식 lint에 추가하고 UI 변경 없는 attribute/handler 수정만 적용한다.
-2. 이메일 OTP adapter와 disabled-by-default feature flag를 구현한 뒤 custom SMTP 환경에서 E2E한다.
-3. SMS adapter는 E.164 parser와 provider preflight까지만 구현하고 provider 결정 전 flag를 끈다.
-4. additive migration으로 signature audit schema, private bucket, RLS를 먼저 배포한다.
-5. provider-neutral signing Edge Function에 `provider_not_configured` 실패 경로를 구현한다.
-6. 기관 인증서/HSM/TSA 결정 후 PAdES-B-T 통합과 독립 validator 검증을 수행한다.
-7. 로그인, 주요 lazy 탭, 위원회 외부표결, 결과보고서 PDF에 시각 회귀 기준을 추가한다.
+1. 이메일 OTP adapter와 disabled-by-default feature flag를 구현한 뒤 custom SMTP 환경에서 E2E한다.
+2. SMS adapter는 E.164 parser와 provider preflight까지만 구현하고 provider 결정 전 flag를 끈다.
+3. additive migration으로 signature audit schema, private bucket, RLS를 먼저 배포한다.
+4. provider-neutral signing Edge Function에 `provider_not_configured` 실패 경로를 구현한다.
+5. 기관 인증서/HSM/TSA 결정 후 PAdES-B-T 통합과 독립 validator 검증을 수행한다.
+6. 로그인, 주요 lazy 탭, 위원회 외부표결, 결과보고서 PDF에 시각 회귀 기준을 추가한다.
+7. 음성 녹음 caption URL 또는 transcript 데이터 계약을 추가한 뒤 `media-has-caption` 규칙을 재활성화한다.
 
 ## Next Steps
 
 - [x] Act 1: 승인 프로필 resolver 통합과 unknown role fail-closed
-- [ ] Act 2: JSX 접근성 검사 gate 정상화
+- [x] Act 2: JSX 접근성 검사 gate 정상화
 - [ ] Act 3: 이메일 OTP adapter·feature flag·시험
 - [ ] Act 4: SMS OTP adapter·provider preflight·시험
 - [ ] Act 5: signature schema/storage/RLS migration

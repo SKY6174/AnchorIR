@@ -333,7 +333,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                   transition: "all 0.2s",
                   boxShadow: isActive ? "0 4px 12px rgba(59, 130, 246, 0.15)" : "none"
                 }}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.3rem" }}>
                   <span style={{ fontSize: "0.75rem", fontWeight: "800", color: isActive ? "var(--accent-color)" : "var(--text-secondary)" }}>
                     {u.id}
@@ -443,6 +443,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--background-card-flat, transparent)"; }}
                         >
                           <td
+                            aria-label={`${prog.title} 프로그램 선택`}
                             onClick={() => onSelectProgram && onSelectProgram(activeUnit.id, prog.id)}
                             style={{
                               padding: "0.5rem 0.3rem",
@@ -450,7 +451,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                               verticalAlign: "middle",
                               borderBottom: "1px solid var(--border-color)"
                             }}
-                          >
+                           role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                             <div
                               style={{
                                 fontFamily: "var(--font-data, monospace)",
@@ -494,7 +495,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.color = "var(--accent-color)"; e.currentTarget.style.textDecoration = "underline"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.color = ""; e.currentTarget.style.textDecoration = "none"; }}
-                          >
+                           role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                             {prog.title}
                           </td>
                           <td style={{ textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid var(--border-color)", padding: "0.5rem 0.3rem" }}>
@@ -661,6 +662,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                                 const actualRadius = `${!hasLeftActual ? "4px" : "0"} ${!hasRightActual ? "4px" : "0"} ${!hasRightActual ? "4px" : "0"} ${!hasLeftActual ? "4px" : "0"}`;
 
                                 return (
+                                  // oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- 월 셀은 마우스 드래그 해제 경계이며, 하위 반월 슬롯은 키보드 선택을 지원한다.
                                   <div
                                     key={idx}
                                     style={{
@@ -680,6 +682,19 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                                       <div
                                         onMouseDown={() => handleGanttMouseDown(prog.id, activeUnit.id, 'plan', idx * 2)}
                                         onMouseEnter={() => handleGanttMouseEnter(prog.id, idx * 2)}
+                                        onClick={() => {
+                                          handleGanttMouseDown(prog.id, activeUnit.id, 'plan', idx * 2);
+                                          handleGanttMouseUp(prog);
+                                        }}
+                                        role="button"
+                                        tabIndex={0}
+                                        aria-label={`${prog.title} ${idx + 1}월 전반 계획 선택`}
+                                        onKeyDown={(event) => {
+                                          if (event.key === "Enter" || event.key === " ") {
+                                            event.preventDefault();
+                                            event.currentTarget.click();
+                                          }
+                                        }}
                                         style={{
                                           flex: 1,
                                           height: "100%",
@@ -692,6 +707,19 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                                       <div
                                         onMouseDown={() => handleGanttMouseDown(prog.id, activeUnit.id, 'plan', idx * 2 + 1)}
                                         onMouseEnter={() => handleGanttMouseEnter(prog.id, idx * 2 + 1)}
+                                        onClick={() => {
+                                          handleGanttMouseDown(prog.id, activeUnit.id, 'plan', idx * 2 + 1);
+                                          handleGanttMouseUp(prog);
+                                        }}
+                                        role="button"
+                                        tabIndex={0}
+                                        aria-label={`${prog.title} ${idx + 1}월 후반 계획 선택`}
+                                        onKeyDown={(event) => {
+                                          if (event.key === "Enter" || event.key === " ") {
+                                            event.preventDefault();
+                                            event.currentTarget.click();
+                                          }
+                                        }}
                                         style={{
                                           flex: 1,
                                           height: "100%",
@@ -758,6 +786,19 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                                       <div
                                         onMouseDown={() => handleGanttMouseDown(prog.id, activeUnit.id, 'actual', idx * 2)}
                                         onMouseEnter={() => handleGanttMouseEnter(prog.id, idx * 2)}
+                                        onClick={() => {
+                                          handleGanttMouseDown(prog.id, activeUnit.id, 'actual', idx * 2);
+                                          handleGanttMouseUp(prog);
+                                        }}
+                                        role="button"
+                                        tabIndex={0}
+                                        aria-label={`${prog.title} ${idx + 1}월 전반 실적 선택`}
+                                        onKeyDown={(event) => {
+                                          if (event.key === "Enter" || event.key === " ") {
+                                            event.preventDefault();
+                                            event.currentTarget.click();
+                                          }
+                                        }}
                                         style={{
                                           flex: 1,
                                           height: "100%",
@@ -770,6 +811,19 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                                       <div
                                         onMouseDown={() => handleGanttMouseDown(prog.id, activeUnit.id, 'actual', idx * 2 + 1)}
                                         onMouseEnter={() => handleGanttMouseEnter(prog.id, idx * 2 + 1)}
+                                        onClick={() => {
+                                          handleGanttMouseDown(prog.id, activeUnit.id, 'actual', idx * 2 + 1);
+                                          handleGanttMouseUp(prog);
+                                        }}
+                                        role="button"
+                                        tabIndex={0}
+                                        aria-label={`${prog.title} ${idx + 1}월 후반 실적 선택`}
+                                        onKeyDown={(event) => {
+                                          if (event.key === "Enter" || event.key === " ") {
+                                            event.preventDefault();
+                                            event.currentTarget.click();
+                                          }
+                                        }}
                                         style={{
                                           flex: 1,
                                           height: "100%",

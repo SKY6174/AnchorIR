@@ -949,7 +949,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                       }}
                       onMouseEnter={(e) => e.currentTarget.style.background = "var(--panel-bg)"}
                       onMouseLeave={(e) => e.currentTarget.style.background = selectedInstructor?.id === ins.id ? "rgba(59,130,246,0.06)" : "transparent"}
-                    >
+                     role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                       <td style={{ padding: "0.75rem 0.5rem", fontWeight: "700", color: "var(--accent-color)" }}>{ins.name}</td>
                       <td style={{ padding: "0.75rem 0.5rem" }}>
                         <span style={{
@@ -966,9 +966,10 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                       <td style={{ padding: "0.75rem 0.5rem" }}>{maskBirthDate(ins.decrypted_birth)}</td>
                       <td style={{ padding: "0.75rem 0.5rem" }}>{ins.bank_name}</td>
                       <td style={{ padding: "0.75rem 0.5rem", color: "var(--text-secondary)" }}>{maskAccountNumber(ins.decrypted_account)}</td>
-                      <td style={{ padding: "0.75rem 0.5rem", textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
+                      <td aria-label={`${ins.name} 강사 관리`} style={{ padding: "0.75rem 0.5rem", textAlign: "center" }} onClick={(e) => e.stopPropagation()} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                         <div style={{ display: "flex", gap: "0.4rem", justifyContent: "center", alignItems: "center" }}>
                           <button
+                            aria-label={`${ins.name} 강사 정보 수정`}
                             onClick={() => handleEditInstructorClick(ins)}
                             title="수정"
                             style={{
@@ -982,6 +983,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                             <Edit size={14} />
                           </button>
                           <button
+                            aria-label={`${ins.name} 강사 삭제`}
                             onClick={() => handleDeleteInstructor(ins)}
                             title="삭제"
                             style={{
@@ -1043,7 +1045,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                       borderColor: selectedInstructor?.id === ins.id ? "#3b82f6" : "var(--border-color)",
                       transition: "all 0.15s ease"
                     }}
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <div>
                       <span style={{ fontWeight: "700", fontSize: "0.8rem" }}>{ins.name}</span>
                     </div>
@@ -1206,6 +1208,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                             <td style={{ padding: "0.75rem 0.5rem", textAlign: "center" }}>
                               <div style={{ display: "flex", gap: "0.4rem", justifyContent: "center", alignItems: "center" }}>
                                 <button
+                                  aria-label="강의 이력 수정"
                                   onClick={() => handleEditHistoryClick(item)}
                                   title="수정"
                                   style={{
@@ -1219,6 +1222,7 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
                                   <Edit size={14} />
                                 </button>
                                 <button
+                                  aria-label="강의 이력 삭제"
                                   onClick={() => handleDeleteHistory(item.id)}
                                   title="삭제"
                                   style={{

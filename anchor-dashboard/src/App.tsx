@@ -9045,7 +9045,7 @@ export default function App() {
                   height: "28px"
                 }}
                 title={syncStatus === "error" ? "클릭하여 로컬 캐시 초기화" : ""}
-              >
+               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                 {syncStatus === "synced" ? "☁️ DB 동기화 완료" : syncStatus === "syncing" ? "🔄 DB 저장 중..." : "⚠️ 동기화 실패 (클릭 시 복구)"}
               </span>
 
@@ -9370,6 +9370,7 @@ export default function App() {
 
                                 return (
                                   <tr
+                                    aria-label={`${u.title} 단위과제 선택`}
                                     key={u.id}
                                     onClick={() => {
                                       setSelectedUnitId(u.id);
@@ -9381,7 +9382,7 @@ export default function App() {
                                       background: selectedUnitId === u.id ? "rgba(59, 130, 246, 0.15)" : "transparent",
                                       transition: "background 0.2s"
                                     }}
-                                  >
+                                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                                     <td style={{ fontWeight: "700", borderRight: "1px solid var(--border-color)" }}>
                                       {u.id === "Common" ? "" : `${u.id}. `}{u.title}
                                     </td>
@@ -9848,7 +9849,7 @@ export default function App() {
                             style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
                             onMouseEnter={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                             onMouseLeave={(e) => e.currentTarget.style.color = ""}
-                          >
+                           role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                             소속 부서 {memberSortConfig.key === "dept" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                           </th>
                           <th style={{ textAlign: "center", verticalAlign: "middle" }}>성명</th>
@@ -9857,7 +9858,7 @@ export default function App() {
                             style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
                             onMouseEnter={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                             onMouseLeave={(e) => e.currentTarget.style.color = ""}
-                          >
+                           role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                             직책 {memberSortConfig.key === "role" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                           </th>
                           <th style={{ textAlign: "center", verticalAlign: "middle" }}>직급/직위</th>
@@ -9869,7 +9870,7 @@ export default function App() {
                             style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
                             onMouseEnter={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                             onMouseLeave={(e) => e.currentTarget.style.color = ""}
-                          >
+                           role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                             시작일 {memberSortConfig.key === "startDate" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                           </th>
                           <th style={{ textAlign: "center", verticalAlign: "middle" }}>종료일</th>
@@ -9878,7 +9879,7 @@ export default function App() {
                             style={{ cursor: "pointer", userSelect: "none", textAlign: "center", verticalAlign: "middle" }}
                             onMouseEnter={(e) => e.currentTarget.style.color = "var(--accent-color)"}
                             onMouseLeave={(e) => e.currentTarget.style.color = ""}
-                          >
+                           role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                             참여 여부 {memberSortConfig.key === "status" ? (memberSortConfig.direction === "asc" ? " ▲" : " ▼") : " ⇅"}
                           </th>
                           {currentRole.rank <= 2 && <th style={{ textAlign: "center", verticalAlign: "middle" }}>관리</th>}
@@ -10801,6 +10802,7 @@ export default function App() {
                     📄 [{selectedRequest.program_title}] 기획 변경 상세 대조표 ({selectedRequest.version_name})
                   </h3>
                   <button
+                    aria-label="변경 요청 상세 창 닫기"
                     onClick={() => setSelectedRequest(null)}
                     style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
                   >
@@ -11253,6 +11255,7 @@ export default function App() {
                           const isSelected = selectedKpi?.id === nk.id;
                           return (
                             <tr
+                              aria-label={`${nk.name} KPI 선택`}
                               key={nk.id}
                               onClick={() => setSelectedKpi(nk)}
                               style={{
@@ -11261,7 +11264,7 @@ export default function App() {
                                 borderLeft: isSelected ? "4px solid var(--accent-color)" : "none",
                                 transition: "all 0.2s ease"
                               }}
-                            >
+                             role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                               <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{nk.id}</td>
                               <td style={{ fontWeight: isSelected ? "700" : "normal" }}>{nk.name}</td>
                               <td>
@@ -11343,6 +11346,7 @@ export default function App() {
                                       <td style={{ textAlign: "right" }}>
                                         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
                                           <input id="a11y-app-24"
+                                            aria-label={`${cleanName} ${selectedYear}차년도 목표값`}
                                             type="number"
                                             step="any"
                                             className="user-selector"
@@ -11378,6 +11382,7 @@ export default function App() {
                                       <td style={{ textAlign: "right" }}>
                                         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.2rem" }}>
                                           <input
+                                            aria-label={`${cleanName} ${selectedYear}차년도 현재값`}
                                             type="number"
                                             step="any"
                                             className="user-selector"
@@ -12077,6 +12082,7 @@ export default function App() {
                 👥 {editingMember.id ? "구성원 정보 수정" : "신규 구성원 등록"}
               </h3>
               <button
+                aria-label="구성원 입력 창 닫기"
                 type="button"
                 onClick={() => {
                   setIsMemberModalOpen(false);
@@ -12354,6 +12360,7 @@ export default function App() {
                 🎯 {editingProgram ? "프로그램 수정" : "신규 프로그램 추가"}
               </h3>
               <button
+                aria-label="프로그램 입력 창 닫기"
                 type="button"
                 onClick={() => setShowProgramEditor(false)}
                 style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}
@@ -13702,7 +13709,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                       background: u.id === "Common" || u.id === "X0" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
                       fontWeight: "700"
                     }}
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" || u.id === "X0" ? "#fbbf24" : "inherit", borderRight: "1.5px solid rgba(255, 255, 255, 0.2)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       {hasCategories && (
                         <span style={{ fontSize: "0.6rem", display: "inline-block", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.15s ease" }}>▶</span>
@@ -14113,7 +14120,7 @@ function TotalInvestmentManager({ investmentSubTab, onChangeInvestmentSubTab, pr
                         background: u.id === "Common" || u.id === "X0" ? "rgba(245, 158, 11, 0.08)" : "rgba(255,255,255,0.01)",
                         fontWeight: "700"
                       }}
-                    >
+                     role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                       <td style={{ paddingLeft: "1.5rem", color: u.id === "Common" || u.id === "X0" ? "#fbbf24" : "inherit", borderRight: "1px solid rgba(255, 255, 255, 0.1)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         {hasCategories && (
                           <span style={{ fontSize: "0.6rem", display: "inline-block", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.15s ease" }}>▶</span>

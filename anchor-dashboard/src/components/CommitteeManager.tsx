@@ -2844,6 +2844,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                 ) : (
                   meetings.map(m => (
                     <div
+                      aria-label={`${m.title} 회의 선택`}
                       key={m.id}
                       onClick={() => setSelectedMeeting(m)}
                       style={{
@@ -2854,7 +2855,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         cursor: "pointer",
                         transition: "all 0.2s ease"
                       }}
-                    >
+                     role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <span style={{ fontSize: "0.8rem", fontWeight: "bold", color: "var(--text-primary)" }}>{m.title}</span>
                         <span style={{
@@ -3725,7 +3726,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
                         background: isSelected ? "rgba(37, 99, 235, 0.1)" : "rgba(255,255,255,0.01)",
                         transition: "all 0.2s ease"
                       }}
-                    >
+                     role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                       <span style={{ fontSize: "0.68rem", color: "var(--accent-color)", fontWeight: "bold" }}>
                         {rep.committee_meetings?.committees?.name}
                       </span>

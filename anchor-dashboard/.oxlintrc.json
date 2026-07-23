@@ -1,8 +1,13 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "oxc"],
+  "plugins": ["react", "oxc", "jsx-a11y"],
   "rules": {
     "react/exhaustive-deps": "warn",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "jsx-a11y/control-has-associated-label": ["warn", {
+      "depth": 10
+    }],
+    "jsx-a11y/media-has-caption": "off",
     "react/only-export-components": ["warn", {
       "allowConstantExport": true,
       "allowExportNames": ["academicYears", "getAllValidDepartments", "universityOrgData", "getDepartmentListByYear"]

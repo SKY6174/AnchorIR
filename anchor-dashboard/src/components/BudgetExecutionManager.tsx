@@ -1105,7 +1105,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole: _cu
                         transition: "all 0.2s"
                       }}
                       title="클릭하여 업로드 상세 내역 보기"
-                    >
+                     role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                       <span style={{ fontSize: "0.6rem", color: "var(--text-primary)", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }} title={mainMeta.fileName}>
                         📄 {mainMeta.fileName}
                       </span>
@@ -1224,7 +1224,7 @@ export default function BudgetExecutionManager({ projects = [], currentRole: _cu
                           transition: "all 0.2s"
                         }}
                         title="클릭하여 업로드 상세 내역 보기"
-                      >
+                       role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                         <span style={{ fontSize: "0.6rem", color: "var(--text-primary)", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }} title={carryMeta.fileName}>
                           📄 {carryMeta.fileName}
                         </span>

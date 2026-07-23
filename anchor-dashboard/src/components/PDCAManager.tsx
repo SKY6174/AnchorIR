@@ -2049,7 +2049,7 @@ ${inputEvalType === "우수" ? `
                       cursor: "pointer",
                       transition: "all 0.2s ease"
                     }}
-                  >
+                   role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                       <span>{prog.id}</span>
                       <span style={{ color: "var(--accent-color)", fontWeight: "700" }}>
@@ -2201,7 +2201,7 @@ ${inputEvalType === "우수" ? `
                           style={{ cursor: "pointer", transition: "transform 0.2s" }}
                           onClick={() => setActivePdcaStage(stage.toUpperCase())}
                           title={`${stage.toUpperCase()} 단계 실무 폼 열기`}
-                        >
+                         role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                           <div className="pdca-circle">{stage.toUpperCase()}</div>
                           <span style={{ fontSize: "0.7rem", fontWeight: "700" }}>
                             {stage === "p" ? "Plan" : stage === "d" ? "Do" : stage === "c" ? "Check" : "Act"}
@@ -3484,7 +3484,7 @@ ${inputEvalType === "우수" ? `
                         background: selectedProgId === prog.id ? "rgba(59,130,246,0.06)" : "inherit",
                         cursor: "pointer"
                       }}
-                    >
+                     role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                       <td style={{ textAlign: "center" }}>{prog.unitId}</td>
                       <td style={{ fontFamily: "var(--font-data)", fontWeight: "700" }}>{prog.id}</td>
                       <td style={{ fontWeight: selectedProgId === prog.id ? "700" : "normal" }}>{prog.title}</td>
@@ -3556,7 +3556,7 @@ ${inputEvalType === "우수" ? `
                         style={{ cursor: "pointer", transition: "transform 0.2s" }}
                         onClick={() => setActivePdcaStage(stage.toUpperCase())}
                         title={`${stage.toUpperCase()} 단계 실무 폼 열기`}
-                      >
+                       role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                         <div className="pdca-circle" style={{ width: "24px", height: "24px", fontSize: "0.75rem" }}>{stage.toUpperCase()}</div>
                         <span style={{ fontSize: "0.65rem", fontWeight: "700" }}>
                           {stage === "p" ? "Plan" : stage === "d" ? "Do" : stage === "c" ? "Check" : "Act"}

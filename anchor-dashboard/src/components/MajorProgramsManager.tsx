@@ -1808,7 +1808,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                     background: activeCourseId === c.id ? "rgba(16, 185, 129, 0.06)" : "transparent"
                                   }}
                                   className="course-tr-hover"
-                                >
+                                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                                   <td style={{ padding: "0.5rem" }}>
                                     <span style={{
                                       fontSize: "0.65rem",
@@ -2079,7 +2079,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                                     ...badgeStyle
                                                   }}
                                                   title="클릭하여 상태 변경"
-                                                >
+                                                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                                                   {status}
                                                 </span>
                                               </td>
@@ -2286,6 +2286,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                   <td style={{ padding: "0.6rem 0.5rem", textAlign: "center" }}>
                                     <div style={{ display: "flex", gap: "0.35rem", justifyContent: "center" }}>
                                       <button
+                                        aria-label={`제${seminar.id}차 세미나 결과 수정`}
                                         onClick={() => {
                                           setIsEditMode(true);
                                           setFormSeminarId(String(seminar.id));
@@ -2305,6 +2306,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                                         <Pencil size={11} />
                                       </button>
                                       <button
+                                        aria-label={`제${seminar.id}차 세미나 결과 삭제`}
                                         onClick={() => {
                                           if (confirm(`제${seminar.id}차 세미나 결과보고를 목록에서 삭제하시겠습니까?`)) {
                                             const deleteFromDb = async () => {

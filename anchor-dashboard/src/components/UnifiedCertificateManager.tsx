@@ -614,18 +614,18 @@ export default function UnifiedCertificateManager({
         <table className="custom-table" style={{ minWidth: "1750px", fontSize: "0.85rem" }}>
           <thead>
             <tr>
-              <th onClick={() => requestSort("certNo")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px", textAlign: "center" }}>증서번호{renderSortIndicator("certNo")}</th>
-              <th onClick={() => requestSort("certType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "60px", textAlign: "center" }}>구분{renderSortIndicator("certType")}</th>
-              <th onClick={() => requestSort("awardType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px", textAlign: "center" }}>상훈{renderSortIndicator("awardType")}</th>
-              <th onClick={() => requestSort("teamName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "130px", textAlign: "center" }}>팀명{renderSortIndicator("teamName")}</th>
-              <th onClick={() => requestSort("recipientName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px", textAlign: "center" }}>성명{renderSortIndicator("recipientName")}</th>
-              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px", textAlign: "center" }}>학번{renderSortIndicator("studentId")}</th>
-              <th onClick={() => requestSort("issueDate")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px", textAlign: "center" }}>수상(수료)일{renderSortIndicator("issueDate")}</th>
+              <th onClick={() => requestSort("certNo")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px", textAlign: "center" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>증서번호{renderSortIndicator("certNo")}</th>
+              <th onClick={() => requestSort("certType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "60px", textAlign: "center" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>구분{renderSortIndicator("certType")}</th>
+              <th onClick={() => requestSort("awardType")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px", textAlign: "center" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>상훈{renderSortIndicator("awardType")}</th>
+              <th onClick={() => requestSort("teamName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "130px", textAlign: "center" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>팀명{renderSortIndicator("teamName")}</th>
+              <th onClick={() => requestSort("recipientName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px", textAlign: "center" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>성명{renderSortIndicator("recipientName")}</th>
+              <th onClick={() => requestSort("studentId")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px", textAlign: "center" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>학번{renderSortIndicator("studentId")}</th>
+              <th onClick={() => requestSort("issueDate")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "100px", textAlign: "center" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>수상(수료)일{renderSortIndicator("issueDate")}</th>
               <th style={{ whiteSpace: "nowrap", minWidth: "100px", textAlign: "center" }}>사업단명</th>
-              <th onClick={() => requestSort("issuer")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "120px", textAlign: "center" }}>발급자{renderSortIndicator("issuer")}</th>
+              <th onClick={() => requestSort("issuer")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "120px", textAlign: "center" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>발급자{renderSortIndicator("issuer")}</th>
               <th style={{ whiteSpace: "nowrap", minWidth: "220px", textAlign: "center" }}>시상내용(과정명)</th>
-              <th onClick={() => requestSort("managerDept")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px", textAlign: "center" }}>담당자 소속{renderSortIndicator("managerDept")}</th>
-              <th onClick={() => requestSort("managerName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px", textAlign: "center" }}>담당자 성명{renderSortIndicator("managerName")}</th>
+              <th onClick={() => requestSort("managerDept")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "110px", textAlign: "center" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>담당자 소속{renderSortIndicator("managerDept")}</th>
+              <th onClick={() => requestSort("managerName")} style={{ cursor: "pointer", whiteSpace: "nowrap", minWidth: "80px", textAlign: "center" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>담당자 성명{renderSortIndicator("managerName")}</th>
               <th style={{ whiteSpace: "nowrap", minWidth: "100px", textAlign: "center" }}>비고</th>
               {currentRole?.id !== "GUEST" && <th style={{ whiteSpace: "nowrap", minWidth: "80px", textAlign: "center" }}>관리</th>}
             </tr>
@@ -662,10 +662,10 @@ export default function UnifiedCertificateManager({
                   {currentRole?.id !== "GUEST" && (
                     <td style={{ textAlign: "center" }}>
                       <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
-                        <button className="icon-btn edit-btn" onClick={() => openModalForEdit(c)} title="수정">
+                        <button aria-label="수료증 내역 수정" className="icon-btn edit-btn" onClick={() => openModalForEdit(c)} title="수정">
                           <Edit size={16} />
                         </button>
-                        <button className="icon-btn delete-btn" onClick={() => window.confirm("삭제하시겠습니까?") && c.id !== undefined && onDeleteCertificate?.(c.id)} title="삭제">
+                        <button aria-label="수료증 내역 삭제" className="icon-btn delete-btn" onClick={() => window.confirm("삭제하시겠습니까?") && c.id !== undefined && onDeleteCertificate?.(c.id)} title="삭제">
                           <Trash2 size={16} />
                         </button>
                       </div>
@@ -688,11 +688,11 @@ export default function UnifiedCertificateManager({
       </div>
 
       {isModalOpen && createPortal(
-        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }} onClick={() => setIsModalOpen(false)}>
-          <div style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", borderRadius: "0.75rem", width: "100%", maxWidth: "800px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "var(--text-primary)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }} onClick={e => e.stopPropagation()}>
+        <div aria-label="수료증 입력 창 닫기" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", overflowY: "auto", padding: "2rem 1rem" }} onClick={() => setIsModalOpen(false)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
+          <div aria-label="수료증 입력 창" style={{ background: "var(--modal-bg)", border: "1px solid var(--border-color)", borderRadius: "0.75rem", width: "100%", maxWidth: "800px", maxHeight: "85vh", display: "flex", flexDirection: "column", color: "var(--text-primary)", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)", margin: "auto" }} onClick={e => e.stopPropagation()} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.85rem 1.25rem", borderBottom: "1px solid var(--border-color)", flexShrink: 0 }}>
               <h3 style={{ fontSize: "0.9rem", fontWeight: "800" }}>{editingId ? "내역 수정" : "신규 내역 등록"}</h3>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}><X size={20} /></button>
+              <button aria-label="수료증 입력 창 닫기" onClick={() => setIsModalOpen(false)} style={{ background: "none", border: "none", color: "#a1a1aa", cursor: "pointer" }}><X size={20} /></button>
             </div>
             <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.8rem", flex: 1, overflowY: "auto" }}>
               <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

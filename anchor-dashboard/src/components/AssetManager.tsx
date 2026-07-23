@@ -1190,6 +1190,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
               return (
                 <div
+                  aria-label={`${space} 공간 선택`}
                   key={space}
                   onClick={() => {
                     setSelectedSpace(space);
@@ -1205,7 +1206,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                     flexDirection: "column",
                     gap: "0.35rem"
                   }}
-                >
+                 role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem" }}>
                       {SPACE_ROOMS[space] && (
@@ -1352,7 +1353,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                           flexDirection: "column",
                           justifyContent: "space-between"
                         }}
-                      >
+                       role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                         {/* 날짜 숫자 */}
                         <span style={{
                           fontSize: "0.68rem",
@@ -1750,7 +1751,6 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                 <div style={{ display: "flex", gap: "0.5rem", position: "relative" }}>
                   <input
                     type="text"
-                    autoFocus
                     placeholder="바코드를 스캔해 주세요 (예: 8809123456789)"
                     value={scanInput}
                     onChange={(e) => setScanInput(e.target.value)}
@@ -2013,20 +2013,20 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.68rem", textAlign: "center" }}>
                           <thead>
                             <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)", background: "rgba(255, 255, 255, 0.02)" }}>
-                              {visibleColumns.asset_number && <th onClick={() => handleSort("asset_number")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "9%", cursor: "pointer", userSelect: "none" }}>자산번호{renderSortArrow("asset_number")}</th>}
-                              {visibleColumns.category_name && <th onClick={() => handleSort("category_name")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "3%", cursor: "pointer", userSelect: "none" }}>분류명{renderSortArrow("category_name")}</th>}
-                              {visibleColumns.item_name && <th onClick={() => handleSort("item_name")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "5%", cursor: "pointer", userSelect: "none" }}>품목명{renderSortArrow("item_name")}</th>}
-                              {visibleColumns.spec && <th onClick={() => handleSort("spec")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "20%", cursor: "pointer", userSelect: "none" }}>규격{renderSortArrow("spec")}</th>}
-                              {visibleColumns.inspect_date && <th onClick={() => handleSort("inspect_date")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }}>검수일자{renderSortArrow("inspect_date")}</th>}
-                              {visibleColumns.price && <th onClick={() => handleSort("price")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%", cursor: "pointer", userSelect: "none" }}>금액{renderSortArrow("price")}</th>}
-                              {visibleColumns.dept_name && <th onClick={() => handleSort("dept_name")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }}>관리부서{renderSortArrow("dept_name")}</th>}
-                              {visibleColumns.install_dept && <th onClick={() => handleSort("install_dept")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%", cursor: "pointer", userSelect: "none" }}>설치부서{renderSortArrow("install_dept")}</th>}
-                              {visibleColumns.room_no && <th onClick={() => handleSort("room_no")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%", cursor: "pointer", userSelect: "none" }}>호실{renderSortArrow("room_no")}</th>}
-                              {visibleColumns.item_type && <th onClick={() => handleSort("item_type")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }}>항목{renderSortArrow("item_type")}</th>}
-                              {visibleColumns.pay_date && <th onClick={() => handleSort("pay_date")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }}>지출일자{renderSortArrow("pay_date")}</th>}
-                              {visibleColumns.is_sw && <th onClick={() => handleSort("is_sw")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%", cursor: "pointer", userSelect: "none" }}>SW여부{renderSortArrow("is_sw")}</th>}
-                              {visibleColumns.vendor && <th onClick={() => handleSort("vendor")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "7%", cursor: "pointer", userSelect: "none" }}>구입업체{renderSortArrow("vendor")}</th>}
-                              {visibleColumns.ai_dx && <th onClick={() => handleSort("ai_dx")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%", cursor: "pointer", userSelect: "none" }}>AI∙DX 자산여부{renderSortArrow("ai_dx")}</th>}
+                              {visibleColumns.asset_number && <th onClick={() => handleSort("asset_number")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "9%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>자산번호{renderSortArrow("asset_number")}</th>}
+                              {visibleColumns.category_name && <th onClick={() => handleSort("category_name")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "3%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>분류명{renderSortArrow("category_name")}</th>}
+                              {visibleColumns.item_name && <th onClick={() => handleSort("item_name")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "5%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>품목명{renderSortArrow("item_name")}</th>}
+                              {visibleColumns.spec && <th onClick={() => handleSort("spec")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "20%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>규격{renderSortArrow("spec")}</th>}
+                              {visibleColumns.inspect_date && <th onClick={() => handleSort("inspect_date")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>검수일자{renderSortArrow("inspect_date")}</th>}
+                              {visibleColumns.price && <th onClick={() => handleSort("price")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>금액{renderSortArrow("price")}</th>}
+                              {visibleColumns.dept_name && <th onClick={() => handleSort("dept_name")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>관리부서{renderSortArrow("dept_name")}</th>}
+                              {visibleColumns.install_dept && <th onClick={() => handleSort("install_dept")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>설치부서{renderSortArrow("install_dept")}</th>}
+                              {visibleColumns.room_no && <th onClick={() => handleSort("room_no")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "8%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>호실{renderSortArrow("room_no")}</th>}
+                              {visibleColumns.item_type && <th onClick={() => handleSort("item_type")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>항목{renderSortArrow("item_type")}</th>}
+                              {visibleColumns.pay_date && <th onClick={() => handleSort("pay_date")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "6%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>지출일자{renderSortArrow("pay_date")}</th>}
+                              {visibleColumns.is_sw && <th onClick={() => handleSort("is_sw")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>SW여부{renderSortArrow("is_sw")}</th>}
+                              {visibleColumns.vendor && <th onClick={() => handleSort("vendor")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "7%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>구입업체{renderSortArrow("vendor")}</th>}
+                              {visibleColumns.ai_dx && <th onClick={() => handleSort("ai_dx")} style={{ padding: "0.5rem 0.35rem", textAlign: "center", width: "4%", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>AI∙DX 자산여부{renderSortArrow("ai_dx")}</th>}
                             </tr>
                           </thead>
                           <tbody>
@@ -2072,6 +2072,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                                   {visibleColumns.ai_dx && (
                                     <td style={{ padding: "0.4rem 0.3rem", textAlign: "center", width: "4%" }}>
                                       <input
+                                        aria-label={`${item.item_name} AI·DX 자산 분류`}
                                         type="checkbox"
                                         checked={item.category === "ai_dx"}
                                         disabled={currentRole.id === "GUEST"}
@@ -2098,12 +2099,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", textAlign: "center" }}>
                         <thead>
                           <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)" }}>
-                            <th onClick={() => handleSort("item_name")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>기자재 품명{renderSortArrow("item_name")}</th>
-                            <th onClick={() => handleSort("asset_number")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>물품(기자재)번호{renderSortArrow("asset_number")}</th>
-                            <th onClick={() => handleSort("barcode_id")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>바코드{renderSortArrow("barcode_id")}</th>
-                            <th onClick={() => handleSort("stock_location")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>재고위치{renderSortArrow("stock_location")}</th>
-                            <th onClick={() => handleSort("usage_type")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>사용 분야(목적){renderSortArrow("usage_type")}</th>
-                            <th onClick={() => handleSort("last_checked_at")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }}>최근 점검 시각{renderSortArrow("last_checked_at")}</th>
+                            <th aria-label="기자재 품명 기준 정렬" onClick={() => handleSort("item_name")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>기자재 품명{renderSortArrow("item_name")}</th>
+                            <th aria-label="물품 기자재 번호 기준 정렬" onClick={() => handleSort("asset_number")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>물품(기자재)번호{renderSortArrow("asset_number")}</th>
+                            <th aria-label="바코드 기준 정렬" onClick={() => handleSort("barcode_id")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>바코드{renderSortArrow("barcode_id")}</th>
+                            <th aria-label="재고 위치 기준 정렬" onClick={() => handleSort("stock_location")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>재고위치{renderSortArrow("stock_location")}</th>
+                            <th aria-label="사용 분야 기준 정렬" onClick={() => handleSort("usage_type")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>사용 분야(목적){renderSortArrow("usage_type")}</th>
+                            <th aria-label="최근 점검 시각 기준 정렬" onClick={() => handleSort("last_checked_at")} style={{ padding: "0.5rem", textAlign: "center", cursor: "pointer", userSelect: "none" }} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>최근 점검 시각{renderSortArrow("last_checked_at")}</th>
                             <th style={{ padding: "0.5rem", textAlign: "center" }}>사용실적</th>
                             <th style={{ padding: "0.5rem", textAlign: "center" }}>관리</th>
                           </tr>
@@ -2135,6 +2136,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                               </td>
                               <td style={{ padding: "0.5rem", textAlign: "center" }}>
                                 <button
+                                  aria-label={`${item.item_name} 학기별 실적 관리`}
                                   onClick={() => handleOpenUtilizationModal(item)}
                                   title="학기별 실적 관리"
                                   style={{ background: "none", border: "none", color: "#10B981", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
@@ -2145,6 +2147,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                               <td style={{ padding: "0.5rem", textAlign: "center" }}>
                                 <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
                                   <button
+                                    aria-label={`${item.item_name} 장비 수정`}
                                     onClick={() => handleOpenEditEquip(item)}
                                     title="수정"
                                     style={{ background: "none", border: "none", color: "#60A5FA", cursor: "pointer" }}
@@ -2152,6 +2155,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                                     <Edit2 size={13} />
                                   </button>
                                   <button
+                                    aria-label={`${item.item_name} 장비 삭제`}
                                     onClick={() => handleDeleteEquipment(item.id)}
                                     title="삭제"
                                     style={{ background: "none", border: "none", color: "#F87171", cursor: "pointer" }}

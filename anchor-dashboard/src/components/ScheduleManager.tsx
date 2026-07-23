@@ -4516,7 +4516,7 @@ Gemini 피드백: \n${geminiCritiqueText}
             display: "flex",
             flexDirection: "column"
           }}
-        >
+         role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
           <span style={{ fontSize: "0.75rem", fontWeight: "700", color: isSelected ? "var(--accent-color)" : "var(--text-primary)" }}>
             {day}
           </span>
@@ -4814,7 +4814,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                           cursor: isLinkable ? "pointer" : "default",
                           transition: "all 0.15s ease"
                         }}
-                      >
+                       role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
                           <div style={{ display: "flex", alignItems: "flex-start", gap: "0.5rem", flex: 1 }}>
                             {(isTask || isDeadline) && (
@@ -4848,7 +4848,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                             </div>
                           </div>
                           {currentRole.id !== "GUEST" && (
-                            <div style={{ display: "flex", gap: "0.25rem" }} onClick={(e) => e.stopPropagation()}>
+                            <div style={{ display: "flex", gap: "0.25rem" }} onClick={(e) => e.stopPropagation()} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                               <button
                                 onClick={() => handleEditSchedule(sched)}
                                 title="수정"
@@ -5258,7 +5258,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                         overflow: "hidden"
                       }}
                       className="committee-item-card"
-                    >
+                     role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                       {/* 상단 그라데이션 좌측 사이드바 */}
                       <div style={{
                         position: "absolute",
@@ -5575,6 +5575,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                       <td style={{ padding: "0.6rem 0.75rem", textAlign: "right", whiteSpace: "nowrap" }}>
                                         <div style={{ display: "flex", gap: "0.4rem", justifyContent: "flex-end" }}>
                                           <button
+                                            aria-label={`${member.name} 위원 정보 수정`}
                                             onClick={() => {
                                               let tStart = "";
                                               let tEnd = "";
@@ -5611,6 +5612,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                             <Edit size={12} />
                                           </button>
                                           <button
+                                            aria-label={`${member.name} 위원 삭제`}
                                             onClick={() => handleDeleteMember(member.id)}
                                             style={{
                                               border: "none",
@@ -6064,7 +6066,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                                 onMouseOver={(e) => { if (!isSelected) e.currentTarget.style.background = darkMode ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.03)"; }}
                                 onBlur={(e) => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
                                 onMouseOut={(e) => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
-                              >
+                               role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                                 <span style={{ fontSize: "0.8rem", fontWeight: "700", color: isSelected ? (darkMode ? "#60A5FA" : "var(--accent-color)") : "var(--text-primary)", wordBreak: "break-all" }}>
                                   {meeting.title}
                                 </span>
@@ -7009,7 +7011,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                           cursor: "pointer",
                           transition: "all 0.2s"
                         }}
-                      >
+                       role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                           <div style={{ display: "flex", gap: "0.4rem" }}>
                             <span style={{ fontSize: "0.65rem", padding: "0.15rem 0.4rem", borderRadius: "4px", background: press.type === "방송" ? "rgba(239, 68, 68, 0.15)" : press.type === "신문" ? "rgba(59, 130, 246, 0.15)" : "rgba(139, 92, 246, 0.15)", color: press.type === "방송" ? "#EF4444" : press.type === "신문" ? "#60A5FA" : "#A78BFA", fontWeight: "800" }}>
@@ -7021,7 +7023,7 @@ Gemini 피드백: \n${geminiCritiqueText}
                           </div>
 
                           {/* 제어 버튼 */}
-                          <div style={{ display: "flex", gap: "0.3rem" }} onClick={(e) => e.stopPropagation()}>
+                          <div style={{ display: "flex", gap: "0.3rem" }} onClick={(e) => e.stopPropagation()} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.currentTarget.click(); } }}>
                             {currentRole.id !== "GUEST" && (
                               <>
                                 <button
