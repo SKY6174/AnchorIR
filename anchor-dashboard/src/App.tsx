@@ -36,6 +36,9 @@ import "./styles/dashboard.css";
 type LegacyAppRecord = Record<string, any>;
 type LegacyYearRecord = Record<number, LegacyAppRecord>;
 type RiseMemberInsert = TablesInsert<"rise_members">;
+type ScheduleMonthlyInsert = TablesInsert<"schedule_monthly">;
+type ScheduleEventInsert = TablesInsert<"schedule_events">;
+type ScheduleMeetingInsert = TablesInsert<"schedule_meetings">;
 type Html2PdfFactory = () => LegacyAppRecord;
 
 declare global {
@@ -44,6 +47,7 @@ declare global {
     __HAS_NO_ADVANCED_SERVICES_COLUMNS__?: boolean;
     __HAS_NO_ADVANCED_ENV_COLUMNS__?: boolean;
     __HAS_NO_ADVANCED_EQUIP_COLUMNS__?: boolean;
+    __HAS_NO_ADVANCED_PRESS_COLUMNS__?: boolean;
   }
 }
 
@@ -3229,39 +3233,39 @@ export default function App() {
   const [syncStatus, setSyncStatus] = useState("synced"); // "synced", "syncing", "error"
 
   // 구매용역 관리 DB 보존 상태
-  const [envData, setEnvData] = useState(() => {
+  const [envData, setEnvData] = useState<LegacyAppRecord[]>(() => {
     const savedYear = localStorage.getItem("anchor_selected_year") || "2";
     const cached = localStorage.getItem(`anchor_cache_env_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
-  const [equipData, setEquipData] = useState(() => {
+  const [equipData, setEquipData] = useState<LegacyAppRecord[]>(() => {
     const savedYear = localStorage.getItem("anchor_selected_year") || "2";
     const cached = localStorage.getItem(`anchor_cache_equip_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
-  const [serviceData, setServiceData] = useState(() => {
+  const [serviceData, setServiceData] = useState<LegacyAppRecord[]>(() => {
     const savedYear = localStorage.getItem("anchor_selected_year") || "2";
     const cached = localStorage.getItem(`anchor_cache_serv_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
 
   // 일정관리 DB 보존 상태
-  const [monthlySchedules, setMonthlySchedules] = useState(() => {
+  const [monthlySchedules, setMonthlySchedules] = useState<LegacyAppRecord[]>(() => {
     const savedYear = localStorage.getItem("anchor_selected_year") || "2";
     const cached = localStorage.getItem(`anchor_cache_month_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
-  const [eventSchedules, setEventSchedules] = useState(() => {
+  const [eventSchedules, setEventSchedules] = useState<LegacyAppRecord[]>(() => {
     const savedYear = localStorage.getItem("anchor_selected_year") || "2";
     const cached = localStorage.getItem(`anchor_cache_event_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
-  const [meetingSchedules, setMeetingSchedules] = useState(() => {
+  const [meetingSchedules, setMeetingSchedules] = useState<LegacyAppRecord[]>(() => {
     const savedYear = localStorage.getItem("anchor_selected_year") || "2";
     const cached = localStorage.getItem(`anchor_cache_meet_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
   });
-  const [pressReleases, setPressReleases] = useState(() => {
+  const [pressReleases, setPressReleases] = useState<LegacyAppRecord[]>(() => {
     const savedYear = localStorage.getItem("anchor_selected_year") || "2";
     const cached = localStorage.getItem(`anchor_cache_press_y${savedYear}`);
     return cached ? JSON.parse(cached) : [];
@@ -5173,7 +5177,7 @@ export default function App() {
 
         if (!active) return;
 
-        const formattedEvents = (sEvent || []).map(x => ({
+        const formattedEvents: LegacyAppRecord[] = (sEvent || []).map(x => ({
           id: Number(x.id),
           year: Number(x.year),
           month: Number(x.month),
@@ -5188,7 +5192,7 @@ export default function App() {
           datetime: x.datetime
         }));
 
-        const formattedMeetings = (sMeet || []).map(x => ({
+        const formattedMeetings: LegacyAppRecord[] = (sMeet || []).map(x => ({
           ...x,
           id: Number(x.id),
           year: Number(x.year),
@@ -5199,7 +5203,7 @@ export default function App() {
           pdfUrl: x.pdf_url || ""
         }));
 
-        let formattedMonthly = (sMonth || [])
+        let formattedMonthly: LegacyAppRecord[] = (sMonth || [])
           .filter(x => x.event_id === null && x.meeting_id === null) // 순수 일반 일정만 로드
           .map(x => ({
             id: Number(x.id),
@@ -6171,7 +6175,7 @@ export default function App() {
   }, [serviceData, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 최신 monthlySchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
-  const latestMonthlySchedulesRef = useRef(null);
+  const latestMonthlySchedulesRef = useRef<LegacyAppRecord[] | null>(null);
   useEffect(() => {
     latestMonthlySchedulesRef.current = monthlySchedules;
   }, [monthlySchedules]);
@@ -6195,7 +6199,7 @@ export default function App() {
     safeSetLocalStorage(`anchor_cache_month_y${selectedYear}`, JSON.stringify(monthlySchedules), selectedYear);
     setSyncStatus("syncing");
 
-    const performSync = async (schedulesToSync, targetYear) => {
+    const performSync = async (schedulesToSync: LegacyAppRecord[], targetYear: number) => {
       try {
         if (!schedulesToSync) return;
 
@@ -6213,11 +6217,11 @@ export default function App() {
         const pureSchedulesToSync = schedulesToSync.filter(s => !s.eventId && !s.meetingId);
 
         // 2. 신규 생성(id가 없음)과 기존 수정(id가 존재)을 분리하여 Not-Null primary key Violate 방지
-        const newItems = [];
-        const updateItems = [];
+        const newItems: ScheduleMonthlyInsert[] = [];
+        const updateItems: ScheduleMonthlyInsert[] = [];
 
         pureSchedulesToSync.forEach(s => {
-          const item = {
+          const item: ScheduleMonthlyInsert = {
             year: targetYear,
             title: s.title,
             type: s.type || "기타",
@@ -6241,7 +6245,7 @@ export default function App() {
         });
 
         // 3. 분할 전송 수행 및 새로 발행된 sequence id 결과 조회
-        const upsertedData = [];
+        const upsertedData: LegacyAppRecord[] = [];
 
         // [A] 기존 수정 일정 (upsert)
         if (updateItems.length > 0) {
@@ -6294,7 +6298,7 @@ export default function App() {
         // 4. 로컬 임시 id를 DB sequence id로 매핑 복원하여 중복 인서트 방지 (날짜 substring 10자리 비교 및 camelCase 규격 정형화)
         let finalLocalSchedules = schedulesToSync;
         if (upsertedData && upsertedData.length > 0) {
-          const normalizedUpserted = upsertedData.map(x => ({
+          const normalizedUpserted: LegacyAppRecord[] = upsertedData.map(x => ({
             id: Number(x.id),
             year: Number(x.year),
             title: x.title,
@@ -6379,13 +6383,13 @@ export default function App() {
   }, [monthlySchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 최신 eventSchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
-  const latestEventSchedulesRef = useRef(null);
+  const latestEventSchedulesRef = useRef<LegacyAppRecord[] | null>(null);
   useEffect(() => {
     latestEventSchedulesRef.current = eventSchedules;
   }, [eventSchedules]);
 
   // 주요 행사와 월간 일정을 단방향으로 강제 Reactive 동기화하는 함수
-  const syncEventsToMonthly = (latestEvents) => {
+  const syncEventsToMonthly = (latestEvents: LegacyAppRecord[]) => {
     if (!latestEvents) return;
     setMonthlySchedules(prev => {
       let updated = [...prev];
@@ -6445,7 +6449,7 @@ export default function App() {
   };
 
   // 회의록과 월간 일정을 단방향으로 강제 Reactive 동기화하는 함수
-  const syncMeetingsToMonthly = (latestMeetings) => {
+  const syncMeetingsToMonthly = (latestMeetings: LegacyAppRecord[]) => {
     if (!latestMeetings) return;
     setMonthlySchedules(prev => {
       let updated = [...prev];
@@ -6527,7 +6531,7 @@ export default function App() {
     safeSetLocalStorage(`anchor_cache_event_y${selectedYear}`, JSON.stringify(eventSchedules), selectedYear);
     setSyncStatus("syncing");
 
-    const performSync = async (schedulesToSync, targetYear) => {
+    const performSync = async (schedulesToSync: LegacyAppRecord[], targetYear: number) => {
       try {
         if (!schedulesToSync) return;
 
@@ -6542,11 +6546,11 @@ export default function App() {
         }
 
         // 2. 신규 생성(id가 없음)과 기존 수정(id가 존재)을 분리하여 Not-Null primary key Violate 방지
-        const newItems = [];
-        const updateItems = [];
+        const newItems: ScheduleEventInsert[] = [];
+        const updateItems: ScheduleEventInsert[] = [];
 
-        schedulesToSync.forEach(s => {
-          const item = {
+        schedulesToSync.forEach((s: LegacyAppRecord) => {
+          const item: ScheduleEventInsert = {
             year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, targetYear),
             month: s.month,
             title: s.title,
@@ -6568,7 +6572,7 @@ export default function App() {
         });
 
         // 3. 분할 전송 수행 및 새로 발행된 sequence id 결과 조회
-        const upsertedData = [];
+        const upsertedData: LegacyAppRecord[] = [];
 
         // [A] 기존 수정 일정 (upsert)
         if (updateItems.length > 0) {
@@ -6673,7 +6677,7 @@ export default function App() {
   }, [eventSchedules, selectedYear, isDbLoaded, isFetchCompleted]);
 
   // 최신 meetingSchedules 상태 보존을 위한 Ref (언마운트/탭이동 시 즉시 강제 Flush 동기화 보장)
-  const latestMeetingSchedulesRef = useRef(null);
+  const latestMeetingSchedulesRef = useRef<LegacyAppRecord[] | null>(null);
   useEffect(() => {
     latestMeetingSchedulesRef.current = meetingSchedules;
   }, [meetingSchedules]);
@@ -6697,7 +6701,7 @@ export default function App() {
     safeSetLocalStorage(`anchor_cache_meet_y${selectedYear}`, JSON.stringify(meetingSchedules), selectedYear);
     setSyncStatus("syncing");
 
-    const performSync = async (schedulesToSync, targetYear) => {
+    const performSync = async (schedulesToSync: LegacyAppRecord[], targetYear: number) => {
       try {
         if (!schedulesToSync) return;
 
@@ -6713,11 +6717,11 @@ export default function App() {
 
         // 2. 20억 이하의 실제 DB id만 전송에 포함하고 로컬 임시 id는 제외하여 시퀀스 범위초과 에러 방지
         // 2. 신규 생성(id가 없음)과 기존 수정(id가 존재)을 분리하여 Not-Null primary key Violate 방지
-        const newItems = [];
-        const updateItems = [];
+        const newItems: ScheduleMeetingInsert[] = [];
+        const updateItems: ScheduleMeetingInsert[] = [];
 
-        schedulesToSync.forEach(s => {
-          const item = {
+        schedulesToSync.forEach((s: LegacyAppRecord) => {
+          const item: ScheduleMeetingInsert = {
             year: getCalculatedYearFromDate(s.datetime ? s.datetime.substring(0, 10) : null, targetYear),
             month: s.month,
             category: s.category,
@@ -6740,7 +6744,7 @@ export default function App() {
         });
 
         // 3. 분할 전송 수행 및 새로 발행된 sequence id 결과 조회
-        const upsertedData = [];
+        const upsertedData: LegacyAppRecord[] = [];
 
         // [A] 기존 수정 일정 (upsert)
         if (updateItems.length > 0) {
@@ -6842,10 +6846,13 @@ export default function App() {
 
 
   // 1차년도용 단위과제 필터링 및 이름/ID 변환
-  const getNormalizedProjectsForRendering = (rawProjects, yr) => {
+  const getNormalizedProjectsForRendering = (
+    rawProjects: LegacyAppRecord[],
+    yr: number
+  ): LegacyAppRecord[] => {
     if (!rawProjects) return [];
 
-    const cloned = JSON.parse(JSON.stringify(rawProjects));
+    const cloned = JSON.parse(JSON.stringify(rawProjects)) as LegacyAppRecord[];
 
     // 💡 [실시간 엑셀 업로드 집행 기록 전역 동적 합산 가드]
     // '예산 관리 > 집행률 관리'에서 업로드하여 localStorage에 저장된 실제 집행 로우 데이터를
@@ -6863,7 +6870,7 @@ export default function App() {
       "간접비"
     ];
 
-    const cachedExecs = (() => {
+    const cachedExecs: LegacyAppRecord[] = (() => {
       try {
         const data = localStorage.getItem(`budget_exec_records_${yr}`);
         return data ? JSON.parse(data) : [];
@@ -6873,8 +6880,8 @@ export default function App() {
       }
     })();
 
-    const matchedRecordsForUnit = (unitId, records) => {
-      return records.filter(r => {
+    const matchedRecordsForUnit = (unitId: string, records: LegacyAppRecord[]) => {
+      return records.filter((r: LegacyAppRecord) => {
         if (unitId === "X0") {
           return (r.program_id || "").startsWith("X0");
         }
@@ -6883,8 +6890,8 @@ export default function App() {
     };
 
     // 복사본 cloned 전체를 돌며 엑셀 집행 데이터를 각 단위과제에 실시간 환산 누적 적용
-    cloned.forEach(p => {
-      p.units.forEach(u => {
+    cloned.forEach((p: LegacyAppRecord) => {
+      p.units.forEach((u: LegacyAppRecord) => {
         // years가 없는 유닛(예: 공통 X0)에 대해 동적으로 년차별 매핑 생성
         if (!u.years) {
           u.years = {
@@ -6947,7 +6954,7 @@ export default function App() {
         const matchedRecords = matchedRecordsForUnit(u.id, cachedExecs);
 
         // 필터링된 집행건들을 비목별 및 예산유형별로 합산
-        matchedRecords.forEach(r => {
+        matchedRecords.forEach((r: LegacyAppRecord) => {
           const bName = BUDGET_ITEM_NAMES.find(name => {
             const norm1 = (name || "").replace(/\s/g, "").replace(/[·∙•ㆍ]/g, "");
             const norm2 = (r.expense_category || "").replace(/\s/g, "").replace(/[·∙•ㆍ]/g, "");
@@ -6990,8 +6997,8 @@ export default function App() {
 
     if (yr !== 1) {
       // 2~5차년도에는 해당 연도의 프로그램만 필터링 및 X0 등 년도 매핑이 누락된 유닛 정규화
-      return cloned.map(p => {
-        const newUnits = p.units.map(u => {
+      return cloned.map((p: LegacyAppRecord) => {
+        const newUnits = p.units.map((u: LegacyAppRecord) => {
           // years가 없는 유닛(예: 공통 X0)에 대해 동적으로 년차별 매핑 생성
           if (!u.years) {
             u.years = {
@@ -7034,7 +7041,7 @@ export default function App() {
           }
 
           // 프로그램 목록 필터링 및 정규화
-          const filteredPrograms = u.programs ? u.programs.map(prog => {
+          const filteredPrograms = u.programs ? u.programs.map((prog: LegacyAppRecord) => {
             if (!prog.years) {
               prog.years = {
                 1: (prog.budget_2025 || 0) > 0,
@@ -7042,7 +7049,7 @@ export default function App() {
               };
             }
             return prog;
-          }).filter(prog => prog.years && prog.years[yr]) : [];
+          }).filter((prog: LegacyAppRecord) => prog.years && prog.years[yr]) : [];
 
           return {
             ...u,
@@ -7054,7 +7061,7 @@ export default function App() {
     }
 
     // 1차년도에 A1나 및 공통 E는 필터링 제외
-    const mapping = {
+    const mapping: Record<string, { id: string; title: string }> = {
       "A1가": { id: "A1", title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성" },
       "A2": { id: "A2", title: "지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성" },
       "A3": { id: "D4", title: "지역산업 연계 글로벌 협력 거점 대학 육성" },
@@ -7069,14 +7076,14 @@ export default function App() {
       "D3": { id: "D3", title: "에코 컬처로 만드는 꿀잼도시 울산" }
     };
 
-    return cloned.map(p => {
+    return cloned.map((p: LegacyAppRecord) => {
       if (p.id === "E") return null;
 
       const newUnits = p.units
-        .filter(u => u.id !== "A1나")
-        .map(u => {
+        .filter((u: LegacyAppRecord) => u.id !== "A1나")
+        .map((u: LegacyAppRecord) => {
           const mapInfo = mapping[u.id];
-          const filteredPrograms = u.programs.filter(prog => prog.years && prog.years[1]);
+          const filteredPrograms = u.programs.filter((prog: LegacyAppRecord) => prog.years && prog.years[1]);
           if (mapInfo) {
             return {
               ...u,
@@ -7095,7 +7102,7 @@ export default function App() {
         ...p,
         units: newUnits
       };
-    }).filter(Boolean);
+    }).filter(Boolean) as LegacyAppRecord[];
   };
 
   const displayProjects = getNormalizedProjectsForRendering(projects, selectedYear);
@@ -7115,31 +7122,31 @@ export default function App() {
       if (kpiSubTab === "공통" && !isStatusVisible) {
         if (isSelfVisible) {
           setKpiSubTab("자율");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
+          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "자율");
           setSelectedKpi(first || null);
         } else if (isFocusVisible) {
           setKpiSubTab("중점");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
+          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "중점");
           setSelectedKpi(first || null);
         }
       } else if (kpiSubTab === "자율" && !isSelfVisible) {
         if (isStatusVisible) {
           setKpiSubTab("공통");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
+          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "공통");
           setSelectedKpi(first || null);
         } else if (isFocusVisible) {
           setKpiSubTab("중점");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
+          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "중점");
           setSelectedKpi(first || null);
         }
       } else if (kpiSubTab === "중점" && !isFocusVisible) {
         if (isStatusVisible) {
           setKpiSubTab("공통");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
+          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "공통");
           setSelectedKpi(first || null);
         } else if (isSelfVisible) {
           setKpiSubTab("자율");
-          const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
+          const first = displayProjects.flatMap(p => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find(k => k.type === "자율");
           setSelectedKpi(first || null);
         }
       }
@@ -7164,7 +7171,7 @@ export default function App() {
     };
 
     // 2. 실시간 스크롤 움직임 추적 (디바운스 적용)
-    let scrollTimeout;
+    let scrollTimeout: ReturnType<typeof setTimeout> | undefined;
     const handleScroll = () => {
       if (scrollTimeout) clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
