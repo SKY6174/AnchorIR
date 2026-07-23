@@ -6,6 +6,7 @@ import CenterOrgChartManager from "../../../components/CenterOrgChartManager";
 import PortalConfigManager from "../../../components/PortalConfigManager";
 import type { AssetReservation, LegacyAppRecord, ProgramVersionRequest } from "../../../app/app-types";
 import { formatAssignee } from "../../../app/app-data-utils";
+import { useManagementMemberList } from "../hooks/use-management-member-list";
 import { deleteRiseMember } from "../services/member-service";
 
 const InstructorPoolManager = React.lazy(() => import("../../../components/InstructorPoolManager"));
@@ -21,11 +22,6 @@ interface ManagementScreenProps {
   setMgmtSubTab: React.Dispatch<React.SetStateAction<string>>;
   members: LegacyAppRecord[];
   setMembers: React.Dispatch<React.SetStateAction<LegacyAppRecord[]>>;
-  memberFilter: string;
-  setMemberFilter: React.Dispatch<React.SetStateAction<string>>;
-  memberSortConfig: { key: string | null; direction: string };
-  requestMemberSort: (key: string) => void;
-  getSortedMembers: () => LegacyAppRecord[];
   getMemberStatusForYear: (member: LegacyAppRecord, year: number) => string;
   renderRoleBadge: (role: string, isRetired: boolean) => React.ReactNode;
   setEditingMember: React.Dispatch<React.SetStateAction<LegacyAppRecord | null>>;
@@ -84,11 +80,6 @@ export const ManagementScreen = ({
   setMgmtSubTab,
   members,
   setMembers,
-  memberFilter,
-  setMemberFilter,
-  memberSortConfig,
-  requestMemberSort,
-  getSortedMembers,
   getMemberStatusForYear,
   renderRoleBadge,
   setEditingMember,
@@ -135,7 +126,20 @@ export const ManagementScreen = ({
   handleSaveMenuVisibility,
   renderBudgetCategoriesDiff,
   renderTimelineDiff
-}: ManagementScreenProps) => (
+}: ManagementScreenProps) => {
+  const {
+    getSortedMembers,
+    memberFilter,
+    memberSortConfig,
+    requestMemberSort,
+    setMemberFilter
+  } = useManagementMemberList({
+    getMemberStatusForYear,
+    members,
+    selectedYear
+  });
+
+  return (
   <>
         {isActive && (
           <div className="management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
@@ -1678,4 +1682,5 @@ export const ManagementScreen = ({
           </div>
         )}
   </>
-);
+  );
+};

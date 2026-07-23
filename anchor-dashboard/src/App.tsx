@@ -782,111 +782,6 @@ export default function App() {
     return localStorage.getItem("anchor_mgmt_sub_tab") || "approvals";
   }); // "approvals", "members", "programs", "users"
   useLocalStorageValue("anchor_mgmt_sub_tab", mgmtSubTab);
-  const [memberFilter, setMemberFilter] = useState("all"); // "all", "active", "retired"
-  const [memberSortConfig, setMemberSortConfig] = useState<{ key: string | null; direction: string }>({ key: null, direction: "asc" });
-
-  const requestMemberSort = (key: string) => {
-    let direction = "asc";
-    if (memberSortConfig.key === key && memberSortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    setMemberSortConfig({ key, direction });
-  };
-
-  const getSortedMembers = () => {
-    const filtered = (members || []).filter((m) => {
-      const computedStatus = getMemberStatusForYear(m, selectedYear);
-      if (memberFilter === "active") return computedStatus !== "미참여";
-      if (memberFilter === "retired") return computedStatus === "미참여";
-      return true;
-    });
-
-    const sorted = [...filtered];
-
-    if (!memberSortConfig.key) {
-      // 기본 정렬: 리더십 순서 -> 센터 부서 가중치 -> 연구원 가중치 -> ID 오름차순
-      return sorted.sort((a, b) => {
-        const roleRanks: Record<string, number> = {
-          "사업단장": 1,
-          "본부장": 2,
-          "센터장": 3,
-          "운영팀장": 4,
-          "팀장교수": 4,
-          "연구원": 5
-        };
-        const rankA = roleRanks[a.role] || 99;
-        const rankB = roleRanks[b.role] || 99;
-        if (rankA !== rankB) {
-          return rankA - rankB;
-        }
-
-        if (a.role === "센터장" && b.role === "센터장") {
-          const centerOrder: Record<string, number> = {
-            "ECC센터": 1,
-            "ICC센터": 2,
-            "RCC센터": 3,
-            "울산늘봄누리센터": 4,
-            "신산업특화센터": 5
-          };
-          const oA = centerOrder[a.dept] || 99;
-          const oB = centerOrder[b.dept] || 99;
-          if (oA !== oB) return oA - oB;
-        }
-
-        if (a.role === "운영팀장" && b.role !== "운영팀장") return -1;
-        if (a.role !== "운영팀장" && b.role === "운영팀장") return 1;
-
-        if (a.role === "연구원" && b.role === "연구원") {
-          const deptOrder: Record<string, number> = {
-            "ECC센터": 1,
-            "ICC센터": 2,
-            "RCC센터": 3,
-            "AID-X지원센터": 4,
-            "울산늘봄누리센터": 5,
-            "신산업특화센터": 6
-          };
-          const deptValA = deptOrder[a.dept] || 99;
-          const deptValB = deptOrder[b.dept] || 99;
-          if (deptValA !== deptValB) {
-            return deptValA - deptValB;
-          }
-
-          const gradeOrder: Record<string, number> = {
-            "책임연구원": 1,
-            "선임연구원": 2,
-            "연구원": 3
-          };
-          const gradeValA = gradeOrder[a.grade] || 99;
-          const gradeValB = gradeOrder[b.grade] || 99;
-          if (gradeValA !== gradeValB) {
-            return gradeValA - gradeValB;
-          }
-        }
-
-        return a.id.localeCompare(b.id, 'en');
-      });
-    }
-
-    return sorted.sort((a, b) => {
-      let valA = a[memberSortConfig.key!] || "";
-      let valB = b[memberSortConfig.key!] || "";
-
-      if (memberSortConfig.key === "startDate") {
-        valA = a.startDate || a.hireDate || "";
-        valB = b.startDate || b.hireDate || "";
-      }
-
-      if (typeof valA === "string" && typeof valB === "string") {
-        return memberSortConfig.direction === "asc"
-          ? valA.localeCompare(valB, undefined, { numeric: true, sensitivity: "base" })
-          : valB.localeCompare(valA, undefined, { numeric: true, sensitivity: "base" });
-      }
-
-      if (valA < valB) return memberSortConfig.direction === "asc" ? -1 : 1;
-      if (valA > valB) return memberSortConfig.direction === "asc" ? 1 : -1;
-      return 0;
-    });
-  };
   // Supabase 실시간 동기화 상태 배지 및 로드 플래그
   const [isDbLoaded, setIsDbLoaded] = useState(false);
   const [syncStatus, setSyncStatus] = useState("synced"); // "synced", "syncing", "error"
@@ -4101,11 +3996,6 @@ export default function App() {
           setMgmtSubTab={setMgmtSubTab}
           members={members}
           setMembers={setMembers}
-          memberFilter={memberFilter}
-          setMemberFilter={setMemberFilter}
-          memberSortConfig={memberSortConfig}
-          requestMemberSort={requestMemberSort}
-          getSortedMembers={getSortedMembers}
           getMemberStatusForYear={getMemberStatusForYear}
           renderRoleBadge={renderRoleBadge}
           setEditingMember={setEditingMember}
