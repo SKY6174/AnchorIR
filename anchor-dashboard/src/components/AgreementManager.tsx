@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download, Award as AwardIcon, FileCheck } from "lucide-react";
 import * as XLSX from "xlsx";
@@ -23,22 +24,39 @@ export interface AgreementItem {
   year?: number | string;
   date: string;
   center: string;
-  organizations: AgreementOrg[] | any;
-  subject_univ: string;
-  unit_id: string;
+  organizations: AgreementOrg[] | string[];
+  subjectUniversity: string;
+  subjectOrganization?: string;
+  unitId: string;
   contents: string[];
-  file_name?: string | null;
-  file_data?: string | null;
-  agreement_type?: string | null;
+  fileName?: string | null;
+  fileData?: string | null;
+  agreementType?: string | null;
   created_at?: string;
 }
 
+interface ProgramPlan {
+  years?: Record<string, unknown>;
+}
+
+interface ProjectUnit {
+  id: string;
+  title: string;
+  programs?: ProgramPlan[];
+}
+
+interface AgreementProject {
+  units?: ProjectUnit[];
+}
+
+type AgreementSortKey = "date" | "center" | "organizations" | "unitId" | "agreementType";
+
 export interface AgreementManagerProps {
-  projects?: any[];
+  projects?: AgreementProject[];
   agreements?: AgreementItem[];
   selectedYear?: number | string;
   onAddAgreement?: (agreement: AgreementItem) => void;
-  onUpdateAgreement?: (agreement: AgreementItem) => void;
+  onUpdateAgreement?: (id: number | string, agreement: AgreementItem) => void;
   onDeleteAgreement?: (id: number | string) => void;
   setAgreements?: React.Dispatch<React.SetStateAction<AgreementItem[]>>;
   currentRole?: any;
@@ -87,15 +105,15 @@ export default function AgreementManager({
   const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
 
   // 정렬 상태 관리 (협약서만 유지)
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" }>({ key: "date", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState<{ key: AgreementSortKey; direction: "asc" | "desc" }>({ key: "date", direction: "asc" });
 
   // 엑셀 다운로드 URL 상태
   const [excelDownloadUrl, setExcelDownloadUrl] = useState("");
 
   // 단위과제 로드 (기존 동일)
   const getAvailableUnits = () => {
-    const unitsMap = new Map();
-    const y1Mapping = {
+    const unitsMap = new Map<string, { id: string; title: string }>();
+    const y1Mapping: Record<string, { id: string; title: string }> = {
       "A1가": { id: "A1", title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성" },
       "A2": { id: "A2", title: "지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성" },
       "A3": { id: "D4", title: "지역산업 연계 글로벌 협력 거점 대학 육성" },
@@ -113,7 +131,7 @@ export default function AgreementManager({
     projects.forEach((p) => {
       if (p.units && Array.isArray(p.units)) {
         p.units.forEach((u) => {
-          const hasYearPlan = u.programs?.some(prog => prog.years && prog.years[selectedYear]);
+          const hasYearPlan = u.programs?.some(prog => prog.years && prog.years[String(selectedYear ?? 2)]);
         if (hasYearPlan || selectedYear === 2) {
           if (selectedYear === 1) {
             const mapInfo = y1Mapping[u.id];
@@ -136,7 +154,7 @@ export default function AgreementManager({
   const availableUnits = getAvailableUnits();
 
   // 단위과제 다중 선택 필터 토글 핸들러
-  const handleToggleUnitFilter = (unitId) => {
+  const handleToggleUnitFilter = (unitId: string) => {
     setSelectedUnits((prev) => {
       if (prev.includes(unitId)) {
         return prev.filter((id) => id !== unitId);
@@ -152,7 +170,7 @@ export default function AgreementManager({
   };
 
   // 날짜 기준 앵커 사업 연차(1~5) 자동 계산기
-  const getYearFromDate = (dateStr) => {
+  const getYearFromDate = (dateStr: string): number | null => {
     if (!dateStr) return null;
     const d = new Date(`${dateStr}T00:00:00`);
     if (isNaN(d.getTime())) return null;
@@ -168,7 +186,7 @@ export default function AgreementManager({
   };
 
   // 💡 날짜 문자열 안전 정화기 (PostgreSQL DATE 타입 호환 보장 및 오입력 데이터 정제)
-  const sanitizeDateStr = (dateStr, fallbackYear) => {
+  const sanitizeDateStr = (dateStr: unknown, fallbackYear: number | string | undefined): string => {
     if (!dateStr) return `${fallbackYear === 1 ? 2025 : 2026}-05-15`;
     
     let clean = String(dateStr).trim().replace(/[^0-9-]/g, ""); // 숫자와 대시만 필터링
@@ -206,7 +224,7 @@ export default function AgreementManager({
   };
 
   // 날짜 범위 검증 (Y차년도: (2024 + Y)년 3월 1일 ~ (2024 + Y + 1)년 2월 말일)
-  const isDateValidForYear = (dateStr, year) => {
+  const isDateValidForYear = (dateStr: string, year: number): boolean => {
     if (!dateStr) return false;
     const startYear = 2024 + year;
     const endYear = startYear + 1;
@@ -222,8 +240,8 @@ export default function AgreementManager({
   const filteredAgreements = agreements.filter(a => a.year === selectedYear);
 
   // 정렬 요청 핸들러 (협약)
-  const requestSort = (key) => {
-    let direction = "asc";
+  const requestSort = (key: AgreementSortKey) => {
+    let direction: "asc" | "desc" = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
       direction = "desc";
     }
@@ -241,7 +259,7 @@ export default function AgreementManager({
         // 협약기관 컬럼 정렬 시 객체 배열 내의 명칭을 결합한 텍스트로 비교하되,
         // (주), 주식회사 등 상호명 접두 특수기호 및 문자를 정화(Sanitize)하여 실질 상호명 기준으로 정렬합니다.
         if (sortConfig.key === "organizations") {
-          const getCleanOrgName = (orgs) => {
+          const getCleanOrgName = (orgs: AgreementItem["organizations"]) => {
             let rawStr = "";
             if (Array.isArray(orgs)) {
               rawStr = orgs.map(o => typeof o === "object" ? (o.name || "") : String(o)).join(", ");
@@ -288,8 +306,8 @@ export default function AgreementManager({
       let orgSubjectsStr = "";
       if (Array.isArray(agr.organizations)) {
         if (typeof agr.organizations[0] === "object" && agr.organizations[0] !== null) {
-          orgsStr = agr.organizations.map(o => o.name).join(", ");
-          orgSubjectsStr = agr.organizations.map(o => `${o.name}(${o.subject || "주체없음"})`).join(", ");
+          orgsStr = agr.organizations.map(o => typeof o === "object" ? o.name : o).join(", ");
+          orgSubjectsStr = agr.organizations.map(o => typeof o === "object" ? `${o.name}(${o.subject || "주체없음"})` : o).join(", ");
         } else {
           orgsStr = agr.organizations.join(", ");
           orgSubjectsStr = agr.subjectOrganization || "";
@@ -354,18 +372,19 @@ export default function AgreementManager({
   };
 
   // 엑셀 업로드 (가져오기)
-  const handleExcelImport = (e) => {
-    const file = e.target.files[0];
+  const handleExcelImport = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
-        const binaryStr = evt.target.result;
+        const binaryStr = evt.target?.result;
+        if (!binaryStr) return;
         const workbook = XLSX.read(binaryStr, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
         const ws = workbook.Sheets[sheetName];
-        const rawRows = XLSX.utils.sheet_to_json(ws);
+        const rawRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws);
 
         if (rawRows.length === 0) {
           alert("엑셀 파일에 데이터가 존재하지 않습니다.");
@@ -373,7 +392,13 @@ export default function AgreementManager({
         }
 
         let importedCount = 0;
-        const partnerPayloads = [];
+        const partnerPayloads: Array<{
+          name: string;
+          category: string;
+          sub_category: string;
+          location: string;
+          sectors: string[];
+        }> = [];
 
         rawRows.forEach((row, index) => {
           const dateVal = row["체결일자"];
@@ -443,7 +468,7 @@ export default function AgreementManager({
             }
           });
 
-          onAddAgreement(newAgr);
+          onAddAgreement?.(newAgr);
           importedCount++;
         });
 
@@ -455,8 +480,7 @@ export default function AgreementManager({
             .then(({ error }) => {
               if (error) console.error("Excel import partner upsert fail:", error);
               else console.log("Excel import partner upsert success.");
-            })
-            .catch(err => console.error("Excel import partner upsert error:", err));
+            }, err => console.error("Excel import partner upsert error:", err));
         }
 
         alert(`${importedCount}개의 협약서 정보가 성공적으로 적재되었습니다.`);
@@ -473,7 +497,7 @@ export default function AgreementManager({
    * cleanName: 파일명이나 대시보드 항목명에서 불필요한 회사 수식어(주식회사, ㈜ 등)와 공백을 지워
    * 순수한 텍스트 비교가 가능하도록 정화하는 공통 헬퍼 함수입니다.
    */
-  const cleanName = (name) => {
+  const cleanName = (name: string) => {
     if (!name) return "";
     // 1) 모든 공백을 제거합니다.
     let temp = name.replace(/\s/g, "");
@@ -491,8 +515,8 @@ export default function AgreementManager({
   // ==========================================
 
   // 1-1. 협약 사본 파일명 기반 일괄 자동 매핑 핸들러
-  const handleBatchAgreementImport = async (e) => {
-    const files = Array.from(e.target.files);
+  const handleBatchAgreementImport = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
     if (currentRole.id === "GUEST") {
@@ -507,9 +531,16 @@ export default function AgreementManager({
       const fileBaseName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
       const fileClean = cleanName(fileBaseName);
 
-      let matchedTarget = null;
+      let matchedTarget: AgreementItem | null = null;
       let maxScore = 0;
-      let bestDetails = null;
+      let bestDetails: {
+        extractedOrg: string;
+        extractedName: string;
+        orgScore: number;
+        nameScore: number;
+        dateScore: number;
+        breakdown: string;
+      } | null = null;
 
       // 전체 협약 목록을 순회하며 매칭 점수를 산출합니다.
       agreements.forEach(item => {
@@ -558,7 +589,7 @@ export default function AgreementManager({
           maxScore = totalScore;
           matchedTarget = item;
           bestDetails = {
-            extractedOrg: item.organizations.map(o => o.name).join(", "),
+            extractedOrg: item.organizations.map(o => typeof o === "object" ? o.name : o).join(", "),
             extractedName: item.subjectUniversity || "없음",
             orgScore,
             nameScore,
@@ -568,21 +599,22 @@ export default function AgreementManager({
         }
       });
 
-      const fileData = await new Promise((resolve) => {
+      const fileData = await new Promise<string | null>((resolve) => {
         const reader = new FileReader();
-        reader.onload = (ev) => resolve(ev.target.result);
+        reader.onload = (ev) => resolve(typeof ev.target?.result === "string" ? ev.target.result : null);
         reader.onerror = () => resolve(null);
         reader.readAsDataURL(file);
       });
 
-      if (maxScore >= 70 && matchedTarget) {
+      const selectedMatch = matchedTarget as AgreementItem | null;
+      if (maxScore >= 70 && selectedMatch) {
         results.push({
           fileName,
           file,
           fileData,
           status: "success",
-          targetId: matchedTarget.id,
-          targetDesc: `${matchedTarget.organizations.map(o => o.name).join(", ")} (${matchedTarget.date})`,
+          targetId: selectedMatch.id,
+          targetDesc: `${selectedMatch.organizations.map(o => typeof o === "object" ? o.name : o).join(", ")} (${selectedMatch.date})`,
           score: maxScore,
           details: bestDetails
         });
@@ -680,7 +712,7 @@ export default function AgreementManager({
       return;
     }
 
-    setAgreements(prev =>
+    setAgreements?.(prev =>
       prev.map(item => {
         const match = successMap.get(item.id);
         if (match) {
@@ -707,18 +739,18 @@ export default function AgreementManager({
     setInputOrganizations([...inputOrganizations, { name: "", subject: "" }]);
   };
 
-  const handleRemoveOrgField = (index) => {
+  const handleRemoveOrgField = (index: number) => {
     if (inputOrganizations.length <= 1) return;
     setInputOrganizations(inputOrganizations.filter((_, i) => i !== index));
   };
 
-  const handleOrgChange = (index, field, value) => {
+  const handleOrgChange = (index: number, field: keyof AgreementOrg, value: string) => {
     const updated = [...inputOrganizations];
     updated[index] = { ...updated[index], [field]: value };
     setInputOrganizations(updated);
   };
 
-  const handleToggleContent = (content) => {
+  const handleToggleContent = (content: string) => {
     if (inputContents.includes(content)) {
       setInputContents(inputContents.filter(c => c !== content));
     } else {
@@ -727,8 +759,8 @@ export default function AgreementManager({
   };
 
   // 모의 파일 업로드 (Supabase Storage 버킷 업로드 연동)
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>, _kind?: string) => {
+    const file = e.target.files?.[0];
     if (file) {
       const normalizedName = file.name.normalize("NFC");
       setInputFileName("업로드 중...");
@@ -759,7 +791,7 @@ export default function AgreementManager({
   };
 
   // 사본 뷰어 팝업 연동 (원격 URL 및 Base64 하이브리드 지원)
-  const handleViewFile = (fileData, fileName) => {
+  const handleViewFile = (fileData?: string | null, _fileName?: string | null) => {
     try {
       if (!fileData) {
         alert("⚠️ 등록된 사본 파일 데이터(URL)가 존재하지 않습니다. 사본 일괄 매핑 등을 통해 파일을 먼저 등록해 주세요.");
@@ -812,32 +844,8 @@ export default function AgreementManager({
     setInputAgreementType("-");
   };
 
-  // 2-1. 이수증 폼 초기화
-  const resetCertForm = () => {
-    setEditingCertId(null);
-    setCertNo("");
-    setCertDept("");
-    setCertName("");
-    setCertDate("");
-    setCertIssuer("사업단장");
-    setCertFileName("");
-    setCertFileData("");
-  };
-
-  // 3-1. 상장 폼 초기화
-  const resetAwardForm = () => {
-    setEditingAwardId(null);
-    setAwardNo("");
-    setAwardDept("");
-    setAwardName("");
-    setAwardDate("");
-    setAwardIssuer("사업단장");
-    setAwardFileName("");
-    setAwardFileData("");
-  };
-
   // 1-3. 협약 저장 핸들러
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!inputDate) return alert("협약 체결일자를 선택해 주세요.");
 
@@ -847,7 +855,7 @@ export default function AgreementManager({
       return;
     }
 
-    const cleanOrgs = inputOrganizations.map(o => ({ name: o.name.trim(), subject: o.subject.trim() })).filter(o => o.name);
+    const cleanOrgs = inputOrganizations.map(o => ({ name: o.name.trim(), subject: (o.subject || "").trim() })).filter(o => o.name);
     if (cleanOrgs.length === 0) return alert("협약 대상기관을 입력해 주세요.");
     if (cleanOrgs.some(o => !o.subject)) return alert("기관 측 협약주체를 입력해 주세요.");
     if (!inputUnitId) return alert("관련 단위과제를 선택해 주세요.");
@@ -877,9 +885,9 @@ export default function AgreementManager({
     };
 
     if (editingId) {
-      onUpdateAgreement(editingId, payload);
+      onUpdateAgreement?.(editingId, payload);
     } else {
-      onAddAgreement(payload);
+      onAddAgreement?.(payload);
     }
 
     // [지산학 파트너십 CRM 연계 적재]
@@ -898,80 +906,11 @@ export default function AgreementManager({
         .then(({ error }) => {
           if (error) console.error("Failed to auto-upsert partner institutions from agreement:", error);
           else console.log("Successfully auto-upserted partner institutions from agreement.");
-        })
-        .catch(err => console.error("Error in auto-upsert partner:", err));
+        }, err => console.error("Error in auto-upsert partner:", err));
     }
 
     setIsModalOpen(false);
     resetForm();
-  };
-
-  // 2-2. 이수증 저장 핸들러
-  const handleCertSubmit = (e) => {
-    e.preventDefault();
-    if (!certNo.trim()) return alert("발급번호를 입력해 주세요.");
-    if (!certDept.trim()) return alert("발급대상 소속을 입력해 주세요.");
-    if (!certName.trim()) return alert("발급대상 성명을 입력해 주세요.");
-    if (!certDate) return alert("발급일을 선택해 주세요.");
-
-    const calculatedYear = getYearFromDate(certDate);
-    if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
-      alert("유효한 앵커 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
-      return;
-    }
-
-    const payload = {
-      year: calculatedYear,
-      certNo: certNo.trim(),
-      recipientDept: certDept.trim(),
-      recipientName: certName.trim(),
-      issueDate: certDate,
-      issuer: certIssuer,
-      fileName: certFileName,
-      fileData: certFileData
-    };
-
-    if (editingCertId) {
-      onUpdateCertificate(editingCertId, payload);
-    } else {
-      onAddCertificate(payload);
-    }
-    setIsCertModalOpen(false);
-    resetCertForm();
-  };
-
-  // 3-2. 상장 저장 핸들러
-  const handleAwardSubmit = (e) => {
-    e.preventDefault();
-    if (!awardNo.trim()) return alert("발급번호를 입력해 주세요.");
-    if (!awardDept.trim()) return alert("발급대상 소속을 입력해 주세요.");
-    if (!awardName.trim()) return alert("발급대상 성명을 입력해 주세요.");
-    if (!awardDate) return alert("발급일을 선택해 주세요.");
-
-    const calculatedYear = getYearFromDate(awardDate);
-    if (!calculatedYear || calculatedYear < 1 || calculatedYear > 5) {
-      alert("유효한 앵커 사업 기간 내의 날짜를 선택해 주세요. (2025년 3월 이후)");
-      return;
-    }
-
-    const payload = {
-      year: calculatedYear,
-      awardNo: awardNo.trim(),
-      recipientDept: awardDept.trim(),
-      recipientName: awardName.trim(),
-      issueDate: awardDate,
-      issuer: awardIssuer,
-      fileName: awardFileName,
-      fileData: awardFileData
-    };
-
-    if (editingAwardId) {
-      onUpdateAward(editingAwardId, payload);
-    } else {
-      onAddAward(payload);
-    }
-    setIsAwardModalOpen(false);
-    resetAwardForm();
   };
 
   return (
@@ -1147,7 +1086,7 @@ export default function AgreementManager({
           </div>
         </div>
 
-        {filteredAgreements.filter(a => !isDateValidForYear(a.date, selectedYear)).length > 0 && (
+        {filteredAgreements.filter(a => !isDateValidForYear(a.date, Number(selectedYear ?? 1))).length > 0 && (
           <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: "0.375rem", padding: "0.6rem 0.8rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <AlertTriangle color="#ef4444" size={14} style={{ flexShrink: 0 }} />
             <span style={{ fontSize: "0.72rem", color: "#fca5a5" }}>
@@ -1190,7 +1129,7 @@ export default function AgreementManager({
                 </tr>
               ) : (
                 displayAgreements.map((agr) => {
-                  const hasInvalidDate = !isDateValidForYear(agr.date, selectedYear);
+                  const hasInvalidDate = !isDateValidForYear(agr.date, Number(selectedYear ?? 1));
                   return (
                     <tr key={agr.id} style={{ borderBottom: "1px solid var(--border-color-dark)", background: hasInvalidDate ? "rgba(239, 68, 68, 0.05)" : "transparent" }}>
                       <td style={{ padding: "0.6rem 0.8rem", textAlign: "center" }}>{agr.date}</td>
@@ -1277,7 +1216,7 @@ export default function AgreementManager({
                             {currentRole.id !== "GUEST" && (
                               <>
                                 <button onClick={() => {
-                                  setEditingId(agr.id);
+                                  setEditingId(agr.id ?? null);
                                   setInputDate(agr.date || "");
                                   setInputCenter(agr.center || "ECC센터");
                                   setInputOrganizations(Array.isArray(agr.organizations) ? agr.organizations.map(o => typeof o === "object" ? { name: o.name || "", subject: o.subject || "" } : { name: o, subject: "" }) : [{ name: "", subject: "" }]);
@@ -1310,7 +1249,7 @@ export default function AgreementManager({
                                 }} style={{ background: "none", border: "none", color: "var(--text-secondary)", cursor: "pointer" }} title="수정">
                                   <Edit size={14} />
                                 </button>
-                                <button onClick={() => { if (confirm("이 협약서를 삭제하시겠습니까?")) onDeleteAgreement(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
+                                <button onClick={() => { if (confirm("이 협약서를 삭제하시겠습니까?") && agr.id !== undefined) onDeleteAgreement?.(agr.id); }} style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }} title="삭제">
                                   <Trash size={14} />
                                 </button>
                               </>
