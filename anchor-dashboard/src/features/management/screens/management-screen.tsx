@@ -6,6 +6,7 @@ import CenterOrgChartManager from "../../../components/CenterOrgChartManager";
 import PortalConfigManager from "../../../components/PortalConfigManager";
 import type { AssetReservation, LegacyAppRecord, ProgramVersionRequest } from "../../../app/app-types";
 import { formatAssignee } from "../../../app/app-data-utils";
+import { useLocalStorageValue } from "../../../shared/hooks/use-local-storage-persistence";
 import { useManagementMemberList } from "../hooks/use-management-member-list";
 import { deleteRiseMember } from "../services/member-service";
 
@@ -31,8 +32,6 @@ interface ManagementScreenProps {
   jointPrograms: Record<string, boolean>;
   setJointPrograms: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   registeredUsers: LegacyAppRecord[];
-  approvalsTab: string;
-  setApprovalsTab: React.Dispatch<React.SetStateAction<string>>;
   versionRequests: ProgramVersionRequest[];
   selectedRequest: ProgramVersionRequest | null;
   setSelectedRequest: React.Dispatch<React.SetStateAction<ProgramVersionRequest | null>>;
@@ -87,8 +86,6 @@ export const ManagementScreen = ({
   jointPrograms,
   setJointPrograms,
   registeredUsers,
-  approvalsTab,
-  setApprovalsTab,
   versionRequests,
   selectedRequest,
   setSelectedRequest,
@@ -124,6 +121,21 @@ export const ManagementScreen = ({
   renderTimelineDiff
 }: ManagementScreenProps) => {
   const [assignFilterUnitId, setAssignFilterUnitId] = React.useState("all");
+  const [approvalsTab, setApprovalsTab] = React.useState(() => {
+    const savedLogged = localStorage.getItem("anchor_logged_in_user");
+    if (savedLogged) {
+      try {
+        const user = JSON.parse(savedLogged);
+        const name = user.name || "";
+        if (["이규상", "임은애", "황수진", "최주명"].some((candidate) => name.includes(candidate))) {
+          return "facility";
+        }
+      } catch { }
+    }
+    return localStorage.getItem("anchor_approvals_tab") || "budget";
+  });
+  useLocalStorageValue("anchor_approvals_tab", approvalsTab);
+
   const {
     getSortedMembers,
     memberFilter,

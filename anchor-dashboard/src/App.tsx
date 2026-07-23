@@ -294,19 +294,6 @@ export default function App() {
   // 결재 변경 승인요청 상태 및 상세 보기 모달 제어용
   const [versionRequests, setVersionRequests] = useState<ProgramVersionRequest[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<ProgramVersionRequest | null>(null);
-  const [approvalsTab, setApprovalsTab] = useState(() => {
-    const savedLogged = localStorage.getItem("anchor_logged_in_user");
-    if (savedLogged) {
-      try {
-        const u = JSON.parse(savedLogged);
-        const name = u.name || "";
-        if (["이규상", "임은애", "황수진", "최주명"].some(n => name.includes(n))) {
-          return "facility";
-        }
-      } catch { }
-    }
-    return localStorage.getItem("anchor_approvals_tab") || "budget";
-  });
   const [reservations, setReservations] = useState<AssetReservation[]>([]);
 
   // 💡 [교육용 한글 주석] 승인자 전용의 공간 예약 일시 조율용 상태변수들입니다.
@@ -324,8 +311,6 @@ export default function App() {
 
   // survey_respond 탭은 임시 설문 화면이므로 마지막 일반 탭 상태를 유지합니다.
   useActiveTabPersistence(activeTab);
-
-  useLocalStorageValue("anchor_approvals_tab", approvalsTab);
 
   // 💡 [교육용 한글 주석] 직책에 따라 테두리선(line), 배경색, 글자색이 가미된 선명하고 세련된 뱃지를 렌더링하는 공용 헬퍼 함수입니다.
   const renderRoleBadge = (role: string, isRetired: boolean) => {
@@ -4003,8 +3988,6 @@ export default function App() {
           jointPrograms={jointPrograms}
           setJointPrograms={setJointPrograms}
           registeredUsers={registeredUsers}
-          approvalsTab={approvalsTab}
-          setApprovalsTab={setApprovalsTab}
           versionRequests={versionRequests}
           selectedRequest={selectedRequest}
           setSelectedRequest={setSelectedRequest}
