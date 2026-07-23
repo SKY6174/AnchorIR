@@ -18,6 +18,13 @@ import type {
   ScheduleFormData,
   ScheduleItem
 } from "../features/schedule/schedule-types";
+import {
+  calculateScheduleYearFromDate,
+  getFormattedMemberGrade,
+  isDateInSelectedYear,
+  isWriterExcluded,
+  sortMembersByRole
+} from "../features/schedule/utils/schedule-member-utils";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 const scheduleDb = supabase as any;
@@ -69,119 +76,8 @@ export default function ScheduleManager({
   const [isEditMode, setIsEditMode] = useState(false);   // 수정 모드 활성화 여부
   const [editingItemId, setEditingItemId] = useState<number | string | null>(null); // 편집 대상 일정 ID
 
-  // 교원의 경우 직급/직위를 '센터장', '팀장교수'로 이원화 표기 및 심현미 운영팀장 표기 헬퍼 함수
-  const getFormattedMemberGrade = (m: ScheduleCommitteeMember | null | undefined, _includeProfessors?: boolean) => {
-    if (!m) return "연구원";
-
-    // 송경영의 경우 직위를 '단장'으로 강제 표기하여 목록 노출을 보정합니다.
-    if (m.name === "송경영") {
-      return "단장";
-    }
-
-    // 김현수의 경우 직위를 '총괄본부장'으로 강제 표기하여 목록 노출을 보정합니다.
-    if (m.name === "김현수") {
-      return "총괄본부장";
-    }
-
-    // 심현미의 경우 직위를 '운영팀장'으로 강제 표기
-    if (m.name === "심현미") {
-      return "운영팀장";
-    }
-
-    // 교수의 조건 판별 (grade 혹은 role/rank 가 교수, 조교수, 부교수, 정교수 등 교직원 형태인 경우)
-    const isProfessorType =
-      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) ||
-      ["팀장교수", "센터장"].includes(m.role) ||
-      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.role) ||
-      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
-
-    if (isProfessorType) {
-      // 5대 센터장 정보 매핑 (김현수 교수는 본부장으로 표시되며 센터장 매핑에서 삭제됨)
-      const centerHeads: Record<string, string> = {
-        "이동은": "ECC센터",
-        "김기범": "ICC센터",
-        "현용환": "RCC센터",
-        "홍광표": "울산늘봄누리센터",
-        "홍진숙": "신산업특화센터"
-      };
-
-      const isCenterHead =
-        m.role === "센터장" ||
-        m.rank === "센터장" ||
-        centerHeads[m.name] !== undefined;
-
-      if (isCenterHead) {
-        return "센터장";
-      }
-
-      // 늘봄누리센터와 신산업특화센터는 팀장교수 없음
-      const deptName = m.dept || "";
-      const isNoTeamProfDept = deptName.includes("늘봄") || deptName.includes("신산업");
-
-      if (isNoTeamProfDept) {
-        return m.grade || "교수";
-      }
-
-      // 늘봄/신산업이 아닌 4대 센터 소속 일반 교수진은 무조건 '팀장교수' 고정 표기
-      return "팀장교수";
-    }
-
-    // 일반 연구원 등은 기존 값을 반환
-    return m.grade || "연구원";
-  };
-
-  // 회의록 작성자에서 센터장, 교수진(팀장교수 포함), 운영팀장을 배제하는 판별 함수
-  const isWriterExcluded = (m: ScheduleCommitteeMember | null | undefined) => {
-    if (!m) return true;
-    const displayRole = getFormattedMemberGrade(m);
-
-    // 센터장, 팀장교수, 운영팀장은 작성자에서 완전히 제외
-    if (displayRole === "센터장" || displayRole === "팀장교수" || displayRole === "운영팀장") {
-      return true;
-    }
-
-    // 기타 교직원(교수) 여부 검증
-    const isProf =
-      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.grade) ||
-      ["팀장교수", "센터장"].includes(m.role) ||
-      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.role) ||
-      ["정교수", "부교수", "조교수", "교수", "조교", "팀장교수", "교원"].includes(m.rank);
-
-    return isProf;
-  };
-
-  // 선택 연차의 실제 회계연도 사업기간(3/1 ~ 이듬해 2/28 또는 29) 부합 여부 판별 함수
-  const isDateInSelectedYear = (dateStr: string | undefined, yearVal: number | string | undefined) => {
-    if (!dateStr) return false;
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return false;
-
-    const targetYearNum = yearVal === 1 ? 2025 : yearVal === 2 ? 2026 : yearVal === 3 ? 2027 : yearVal === 4 ? 2028 : 2029;
-    const start = new Date(`${targetYearNum}-03-01T00:00:00+09:00`);
-
-    const endYear = targetYearNum + 1;
-    const isLeap = (endYear % 4 === 0 && endYear % 100 !== 0) || (endYear % 400 === 0);
-    const endDay = isLeap ? "29" : "28";
-    const end = new Date(`${endYear}-02-${endDay}T23:59:59+09:00`);
-
-    return date >= start && date <= end;
-  };
-
-  // 날짜 문자열을 기반으로 공식 회계연도(3/1 ~ 이듬해 2/28) 1~5차년도 값을 동적으로 리턴하는 함수
   const getCalculatedYearFromDate = (dateStr?: string) => {
-    if (!dateStr) return selectedYear;
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return selectedYear;
-
-    const year = d.getFullYear();
-    const month = d.getMonth() + 1;
-
-    let calcYear = year;
-    if (month < 3) {
-      calcYear = year - 1;
-    }
-
-    return calcYear === 2025 ? 1 : calcYear === 2026 ? 2 : calcYear === 2027 ? 3 : calcYear === 2028 ? 4 : calcYear === 2029 ? 5 : selectedYear;
+    return calculateScheduleYearFromDate(dateStr, selectedYear);
   };
 
   // 위원회 관리 상태 정의
@@ -223,30 +119,6 @@ export default function ScheduleManager({
   const [committees, setCommittees] = useState<any[]>(COMMITTEES_DATA);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<ScheduleCommitteeMember | null>(null); // 수정할 위원 정보 (null 이면 신규 추가)
-
-  // 💡 [위원 직분별 우선순위 정렬 헬퍼] 위원장 -> 위원 -> 간사 순서 출력
-  const sortMembersByRole = (membersList: ScheduleCommitteeMember[], _context?: unknown) => {
-    if (!Array.isArray(membersList)) return [];
-    const getRolePriority = (typeStr?: string | null) => {
-      if (!typeStr) return 2;
-      if (typeStr.includes("위원장")) return 1;
-      if (typeStr.includes("간사")) return 3;
-      return 2; // 위원, 위원(자문겸직) 등
-    };
-
-    return [...membersList].sort((a, b) => {
-      const pA = getRolePriority(a.type);
-      const pB = getRolePriority(b.type);
-      if (pA !== pB) {
-        return pA - pB;
-      }
-      const sA = a.sort_order ?? 999;
-      const sB = b.sort_order ?? 999;
-      return sA - sB;
-    });
-  };
-
-
 
   // 위원회 종류 필터 상태
   const [selectedCommitteeFilters, setSelectedCommitteeFilters] = useState<string[]>([]);
