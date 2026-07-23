@@ -2481,7 +2481,7 @@ ${selectedMeetingAgendas.map((a, idx) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        window.URL.revokeObjectURL(downloadUrl);
+        window.setTimeout(() => window.URL.revokeObjectURL(downloadUrl), 30_000);
         return;
       }
 
