@@ -51,7 +51,8 @@ import { saveMenuVisibility } from "./features/management/services/portal-config
 import { useApprovalDataRefresh, useRegisteredUsersRefresh } from "./features/management/hooks/use-management-refresh";
 import { usePortalMenuVisibility } from "./features/management/hooks/use-portal-menu-visibility";
 import { useEnvironmentAutosave } from "./features/procurement/hooks/use-environment-autosave";
-import { deleteEquipmentRecordsByYear, deleteServiceRecordsByYear, insertEquipmentRecords, insertServiceRecords, probeProcurementAdvancedColumns, upsertEquipmentAssets } from "./features/procurement/services/procurement-data-service";
+import { useEquipmentAutosave } from "./features/procurement/hooks/use-equipment-autosave";
+import { deleteServiceRecordsByYear, insertServiceRecords, probeProcurementAdvancedColumns } from "./features/procurement/services/procurement-data-service";
 import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
 import { useProjectAutosave } from "./features/projects/hooks/use-project-autosave";
@@ -3401,120 +3402,16 @@ export default function App() {
   });
 
   // 5) Procurement Equipment 자동 저장 디바운스 훅
-  useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
-    if (!currentUser || currentRole?.id === "GUEST") return;
-
-    // 💡 안전 가드: 데이터가 없거나 로딩 중 꼬였을 때 DB 데이터를 지워버리는 대형 사고 방지
-    if (!equipData || equipData.length === 0) return;
-
-    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
-    const currentCleanStr = JSON.stringify(equipData);
-    if (!fetchedEquipDataRef.current || fetchedEquipDataRef.current === currentCleanStr) {
-      safeSetLocalStorage(`anchor_cache_equip_y${selectedYear}`, currentCleanStr, selectedYear);
-      return;
-    }
-
-    safeSetLocalStorage(`anchor_cache_equip_y${selectedYear}`, currentCleanStr, selectedYear);
-    setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
-      try {
-        await deleteEquipmentRecordsByYear(selectedYear);
-        if (equipData.length > 0) {
-          const insertPayload = equipData.map(e => ({
-            year: selectedYear,
-            unit: e.unit || "A1",
-            seq: Number(e.seq) || 1,
-            dept_name: e.deptName || "",
-            division_name: e.divisionName || "",
-            item_name: e.itemName || e.name || "",
-            unit_price: Number(e.unitPrice) || 0,
-            quantity: Number(e.quantity) || 1,
-            spec: e.spec || "",
-            item_unit: e.itemUnit || "대",
-            description: e.description || "",
-            operation: e.operation || "교과목(정규)",
-            password: e.password || "1234",
-            related_docs: e.relatedDocs || [e.docPlan, e.docPurchase, e.docBid].filter(Boolean).join(", "),
-            doc_plan: e.docPlan || "",
-            doc_purchase: e.docPurchase || "",
-            doc_bid: e.docBid || "",
-            date_p: e.dateP || null,
-            date_a: e.dateA || null,
-            date_b: e.dateB || null,
-            date_pr: e.datePr || null,
-            date_i: e.date_i || e.dateI || null,
-            barcode: e.barcode || "",
-            asset_number: e.asset_number || ""
-          }));
-
-          // 💡 초연결 자산 연동: '기자재 구매' 단계에서 바코드가 입력된 항목들을 equipment_assets 테이블에 자동 Upsert 동기화
-          const assetsPayload = equipData
-            .filter(e => e.barcode) // 바코드가 실재로 스캔 등록된 자산만 연동
-            .map(e => ({
-              barcode_id: e.barcode,
-              asset_number: e.asset_number || `AIDX-EQ-${e.id}`,
-              item_name: e.itemName || e.name || "새 기자재 항목",
-              dept_name: e.deptName || e.divisionName || "",
-              unit_price: Number(e.unitPrice) || 0,
-              quantity: Number(e.quantity) || 1,
-              stock_location: e.location || "",
-              memo: e.description || "",
-              category: (e.itemName || e.name || "").includes("AI") || (e.itemName || e.name || "").includes("DX") ? "AI∙DX 자산" : "기타자산",
-              usage_type: "정규교과"
-            }));
-
-          if (assetsPayload.length > 0) {
-            const { error: assetSyncErr } = await upsertEquipmentAssets(assetsPayload);
-            if (assetSyncErr) {
-              console.error("equipment_assets 자산 동기화 실패:", assetSyncErr.message);
-            }
-          }
-
-          let error = null;
-
-          if (window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__) {
-            const safePayload = insertPayload.map(item => {
-              const {
-                date_p: _date_p, date_a: _date_a, date_b: _date_b, date_pr: _date_pr, date_i: _date_i,
-                doc_plan: _doc_plan, doc_purchase: _doc_purchase, doc_bid: _doc_bid,
-                ...rest
-              } = item;
-              return rest;
-            });
-            const { error: retryErr } = await insertEquipmentRecords(safePayload);
-            error = retryErr;
-          } else {
-            const { error: firstErr } = await insertEquipmentRecords(insertPayload);
-            error = firstErr;
-
-            if (error) {
-              console.warn("DB에 procurement_equipment 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", error);
-              window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__ = true;
-              const safePayload = insertPayload.map(item => {
-                const {
-                  date_p: _date_p, date_a: _date_a, date_b: _date_b, date_pr: _date_pr, date_i: _date_i,
-                  doc_plan: _doc_plan, doc_purchase: _doc_purchase, doc_bid: _doc_bid,
-                  ...rest
-                } = item;
-                return rest;
-              });
-              const { error: retryErr } = await insertEquipmentRecords(safePayload);
-              error = retryErr;
-            }
-          }
-
-          if (error) throw error;
-        }
-        setSyncStatus("synced");
-      } catch (e) {
-        console.error("Failed to sync procurement_equipment:", e);
-        setSyncStatus("error");
-      }
-    }, 150);
-    return () => clearTimeout(timer);
-  // oxlint-disable-next-line react/exhaustive-deps -- equipment data, year, and load guards own synchronization; auth restoration is a permission check, not a write trigger.
-  }, [equipData, selectedYear, isDbLoaded, isFetchCompleted]);
+  useEquipmentAutosave({
+    equipData,
+    selectedYear,
+    isDbLoaded,
+    isFetchCompleted,
+    canWrite: Boolean(currentUser && currentRole?.id !== "GUEST"),
+    fetchedEquipDataRef,
+    safeSetLocalStorage,
+    setSyncStatus
+  });
 
   // 6) Procurement Services 자동 저장 디바운스 훅
   useEffect(() => {
