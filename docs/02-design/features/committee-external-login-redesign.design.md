@@ -1,6 +1,6 @@
 # committee-external-login-redesign - Design Document
 
-> Version: 1.0.0 | Date: 2026-07-23 | Status: Approved
+> Version: 1.1.0 | Date: 2026-07-23 | Status: Approved
 > Level: Dynamic | Plan: `docs/01-plan/features/committee-external-login-redesign.plan.md`
 
 ---
@@ -9,7 +9,7 @@
 
 ### 1.1 Purpose
 
-외부위원 미인증 화면만 UC 산학협력단 레퍼런스 기반의 2열 로그인 경험으로 교체한다. 인증 이후 화면과 모든 서비스 호출은 현재 구현을 그대로 사용한다.
+외부위원 미인증 화면과 인증 후 자료 열람·표결 화면을 하나의 UC 보안위원회 디자인 언어로 통합한다. 인증, 자료 조회, 표결, 서명 서비스 호출은 현재 구현을 그대로 사용한다.
 
 ### 1.2 Design Goals
 
@@ -23,16 +23,43 @@
 
 ### 2.1 Component Boundary
 
-`CommitteeExternalVote`의 다음 영역만 변경한다.
+`CommitteeExternalVote`의 인증 전후 표현 계층만 변경한다.
 
 ```text
 loading/error render       unchanged
-unauthorized render        redesign
-handleAuthSubmit           unchanged
-authorized vote workflow   unchanged
+unauthorized render        existing login design
+authorized workspace       linked light/blue design
+handlers and API calls     unchanged
 ```
 
 별도 인증 체계나 상태를 추가하지 않는다. 스타일은 `CommitteeExternalVote.tsx`에 전용 class를 부여하고 `dashboard.css`의 해당 scope에서 정의한다.
+
+### 2.4 Authenticated workspace extension
+
+- 전체 배경은 로그인 우측 패널과 동일한 `#f4f7fb` 계열로 전환한다.
+- 상단에는 로그인 좌측 패널의 네이비 그라데이션과 UC 브랜드 마크를 재사용한다.
+- 회의명, 일시, 접속 위원, 로그아웃을 하나의 보안 세션 헤더로 구성한다.
+- 자료·표결·서명은 흰색 카드, 옅은 회색 테두리, 블루 포커스 링으로 통일한다.
+- PDF iframe, 안건 선택, 표결 값, 서명 canvas의 상태와 이벤트는 변경하지 않는다.
+- 원본 첨부파일명과 보안 signed URL 처리도 변경하지 않는다.
+
+Desktop workspace:
+
+```text
+┌─────────────────────────────────────────────────────────┐
+│ UC / SECURE COMMITTEE     meeting / member / logout     │
+├─────────────────────────────────────────────────────────┤
+│ materials card: agenda information | secure PDF viewer  │
+├─────────────────────────────────────────────────────────┤
+│ agenda voting cards                                     │
+├─────────────────────────────────────────────────────────┤
+│ signature and submit                                    │
+└─────────────────────────────────────────────────────────┘
+```
+
+- 980px 이하에서 자료 영역은 1열로 전환한다.
+- 640px 이하에서 헤더와 액션 버튼을 세로 배치하고 카드 여백을 축소한다.
+- PDF 뷰어는 모바일에서 최소 420px 높이를 유지한다.
 
 ### 2.2 Layout
 
@@ -94,8 +121,9 @@ getCommitteeVoteContext(authentication.token)
 2. 미인증 render에서 현재 접근 코드를 계산한다.
 3. 단일 glass card를 2열 scoped layout으로 교체한다.
 4. `dashboard.css`에 desktop/mobile 전용 style을 추가한다.
-5. TypeScript, lint, build, 위원회 시험을 실행한다.
-6. 로컬 production preview를 기준 해상도로 캡처하고 레퍼런스와 비교한다.
+5. 인증 후 워크스페이스에 로그인 토큰 기반 class scope를 적용한다.
+6. TypeScript, lint, build, 위원회 시험을 실행한다.
+7. 로컬 production preview를 데스크톱·모바일 기준 해상도로 확인한다.
 
 ## 5. Test Plan
 

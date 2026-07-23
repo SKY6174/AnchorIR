@@ -579,78 +579,81 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
     );
   }
 
-  return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "1.5rem" }}>
-      {/* 상단 회의 헤더 */}
-      <div className="glass-card" style={{ marginBottom: "1.5rem", padding: "1.5rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.4rem" }}>
-              <span className="badge-blue" style={{ fontSize: "0.75rem" }}>{meeting?.committee_id === "planning" ? "앵커사업단 기획위원회" : "위원회 회의"}</span>
-              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>{meeting?.meeting_date}</span>
-            </div>
-            <h1 style={{ fontSize: "1.5rem", fontWeight: "800" }}>{meeting?.title}</h1>
-            <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginTop: "0.4rem" }}>{meeting?.location}</p>
-          </div>
-          <div style={{ textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
-            <div>
-              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>접속 위원: </span>
-              <span style={{ fontWeight: "700", color: "var(--accent-color)", fontSize: "1.05rem" }}>
-                {authMember?.name} {authMember?.rank ? `(${authMember.rank})` : (authMember?.dept ? `(${authMember.dept})` : "")}
-              </span>
-            </div>
-            <button
-              onClick={handleLogout}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.35rem",
-                padding: "0.35rem 0.75rem",
-                fontSize: "0.78rem",
-                fontWeight: "600",
-                color: "#ef4444",
-                background: "rgba(239, 68, 68, 0.12)",
-                border: "1px solid rgba(239, 68, 68, 0.35)",
-                borderRadius: "6px",
-                cursor: "pointer",
-                transition: "all 0.2s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(239, 68, 68, 0.25)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(239, 68, 68, 0.12)";
-              }}
-            >
-              <LogOut size={13} /> 인증 해제 / 로그아웃
-            </button>
-          </div>
-        </div>
-      </div>
+  const committeeSystemName = getCommitteeSystemName(meeting?.committee_id);
 
-      {/* 💡 [전체 1열 카드 레이아웃 구조 개편] */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+  return (
+    <main className="committee-workspace-page">
+      <div className="committee-workspace-shell">
+        {/* 상단 회의 헤더 */}
+        <header className="committee-workspace-header">
+        <div className="committee-workspace-brand">
+          <span className="committee-workspace-brand-mark">UC</span>
+          <span className="committee-workspace-brand-copy">
+            <strong>울산과학대학교</strong>
+            <small>{committeeSystemName}</small>
+          </span>
+        </div>
+
+        <div className="committee-workspace-meeting">
+          <span className="committee-workspace-eyebrow">
+            <ShieldCheck size={16} aria-hidden="true" />
+            SECURE COMMITTEE
+          </span>
+          <div className="committee-workspace-meta">
+            <span>{meeting?.committee_id === "planning" ? "앵커사업단 기획위원회" : "위원회 회의"}</span>
+            <time>{meeting?.meeting_date}</time>
+          </div>
+          <h1>{meeting?.title}</h1>
+          {meeting?.location && <p>{meeting.location}</p>}
+        </div>
+
+        <div className="committee-workspace-session">
+          <span className="committee-workspace-session-label">AUTHENTICATED MEMBER</span>
+          <div>
+            <span>접속 위원</span>
+            <strong>
+              {authMember?.name} {authMember?.rank ? `(${authMember.rank})` : (authMember?.dept ? `(${authMember.dept})` : "")}
+            </strong>
+          </div>
+          <button onClick={handleLogout} className="committee-workspace-logout">
+            <LogOut size={16} /> 인증 해제 / 로그아웃
+          </button>
+        </div>
+        </header>
+
+        <div className="committee-workspace-status">
+          <span><Lock size={16} aria-hidden="true" /> 인증된 위원 전용 보안 열람 세션</span>
+          <span>자료 검토 후 안건별 의결과 서명을 제출해 주세요.</span>
+        </div>
+
+        {/* 💡 [전체 1열 카드 레이아웃 구조 개편] */}
+        <div className="committee-workspace-content">
 
         {/* 1. 상정 안건 및 관련 자료 (1열 전체 블록) */}
-        <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
-            <h3 style={{ fontSize: "1.15rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <FileText size={22} style={{ color: "var(--accent-color)" }} />
-              <span>상정 안건 및 관련 자료</span>
-            </h3>
+        <section className="glass-card committee-workspace-card committee-materials-card">
+          <div className="committee-workspace-section-heading">
+            <div className="committee-workspace-section-icon">
+              <FileText size={22} aria-hidden="true" />
+            </div>
+            <div>
+              <span className="committee-workspace-section-label">MEETING MATERIALS</span>
+              <h3>상정 안건 및 관련 자료</h3>
+              <p>안건을 선택하고 첨부된 보안 문서를 검토해 주세요.</p>
+            </div>
           </div>
 
           {selectedMeetingAgendas.length > 0 ? (
             /* 그 안에서 2열 그리드: 왼쪽(드롭다운 + 안건설명), 오른쪽(첨부파일 + PDF 뷰어) */
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginTop: "0.25rem" }}>
+            <div className="committee-materials-grid">
 
               {/* 왼쪽 영역: 드롭다운 + 안건 정보 */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+              <div className="committee-materials-agenda">
+                <div className="committee-materials-field">
                   <label htmlFor="a11y-committee-external-vote-1" style={{ fontSize: "0.8rem", fontWeight: "800", color: "var(--text-secondary)" }}>
                     📋 열람할 상정 의안 선택 ({selectedMeetingAgendas.length}건 중)
                   </label>
                   <select id="a11y-committee-external-vote-1"
+                    className="committee-materials-select"
                     value={activeAgendaId || ""}
                     onChange={(e) => setActiveAgendaId(e.target.value)}
                     style={{
@@ -675,7 +678,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                 </div>
 
                 {activeAgenda && (
-                  <div style={{ padding: "0.85rem", borderRadius: "8px", background: "rgba(59, 130, 246, 0.06)", borderLeft: "4px solid var(--accent-color)", border: "1px solid rgba(59, 130, 246, 0.2)" }}>
+                  <div className="committee-materials-detail" style={{ padding: "0.85rem", borderRadius: "8px", background: "rgba(59, 130, 246, 0.06)", borderLeft: "4px solid var(--accent-color)", border: "1px solid rgba(59, 130, 246, 0.2)" }}>
                     <span style={{ fontSize: "0.75rem", fontWeight: "800", color: "var(--accent-color)", display: "block" }}>
                       선택된 안건 상세
                     </span>
@@ -696,10 +699,10 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
               </div>
 
               {/* 오른쪽 영역: 첨부파일 + PDF 뷰어 */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <div className="committee-materials-viewer-column">
                 {currentFileName ? (
                   <>
-                    <div style={{ fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.03)", padding: "0.4rem 0.75rem", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
+                    <div className="committee-materials-file-bar" style={{ fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.03)", padding: "0.4rem 0.75rem", borderRadius: "6px", border: "1px solid var(--border-color)" }}>
                       <span style={{ color: "var(--accent-color)", fontWeight: "bold", display: "flex", alignItems: "center", gap: "0.3rem" }}>
                         📎 첨부 파일: {
                           currentFileName?.includes("|")
@@ -710,7 +713,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                         }
                       </span>
                     </div>
-                    <div ref={viewerRef} style={{ width: "100%", height: "480px", border: "1px solid var(--border-color)", borderRadius: "8px", overflow: "hidden", background: "#fff" }}>
+                    <div ref={viewerRef} className="committee-materials-viewer" style={{ width: "100%", height: "480px", border: "1px solid var(--border-color)", borderRadius: "8px", overflow: "hidden", background: "#fff" }}>
                       {activeAttachmentLoading ? (
                         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", color: "#000" }}>
                           문서를 불러오는 중입니다...
@@ -725,7 +728,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                     </div>
                   </>
                 ) : (
-                  <div style={{ height: "100%", minHeight: "250px", border: "1px dashed var(--border-color)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
+                  <div className="committee-materials-empty" style={{ height: "100%", minHeight: "250px", border: "1px dashed var(--border-color)", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
                     등록된 첨부 심의 자료가 없습니다.
                   </div>
                 )}
@@ -735,10 +738,10 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           ) : (
             <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>상정된 의안이 없습니다.</p>
           )}
-        </div>
+        </section>
 
         {/* 2. 의결 표결 카드 (1열 독립 블록 - 의안별 별도 표결) */}
-        <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+        <section className="glass-card committee-workspace-card committee-voting-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           <h3 style={{ fontSize: "1.15rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
             <Vote size={22} style={{ color: "var(--accent-color)" }} />
             <span>의결 표결 (안건별 표결)</span>
@@ -781,6 +784,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                 return (
                   <div
                     key={agenda.id}
+                    className={`committee-vote-agenda-card${isCurrentActive ? " is-active" : ""}`}
                     style={{
                       border: isCurrentActive ? "2px solid var(--accent-color)" : "1px solid var(--border-color)",
                       padding: "1.1rem",
@@ -811,6 +815,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                             <button
                               key={scoreVal}
                               type="button"
+                              className={`committee-score-button${(currentInp.score || 5) === scoreVal ? " is-selected" : ""}`}
                               onClick={() => setAgendaInputs({
                                 ...agendaInputs,
                                 [agenda.id]: {
@@ -840,6 +845,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem", marginBottom: "0.85rem" }}>
                         <button
                           type="button"
+                          className={`committee-decision-button approve${currentInp.vote === "APPROVE" ? " is-selected" : ""}`}
                           onClick={() => setAgendaInputs({
                             ...agendaInputs,
                             [agenda.id]: { ...currentInp, vote: "APPROVE" }
@@ -862,6 +868,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
                         <button
                           type="button"
+                          className={`committee-decision-button reject${currentInp.vote === "REJECT" ? " is-selected" : ""}`}
                           onClick={() => setAgendaInputs({
                             ...agendaInputs,
                             [agenda.id]: { ...currentInp, vote: "REJECT" }
@@ -884,6 +891,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
                         <button
                           type="button"
+                          className={`committee-decision-button abstain${currentInp.vote === "ABSTAIN" ? " is-selected" : ""}`}
                           onClick={() => setAgendaInputs({
                             ...agendaInputs,
                             [agenda.id]: { ...currentInp, vote: "ABSTAIN" }
@@ -909,6 +917,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                     <div>
                       <input
                         type="text"
+                        className="committee-vote-opinion"
                         value={currentInp.opinion}
                         onChange={(e) => setAgendaInputs({
                           ...agendaInputs,
@@ -923,12 +932,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
               })}
             </div>
           )}
-        </div>
+        </section>
 
         {/* 3. 자필 서명 카드 (1열 독립 블록) */}
         {!hasSubmitted && (
-          <div className="glass-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
+          <section className="glass-card committee-workspace-card committee-signature-card" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div className="committee-signature-heading" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
               <label htmlFor="a11y-committee-external-vote-2" style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <Lock size={20} style={{ color: "var(--accent-color)" }} />
                 <span>자필 서명 (AES 암호화 보안 저장)</span>
@@ -945,6 +954,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                 />
                 <button
                   type="button"
+                  className="committee-signature-upload"
                   onClick={() => fileInputRef.current?.click()}
                   style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", color: "var(--accent-color)", background: "rgba(59, 130, 246, 0.1)", border: "1px solid var(--accent-color)", borderRadius: "6px", padding: "0.35rem 0.75rem", cursor: "pointer", fontWeight: "700" }}
                 >
@@ -954,6 +964,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
                 <button
                   type="button"
+                  className="committee-signature-clear"
                   onClick={clearCanvas}
                   style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.8rem", color: "#ef4444", background: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", borderRadius: "6px", padding: "0.35rem 0.75rem", cursor: "pointer", fontWeight: "700" }}
                 >
@@ -963,7 +974,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
               </div>
             </div>
 
-            <div style={{ border: "2px dashed var(--border-color)", borderRadius: "10px", background: "#ffffff", touchAction: "none", marginTop: "0.5rem" }}>
+            <div className="committee-signature-pad" style={{ border: "2px dashed var(--border-color)", borderRadius: "10px", background: "#ffffff", touchAction: "none", marginTop: "0.5rem" }}>
               <canvas
                 ref={canvasRef}
                 width={700}
@@ -983,10 +994,10 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
             </span>
 
             {/* 4. 맨 아래에 임시 저장 및 최종 의결 표결/서명 제출 버튼 배치 */}
-            <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.75rem" }}>
+            <div className="committee-signature-actions" style={{ display: "flex", gap: "0.75rem", marginTop: "0.75rem" }}>
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn btn-secondary committee-draft-button"
                 onClick={() => {
                   try {
                     const targetMId = meetingId || meeting?.id;
@@ -1015,7 +1026,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
 
               <button
                 type="button"
-                className="btn-primary"
+                className="btn-primary committee-submit-button"
                 onClick={handleSubmitVote}
                 style={{
                   flex: 1,
@@ -1037,10 +1048,11 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                 <span>최종 의결 표결 및 서명 제출</span>
               </button>
             </div>
-          </div>
+          </section>
         )}
 
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
