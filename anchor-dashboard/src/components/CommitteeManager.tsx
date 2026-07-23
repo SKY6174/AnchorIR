@@ -519,6 +519,7 @@ export default function CommitteeManager({
       setSelectedMeetingAgendas([]);
       setSelectedMeetingAgendaVotes([]);
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- selectedMeeting owns this load lifecycle; adding the render-local fetcher would change its trigger cadence.
   }, [selectedMeeting]);
 
   const fetchMeetingAgendasAndVotes = async (meetingId: number | string) => {
@@ -640,6 +641,7 @@ export default function CommitteeManager({
       setEditedReportText("");
       return undefined;
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- selectedMeeting intentionally owns the polling interval; render-local fetchers must not restart it on every render.
   }, [selectedMeeting]);
 
   const fetchAuthoritativeMeetingResult = async (meetingId: number | string) => {
@@ -675,6 +677,7 @@ export default function CommitteeManager({
     if (currentUser?.id) {
       fetchMyMemberships();
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- user and committee data are the intended membership refresh inputs; the render-local fetcher is not a lifecycle input.
   }, [currentUser, committees]);
 
   // 💡 [새로고침 유지 가드] selectedCommittee가 변경될 때마다 활성 ID를 로컬 스토리지에 캐시
@@ -771,6 +774,7 @@ export default function CommitteeManager({
         setSelectedCommittee(null);
       }
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- selectedCommittee and filteredCommittees are outputs derived from these source inputs and must not retrigger selection restoration.
   }, [selectedGroup, committees]);
 
   const fetchAllUsers = async () => {
