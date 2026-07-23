@@ -833,7 +833,7 @@ const uploadFileToSupabase = async (
   try {
     // 실제 Supabase Storage 버킷 업로드 시도 (요구사항 반영)
     // 버킷명: document_procument
-    const { data, error } = await supabase.storage
+    const { data: _data, error } = await supabase.storage
       .from("document_procument")
       .upload(filePath, file, {
         cacheControl: "3600",
@@ -871,7 +871,7 @@ const uploadFileToSupabase = async (
   }
 };
 
-const defaultEquipments = [
+const _defaultEquipments = [
   { id: 1, unit: "A1", seq: 1, deptName: "간호학부", divisionName: "", itemName: "스마트 환자 시뮬레이터 (중환자 케어 실습 장비)", spec: "임상 실무 교육용 다기능 스마트 시뮬레이터 시스템", itemUnit: "대", unitPrice: 120000000, quantity: 1, description: "글로벌 앵커 혁신 교육과정 임상 실습 고도화 핵심 기기", operation: "글로컬 앵커 교육과정 고도화", password: "1234",
     dateP: "2025-03-10", dateA: "2025-04-15", dateB: "2025-06-12", datePr: "2025-07-20", dateI: "2025-09-05"
   },
@@ -981,7 +981,7 @@ const getMilestonesFromDates = (item: ProcurementItem, activeYear: number | stri
 };
 
 // [교육용 한글 주석] 기자재 전용 날짜 마일스톤 매핑 헬퍼 함수 (PA, Pr, BC, I 매핑)
-const getMilestonesFromDatesEquip = (item: ProcurementItem, activeYear: number | string): MilestoneMap => {
+const _getMilestonesFromDatesEquip = (item: ProcurementItem, activeYear: number | string): MilestoneMap => {
   const milestones: MilestoneMap = { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] };
   const baseYear = 2024 + Number(activeYear || 1); // 1차년도: 2025, 2차년도: 2026
   
@@ -1311,7 +1311,7 @@ export default function ProcurementManager({
   };
   
   // 환경개선 상세 팝업 상태
-  const [selectedEnvItem, setSelectedEnvItem] = useState<ProcurementItem | null>(null);
+  const [_selectedEnvItem, _setSelectedEnvItem] = useState<ProcurementItem | null>(null);
 
   // 기자재 탭 단위과제 필터 상태
   const [selectedEquipUnit, setSelectedEquipUnit] = useState("ALL");
@@ -1320,14 +1320,14 @@ export default function ProcurementManager({
   const [activePopover, setActivePopover] = useState<ActivePopover | null>(null); // { equipId, month, x, y }
 
   // AI 분석 및 업로드 상태 제어
-  const [isAnalyzingPlan, setIsAnalyzingPlan] = useState(false);
-  const [isAnalyzingPurchase, setIsAnalyzingPurchase] = useState(false);
+  const [_isAnalyzingPlan, _setIsAnalyzingPlan] = useState(false);
+  const [_isAnalyzingPurchase, _setIsAnalyzingPurchase] = useState(false);
   const [isAnalyzingBid, setIsAnalyzingBid] = useState(false);
 
   // 업로드 진행률 상태 제어 (0% ~ 100%)
-  const [uploadProgressPlan, setUploadProgressPlan] = useState(0);
-  const [uploadProgressPurchase, setUploadProgressPurchase] = useState(0);
-  const [uploadProgressBid, setUploadProgressBid] = useState(0);
+  const [_uploadProgressPlan, setUploadProgressPlan] = useState(0);
+  const [_uploadProgressPurchase, setUploadProgressPurchase] = useState(0);
+  const [_uploadProgressBid, setUploadProgressBid] = useState(0);
 
   // AI 분석 모델 엔진 선택 상태 (gemini, gpt, debate)
   const [aiEngine, setAiEngine] = useState("debate");
@@ -2068,7 +2068,7 @@ export default function ProcurementManager({
   };
 
   // 팝오버를 열기 위한 트리거 함수
-  const handleMilestoneClick = (
+  const _handleMilestoneClick = (
     e: ReactMouseEvent<HTMLElement>,
     equipId: number | string,
     month: string
@@ -2142,7 +2142,7 @@ export default function ProcurementManager({
   };
 
   // 월별 PDCA 1줄 Gantt의 색상 및 텍스트를 다중 선택 상태에 맞춰 반환해 주는 헬퍼 스타일 함수
-  const getMilestoneStyle = (stepList: string | string[], monthNum: string) => {
+  const _getMilestoneStyle = (stepList: string | string[], monthNum: string) => {
     const list = getMilestoneArray(stepList);
     
     // 0개 선택
@@ -3419,7 +3419,7 @@ export default function ProcurementManager({
                   return filteredEnvs.map((equip, idx) => {
                     const price = equip.unitPrice ? (equip.unitPrice / 1000000) : (equip.budgetPlan ? (equip.budgetPlan / 1000000) : 0);
                     const qty = equip.quantity || 1;
-                    const total = price * qty;
+                    const _total = price * qty;
 
                     const idxP = getMonthIndex(equip.dateP);
                     const idxA = getMonthIndex(equip.dateA);
@@ -3559,18 +3559,18 @@ export default function ProcurementManager({
                           const currentStatus = getEnvStatusText(equip);
 
                           const shouldShowBalloon = lastActivePhase && lastActivePhase.idx === currIdx;
-                          let phaseColor = "rgba(255, 255, 255, 0.2)";
-                          let phaseLabel = "";
-                          let phaseDate = "";
-                          let primaryCode = "";
+                          let _phaseColor = "rgba(255, 255, 255, 0.2)";
+                          let _phaseLabel = "";
+                          let _phaseDate = "";
+                          let _primaryCode = "";
 
                           if (hasMilestone) {
                             const rawCode = stepList[0];
                             const info = envPhaseMap[rawCode] || { code: rawCode, label: rawCode, color: "#38bdf8" };
-                            primaryCode = info.code;
-                            phaseLabel = info.label;
-                            phaseColor = info.color;
-                            phaseDate = rawCode === "P" ? (equip.dateP || "") :
+                            _primaryCode = info.code;
+                            _phaseLabel = info.label;
+                            _phaseColor = info.color;
+                            _phaseDate = rawCode === "P" ? (equip.dateP || "") :
                                         rawCode === "A" ? (equip.dateA || "") :
                                         rawCode === "B" ? (equip.dateB || "") :
                                         rawCode === "Pr" ? (equip.datePr || "") :
@@ -4285,7 +4285,7 @@ export default function ProcurementManager({
                         return "준비중";
                       };
 
-                      const currentStatus = getEquipStatus(equip);
+                      const _currentStatus = getEquipStatus(equip);
 
                       const monthsOrder = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
                       const getMonthIndexLocal = (dateStr?: string) => {
@@ -4308,7 +4308,7 @@ export default function ProcurementManager({
                       const idxB = getMonthIndexLocal(equip.dateB);
                       const idxI = getMonthIndexLocal(equip.dateI);
 
-                      const getPhaseColor = (code: string) => {
+                      const _getPhaseColor = (code: string) => {
                         const colors: Record<string, string> = {
                           "PA": "#f59e0b",
                           "Pr": "#a78bfa",
@@ -4318,7 +4318,7 @@ export default function ProcurementManager({
                         return colors[code] || "#38bdf8";
                       };
 
-                      const getPhaseLabel = (code: string) => {
+                      const _getPhaseLabel = (code: string) => {
                         const labels: Record<string, string> = {
                           "PA": "기획∙승인",
                           "Pr": "구매신청",
@@ -4335,13 +4335,13 @@ export default function ProcurementManager({
                       if (idxB !== null) activePhases.push({ phase: "BC", idx: idxB, weight: phaseWeightLocal["BC"], date: equip.dateB, label: "입찰∙계약", color: "#06b6d4" });
                       if (idxI !== null) activePhases.push({ phase: "I", idx: idxI, weight: phaseWeightLocal["I"], date: equip.dateI, label: "검수", color: "#10b981" });
 
-                      let lastActivePhase = null;
+                      let _lastActivePhase = null;
                       if (activePhases.length > 0) {
                         const sortedActive = [...activePhases].sort((a, b) => {
                           if (a.idx !== b.idx) return b.idx - a.idx;
                           return b.weight - a.weight;
                         });
-                        lastActivePhase = sortedActive[0];
+                        _lastActivePhase = sortedActive[0];
                       }
 
                       const arrowsToRender = [];
