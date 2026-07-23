@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import type { ChangeEvent, CSSProperties, FormEvent } from "react";
 import Sidebar from "./components/Sidebar";
-import KPIOverview from "./components/KPIOverview";
 const CommitteeExternalVote = React.lazy(() => import("./components/CommitteeExternalVote"));
 const SatisfactionManager = React.lazy(() => import("./components/SatisfactionManager"));
 const ProcurementManager = React.lazy(() => import("./components/ProcurementManager"));
@@ -45,6 +44,7 @@ import { useDashboardUiLifecycle } from "./app/hooks/use-dashboard-ui-lifecycle"
 import { useAgreementLocalCache, useScholarshipLocalCache, useUnifiedCertificateLocalCache } from "./app/hooks/use-record-local-cache";
 import { useAgreementsAutosave } from "./features/agreements/hooks/use-agreements-autosave";
 import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
+import { DashboardScreen } from "./features/dashboard/screens/dashboard-screen";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
 import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
 import { useScholarshipAutosave, useUnifiedCertificateAutosave } from "./features/management/hooks/use-management-record-autosave";
@@ -4194,10 +4194,11 @@ export default function App() {
         </header>
 
         {activeTab === "dashboard" && (
-          <div>
-            {/* 메인 대시보드 탭: 사용자의 요청에 따라 엑셀 업로더 영역을 제거하고 KPI 요약 카드만 노출합니다. */}
-            <KPIOverview key={`kpi-${selectedYear}`} projects={displayProjects} currentRole={currentRole} selectedYear={selectedYear} />
-          </div>
+          <DashboardScreen
+            projects={displayProjects}
+            currentRole={currentRole}
+            selectedYear={selectedYear}
+          />
         )}
 
         {activeTab === "projects" && (
