@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { Plus, Trash2, Edit, Trash, FileText, Upload, X, AlertTriangle, Download, FileCheck, Award } from "lucide-react";
 import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient";
 
-const formatDateString = (dateStr) => {
+const formatDateString = (dateStr: unknown): string => {
   if (!dateStr) return "";
   let str = String(dateStr).trim();
   
   // 1. Excel serial date (e.g. 45000)
-  if (!isNaN(str) && Number(str) > 20000) {
+  if (!Number.isNaN(Number(str)) && Number(str) > 20000) {
     const d = new Date(Math.round((Number(str) - 25569) * 86400 * 1000));
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -79,29 +80,44 @@ const getDynamicTeamName = (dateStr?: any): string => {
 
 export interface CertificateItem {
   id?: number | string;
-  doc_type: "award" | "certificate" | string;
-  issue_number: string;
-  issue_date: string;
-  recipient_name: string;
-  recipient_org?: string;
-  recipient_dept?: string;
-  recipient_birth?: string;
-  title: string;
-  award_category?: string;
-  unit_id: string;
-  program_name: string;
-  file_name?: string | null;
-  file_data?: string | null;
-  issuer_name?: string;
-  created_at?: string;
+  year?: number | string;
+  managerDept?: string;
+  managerName?: string;
+  certNo?: string;
+  certType?: string;
+  note?: string;
+  teamName?: string;
+  recipientName?: string;
+  studentId?: string;
+  birthDate?: string;
+  phone?: string;
+  issueDate?: string;
+  projectGroup?: string;
+  issuer?: string;
+  content?: string;
+  awardType?: string;
+  fileName?: string | null;
+  fileData?: string | null;
 }
+
+type CertificateSortKey =
+  | "certNo"
+  | "certType"
+  | "awardType"
+  | "teamName"
+  | "recipientName"
+  | "studentId"
+  | "issueDate"
+  | "issuer"
+  | "managerDept"
+  | "managerName";
 
 export interface UnifiedCertificateManagerProps {
   projects?: any[];
   certificates?: CertificateItem[];
   selectedYear?: number | string;
   onAddCertificate?: (cert: CertificateItem) => void;
-  onUpdateCertificate?: (cert: CertificateItem) => void;
+  onUpdateCertificate?: (id: number | string, cert: CertificateItem) => void;
   onDeleteCertificate?: (id: number | string) => void;
   setCertificates?: React.Dispatch<React.SetStateAction<CertificateItem[]>>;
   currentRole?: any;
@@ -175,7 +191,7 @@ export default function UnifiedCertificateManager({
   const [awardType, setAwardType] = useState("");
   
   const departmentMembers = React.useMemo(() => {
-    const map = {
+    const map: Record<string, string[]> = {
       "ECC센터": [],
       "ICC센터": [],
       "RCC센터": [],
@@ -233,11 +249,17 @@ export default function UnifiedCertificateManager({
     }
   }, [issueDate, certType]);
 
-  const [sortConfig, setSortConfig] = useState({ key: "certNo", direction: "asc" });
+  const [sortConfig, setSortConfig] = useState<{
+    key: CertificateSortKey;
+    direction: "asc" | "desc";
+  }>({ key: "certNo", direction: "asc" });
 
-  const getCalculatedYearFromDate = (dateStr, fallbackYear) => {
+  const getCalculatedYearFromDate = (
+    dateStr: unknown,
+    fallbackYear: number | string | undefined
+  ): number | string | undefined => {
     if (!dateStr) return fallbackYear;
-    const d = new Date(dateStr);
+    const d = new Date(String(dateStr));
     if (isNaN(d.getTime())) return fallbackYear;
     const year = d.getFullYear();
     const month = d.getMonth() + 1;
@@ -259,15 +281,15 @@ export default function UnifiedCertificateManager({
       return true;
     });
 
-  const requestSort = (key) => {
-    let direction = "asc";
+  const requestSort = (key: CertificateSortKey) => {
+    let direction: "asc" | "desc" = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
       direction = "desc";
     }
     setSortConfig({ key, direction });
   };
 
-  const renderSortIndicator = (key) => {
+  const renderSortIndicator = (key: CertificateSortKey) => {
     if (sortConfig.key === key) {
       return sortConfig.direction === "asc" ? " ▴" : " ▾";
     }
@@ -279,8 +301,8 @@ export default function UnifiedCertificateManager({
     const key = sortConfig.key;
     if (key) {
       sorted.sort((a, b) => {
-        let valA = a[key] || "";
-        let valB = b[key] || "";
+        const valA = a[key] || "";
+        const valB = b[key] || "";
         if (typeof valA === "string" && typeof valB === "string") {
           return sortConfig.direction === "asc"
             ? valA.localeCompare(valB)
@@ -312,8 +334,8 @@ export default function UnifiedCertificateManager({
     setIsModalOpen(true);
   };
 
-  const openModalForEdit = (cert) => {
-    setEditingId(cert.id);
+  const openModalForEdit = (cert: CertificateItem) => {
+    setEditingId(cert.id ?? null);
     setManagerDept(cert.managerDept || "");
     setManagerName(cert.managerName || "");
     setCertNo(cert.certNo || "");
@@ -332,7 +354,7 @@ export default function UnifiedCertificateManager({
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!recipientName || !certType) {
       alert("성명과 구분(상장/이수증 등)은 필수입니다.");
@@ -359,15 +381,15 @@ export default function UnifiedCertificateManager({
     };
 
     if (editingId) {
-      onUpdateCertificate(editingId, payload);
+      onUpdateCertificate?.(editingId, payload);
     } else {
-      onAddCertificate(payload);
+      onAddCertificate?.(payload);
     }
     setIsModalOpen(false);
   };
 
   const getSequenceErrors = () => {
-    const certsByYear = {};
+    const certsByYear: Record<string, number[]> = {};
     filteredCerts.forEach(c => {
       if (!c.certNo) return;
       const acYear = getAcademicYear(c.issueDate);
@@ -378,16 +400,16 @@ export default function UnifiedCertificateManager({
       }
     });
 
-    let allDuplicates = [];
-    let allGaps = [];
+    const allDuplicates: string[] = [];
+    const allGaps: string[] = [];
 
     Object.keys(certsByYear).forEach(year => {
       const numbers = certsByYear[year].filter(n => !isNaN(n)).sort((a, b) => a - b);
       if (numbers.length === 0) return;
 
-      let duplicates = [];
-      let gaps = [];
-      const seen = new Set();
+      const duplicates: string[] = [];
+      const gaps: string[] = [];
+      const seen = new Set<number>();
       numbers.forEach(n => {
         if (seen.has(n)) duplicates.push(`${year}년도 ${n}번`);
         seen.add(n);
@@ -412,38 +434,39 @@ export default function UnifiedCertificateManager({
   const sequenceErrors = getSequenceErrors();
 
 
-  const handleExcelUpload = (e) => {
-    const file = e.target.files[0];
+  const handleExcelUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (evt) => {
       try {
-        const bstr = evt.target.result;
+        const bstr = evt.target?.result;
+        if (!bstr) return;
         const wb = XLSX.read(bstr, { type: "binary" });
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        const data = XLSX.utils.sheet_to_json<Array<string | number>>(ws, { header: 1 });
         if (data.length <= 1) return;
         const rows = data.slice(1);
         const imported = rows.filter(row => row[4]).map(row => { // 성명이 인덱스 4
           const formattedIssueDate = formatDateString(row[8]);
           return {
             year: getCalculatedYearFromDate(formattedIssueDate, selectedYear),
-            certNo: row[0] || "",
-            certType: row[1] || defaultType,
-            awardType: row[2] || "",
-            teamName: row[3] || "",
-            recipientName: row[4] || "",
-            studentId: row[5] || "",
+            certNo: String(row[0] || ""),
+            certType: String(row[1] || defaultType),
+            awardType: String(row[2] || ""),
+            teamName: String(row[3] || ""),
+            recipientName: String(row[4] || ""),
+            studentId: String(row[5] || ""),
             birthDate: formatDateString(row[6]),
-            phone: row[7] || "",
+            phone: String(row[7] || ""),
             issueDate: formattedIssueDate,
-            projectGroup: row[9] || "",
-            issuer: row[10] || "",
-            content: row[11] || "",
-            managerDept: row[12] || "",
-            managerName: row[13] || "",
-            note: row[14] || ""
+            projectGroup: String(row[9] || ""),
+            issuer: String(row[10] || ""),
+            content: String(row[11] || ""),
+            managerDept: String(row[12] || ""),
+            managerName: String(row[13] || ""),
+            note: String(row[14] || "")
           };
         });
 
@@ -458,7 +481,7 @@ export default function UnifiedCertificateManager({
 
         if (uniqueImported.length > 0) {
           if (window.confirm(`${uniqueImported.length}건을 추가하시겠습니까?`)) {
-            uniqueImported.forEach(cert => onAddCertificate(cert));
+            uniqueImported.forEach(cert => onAddCertificate?.(cert));
             alert("업로드 성공");
           }
         } else {
@@ -641,7 +664,7 @@ export default function UnifiedCertificateManager({
                         <button className="icon-btn edit-btn" onClick={() => openModalForEdit(c)} title="수정">
                           <Edit size={16} />
                         </button>
-                        <button className="icon-btn delete-btn" onClick={() => window.confirm("삭제하시겠습니까?") && onDeleteCertificate(c.id)} title="삭제">
+                        <button className="icon-btn delete-btn" onClick={() => window.confirm("삭제하시겠습니까?") && c.id !== undefined && onDeleteCertificate?.(c.id)} title="삭제">
                           <Trash2 size={16} />
                         </button>
                       </div>

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { Plus, Trash2, Edit, FileText, Search, Download, Upload, X, Shield, Globe, Award, Database, Filter, ArrowUpDown } from "lucide-react";
 import * as XLSX from "xlsx";
 import { supabase } from "../supabaseClient";
+import type { TablesInsert } from "../types/supabase";
+
+type PartnerRecord = TablesInsert<"partner_institutions">;
+type PartnerSortField = "name" | "category" | "sub_category" | "location";
 
 // 협력 내용 범주 목록 (협약 관리와 통일)
 const SECTOR_OPTIONS = [
@@ -15,7 +20,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 // 세부분류 매핑
-const SUB_CATEGORY_OPTIONS = {
+const SUB_CATEGORY_OPTIONS: Record<string, string[]> = {
   "공공기관": ["시청", "구청", "군청", "교육청", "기타"],
   "유관기관": ["진흥원", "테크노파크", "센터", "협회", "기타"],
   "산업체": ["대기업", "중견기업", "중소기업", "스타트업", "외투기업"],
@@ -24,7 +29,7 @@ const SUB_CATEGORY_OPTIONS = {
 };
 
 // 2차년도 기본 모의 데이터셋 (데이터가 비어있을 시 자동 폴백 적재용)
-const MOCK_PARTNERS = [
+const MOCK_PARTNERS: PartnerRecord[] = [
   { name: "울산광역시청", category: "공공기관", sub_category: "시청", location: "울산", sectors: ["지역현안해결", "도시재생", "AIDX"], contact_person: "정민우 서기관", contact_phone: "052-229-2000", remarks: "울산 앵커 기획 기본 수립 및 예산 배분 총괄" },
   { name: "울산동구청", category: "공공기관", sub_category: "구청", location: "울산", sectors: ["지역현안해결", "창업", "평생교육"], contact_person: "한서진 팀장", contact_phone: "052-209-3000", remarks: "동구 청년친화도시 조성 및 T:IM 1219 청소년 벽화 공동 추진" },
   { name: "울산남구청", category: "공공기관", sub_category: "구청", location: "울산", sectors: ["지역현안해결", "늘봄"], contact_person: "이진아 주무관", contact_phone: "052-226-0000", remarks: "남구 아동 돌봄 및 늘봄학교 지역 연계 모델 협력" },
@@ -69,23 +74,23 @@ export interface PartnerManagerProps {
 }
 
 export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
-  const [partners, setPartners] = useState([]);
+  const [partners, setPartners] = useState<PartnerRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingPartner, setEditingPartner] = useState(null);
+  const [editingPartner, setEditingPartner] = useState<PartnerRecord | null>(null);
 
   // 정렬 관련 상태
-  const [sortField, setSortField] = useState("name");
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortField, setSortField] = useState<PartnerSortField>("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // 폼 입력 상태
   const [formName, setFormName] = useState("");
   const [formCategory, setFormCategory] = useState("공공기관");
   const [formSubCategory, setFormSubCategory] = useState("");
   const [formLocation, setFormLocation] = useState("울산");
-  const [formSectors, setFormSectors] = useState([]);
+  const [formSectors, setFormSectors] = useState<string[]>([]);
   const [formContactPerson, setFormContactPerson] = useState("");
   const [formContactPhone, setFormContactPhone] = useState("");
   const [formRemarks, setFormRemarks] = useState("");
@@ -114,7 +119,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
       // 로컬 스토리지 캐시 백업
       const cached = localStorage.getItem("anchor_partner_institutions");
       if (cached) {
-        try { setPartners(JSON.parse(cached)); } catch (err) { setPartners(MOCK_PARTNERS); }
+        try { setPartners(JSON.parse(cached) as PartnerRecord[]); } catch (err) { setPartners(MOCK_PARTNERS); }
       } else {
         setPartners(MOCK_PARTNERS);
       }
@@ -156,7 +161,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
     setIsModalOpen(true);
   };
 
-  const openEditModal = (partner) => {
+  const openEditModal = (partner: PartnerRecord) => {
     setEditingPartner(partner);
     setFormName(partner.name);
     setFormCategory(partner.category);
@@ -175,7 +180,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   };
 
   // 다중선택 분야 토글
-  const toggleSector = (sector) => {
+  const toggleSector = (sector: string) => {
     if (formSectors.includes(sector)) {
       setFormSectors(formSectors.filter(s => s !== sector));
     } else {
@@ -184,7 +189,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   };
 
   // C.R.U.D 처리 핸들러
-  const handleSave = async (e) => {
+  const handleSave = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formName || !formLocation) {
       alert("기관명과 지역은 필수 입력값입니다.");
@@ -239,7 +244,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
     }
   };
 
-  const handleDelete = async (partner) => {
+  const handleDelete = async (partner: PartnerRecord) => {
     if (!confirm(`정말로 '${partner.name}' 파트너기관을 목록에서 삭제하시겠습니까?`)) return;
 
     try {
@@ -317,18 +322,19 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   };
 
   // 엑셀 업로드 (가져오기)
-  const handleExcelImport = (e) => {
-    const file = e.target.files[0];
+  const handleExcelImport = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
-        const data = evt.target.result;
+        const data = evt.target?.result;
+        if (!data) return;
         const workbook = XLSX.read(data, { type: "binary" });
         const sheetName = workbook.SheetNames[0];
         const ws = workbook.Sheets[sheetName];
-        const excelRows = XLSX.utils.sheet_to_json(ws);
+        const excelRows = XLSX.utils.sheet_to_json<Record<string, string>>(ws);
 
         // 로우 가공 및 검증
         const importedPartners = excelRows.map((row) => {
@@ -376,7 +382,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   });
 
   // 정렬 핸들러
-  const handleSort = (field) => {
+  const handleSort = (field: PartnerSortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -386,7 +392,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   };
 
   // 정렬 아이콘 렌더러
-  const renderSortIcon = (field) => {
+  const renderSortIcon = (field: PartnerSortField) => {
     const isActive = sortField === field;
     return (
       <ArrowUpDown 
@@ -404,19 +410,16 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
 
   // 정렬 적용된 최종 데이터
   const sortedPartners = [...filteredPartners].sort((a, b) => {
-    let valA = a[sortField] || "";
-    let valB = b[sortField] || "";
-    
-    if (typeof valA === "string") {
-      return sortDirection === "asc"
-        ? valA.localeCompare(valB, "ko")
-        : valB.localeCompare(valA, "ko");
-    }
-    return sortDirection === "asc" ? valA - valB : valB - valA;
+    const valA = String(a[sortField] || "");
+    const valB = String(b[sortField] || "");
+
+    return sortDirection === "asc"
+      ? valA.localeCompare(valB, "ko")
+      : valB.localeCompare(valA, "ko");
   });
 
   // 통계 계산
-  const categoryStats = CATEGORY_OPTIONS.reduce((acc, curr) => {
+  const categoryStats = CATEGORY_OPTIONS.reduce<Record<string, number>>((acc, curr) => {
     acc[curr] = partners.filter(p => p.category === curr).length;
     return acc;
   }, {});
@@ -654,7 +657,7 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
                       "-"
                     )}
                   </td>
-                  <td style={{ padding: "0.85rem 1rem", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text-secondary)", textAlign: "center", verticalAlign: "middle" }} title={p.remarks}>
+                  <td style={{ padding: "0.85rem 1rem", maxWidth: "250px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--text-secondary)", textAlign: "center", verticalAlign: "middle" }} title={p.remarks || undefined}>
                     {p.remarks || "-"}
                   </td>
                   <td style={{ padding: "0.85rem 1rem", textAlign: "center", verticalAlign: "middle" }}>
