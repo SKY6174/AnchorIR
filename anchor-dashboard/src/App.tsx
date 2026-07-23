@@ -2,9 +2,6 @@ import React, { useState, useRef } from "react";
 import type { ChangeEvent, CSSProperties, FormEvent } from "react";
 import Sidebar from "./components/Sidebar";
 const CommitteeExternalVote = React.lazy(() => import("./components/CommitteeExternalVote"));
-const AgreementManager = React.lazy(() => import("./components/AgreementManager"));
-const UnifiedCertificateManager = React.lazy(() => import("./components/UnifiedCertificateManager"));
-const ScholarshipManager = React.lazy(() => import("./components/ScholarshipManager"));
 const InstructorPoolManager = React.lazy(() => import("./components/InstructorPoolManager"));
 const PDCAManager = React.lazy(() => import("./components/PDCAManager"));
 const BudgetExecutionManager = React.lazy(() => import("./components/BudgetExecutionManager"));
@@ -37,6 +34,7 @@ import { useDashboardScroll } from "./app/hooks/use-dashboard-scroll";
 import { useDashboardUiLifecycle } from "./app/hooks/use-dashboard-ui-lifecycle";
 import { useAgreementLocalCache, useScholarshipLocalCache, useUnifiedCertificateLocalCache } from "./app/hooks/use-record-local-cache";
 import { useAgreementsAutosave } from "./features/agreements/hooks/use-agreements-autosave";
+import { AgreementsScreen } from "./features/agreements/screens/agreements-screen";
 import { AssetScreen } from "./features/assets/screens/asset-screen";
 import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
 import { DashboardScreen } from "./features/dashboard/screens/dashboard-screen";
@@ -6670,110 +6668,27 @@ export default function App() {
         )}
 
         {activeTab === "agreements" && (
-          <div className="agreements-management-wrapper" style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%" }}>
-            {/* 협약·발급 관리 본문 가로 탭바 헤더 (예산 탭바와 스타일 완전 대칭화) */}
-            <div style={{ display: "flex", gap: "1.5rem", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "0.2rem", marginBottom: "0.5rem" }}>
-              <button
-                onClick={() => setAgreementsSubTab("agreements")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: agreementsSubTab === "agreements" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: agreementsSubTab === "agreements" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                협약 관리
-              </button>
-              <button
-                onClick={() => setAgreementsSubTab("unified_certificates")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: agreementsSubTab === "unified_certificates" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: agreementsSubTab === "unified_certificates" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                상장·이수증 관리
-              </button>
-              <button
-                onClick={() => setAgreementsSubTab("scholarships")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  fontSize: "1rem",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  padding: "0.5rem 1rem",
-                  color: agreementsSubTab === "scholarships" ? "var(--accent-color)" : "var(--text-secondary)",
-                  borderBottom: agreementsSubTab === "scholarships" ? "2px solid var(--accent-color)" : "none",
-                  transition: "all 0.2s ease"
-                }}
-              >
-                장학금 관리
-              </button>
-            </div>
-
-            <div className="glass-card" style={{ padding: "1.25rem" }}>
-              {/* 협약서 서브탭 활성화 시 협약서 단독 매니저 마운트 */}
-              {agreementsSubTab === "agreements" && (
-                <React.Suspense fallback={null}>
-                  <AgreementManager
-                    key={`agreement-${darkMode}-${selectedYear}`}
-                    projects={displayProjects}
-                    agreements={agreements as AgreementItem[]}
-                    selectedYear={selectedYear}
-                    onAddAgreement={handleAddAgreement}
-                    onUpdateAgreement={handleUpdateAgreement}
-                    onDeleteAgreement={handleDeleteAgreement}
-                    setAgreements={setAgreements as React.Dispatch<React.SetStateAction<AgreementItem[]>>}
-                    currentRole={currentRole}
-                  />
-                </React.Suspense>
-              )}
-
-              {/* 통합 상장/이수증 서브탭 활성화 시 통합 매니저 마운트 */}
-              {agreementsSubTab === "unified_certificates" && (
-                <React.Suspense fallback={null}>
-                  <UnifiedCertificateManager
-                    key={`unified-certificate-${darkMode}-${selectedYear}`}
-                    projects={displayProjects}
-                    certificates={unifiedCertificates}
-                    selectedYear={selectedYear}
-                    onAddCertificate={handleAddUnifiedCertificate}
-                    onUpdateCertificate={handleUpdateUnifiedCertificate}
-                    onDeleteCertificate={handleDeleteUnifiedCertificate}
-                    setCertificates={setUnifiedCertificates}
-                    currentRole={currentRole}
-                    members={members}
-                  />
-                </React.Suspense>
-              )}
-
-              {/* 장학금 관리 서브탭 활성화 시 장학금 매니저 마운트 */}
-              {agreementsSubTab === "scholarships" && (
-                <React.Suspense fallback={null}>
-                  <ScholarshipManager
-                    key={`scholarship-${darkMode}-${selectedYear}`}
-                    scholarships={scholarships as ScholarshipItem[]}
-                    setScholarships={setScholarships as React.Dispatch<React.SetStateAction<ScholarshipItem[]>>}
-                    selectedYear={selectedYear}
-                    currentRole={currentRole}
-                    members={members}
-                  />
-                </React.Suspense>
-              )}
-            </div>
-          </div>
+          <AgreementsScreen
+            subTab={agreementsSubTab}
+            onChangeSubTab={setAgreementsSubTab}
+            darkMode={darkMode}
+            projects={displayProjects}
+            agreements={agreements as AgreementItem[]}
+            selectedYear={selectedYear}
+            onAddAgreement={handleAddAgreement}
+            onUpdateAgreement={handleUpdateAgreement}
+            onDeleteAgreement={handleDeleteAgreement}
+            setAgreements={setAgreements as React.Dispatch<React.SetStateAction<AgreementItem[]>>}
+            currentRole={currentRole}
+            certificates={unifiedCertificates}
+            onAddCertificate={handleAddUnifiedCertificate}
+            onUpdateCertificate={handleUpdateUnifiedCertificate}
+            onDeleteCertificate={handleDeleteUnifiedCertificate}
+            setCertificates={setUnifiedCertificates}
+            members={members}
+            scholarships={scholarships as ScholarshipItem[]}
+            setScholarships={setScholarships as React.Dispatch<React.SetStateAction<ScholarshipItem[]>>}
+          />
         )}
 
         {activeTab === "progress" && (
