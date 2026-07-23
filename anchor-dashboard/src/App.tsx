@@ -54,7 +54,7 @@ import { useEnvironmentAutosave } from "./features/procurement/hooks/use-environ
 import { useEquipmentAutosave } from "./features/procurement/hooks/use-equipment-autosave";
 import { useServiceAutosave } from "./features/procurement/hooks/use-service-autosave";
 import { probeProcurementAdvancedColumns } from "./features/procurement/services/procurement-data-service";
-import { deletePressReleasesByIds, fetchPressReleaseIds, insertPressRelease, insertPressReleases } from "./features/press/services/press-release-service";
+import { usePressReleaseAutosave } from "./features/press/hooks/use-press-release-autosave";
 import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
 import { useProjectAutosave } from "./features/projects/hooks/use-project-autosave";
 import { useKpiSelection, useVisibleKpiSubTabGuard } from "./features/projects/hooks/use-kpi-selection-lifecycle";
@@ -3157,212 +3157,18 @@ export default function App() {
   });
 
   // 10) Press Releases (언론보도) 자동 저장 디바운스 훅 (타 연차 기사 지능형 즉시 분배 저장 탑재)
-  useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted) return;
-
-    // 기사 날짜 기준 연차(1~5) 자동 계산 헬퍼
-    const getCalculatedYearFromDate = (dateStr: string) => {
-      if (!dateStr) return selectedYear;
-      const d = new Date(dateStr);
-      if (isNaN(d.getTime())) return selectedYear;
-      const year = d.getFullYear();
-      const month = d.getMonth() + 1;
-      let calcYear = year;
-      if (month < 3) {
-        calcYear = year - 1;
-      }
-      return calcYear === 2025 ? 1 : calcYear === 2026 ? 2 : calcYear === 2027 ? 3 : calcYear === 2028 ? 4 : calcYear === 2029 ? 5 : selectedYear;
-    };
-
-    if (!isDbLoaded || !isFetchCompleted) return;
-    if (!currentUser || currentRole?.id === "GUEST") return;
-
-    // 💡 철통 방어망: 현재 화면의 데이터가 속한 연차(activeDataYear)와 탭 연차(selectedYear)가 다르면 즉시 중단!
-    // 이는 비동기 로딩 및 탭 전환 타이밍에 발생하는 치명적인 Race Condition 삭제 버그를 완벽히 막아줍니다.
-    if (activeDataYear !== selectedYear) return;
-
-    // 💡 Race Condition 방지: 방금 DB에서 가져온 상태 그대로라면(사용자 수정 없음) Auto-save를 수행하지 않음.
-    // 이는 빈 배열([])일 때 isStaleState 가 실패하여 타 연차 DB를 싹 지워버리는 치명적인 버그를 완벽히 막아줍니다.
-    if (JSON.stringify(pressReleases) === fetchedPressReleasesRef.current) {
-      return;
-    }
-
-    // 💡 탭(연차) 전환 시, 데이터를 새로 패치하기 전의 과거 연차 상태(Stale State)에서 자동저장이 도는 것을 방지
-    // 이 처리가 없으면 과거 연차 데이터가 '타 연차 기사'로 오인되어 이전 연차 DB에 계속 무한 중복 Insert 됨!
-    const isStaleState = pressReleases.length > 0 && pressReleases.some(s => s.year !== selectedYear);
-    if (isStaleState) {
-      return; // DB 패치가 완료되어 s.year === selectedYear 로 맞춰질 때까지 대기
-    }
-
-    // 💡 타 연차에 해당하는 기사들 (사용자가 날짜를 다른 연차로 수정한 경우)
-    const otherYearPress = pressReleases.filter(s => getCalculatedYearFromDate(s.broadcastDate) !== selectedYear);
-
-    // 현재 선택된 연차에 속하는 기사들만 추출
-    const currentYearPress = pressReleases.filter(s => getCalculatedYearFromDate(s.broadcastDate) === selectedYear);
-
-    // 로컬스토리지에는 현재 연차 보도자료 저장
-    safeSetLocalStorage(`anchor_cache_press_y${selectedYear}`, JSON.stringify(currentYearPress), selectedYear);
-    setSyncStatus("syncing");
-
-    const formatToPostgresTimestamp = (dateStr: string) => {
-      if (!dateStr) return new Date().toISOString();
-      const parsed = new Date(dateStr);
-      if (isNaN(parsed.getTime())) return new Date().toISOString();
-
-      const pad = (n: number) => String(n).padStart(2, "0");
-      const yyyy = parsed.getFullYear();
-      const mm = pad(parsed.getMonth() + 1);
-      const dd = pad(parsed.getDate());
-      const hh = pad(parsed.getHours());
-      const mi = pad(parsed.getMinutes());
-      const ss = pad(parsed.getSeconds());
-      return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}+09`;
-    };
-
-    const syncPressImmediate = async () => {
-      try {
-        // --- 1단계: 타 연차 기사가 발견되었을 경우 해당 연차 DB에 단독 Insert 및 청소 ---
-        if (otherYearPress.length > 0) {
-          let hasError = false;
-          for (const item of otherYearPress) {
-            const targetYear = getCalculatedYearFromDate(item.broadcastDate);
-            console.log(`타 연차 기사 감지: ${item.title} -> ${targetYear}차년도 DB로 직접 저장합니다.`);
-
-            let insertPayload = {
-              year: targetYear,
-              type: item.type || "기타",
-              media: item.media || "미상",
-              title: item.title || "새 보도자료",
-              broadcast_date: formatToPostgresTimestamp(item.broadcastDate),
-              content_url: item.contentUrl || "https://www.uc.ac.kr",
-              press_content: item.pressContent || ""
-            };
-
-            let singleInsertErr = null;
-            if (window.__HAS_NO_ADVANCED_PRESS_COLUMNS__) {
-              const { press_content: _press_content, ...rest } = insertPayload;
-              const { error } = await insertPressRelease(rest);
-              singleInsertErr = error;
-            } else {
-              const { error } = await insertPressRelease(insertPayload);
-              singleInsertErr = error;
-              if (singleInsertErr) {
-                console.warn("DB에 press_releases 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", singleInsertErr);
-                window.__HAS_NO_ADVANCED_PRESS_COLUMNS__ = true;
-                const { press_content: _press_content, ...rest } = insertPayload;
-                const { error: fallbackErr } = await insertPressRelease(rest);
-                singleInsertErr = fallbackErr;
-              }
-            }
-
-            if (singleInsertErr) {
-              console.error(`Failed to insert press release to year ${targetYear}:`, singleInsertErr);
-              alert(`📡 타 연차 보도자료 DB 저장 중 오류가 발생했습니다.\n\n[오류 원인]: ${singleInsertErr.message || singleInsertErr}`);
-              hasError = true;
-            } else {
-              // 💡 성공 시 해당 연차의 로컬 캐시도 즉시 업데이트하여 깜빡임 및 누락 예방
-              try {
-                const cachedPressStr = localStorage.getItem(`anchor_cache_press_y${targetYear}`);
-                const cachedPressList = cachedPressStr ? JSON.parse(cachedPressStr) : [];
-                if (!cachedPressList.some((p: LegacyAppRecord) => p.title === item.title && p.broadcastDate === item.broadcastDate)) {
-                  const updatedCache = [item, ...cachedPressList];
-                  safeSetLocalStorage(`anchor_cache_press_y${targetYear}`, JSON.stringify(updatedCache), targetYear);
-                }
-              } catch (cacheErr) {
-                console.warn("Failed to update target year cache:", cacheErr);
-              }
-            }
-          }
-
-          if (!hasError) {
-            // 성공했을 때만 현재 연차 상태에서 제거 (클로저 Race Condition 방지를 위해 ID 기반 필터링 적용)
-            const otherIds = otherYearPress.map(item => item.id);
-            setPressReleases(prev => prev.filter(s => !otherIds.includes(s.id)));
-            // alert는 다른 화면(상장/이수증 등)을 보고 있을 때 방해되므로 제거하고 조용히 백그라운드 처리
-            console.log(`[언론보도] 타 연차(${getCalculatedYearFromDate(otherYearPress[0].broadcastDate)}차년도)로 기사가 자동 이동되었습니다.`);
-          }
-          setSyncStatus(hasError ? "error" : "synced");
-          return;
-        }
-
-        // --- 2단계: 원래 선택된 현재 연차 기사들의 정상 동기화 처리 ---
-        const targetYearNum = selectedYear === 1 ? 2025 : selectedYear === 2 ? 2026 : selectedYear === 3 ? 2027 : selectedYear === 4 ? 2028 : 2029;
-        const startDateStr = `${targetYearNum}-03-01T00:00:00+09:00`;
-        const endDateStr = `${targetYearNum + 1}-03-01T00:00:00+09:00`;
-
-        const { data: currentDbItems, error: fetchErr } = await fetchPressReleaseIds(
-          startDateStr,
-          endDateStr
-        );
-
-        if (fetchErr) {
-          console.error("Failed to fetch current press releases to rollback backup:", fetchErr);
-          setSyncStatus("error");
-          return;
-        }
-
-        const oldIds = (currentDbItems || []).map(item => item.id);
-
-        if (currentYearPress.length > 0) {
-          const insertPayload = currentYearPress.map(s => ({
-            year: selectedYear,
-            type: s.type || "기타",
-            media: s.media || "미상",
-            title: s.title || "새 보도자료",
-            broadcast_date: formatToPostgresTimestamp(s.broadcastDate),
-            content_url: s.contentUrl || "https://www.uc.ac.kr",
-            press_content: s.pressContent || ""
-          }));
-
-          let insertErr = null;
-          if (window.__HAS_NO_ADVANCED_PRESS_COLUMNS__) {
-            const safePayload = insertPayload.map(item => {
-              const { press_content: _press_content, ...rest } = item;
-              return rest;
-            });
-            const { error } = await insertPressReleases(safePayload);
-            insertErr = error;
-          } else {
-            const { error } = await insertPressReleases(insertPayload);
-            insertErr = error;
-            if (insertErr) {
-              console.warn("DB에 press_releases 신규 컬럼이 식별되지 않아 안전 폴백 저장을 시도합니다.", insertErr);
-              window.__HAS_NO_ADVANCED_PRESS_COLUMNS__ = true;
-              const safePayload = insertPayload.map(item => {
-                const { press_content: _press_content, ...rest } = item;
-                return rest;
-              });
-              const { error: fallbackErr } = await insertPressReleases(safePayload);
-              insertErr = fallbackErr;
-            }
-          }
-
-          if (insertErr) {
-            console.error("Failed to insert new press releases:", insertErr);
-            alert(`📡 데이터베이스 저장 오류가 검출되었습니다.\n\n[오류 원인]: ${insertErr.message || insertErr}\n\n데이터 유실 방지를 위해 기존 보도 대장은 안전하게 롤백/보존되었습니다.`);
-            setSyncStatus("error");
-            return;
-          }
-        }
-
-        if (oldIds.length > 0) {
-          const { error: deleteErr } = await deletePressReleasesByIds(oldIds);
-
-          if (deleteErr) {
-            console.error("Failed to clean up old press releases:", deleteErr);
-          }
-        }
-        // 💡 성공적인 Sync 완료 후, 현재 화면의 상태를 "순수 상태"로 참조 업데이트하여 무한 루프 방지
-        fetchedPressReleasesRef.current = JSON.stringify(pressReleases);
-        setSyncStatus("synced");
-      } catch (e) {
-        console.error("Failed to sync press releases:", e);
-        setSyncStatus("error");
-      }
-    };
-    syncPressImmediate();
-  // oxlint-disable-next-line react/exhaustive-deps -- press changes, year, and load guards own synchronization; auth and active-year restoration are safety checks, not write triggers.
-  }, [pressReleases, selectedYear, isDbLoaded, isFetchCompleted]);
+  usePressReleaseAutosave({
+    pressReleases,
+    setPressReleases,
+    selectedYear,
+    activeDataYear,
+    isDbLoaded,
+    isFetchCompleted,
+    canWrite: Boolean(currentUser && currentRole?.id !== "GUEST"),
+    fetchedPressReleasesRef,
+    safeSetLocalStorage,
+    setSyncStatus
+  });
 
   // 3-2) Unified Certificates 자동 저장
   useUnifiedCertificateAutosave({
