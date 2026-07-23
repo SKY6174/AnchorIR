@@ -561,6 +561,12 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
                 type="password"
                 value={loginForm.pin}
                 onChange={(e) => setLoginForm({ ...loginForm, pin: e.target.value })}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    e.currentTarget.form?.requestSubmit();
+                  }
+                }}
                 placeholder="안내받은 6자리 숫자를 입력해 주세요."
                 inputMode="numeric"
                 pattern="[0-9]{6}"
