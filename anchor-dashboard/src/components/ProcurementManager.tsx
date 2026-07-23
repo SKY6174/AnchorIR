@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import type { ChangeEvent, FormEvent, MouseEvent as ReactMouseEvent } from "react";
 import { Plus, Trash2, Info, ListFilter, ArrowUpDown, Edit, X } from "lucide-react";
 import { supabase } from "../supabaseClient"; // Supabase 클라이언트 연동 (요건 3 반영)
 import * as pdfjsLib from "pdfjs-dist";
@@ -7,7 +8,7 @@ import * as pdfjsLib from "pdfjs-dist";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 // 1차년도 및 2차년도 단위과제별 연계 프로그램 데이터셋
-const PROGRAMS_BY_UNIT = {
+const PROGRAMS_BY_UNIT: Record<string, Array<{ id: string; name: string }>> = {
   "A1": [
     { id: "A1-1", name: "미래 핵심 신산업 주문식 교육 운영" },
     { id: "A1-2", name: "글로컬 앵커 교육과정 고도화" },
@@ -80,7 +81,30 @@ const PROGRAMS_BY_UNIT = {
 };
 
 // AI 가상 문서요약 분석 시뮬레이터 함수 (사용자 요구사항 2 반영)
-const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice, fileName = "") => {
+type ProcurementDocumentType = "proposal" | "purchase" | "bid" | "check";
+type MilestoneMap = Record<string, string[]>;
+type ProcurementFormData = Record<string, any>;
+
+interface ProcurementToast {
+  message: string;
+  type: string;
+}
+
+interface ActivePopover {
+  equipId: number | string;
+  month: string;
+  x: number;
+  y: number;
+}
+
+const runAiMockAnalysis = (
+  docType: ProcurementDocumentType,
+  textContent: string,
+  itemName: string,
+  deptName: string,
+  totalPrice: number,
+  fileName = ""
+) => {
   const randomNo = Math.floor(Math.random() * 900) + 100;
   const priceThousand = totalPrice ? Math.round(totalPrice / 1000) : 120000;
   const fName = (fileName || "").toLowerCase();
@@ -400,14 +424,21 @@ const runAiMockAnalysis = (docType, textContent, itemName, deptName, totalPrice,
 };
 
 // OpenAI GPT API를 직접 호출하는 비동기 함수 (요건 2 반영 및 자동완성 스펙 확장)
-const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName, totalPrice) => {
+const callOpenAiGpt = async (
+  docType: ProcurementDocumentType,
+  fileName: string,
+  textContent: string,
+  itemName: string,
+  deptName: string,
+  totalPrice: number
+) => {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
   if (!apiKey) {
     console.warn("⚠️ VITE_OPENAI_API_KEY 환경 변수가 없으므로, 로컬 AI 요약 시뮬레이터로 자동 대체합니다.");
     return runAiMockAnalysis(docType, textContent || fileName, itemName, deptName, totalPrice, fileName);
   }
 
-  const promptMap = {
+  const promptMap: Record<string, string> = {
     proposal: `당신은 대학 RISE(앵커) 사업 기획 분석가입니다. 아래 문서정보와 텍스트를 분석하여, 다음 JSON 스키마를 만족하는 요약본을 JSON 모드로 응답하십시오.
     [스키마]:
     {
@@ -511,7 +542,7 @@ const callOpenAiGpt = async (docType, fileName, textContent, itemName, deptName,
 };
 
 // [교육용 주석] Google Gemini API 연동을 위한 클라이언트 사이드 Fetcher
-const callGeminiApi = async (promptText) => {
+const callGeminiApi = async (promptText: string) => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("Gemini API Key missing");
@@ -540,7 +571,14 @@ const callGeminiApi = async (promptText) => {
 // [교육용 주석] Google Gemini API 단독 호출을 위한 비동기 분석 함수
 // docType: 문서 분류 (proposal/purchase/bid), fileName: 업로드 파일명, textContent: 본문 텍스트
 // itemName: 기자재 품명, deptName: 주관 부서/학과명, totalPrice: 총액 규모
-const callGeminiSingleAnalysis = async (docType, fileName, textContent, itemName, deptName, totalPrice) => {
+const callGeminiSingleAnalysis = async (
+  docType: ProcurementDocumentType,
+  fileName: string,
+  textContent: string,
+  itemName: string,
+  deptName: string,
+  totalPrice: number
+) => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) {
     console.warn("⚠️ VITE_GEMINI_API_KEY 환경 변수가 없으므로, 로컬 AI 요약 시뮬레이터로 자동 대체합니다.");
@@ -548,7 +586,7 @@ const callGeminiSingleAnalysis = async (docType, fileName, textContent, itemName
   }
 
   // GPT-4o 분석 프롬프트와 동일한 스키마 및 가이드를 Gemini 모델에 맞춰 전달
-  const promptMap = {
+  const promptMap: Record<string, string> = {
     proposal: `당신은 대학 RISE(앵커) 사업 기획 분석가입니다. 아래 문서정보와 텍스트를 분석하여, 다음 JSON 스키마를 만족하는 요약본을 JSON 모드로 응답하십시오.
     [스키마]:
     {
@@ -630,7 +668,14 @@ const callGeminiSingleAnalysis = async (docType, fileName, textContent, itemName
 };
 
 // [교육용 주석] API Key가 없을 시 동작하는 가상 AI Debate 모의 시뮬레이터 (교육적 연출 효과 극대화)
-const runAiDebateMock = (docType, fileName, textContent, itemName, deptName, totalPrice) => {
+const runAiDebateMock = (
+  docType: ProcurementDocumentType,
+  fileName: string,
+  textContent: string,
+  itemName: string,
+  deptName: string,
+  totalPrice: number
+) => {
   console.log("🤖 [AI Debate Simulator] GPT-4o: '기본 초안을 빌드하고 있습니다.'");
   console.log("🤖 [AI Debate Simulator] Gemini: '전략 목표 중 산학 네트워크 강화를 보강할 필요가 있어 보입니다.'");
   console.log("🤖 [AI Debate Simulator] GPT-4o: '동의합니다. 2차 보완 및 최종 합의안을 작성 완료했습니다.'");
@@ -641,7 +686,14 @@ const runAiDebateMock = (docType, fileName, textContent, itemName, deptName, tot
 };
 
 // [교육용 주석] GPT-4o와 Gemini API 간의 상호 토론(Debate) 및 합의 도출 로직 (프롬프트 고도화)
-const callDebateAiAnalysis = async (docType, fileName, textContent, itemName, deptName, totalPrice) => {
+const callDebateAiAnalysis = async (
+  docType: ProcurementDocumentType,
+  fileName: string,
+  textContent: string,
+  itemName: string,
+  deptName: string,
+  totalPrice: number
+) => {
   const openaiKey = import.meta.env.VITE_OPENAI_API_KEY;
   const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -750,7 +802,11 @@ const callDebateAiAnalysis = async (docType, fileName, textContent, itemName, de
 };
 
 // Supabase Storage 업로드 및 Public URL 반환 함수 (요건 3 반영)
-const uploadFileToSupabase = async (docType, file, onProgress) => {
+const uploadFileToSupabase = async (
+  docType: ProcurementDocumentType,
+  file: File,
+  onProgress?: (progress: number) => void
+) => {
   if (!file) return null;
   
   // 1단계: 파일 정보 보안 검토 및 암호화 필터 (Rule 8)
@@ -854,7 +910,7 @@ export interface ProcurementItem {
   seq?: number;
   deptName?: string;
   divisionName?: string;
-  itemName: string;
+  itemName?: string;
   spec?: string;
   itemUnit?: string;
   unitPrice?: number;
@@ -892,11 +948,11 @@ const convertMillionWonToThousandWon = (budgetStr?: string | null): string => {
 };
 
 // 날짜 데이터를 기반으로 3월~2월 캘린더 구매단계(P, A, B, Pr, I) 매핑 헬퍼 함수 (4번 요건 대응)
-const getMilestonesFromDates = (item, activeYear) => {
-  const milestones = { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] };
+const getMilestonesFromDates = (item: ProcurementItem, activeYear: number | string): MilestoneMap => {
+  const milestones: MilestoneMap = { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] };
   const baseYear = 2024 + Number(activeYear || 1); // 1차년도: 2025, 2차년도: 2026
   
-  const checkAndAdd = (dateStr, phaseCode) => {
+  const checkAndAdd = (dateStr: string | undefined, phaseCode: string) => {
     if (!dateStr) return;
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return;
@@ -925,11 +981,11 @@ const getMilestonesFromDates = (item, activeYear) => {
 };
 
 // [교육용 한글 주석] 기자재 전용 날짜 마일스톤 매핑 헬퍼 함수 (PA, Pr, BC, I 매핑)
-const getMilestonesFromDatesEquip = (item, activeYear) => {
-  const milestones = { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] };
+const getMilestonesFromDatesEquip = (item: ProcurementItem, activeYear: number | string): MilestoneMap => {
+  const milestones: MilestoneMap = { "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [], "10": [], "11": [], "12": [], "1": [], "2": [] };
   const baseYear = 2024 + Number(activeYear || 1); // 1차년도: 2025, 2차년도: 2026
   
-  const checkAndAdd = (dateStr, phaseCode) => {
+  const checkAndAdd = (dateStr: string | undefined, phaseCode: string) => {
     if (!dateStr) return;
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return;
@@ -957,7 +1013,14 @@ const getMilestonesFromDatesEquip = (item, activeYear) => {
 };
 
 // 단계별 입력 일정 순차 및 사업연차 적합성 검증 헬퍼 함수 (연차-단계별 일자 연계)
-const validateDatesChronological = (yearVal, dateP, dateA, dateB, datePr, dateI) => {
+const validateDatesChronological = (
+  yearVal: number | string,
+  dateP: string,
+  dateA: string,
+  dateB: string,
+  datePr: string,
+  dateI: string
+) => {
   const targetYear = Number(yearVal) || 1; // 1차년도 또는 2차년도
   
   // 1) 사업연차별 유효기간 논리 범위 정의
@@ -1001,7 +1064,13 @@ const validateDatesChronological = (yearVal, dateP, dateA, dateB, datePr, dateI)
 };
 
 // [교육용 한글 주석] 기자재 전용 단계별 입력 일정 순차 및 사업연차 적합성 검증 헬퍼 함수
-const validateDatesChronologicalEquip = (yearVal, dateP, datePr, dateB, dateI) => {
+const validateDatesChronologicalEquip = (
+  yearVal: number | string,
+  dateP: string,
+  datePr: string,
+  dateB: string,
+  dateI: string
+) => {
   const targetYear = Number(yearVal) || 1; // 1차년도 또는 2차년도
   
   // 1) 사업연차별 유효기간 논리 범위 정의
@@ -1044,7 +1113,12 @@ const validateDatesChronologicalEquip = (yearVal, dateP, datePr, dateB, dateI) =
 
 
 // 단위과제별 2차년도 사업계획서 요약 모의 데이터 (기획문서용)
-const PROPOSAL_SUMMARIES = {
+const PROPOSAL_SUMMARIES: Record<string, {
+  title: string;
+  dept: string;
+  goals: string[];
+  budget: string;
+}> = {
   "A1": {
     title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성",
     dept: "ECC센터 (교육혁신센터)",
@@ -1132,7 +1206,7 @@ const PROPOSAL_SUMMARIES = {
 };
 
 // 단일 문자열로 저장되어 있을 유스케이스 방어용 헬퍼 함수
-const getMilestoneArray = (val) => {
+const getMilestoneArray = (val: string | string[] | null | undefined): string[] => {
   if (!val) return [];
   if (Array.isArray(val)) return val;
   return [val];
@@ -1151,12 +1225,12 @@ export interface ProcurementManagerProps {
   setSelectedYear?: (year: any) => void;
   subTab?: string;
   onChangeSubTab?: (subTab: string) => void;
-  envData?: any[];
-  setEnvData?: React.Dispatch<React.SetStateAction<any[]>>;
-  equipData?: any[];
-  setEquipData?: React.Dispatch<React.SetStateAction<any[]>>;
-  serviceData?: any[];
-  setServiceData?: React.Dispatch<React.SetStateAction<any[]>>;
+  envData?: ProcurementItem[];
+  setEnvData?: React.Dispatch<React.SetStateAction<ProcurementItem[]>>;
+  equipData?: ProcurementItem[];
+  setEquipData?: React.Dispatch<React.SetStateAction<ProcurementItem[]>>;
+  serviceData?: ProcurementItem[];
+  setServiceData?: React.Dispatch<React.SetStateAction<ProcurementItem[]>>;
   projects?: any[];
   darkMode?: boolean;
 }
@@ -1169,18 +1243,18 @@ export default function ProcurementManager({
   subTab,
   onChangeSubTab,
   envData = [],
-  setEnvData,
+  setEnvData = () => undefined,
   equipData = [],
-  setEquipData,
+  setEquipData = () => undefined,
   serviceData = [],
-  setServiceData,
+  setServiceData = () => undefined,
   projects = [],
   darkMode = true
 }: ProcurementManagerProps) {
   const monthsOrder = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
 
   // 날짜 문자열로부터 해당 연도 회계연도 기준(3월~익년2월) 월 인덱스(0~11)를 반환하는 로컬 헬퍼
-  const getMonthIndex = (dateStr) => {
+  const getMonthIndex = (dateStr?: string | null) => {
     if (!dateStr) return null;
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) return null;
@@ -1196,8 +1270,8 @@ export default function ProcurementManager({
   };
 
   // 토스트 상태 추가
-  const [toast, setToast] = useState(null);
-  const showToast = (message, type = "success") => {
+  const [toast, setToast] = useState<ProcurementToast | null>(null);
+  const showToast = (message: string, type = "success") => {
     setToast({ message, type });
     setTimeout(() => {
       setToast(null);
@@ -1210,12 +1284,12 @@ export default function ProcurementManager({
   
   // 수정 모드 상태 추가 (2번 요건 대응)
   const [isEditMode, setIsEditMode] = useState(false);
-  const [editingItemId, setEditingItemId] = useState(null);
+  const [editingItemId, setEditingItemId] = useState<number | string | null>(null);
 
   // 기획문서, 구매문서 및 입찰문서 팝업용 상태 추가 (사용자 요건 3 대응)
-  const [proposalModalData, setProposalModalData] = useState(null);
-  const [purchaseModalData, setPurchaseModalData] = useState(null);
-  const [bidModalData, setBidModalData] = useState(null);
+  const [proposalModalData, setProposalModalData] = useState<any>(null);
+  const [purchaseModalData, setPurchaseModalData] = useState<any>(null);
+  const [bidModalData, setBidModalData] = useState<any>(null);
 
   // 다중 파일 업로드 지원에 따른 팝업 내 현재 뷰어 대상 인덱스 상태
   const [selectedProposalIdx, setSelectedProposalIdx] = useState(0);
@@ -1227,7 +1301,7 @@ export default function ProcurementManager({
   const [sortField, setSortField] = useState("seq"); // 기본값 순번
   const [sortDirection, setSortDirection] = useState("asc"); // 기본값 오름차순
 
-  const handleSort = (field) => {
+  const handleSort = (field: string) => {
     if (sortField === field) {
       setSortDirection(prev => (prev === "asc" ? "desc" : "asc"));
     } else {
@@ -1237,13 +1311,13 @@ export default function ProcurementManager({
   };
   
   // 환경개선 상세 팝업 상태
-  const [selectedEnvItem, setSelectedEnvItem] = useState(null);
+  const [selectedEnvItem, setSelectedEnvItem] = useState<ProcurementItem | null>(null);
 
   // 기자재 탭 단위과제 필터 상태
   const [selectedEquipUnit, setSelectedEquipUnit] = useState("ALL");
 
   // 월별 마일스톤 멀티 체크 팝오버 상태
-  const [activePopover, setActivePopover] = useState(null); // { equipId, month, x, y }
+  const [activePopover, setActivePopover] = useState<ActivePopover | null>(null); // { equipId, month, x, y }
 
   // AI 분석 및 업로드 상태 제어
   const [isAnalyzingPlan, setIsAnalyzingPlan] = useState(false);
@@ -1259,7 +1333,7 @@ export default function ProcurementManager({
   const [aiEngine, setAiEngine] = useState("debate");
 
   // 4. 입력 폼 임시 State
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProcurementFormData>({
     title: "",
     unit: "A1",
     plan: "",
@@ -1311,13 +1385,13 @@ export default function ProcurementManager({
 
   // [교육용 주석] 1대N 관계 구축을 위한 기존 기획문서 자동 파싱 라이브러리 추출
   const getUniqueProposalDocs = () => {
-    const list = [];
-    const seenDocNos = new Set();
+    const list: any[] = [];
+    const seenDocNos = new Set<string>();
 
     // 1. equipData (기자재 데이터) 순회하며 고유 기획문서 추출
     (equipData || []).forEach(item => {
       if (item.docPlanFileList && Array.isArray(item.docPlanFileList)) {
-        item.docPlanFileList.forEach(file => {
+        item.docPlanFileList.forEach((file: any) => {
           if (file.aiData && file.aiData.docNo && !seenDocNos.has(file.aiData.docNo)) {
             seenDocNos.add(file.aiData.docNo);
             list.push({ docNo: file.aiData.docNo, name: file.name, size: file.size, url: file.url, aiData: file.aiData });
@@ -1335,7 +1409,7 @@ export default function ProcurementManager({
     // 2. serviceData (용역 데이터) 순회하며 고유 기획문서 추출
     (serviceData || []).forEach(item => {
       if (item.docPlanFileList && Array.isArray(item.docPlanFileList)) {
-        item.docPlanFileList.forEach(file => {
+        item.docPlanFileList.forEach((file: any) => {
           if (file.aiData && file.aiData.docNo && !seenDocNos.has(file.aiData.docNo)) {
             seenDocNos.add(file.aiData.docNo);
             list.push({ docNo: file.aiData.docNo, name: file.name, size: file.size, url: file.url, aiData: file.aiData });
@@ -1353,7 +1427,7 @@ export default function ProcurementManager({
     // 3. envData (환경개선 데이터) 순회
     (envData || []).forEach(item => {
       if (item.docPlanFileList && Array.isArray(item.docPlanFileList)) {
-        item.docPlanFileList.forEach(file => {
+        item.docPlanFileList.forEach((file: any) => {
           if (file.aiData && file.aiData.docNo && !seenDocNos.has(file.aiData.docNo)) {
             seenDocNos.add(file.aiData.docNo);
             list.push({ docNo: file.aiData.docNo, name: file.name, size: file.size, url: file.url, aiData: file.aiData });
@@ -1372,7 +1446,7 @@ export default function ProcurementManager({
   };
 
   // [교육용 주석] 1대N 관계 구축을 위한 기존 기획 결재 연계 적용 함수
-  const handleSelectLegacyProposal = (docNo) => {
+  const handleSelectLegacyProposal = (docNo: string) => {
     if (!docNo) return;
     const uniqueDocs = getUniqueProposalDocs();
     const matched = uniqueDocs.find(d => d.docNo === docNo);
@@ -1392,7 +1466,7 @@ export default function ProcurementManager({
 
         const currentList = prev.docPlanFileList ? [...prev.docPlanFileList] : [];
         // 기획 결재 문서 중복 삽입 방지 검사
-        if (!currentList.some(item => (item.aiData?.docNo === matched.docNo) || (item.name === matched.name))) {
+        if (!currentList.some((item: any) => (item.aiData?.docNo === matched.docNo) || (item.name === matched.name))) {
           currentList.push(legacyItem);
         }
 
@@ -1412,8 +1486,8 @@ export default function ProcurementManager({
   };
 
   // 파일 업로드 관련 핸들러들 (다중 파일 업로드 요건 전격 반영)
-  const handleFileChange = (docType, e) => {
-    const file = e.target.files[0];
+  const handleFileChange = (docType: ProcurementDocumentType, e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     let listKey = "";
@@ -1460,7 +1534,7 @@ export default function ProcurementManager({
     }
   };
 
-  const handleFileRemove = (docType, fileId) => {
+  const handleFileRemove = (docType: ProcurementDocumentType, fileId: number | string) => {
     let listKey = "";
     let fieldPrefix = "";
     let aiKey = "";
@@ -1484,7 +1558,7 @@ export default function ProcurementManager({
 
     if (listKey && fileId) {
       setFormData(prev => {
-        const currentList = (prev[listKey] || []).filter(item => item.id !== fileId);
+        const currentList = (prev[listKey] || []).filter((item: any) => item.id !== fileId);
         return {
           ...prev,
           [listKey]: currentList,
@@ -1500,7 +1574,7 @@ export default function ProcurementManager({
   };
 
   // AI 분석용 예산 문자열 파서 (예: "120,000천원" 또는 "1.2억원" => 백만원 단위 변환)
-  const parseBudgetStringToMillions = (budgetString) => {
+  const parseBudgetStringToMillions = (budgetString: string | number | null | undefined) => {
     if (!budgetString) return "";
     const cleanStr = budgetString.toString().replace(/,/g, "");
     const numMatch = cleanStr.match(/\d+(\.\d+)?/);
@@ -1523,7 +1597,10 @@ export default function ProcurementManager({
     return "";
   };
 
-  const handleAnalyzeAndUpload = async (docType, fileId) => {
+  const handleAnalyzeAndUpload = async (
+    docType: ProcurementDocumentType,
+    fileId?: number | string
+  ) => {
     let listKey = "";
     let fieldPrefix = "";
     let aiKey = "";
@@ -1546,7 +1623,7 @@ export default function ProcurementManager({
     }
 
     if (listKey && fileId) {
-      const fileItem = (formData[listKey] || []).find(item => item.id === fileId);
+      const fileItem = (formData[listKey] || []).find((item: any) => item.id === fileId);
       
       if (!fileItem) {
         alert("⚠️ 분석할 대상 파일을 찾을 수 없습니다.");
@@ -1560,7 +1637,7 @@ export default function ProcurementManager({
 
       // 개별 파일 항목의 분석 대기 상태 활성화
       setFormData(prev => {
-        const list = (prev[listKey] || []).map(item => {
+        const list = (prev[listKey] || []).map((item: any) => {
           if (item.id === fileId) return { ...item, isAnalyzing: true };
           return item;
         });
@@ -1589,7 +1666,7 @@ export default function ProcurementManager({
               for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const text = await page.getTextContent();
-                const pageText = text.items.map(item => item.str).join(" ");
+                const pageText = text.items.map((item: any) => item.str || "").join(" ");
                 fullText += pageText + "\n";
               }
               textContent = fullText.trim();
@@ -1601,7 +1678,7 @@ export default function ProcurementManager({
           const uploadResult = await uploadFileToSupabase(docType, fileItem.fileObj, (progress) => {
             // 개별 파일의 프로그레스 업데이트
             setFormData(prev => {
-              const list = (prev[listKey] || []).map(item => {
+              const list = (prev[listKey] || []).map((item: any) => {
                 if (item.id === fileId) return { ...item, uploadProgress: progress };
                 return item;
               });
@@ -1648,7 +1725,7 @@ export default function ProcurementManager({
         }
 
         setFormData(prev => {
-          const list = (prev[listKey] || []).map(item => {
+          const list = (prev[listKey] || []).map((item: any) => {
             if (item.id === fileId) {
               return { 
                 ...item, 
@@ -1661,7 +1738,7 @@ export default function ProcurementManager({
           });
 
           // 기본 폼 상태 복제
-          const nextData = {
+          const nextData: ProcurementFormData = {
             ...prev,
             [listKey]: list,
             // 하위 호환성 유지: 첫 번째 파일 데이터를 롤업 동기화
@@ -1867,7 +1944,7 @@ export default function ProcurementManager({
           return nextData;
         });
 
-        const engineNameMap = {
+        const engineNameMap: Record<string, string> = {
           gemini: "Google Gemini API",
           gpt: "OpenAI GPT-4o API",
           debate: "AI 교차 토론 조합 (Gemini ✖️ GPT)"
@@ -1877,7 +1954,7 @@ export default function ProcurementManager({
         console.error("문서 분석 에러:", error);
         alert("❌ 문서 분석 중 예상치 못한 에러가 발생했습니다.");
         setFormData(prev => {
-          const list = (prev[listKey] || []).map(item => {
+          const list = (prev[listKey] || []).map((item: any) => {
             if (item.id === fileId) return { ...item, isAnalyzing: false };
             return item;
           });
@@ -1949,7 +2026,7 @@ export default function ProcurementManager({
         }
 
         setFormData(prev => {
-          const nextData = {
+          const nextData: ProcurementFormData = {
             ...prev,
             [`${fieldPrefix}FileName`]: uploadedFileMeta.name,
             [`${fieldPrefix}FileSize`]: uploadedFileMeta.size,
@@ -1975,7 +2052,7 @@ export default function ProcurementManager({
           return nextData;
         });
 
-        const engineNameMap = {
+        const engineNameMap: Record<string, string> = {
           gemini: "Google Gemini API",
           gpt: "OpenAI GPT-4o API",
           debate: "AI 교차 토론 조합 (Gemini ✖️ GPT)"
@@ -1991,7 +2068,11 @@ export default function ProcurementManager({
   };
 
   // 팝오버를 열기 위한 트리거 함수
-  const handleMilestoneClick = (e, equipId, month) => {
+  const handleMilestoneClick = (
+    e: ReactMouseEvent<HTMLElement>,
+    equipId: number | string,
+    month: string
+  ) => {
     e.stopPropagation();
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
@@ -2007,7 +2088,11 @@ export default function ProcurementManager({
   };
 
   // 다중 체크 시 해당 단계 배열 토글 함수
-  const handleMilestoneMultiToggle = (equipId, month, stepName) => {
+  const handleMilestoneMultiToggle = (
+    equipId: number | string,
+    month: string,
+    stepName: string
+  ) => {
     // 신규 추가 폼 내 마일스톤 조작 대응
     if (equipId === "NEW_FORM") {
       setFormData(prev => {
@@ -2057,7 +2142,7 @@ export default function ProcurementManager({
   };
 
   // 월별 PDCA 1줄 Gantt의 색상 및 텍스트를 다중 선택 상태에 맞춰 반환해 주는 헬퍼 스타일 함수
-  const getMilestoneStyle = (stepList, monthNum) => {
+  const getMilestoneStyle = (stepList: string | string[], monthNum: string) => {
     const list = getMilestoneArray(stepList);
     
     // 0개 선택
@@ -2072,7 +2157,7 @@ export default function ProcurementManager({
     }
     
     // 각 단계별 텍스트 및 색상 매핑 (기획 P, 승인 A, 입찰 B, 구매 Pr, 검수 I 및 영문 약어 호환)
-    const stepMeta = {
+    const stepMeta: Record<string, { text: string; color: string }> = {
       "기획": { text: "P", color: "#f59e0b" },
       "승인": { text: "A", color: "#3b82f6" },
       "입찰": { text: "B", color: "#06b6d4" },
@@ -2122,14 +2207,14 @@ export default function ProcurementManager({
   };
 
   // 동적으로 연계 프로그램을 획득하는 헬퍼 함수 (projects prop 연계 및 하드코딩 Fallback 제공)
-  const getDynamicPrograms = (targetUnit) => {
+  const getDynamicPrograms = (targetUnit: string) => {
     const unitKey = targetUnit || formData.unit;
     if (projects && projects.length > 0) {
       for (const proj of projects) {
         if (proj.units && proj.units.length > 0) {
-          const matchedUnit = proj.units.find(u => u.id === unitKey);
+          const matchedUnit = proj.units.find((u: any) => u.id === unitKey);
           if (matchedUnit && matchedUnit.programs) {
-            return matchedUnit.programs.map(prog => ({
+            return matchedUnit.programs.map((prog: any) => ({
               id: prog.id,
               name: prog.title
             }));
@@ -2140,7 +2225,7 @@ export default function ProcurementManager({
     return PROGRAMS_BY_UNIT[unitKey] || [];
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     if (name === "year") {
       const nextYear = Number(value);
@@ -2164,7 +2249,7 @@ export default function ProcurementManager({
       }));
     } else {
       setFormData(prev => {
-        const next = { ...prev, [name]: value };
+        const next: ProcurementFormData = { ...prev, [name]: value };
         // [교육용 주석] 기자재 모달이고 dateP(기획∙승인 일자)가 변경될 때 dateA(승인 일자)도 동일하게 설정하여 DB 호환성 유지
         if (name === "dateP" && modalType === "equip") {
           next.dateA = value;
@@ -2174,7 +2259,7 @@ export default function ProcurementManager({
     }
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
@@ -2652,7 +2737,7 @@ export default function ProcurementManager({
     });
   };
 
-  const openAddModal = (type) => {
+  const openAddModal = (type: "env" | "equip" | "service") => {
     setModalType(type);
     setIsEditMode(false);
     setEditingItemId(null);
@@ -2740,14 +2825,14 @@ export default function ProcurementManager({
     setIsAddModalOpen(true);
   };
 
-  const openEditModal = (equip) => {
+  const openEditModal = (equip: ProcurementItem) => {
     const currentModalType = subTab === "env_improvement" ? "env" : subTab === "major_services" ? "service" : "equip";
     setModalType(currentModalType);
     setIsEditMode(true);
-    setEditingItemId(equip.id);
-    const docParts = (equip.relatedDocs || "").split(",").map(d => d.trim()).filter(Boolean);
+    setEditingItemId(equip.id ?? null);
+    const docParts = (equip.relatedDocs || "").split(",").map((d: string) => d.trim()).filter(Boolean);
     const descText = equip.description || "";
-    const descParts = descText.split("\n").map(l => l.trim());
+    const descParts = descText.split("\n").map((l: string) => l.trim());
     setFormData({
       year: equip.year,
       unit: equip.unit,
@@ -2849,11 +2934,9 @@ export default function ProcurementManager({
       programName: equip.programName || "",
       datePp: equip.datePp || "",
       dateRfo: equip.dateRfo || "",
-      dateB: equip.dateB || "",
       dateEs: equip.dateEs || "",
       dateC: equip.dateC || "",
-      dateE: equip.dateE || "",
-      dateI: equip.dateI || ""
+      dateE: equip.dateE || ""
     });
     // 업로드 진행률 리셋
     setUploadProgressPlan(0);
@@ -3360,7 +3443,7 @@ export default function ProcurementManager({
                       lastActivePhase = sortedActive[0];
                     }
 
-                    const arrowsToRender = [];
+                    const arrowsToRender: Array<{ cellIdx: number; leftPercent: string; color: string }> = [];
                     const segments = [
                       { start: idxP, end: idxA, color: "#f59e0b" },
                       { start: idxA, end: idxB, color: "#3b82f6" },
@@ -3441,10 +3524,10 @@ export default function ProcurementManager({
                         </td>
                         
                         {monthsOrder.map((m, currIdx) => {
-                          const dynamicMilestones = getMilestonesFromDates(equip, selectedYear);
+                          const dynamicMilestones = getMilestonesFromDates(equip, selectedYear || 1);
                           const stepList = dynamicMilestones[m] || [];
 
-                          const getSegmentColorForPos = (pos) => {
+                          const getSegmentColorForPos = (pos: number) => {
                             if (idxP !== null && idxA !== null && pos >= idxP && pos <= idxA) return "#f59e0b";
                             if (idxA !== null && idxB !== null && pos >= idxA && pos <= idxB) return "#3b82f6";
                             if (idxB !== null && idxPr !== null && pos >= idxB && pos <= idxPr) return "#06b6d4";
@@ -3455,7 +3538,7 @@ export default function ProcurementManager({
                           const leftColor = getSegmentColorForPos(currIdx - 0.5);
                           const rightColor = getSegmentColorForPos(currIdx + 0.5);
 
-                          const envPhaseMap = {
+                          const envPhaseMap: Record<string, { code: string; label: string; color: string }> = {
                             "P": { code: "PA", label: "기획∙승인", color: "#f59e0b" },
                             "A": { code: "RD", label: "요청∙설계", color: "#3b82f6" },
                             "B": { code: "PBC", label: "구매∙입찰∙계약", color: "#06b6d4" },
@@ -3465,7 +3548,7 @@ export default function ProcurementManager({
 
                           const hasMilestone = stepList.length > 0;
                           
-                          const getEnvStatusText = (item) => {
+                          const getEnvStatusText = (item: ProcurementItem) => {
                             if (item.dateI) return "검수 완료";
                             if (item.datePr) return "시공 중";
                             if (item.dateB) return "구매∙입찰∙계약 중";
@@ -3487,11 +3570,11 @@ export default function ProcurementManager({
                             primaryCode = info.code;
                             phaseLabel = info.label;
                             phaseColor = info.color;
-                            phaseDate = rawCode === "P" ? equip.dateP :
-                                        rawCode === "A" ? equip.dateA :
-                                        rawCode === "B" ? equip.dateB :
-                                        rawCode === "Pr" ? equip.datePr :
-                                        equip.dateI;
+                            phaseDate = rawCode === "P" ? (equip.dateP || "") :
+                                        rawCode === "A" ? (equip.dateA || "") :
+                                        rawCode === "B" ? (equip.dateB || "") :
+                                        rawCode === "Pr" ? (equip.datePr || "") :
+                                        equip.dateI || "";
                           }
 
                           const colorSet = 
@@ -3554,13 +3637,13 @@ export default function ProcurementManager({
                                 {shouldShowBalloon && (
                                   <div 
                                     className="status-flag-balloon"
-                                    style={{
+                                    style={({
                                       "--bg-color": colorSet.bg,
                                       "--shadow-color": colorSet.shadow,
                                       "--border-color": colorSet.border,
                                       bottom: "100%",
                                       marginBottom: "4px"
-                                    }}
+                                    } as React.CSSProperties)}
                                   >
                                     {currentStatus}
                                   </div>
@@ -4184,7 +4267,7 @@ export default function ProcurementManager({
                       const qty = Number(equip.quantity) || 0;
                       const total = price * qty;
 
-                      const getEquipStatus = (eq) => {
+                      const getEquipStatus = (eq: ProcurementItem) => {
                         if (!eq.dateP && !eq.datePr && !eq.dateB && !eq.dateI) {
                           return "준비중";
                         }
@@ -4205,7 +4288,7 @@ export default function ProcurementManager({
                       const currentStatus = getEquipStatus(equip);
 
                       const monthsOrder = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
-                      const getMonthIndexLocal = (dateStr) => {
+                      const getMonthIndexLocal = (dateStr?: string) => {
                         if (!dateStr) return null;
                         const date = new Date(dateStr);
                         if (isNaN(date.getTime())) return null;
@@ -4225,8 +4308,8 @@ export default function ProcurementManager({
                       const idxB = getMonthIndexLocal(equip.dateB);
                       const idxI = getMonthIndexLocal(equip.dateI);
 
-                      const getPhaseColor = (code) => {
-                        const colors = {
+                      const getPhaseColor = (code: string) => {
+                        const colors: Record<string, string> = {
                           "PA": "#f59e0b",
                           "Pr": "#a78bfa",
                           "BC": "#06b6d4",
@@ -4235,8 +4318,8 @@ export default function ProcurementManager({
                         return colors[code] || "#38bdf8";
                       };
 
-                      const getPhaseLabel = (code) => {
-                        const labels = {
+                      const getPhaseLabel = (code: string) => {
+                        const labels: Record<string, string> = {
                           "PA": "기획∙승인",
                           "Pr": "구매신청",
                           "BC": "입찰∙계약",
@@ -4325,7 +4408,7 @@ export default function ProcurementManager({
                             {(() => {
                               // 개행으로 구분된 데이터를 구입목적과 활용계획으로 쪼갭니다 (요구사항 3)
                               const text = equip.description || equip.opPlan || "";
-                              const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+                              const lines = text.split("\n").map((l: string) => l.trim()).filter(Boolean);
                               const purpose = lines[0] || "-";
                               const plan = lines[1] || "-";
                               return (
@@ -5525,7 +5608,7 @@ export default function ProcurementManager({
                       onChange={handleInputChange} 
                       className="form-select" 
                     >
-                      {getDynamicPrograms().map(p => (
+                      {getDynamicPrograms(formData.unit).map((p: any) => (
                         <option key={p.id} value={p.name}>[{p.id}] {p.name}</option>
                       ))}
                     </select>
@@ -5649,13 +5732,13 @@ export default function ProcurementManager({
                     <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>품명</label>
                     <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="예: 임상 실습용 스마트 베드" className="form-input" />
                   </div>
-                  {modalType !== "env" && (
+                  {(modalType as string) !== "env" && (
                     <div>
                       <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>규격</label>
                       <input type="text" name="spec" value={formData.spec || ""} onChange={handleInputChange} placeholder="예: 20자유도(DoF) 초정밀 관절 제어 메커니즘 탑재" className="form-input" />
                     </div>
                   )}
-                  {modalType !== "env" && (() => {
+                  {(modalType as string) !== "env" && (() => {
                     const priceVal = parseFloat(formData.unitPrice || 0);
                     const qtyVal = parseFloat(formData.quantity || 0);
                     const totalInMillion = (priceVal * qtyVal).toFixed(2);
@@ -5693,7 +5776,7 @@ export default function ProcurementManager({
                     );
                   })()}
 
-                  {modalType === "env" && (
+                  {(modalType as string) === "env" && (
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                       <div>
                         <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>구축목적</label>
@@ -5710,14 +5793,14 @@ export default function ProcurementManager({
                     <span style={{ display: "block", fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)", marginBottom: "0.75rem" }}>
                       📅 단계별 이벤트 일자 입력 (선택 입력)
                     </span>
-                    <div style={{ display: "grid", gridTemplateColumns: modalType === "env" ? "repeat(5, 1fr)" : "repeat(4, 1fr)", gap: "0.5rem" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: (modalType as string) === "env" ? "repeat(5, 1fr)" : "repeat(4, 1fr)", gap: "0.5rem" }}>
                       <div>
                         <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
                           기획∙승인(PA) 일자
                         </label>
                         <input type="date" name="dateP" value={formData.dateP || ""} onChange={handleInputChange} className="form-input" style={{ fontSize: "0.72rem", padding: "0.4rem 0.35rem" }} />
                       </div>
-                      {modalType === "env" && (
+                      {(modalType as string) === "env" && (
                         <>
                           <div>
                             <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.25rem" }}>
@@ -5739,7 +5822,7 @@ export default function ProcurementManager({
                           </div>
                         </>
                       )}
-                      {modalType !== "env" && (
+                      {(modalType as string) !== "env" && (
                         <>
                           <div>
                             <label style={{ display: "block", fontSize: "0.7rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
@@ -5847,7 +5930,7 @@ export default function ProcurementManager({
                           />
 
                           {/* 업로드된 다중 기획문서 목록 루프 */}
-                          {(formData.docPlanFileList || []).map((fileItem) => (
+                          {(formData.docPlanFileList || []).map((fileItem: any) => (
                             <div key={fileItem.id} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", background: "rgba(0,0,0,0.3)", padding: "0.45rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)" }}>
                               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
                                 <span style={{ fontSize: "0.75rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }} title={fileItem.name}>
@@ -5955,7 +6038,7 @@ export default function ProcurementManager({
                           />
 
                           {/* 업로드된 다중 구매문서 목록 루프 */}
-                          {(formData.docPurchaseFileList || []).map((fileItem) => (
+                          {(formData.docPurchaseFileList || []).map((fileItem: any) => (
                             <div key={fileItem.id} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", background: "rgba(0,0,0,0.3)", padding: "0.45rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)" }}>
                               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
                                 <span style={{ fontSize: "0.75rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }} title={fileItem.name}>
@@ -6063,7 +6146,7 @@ export default function ProcurementManager({
                           />
 
                           {/* 업로드된 다중 입찰문서 목록 루프 */}
-                          {(formData.docBidFileList || []).map((fileItem) => (
+                          {(formData.docBidFileList || []).map((fileItem: any) => (
                             <div key={fileItem.id} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", background: "rgba(0,0,0,0.3)", padding: "0.45rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)" }}>
                               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
                                 <span style={{ fontSize: "0.75rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }} title={fileItem.name}>
@@ -6171,7 +6254,7 @@ export default function ProcurementManager({
                           />
 
                           {/* 업로드된 다중 검수문서 목록 루프 */}
-                          {(formData.docCheckFileList || []).map((fileItem) => (
+                          {(formData.docCheckFileList || []).map((fileItem: any) => (
                             <div key={fileItem.id} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", background: "rgba(0,0,0,0.3)", padding: "0.45rem 0.6rem", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.05)" }}>
                               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem" }}>
                                 <span style={{ fontSize: "0.75rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }} title={fileItem.name}>
@@ -6324,7 +6407,7 @@ export default function ProcurementManager({
                         className="form-select" 
                       >
                         <option value="">(연계 프로그램 선택 안 함)</option>
-                        {getDynamicPrograms(formData.unit).map(prog => (
+                        {getDynamicPrograms(formData.unit).map((prog: any) => (
                           <option key={prog.id} value={`${prog.id}|${prog.name}`}>
                             [{prog.id}] {prog.name}
                           </option>
@@ -6561,7 +6644,7 @@ export default function ProcurementManager({
                       <input type="file" id="file-plan-upload-serv" onChange={(e) => handleFileChange("proposal", e)} style={{ display: "none" }} />
                       
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                        {(formData.docPlanFileList || []).map(fileItem => (
+                        {(formData.docPlanFileList || []).map((fileItem: any) => (
                           <div key={fileItem.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", background: "rgba(0,0,0,0.2)", padding: "0.35rem 0.5rem", borderRadius: "4px" }}>
                             <span style={{ fontSize: "0.72rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }}>
                               📄 {fileItem.name} ({formatToThousandWon(fileItem.size)} KB)
@@ -6600,7 +6683,7 @@ export default function ProcurementManager({
                       <input type="file" id="file-purchase-upload-serv" onChange={(e) => handleFileChange("purchase", e)} style={{ display: "none" }} />
                       
                       <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                        {(formData.docPurchaseFileList || []).map(fileItem => (
+                        {(formData.docPurchaseFileList || []).map((fileItem: any) => (
                           <div key={fileItem.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", background: "rgba(0,0,0,0.2)", padding: "0.35rem 0.5rem", borderRadius: "4px" }}>
                             <span style={{ fontSize: "0.72rem", color: "white", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", flex: 1 }}>
                               📄 {fileItem.name} ({formatToThousandWon(fileItem.size)} KB)
@@ -6830,7 +6913,7 @@ export default function ProcurementManager({
                       cursor: "pointer"
                     }}
                   >
-                    {planList.map((f, idx) => (
+                    {planList.map((f: any, idx: number) => (
                       <option key={f.id || idx} value={idx}>
                         {idx + 1}. {f.name.slice(0, 45)} {f.aiData ? `(${f.aiData.docNo})` : ""}
                       </option>
@@ -6862,7 +6945,7 @@ export default function ProcurementManager({
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
                     <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
                     <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                      {(activeAi.goals || []).map((goal, idx) => (
+                      {(activeAi.goals || []).map((goal: string, idx: number) => (
                         <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{goal}</li>
                       ))}
                     </ul>
@@ -6899,7 +6982,7 @@ export default function ProcurementManager({
                     <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
                       <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>주요 추진 전략 목표</span>
                       <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                        {summary.goals.map((goal, idx) => (
+                        {summary.goals.map((goal: string, idx: number) => (
                           <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{goal}</li>
                         ))}
                       </ul>
@@ -7020,7 +7103,7 @@ export default function ProcurementManager({
                       cursor: "pointer"
                     }}
                   >
-                    {purchaseList.map((f, idx) => (
+                    {purchaseList.map((f: any, idx: number) => (
                       <option key={f.id || idx} value={idx}>
                         {idx + 1}. {f.name.slice(0, 45)} {f.aiData ? `(${f.aiData.docNo})` : ""}
                       </option>
@@ -7064,7 +7147,7 @@ export default function ProcurementManager({
                   <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
                     <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>조달 위탁 요청 기술 사양</span>
                     <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: "1.5", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                      {(activeAi.specs || []).map((spec, idx) => (
+                      {(activeAi.specs || []).map((spec: string, idx: number) => (
                         <li key={idx} style={{ color: "rgba(255,255,255,0.85)" }}>{spec}</li>
                       ))}
                     </ul>
@@ -7245,7 +7328,7 @@ export default function ProcurementManager({
                             {isEnv ? "시공 범위 및 실적" : "참가 자격 및 규격"}
                           </td>
                           <td style={{ padding: "0.5rem", color: "rgba(255,255,255,0.85)", lineHeight: "1.4" }}>
-                            {(ai.qualifications || []).map((qual, idx) => (
+                            {(ai.qualifications || []).map((qual: string, idx: number) => (
                               <div key={idx} style={{ marginBottom: "0.2rem" }}>- {qual}</div>
                             ))}
                           </td>
