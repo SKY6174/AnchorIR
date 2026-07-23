@@ -2480,8 +2480,10 @@ ${selectedMeetingAgendas.map((a, idx) => {
         link.download = customFileName;
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
-        window.setTimeout(() => window.URL.revokeObjectURL(downloadUrl), 30_000);
+        window.setTimeout(() => {
+          link.remove();
+          window.URL.revokeObjectURL(downloadUrl);
+        }, 30_000);
         return;
       }
 
