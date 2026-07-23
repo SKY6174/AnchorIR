@@ -5915,12 +5915,13 @@ export default function App() {
           if (window.__HAS_NO_ADVANCED_ENV_COLUMNS__) {
             const safePayload = insertPayload.map(item => {
               const {
-                dept_name, division_name, date_p, date_a, date_b, date_pr, date_i,
-                doc_plan, doc_purchase, doc_bid,
-                doc_plan_file_name, doc_purchase_file_name, doc_bid_file_name,
-                doc_plan_file_size, doc_purchase_file_size, doc_bid_file_size,
-                doc_plan_file_url, doc_purchase_file_url, doc_bid_file_url,
-                ai_proposal_data, ai_purchase_data, ai_bid_data, related_docs,
+                dept_name: _dept_name, division_name: _division_name,
+                date_p: _date_p, date_a: _date_a, date_b: _date_b, date_pr: _date_pr, date_i: _date_i,
+                doc_plan: _doc_plan, doc_purchase: _doc_purchase, doc_bid: _doc_bid,
+                doc_plan_file_name: _doc_plan_file_name, doc_purchase_file_name: _doc_purchase_file_name, doc_bid_file_name: _doc_bid_file_name,
+                doc_plan_file_size: _doc_plan_file_size, doc_purchase_file_size: _doc_purchase_file_size, doc_bid_file_size: _doc_bid_file_size,
+                doc_plan_file_url: _doc_plan_file_url, doc_purchase_file_url: _doc_purchase_file_url, doc_bid_file_url: _doc_bid_file_url,
+                ai_proposal_data: _ai_proposal_data, ai_purchase_data: _ai_purchase_data, ai_bid_data: _ai_bid_data, related_docs: _related_docs,
                 ...rest
               } = item;
               return rest;
@@ -5936,12 +5937,13 @@ export default function App() {
               window.__HAS_NO_ADVANCED_ENV_COLUMNS__ = true;
               const safePayload = insertPayload.map(item => {
                 const {
-                  dept_name, division_name, date_p, date_a, date_b, date_pr, date_i,
-                  doc_plan, doc_purchase, doc_bid,
-                  doc_plan_file_name, doc_purchase_file_name, doc_bid_file_name,
-                  doc_plan_file_size, doc_purchase_file_size, doc_bid_file_size,
-                  doc_plan_file_url, doc_purchase_file_url, doc_bid_file_url,
-                  ai_proposal_data, ai_purchase_data, ai_bid_data, related_docs,
+                  dept_name: _dept_name, division_name: _division_name,
+                  date_p: _date_p, date_a: _date_a, date_b: _date_b, date_pr: _date_pr, date_i: _date_i,
+                  doc_plan: _doc_plan, doc_purchase: _doc_purchase, doc_bid: _doc_bid,
+                  doc_plan_file_name: _doc_plan_file_name, doc_purchase_file_name: _doc_purchase_file_name, doc_bid_file_name: _doc_bid_file_name,
+                  doc_plan_file_size: _doc_plan_file_size, doc_purchase_file_size: _doc_purchase_file_size, doc_bid_file_size: _doc_bid_file_size,
+                  doc_plan_file_url: _doc_plan_file_url, doc_purchase_file_url: _doc_purchase_file_url, doc_bid_file_url: _doc_bid_file_url,
+                  ai_proposal_data: _ai_proposal_data, ai_purchase_data: _ai_purchase_data, ai_bid_data: _ai_bid_data, related_docs: _related_docs,
                   ...rest
                 } = item;
                 return rest;
@@ -6039,8 +6041,8 @@ export default function App() {
           if (window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__) {
             const safePayload = insertPayload.map(item => {
               const {
-                date_p, date_a, date_b, date_pr, date_i,
-                doc_plan, doc_purchase, doc_bid,
+                date_p: _date_p, date_a: _date_a, date_b: _date_b, date_pr: _date_pr, date_i: _date_i,
+                doc_plan: _doc_plan, doc_purchase: _doc_purchase, doc_bid: _doc_bid,
                 ...rest
               } = item;
               return rest;
@@ -6056,8 +6058,8 @@ export default function App() {
               window.__HAS_NO_ADVANCED_EQUIP_COLUMNS__ = true;
               const safePayload = insertPayload.map(item => {
                 const {
-                  date_p, date_a, date_b, date_pr, date_i,
-                  doc_plan, doc_purchase, doc_bid,
+                  date_p: _date_p, date_a: _date_a, date_b: _date_b, date_pr: _date_pr, date_i: _date_i,
+                  doc_plan: _doc_plan, doc_purchase: _doc_purchase, doc_bid: _doc_bid,
                   ...rest
                 } = item;
                 return rest;
