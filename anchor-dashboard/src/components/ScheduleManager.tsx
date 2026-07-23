@@ -25,6 +25,12 @@ import {
   isWriterExcluded,
   sortMembersByRole
 } from "../features/schedule/utils/schedule-member-utils";
+import {
+  getDaysInMonth,
+  getOneHourLater,
+  getStartDayOfWeek,
+  getYoutubeEmbedUrl
+} from "../features/schedule/utils/schedule-display-utils";
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 const scheduleDb = supabase as any;
@@ -2108,35 +2114,6 @@ Gemini 피드백: \n${geminiCritiqueText}
     }, 1200);
   };
 
-  // 유튜브 임베드용 ID 추출 헬퍼
-  const getYoutubeEmbedUrl = (url: string | undefined) => {
-    if (!url) return null;
-    const trimmed = url.trim();
-    let videoId = "";
-
-    if (trimmed.includes("v=")) {
-      const parts = trimmed.split("v=");
-      if (parts[1]) {
-        videoId = parts[1].split("&")[0];
-      }
-    } else if (trimmed.includes("youtu.be/")) {
-      const parts = trimmed.split("youtu.be/");
-      if (parts[1]) {
-        videoId = parts[1].split("?")[0].split("&")[0];
-      }
-    } else if (trimmed.includes("embed/")) {
-      const parts = trimmed.split("embed/");
-      if (parts[1]) {
-        videoId = parts[1].split("?")[0];
-      }
-    }
-
-    if (videoId && videoId.trim().length === 11) {
-      return `https://www.youtube.com/embed/${videoId.trim()}`;
-    }
-    return null;
-  };
-
   // 회의록 관리 부서별 필터 및 선택 상태 추가
   const [selectedDeptFilters, setSelectedDeptFilters] = useState<string[]>([]);
   const [selectedMeetingId, setSelectedMeetingId] = useState<number | string | null>(null);
@@ -2220,19 +2197,6 @@ Gemini 피드백: \n${geminiCritiqueText}
       setActivePressId(null);
     }
   }, [pressReleases, selectedPressType, activePressId, selectedYear]);
-
-  // 시작시간 기준으로 1시간 경과된 시간 문자열을 반환하는 헬퍼 함수
-  const getOneHourLater = (timeStr: string) => {
-    if (!timeStr) return "";
-    const parts = timeStr.split(":");
-    if (parts.length < 2) return "";
-    let hours = parseInt(parts[0], 10);
-    let minutes = parseInt(parts[1], 10);
-    hours = (hours + 1) % 24;
-    const mm = String(minutes).padStart(2, "0");
-    const hh = String(hours).padStart(2, "0");
-    return `${hh}:${mm}`;
-  };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -3971,17 +3935,6 @@ Gemini 피드백: \n${geminiCritiqueText}
       committeeType: "agency"
     });
     setIsAddModalOpen(true);
-  };
-
-  // 캘린더 드로잉 헬퍼
-  const getDaysInMonth = (year: number, month: number) => {
-    // JavaScript Date 객체를 사용하여 해당 연도와 월의 총 일수를 동적으로 구합니다 (month는 1-indexed)
-    return new Date(year, month, 0).getDate();
-  };
-
-  const getStartDayOfWeek = (year: number, month: number) => {
-    // JavaScript Date 객체를 사용하여 해당 연도와 월의 1일 시작 요일을 구합니다 (0: 일요일, ..., 6: 토요일)
-    return new Date(year, month - 1, 1).getDay();
   };
 
   // 💡 [교육용 한글 주석 - 성능 최적화 설명]
