@@ -116,6 +116,17 @@ function mapStorageError(error: { message?: string; statusCode?: string | number
   return new VoteFunctionError("STORAGE_UPLOAD_FAILED", "STORAGE_UPLOAD_FAILED", 503);
 }
 
+function sanitizeStoragePdfName(fileName: string): string {
+  const withoutExtension = fileName.normalize("NFKD").replace(/\.pdf$/i, "");
+  const asciiBaseName = withoutExtension
+    .replace(/[^\x00-\x7F]/g, "_")
+    .replace(/[^0-9A-Za-z._-]/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^[._-]+|[._-]+$/g, "")
+    .slice(0, 80);
+  return `${asciiBaseName || "document"}.pdf`;
+}
+
 async function getSession(token: string) {
   if (!token || token.length > 128) throw new VoteFunctionError("FORBIDDEN", "FORBIDDEN", 403);
   const tokenHash = await sha256(token);
@@ -454,7 +465,7 @@ async function uploadDocument(request: Request, meetingId: string, fileName: str
   await requireAdmin(request);
   if (!/^[0-9a-f-]{36}$/i.test(meetingId)) throw new VoteFunctionError("NOT_FOUND", "NOT_FOUND", 404);
   const pdf = decodePdf(dataUrl);
-  const safeName = fileName.normalize("NFKC").replace(/[^0-9A-Za-z가-힣._-]/g, "_").slice(-120) || "document.pdf";
+  const safeName = sanitizeStoragePdfName(fileName);
   const objectPath = `${meetingId}/${crypto.randomUUID()}-${safeName}`;
   const { error } = await service.storage.from("committee-meeting-documents")
     .upload(objectPath, pdf, { contentType: "application/pdf", upsert: false });
@@ -512,8 +523,7 @@ async function migrateAttachments(request: Request, batchSize: number) {
   for (const agenda of agendas ?? []) {
     try {
       const pdf = decodePdf(String(agenda.attachment_data));
-      const safeName = String(agenda.attachment_name || "document.pdf")
-        .normalize("NFKC").replace(/[^0-9A-Za-z가-힣._-]/g, "_").slice(-120);
+      const safeName = sanitizeStoragePdfName(String(agenda.attachment_name || "document.pdf"));
       const objectPath = `${agenda.meeting_id}/${agenda.id}-${safeName}`;
       const { error: uploadError } = await service.storage.from("committee-meeting-documents")
         .upload(objectPath, pdf, { contentType: "application/pdf", upsert: false });
