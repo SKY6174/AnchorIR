@@ -265,13 +265,17 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
   useEffect(() => {
     if (selectedYear === 1) {
       setSubTab("main");
-      if (selectedUnitId === "A1가" || !["A1", "A2", "D4", "B1", "B3", "C1", "C3", "C2", "D2", "B2", "D1", "D3", "Total"].includes(selectedUnitId)) {
-        setSelectedUnitId("A1");
-      }
+      setSelectedUnitId(currentUnitId =>
+        currentUnitId === "A1가" || !["A1", "A2", "D4", "B1", "B3", "C1", "C3", "C2", "D2", "B2", "D1", "D3", "Total"].includes(currentUnitId)
+          ? "A1"
+          : currentUnitId
+      );
     } else {
-      if (selectedUnitId === "A1" || !["A1가", "A1나", "A2", "A3", "B1", "B3", "B4", "B2", "C2", "C1", "D1", "D2", "D3", "X0", "Common", "Total"].includes(selectedUnitId)) {
-        setSelectedUnitId("A1가");
-      }
+      setSelectedUnitId(currentUnitId =>
+        currentUnitId === "A1" || !["A1가", "A1나", "A2", "A3", "B1", "B3", "B4", "B2", "C2", "C1", "D1", "D2", "D3", "X0", "Common", "Total"].includes(currentUnitId)
+          ? "A1가"
+          : currentUnitId
+      );
     }
   }, [selectedYear]);
 
@@ -290,6 +294,7 @@ export default function BudgetItemsManager({ projects, currentRole, onUpdateBudg
       };
     });
     setEditedBudgets(init);
+  // oxlint-disable-next-line react/exhaustive-deps -- activeUnit is derived from projects, selectedUnitId, and selectedYear; depending on the render-local aggregate would retrigger initialization.
   }, [selectedUnitId, selectedYear, projects]);
 
   const handleSelectUnit = (unit: BudgetUnit) => {

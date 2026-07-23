@@ -86,12 +86,13 @@ export default function BudgetExecutionManager({ projects = [], currentRole: _cu
 
   // 연차 변경 시 선택된 단위과제 초기값 자동 동기화
   useEffect(() => {
-    setSelectedUnit(unitList[0]);
+    setSelectedUnit(selectedYear === 1 ? "A1" : "A1가");
   }, [selectedYear]);
 
   // 💡 [교육용 한글 주석] 초기 진입 시 Supabase 혹은 LocalStorage 캐시 저장소로부터 이전 업로드 데이터를 불러옵니다.
   useEffect(() => {
     loadSavedData();
+  // oxlint-disable-next-line react/exhaustive-deps -- selectedYear intentionally owns data restoration; a render-local loader must not cause additional remote fetches.
   }, [selectedYear]);
 
   const loadSavedData = async () => {
