@@ -10,6 +10,7 @@ import {
 import { CommitteeVoteContext } from "../types/committee-vote";
 import { buildValidatedVoteItems, createIdempotencyKey } from "../utils/committee-vote-validation";
 import { buildCommitteeHumanCode } from "../utils/committee-code";
+import { formatCommitteeMemberDisplay } from "../utils/committee-member-display";
 
 const COMMITTEE_DISPLAY_NAMES: Record<string, string> = {
   total: "앵커총괄위원회",
@@ -615,9 +616,7 @@ export default function CommitteeExternalVote({ meetingId }: CommitteeExternalVo
           <span className="committee-workspace-session-label">AUTHENTICATED MEMBER</span>
           <div>
             <span>접속 위원</span>
-            <strong>
-              {authMember?.name} {authMember?.rank ? `(${authMember.rank})` : (authMember?.dept ? `(${authMember.dept})` : "")}
-            </strong>
+            <strong>{formatCommitteeMemberDisplay(authMember)}</strong>
           </div>
           <button onClick={handleLogout} className="committee-workspace-logout">
             <LogOut size={16} /> 인증 해제 / 로그아웃
