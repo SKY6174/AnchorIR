@@ -67,7 +67,12 @@
   - **인증 보강 & Fail-Closed 구축**: `resolveApprovedRiseUser` 공통 승인 프로필 resolver 도입, unknown role `RESEARCHER` fallback 취약성 제거 및 세션 폐기 보안 보강 (`ce81d16`, `fc8ca1b`, `7b7b819`).
   - **외부위원 로그인 화면 UI/UX 리디자인 (`CommitteeExternalVote.tsx`)**: 기존 서면심의/전자서명 100% 보존, 데스크톱 2열/모바일(390px) 1열 반응형 구조 및 URL 위원회 코드 자동 표시 (`f01428b`).
   - **종합 품질 & PAdES 전자서명/OTP 기틀 마련**: Rolldown `strictExecutionOrder` 설정, Oxlint 접근성 진단, PAdES Edge Function 및 Migration 100 구축 (`dashboard-quality-auth-signing.report.md`, 설계 일치율 86%).
+  - **외부위원 심의 표결 디폴트 중립화**: 최초 진입 시 찬성/5점 자동 선택 현상 제거 및 미선택 중립 색상 처리, 미선택 안건 제출 차단 검증.
+  - **경로형 단축 URL (`/v/{shortCode}`) 시스템 전환**: Google Forms 스타일 경로형 단축 링크 구현, 기존 `?v=` 파라미터 100% 하위 호환 및 단축 링크 테스트 21건 통과 (`894c36b`).
+  - **표준 위원회 관리코드 & 자동 차수 추출 엔진 제정**: `UC-ANCHOR-{연도}-{위원회코드}-{차수}` 표준 규칙 확립 (STEER, PLAN, BUDGET, EVAL 등), 회의 제목 내 차수 자동 파싱 및 테스트 26건 통과 (`13306bf`).
+  - **Supabase DB 마이그레이션 101 적용**: `101_default_committee_public_code.sql` (`public_code` NOT NULL 및 `gen_random_bytes(18)` 자동 기본값 주입).
   - **PDCA 완료 및 문서화**: 갭 분석(`docs/03-analysis/committee-vote-stabilization.analysis.md`) 및 완료 보고서(`docs/04-report/committee-vote-stabilization.report.md`) 작성 완료 (일치율 97%, Complete).
-  - Vercel 프로덕션 배포 완료 (`2f08c79`, `26036e1`, `303eec0`, `e142b85`, `f01428b`).
+  - Vercel 프로덕션 배포 완료 (`2f08c79`, `26036e1`, `303eec0`, `e142b85`, `f01428b`, `894c36b`, `13306bf`).
+
 
 
