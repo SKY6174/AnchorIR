@@ -7318,6 +7318,8 @@ export default function App() {
 
   const handleLoginSuccess = async (user) => {
     setCurrentUser(user);
+    setActiveTab("dashboard");
+    localStorage.setItem("anchor_active_tab", "dashboard");
     localStorage.setItem("anchor_logged_in_user", JSON.stringify(user));
   };
 

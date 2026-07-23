@@ -12,8 +12,8 @@ AS $$
     WHERE u.uuid = auth.uid()
       AND u.approved = true
       AND u.role_key IN (
-        'DIRECTOR', 'G_DIRECTOR', 'HQ_HEAD', 'TEAM_LEADER', 'MANAGER',
-        'RESEARCHER', 'CENTER_ECC', 'CENTER_ICC', 'CENTER_RCC',
+        'ADMIN', 'DIRECTOR', 'G_DIRECTOR', 'HQ_HEAD', 'TEAM_LEADER', 'MANAGER',
+        'CENTER_ECC', 'CENTER_ICC', 'CENTER_RCC',
         'CENTER_NURI', 'CENTER_SPECIAL'
       )
   );

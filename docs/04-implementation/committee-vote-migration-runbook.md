@@ -48,6 +48,8 @@ WHERE (u.uuid IS NOT NULL AND a.id IS NULL)
 8. `supabase/tests/committee-vote-verification.sql`
 9. `committee-vote` Edge Function 배포
 
+운영 검증에서 구형 명단 자동복원 write 또는 과도한 연구원 관리 권한이 발견된 환경은 `097_harden_committee_admin_boundary.sql`을 추가 적용한다.
+
 `committee_vote_migration_summary`에서 다음 항목을 사람이 검토한다.
 
 - `MEMBER_AUTH_MAPPING_MISSING`

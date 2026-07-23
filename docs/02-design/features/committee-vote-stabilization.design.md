@@ -164,6 +164,8 @@ flowchart LR
 - `anon`과 일반 `authenticated` 역할에서 핵심 테이블 직접 write 권한을 회수한다.
 - 외부위원의 DB 접근은 Edge Function과 제한된 security-definer RPC로만 허용한다.
 - 관리자 정책은 `auth.uid()`에 대응하는 승인된 `rise_users`와 허용 역할을 서버에서 검증한다.
+- 위원회 관리 역할은 `ADMIN`, 단장·본부장·운영/팀장 및 센터장 계열로 제한하고 일반 `RESEARCHER`는 관리 write와 보고서 확정을 허용하지 않는다. 위원으로 등록된 사용자의 본인 표결 제출은 별도 roster 검증 경로로 허용한다.
+- 위원회 명단 조회는 절대로 fallback 명단의 자동 삭제·삽입을 유발하지 않는다. 공식 명단이 없거나 조회가 실패하면 빈 상태/오류로 처리한다.
 - security-definer 함수는 고정 `search_path`, 완전 수식 테이블명, 입력 크기 제한, 최소 `EXECUTE` grant를 사용한다.
 - service-role key, HMAC key 및 storage signing 권한은 서버 환경에만 둔다.
 

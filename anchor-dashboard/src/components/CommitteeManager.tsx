@@ -815,63 +815,12 @@ export default function CommitteeManager({
         .order("sort_order", { ascending: true })
         .order("id", { ascending: true });
       if (error) throw error;
-
-      const fallback: CommitteeMember[] = (MOCK_COMMITTEE_MEMBERS_FALLBACK as any)[committeeId] || [
-        { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
-        { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
-      ];
-
-      // 💡 [동기화 버전업 가드] 기존 데이터가 존재하지만 최신 마스터 백업 인원 수보다 적은 경우 구버전으로 판정하여 자동 배정(Upsert)
-      if (data && data.length >= fallback.length) {
-        setMembers(data);
-        localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(data));
-      } else {
-        console.log(`위원회 [${committeeId}]에 소속된 위원 수(${data ? data.length : 0}명)가 최신 마스터 위원 수(${fallback.length}명)보다 적으므로 자동 업그레이드를 시작합니다.`);
-
-        // insert 시 id 필드는 DB auto-increment를 위해 제외
-        const insertPayloads = fallback.map(({ id, ...rest }) => rest);
-
-        try {
-          if (data && data.length > 0) {
-            await supabase.from("committee_members").delete().eq("committee_id", committeeId);
-          }
-          const { error: insErr } = await supabase
-            .from("committee_members")
-            .insert(insertPayloads);
-          if (insErr) throw insErr;
-
-          // 성공 시 최신 정보 다시 조회
-          const { data: refreshedData } = await supabase
-            .from("committee_members")
-            .select(`id, committee_id, type, name, org, dept, rank, location, note, sort_order`)
-            .eq("committee_id", committeeId)
-            .order("sort_order", { ascending: true });
-
-          const finalData = refreshedData && refreshedData.length > 0 ? refreshedData : fallback;
-          setMembers(finalData);
-          localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(finalData));
-        } catch (dbInsErr: any) {
-          // DB 실패 시 로컬 스토리지에 모의 배정 저장
-          console.warn("위원 자동 배정 DB 적재 실패 (오프라인 로컬 저장소 캐싱):", dbInsErr.message);
-          setMembers(fallback);
-          localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(fallback));
-        }
-      }
+      const officialMembers = data || [];
+      setMembers(officialMembers);
+      localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(officialMembers));
     } catch (err: any) {
-      console.error("위원 조회 에러 (로컬 캐시 스위칭 및 강제 마이그레이션):", err.message);
-      const localData = localStorage.getItem(`local_committee_members_${committeeId}`);
-      const parsed = localData ? JSON.parse(localData) : [];
-      const fallback: CommitteeMember[] = (MOCK_COMMITTEE_MEMBERS_FALLBACK as any)[committeeId] || [
-        { committee_id: committeeId, type: "위원장", name: "송경영", org: "울산과학대학교", dept: "산학협력단(앵커)", rank: "단장", location: "교내", note: "", sort_order: 1 },
-        { committee_id: committeeId, type: "위원", name: "이동은", org: "울산과학대학교", dept: "지산학교육센터(ECC)", rank: "센터장", location: "교내", note: "", sort_order: 2 }
-      ];
-
-      if (parsed.length >= fallback.length) {
-        setMembers(parsed);
-      } else {
-        setMembers(fallback);
-        localStorage.setItem(`local_committee_members_${committeeId}`, JSON.stringify(fallback));
-      }
+      console.error("공식 위원 명단 조회 에러:", err.message);
+      setMembers([]);
     }
   };
 

@@ -279,7 +279,7 @@ async function requireAdmin(request: Request) {
     .eq("uuid", user.id)
     .maybeSingle();
   const allowedRoles = new Set([
-    "DIRECTOR", "G_DIRECTOR", "HQ_HEAD", "TEAM_LEADER", "MANAGER", "RESEARCHER",
+    "ADMIN", "DIRECTOR", "G_DIRECTOR", "HQ_HEAD", "TEAM_LEADER", "MANAGER",
     "CENTER_ECC", "CENTER_ICC", "CENTER_RCC", "CENTER_NURI", "CENTER_SPECIAL"
   ]);
   if (roleError || !riseUser?.approved || !allowedRoles.has(riseUser.role_key)) {
