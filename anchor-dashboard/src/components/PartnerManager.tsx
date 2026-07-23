@@ -142,9 +142,9 @@ export default function PartnerManager({ selectedYear }: PartnerManagerProps) {
   // 카테고리 대분류 변경 시 세부분류 초기값 설정
   useEffect(() => {
     const subOptions = SUB_CATEGORY_OPTIONS[formCategory] || [];
-    if (subOptions.length > 0 && !subOptions.includes(formSubCategory)) {
-      setFormSubCategory(subOptions[0]);
-    }
+    setFormSubCategory(currentSubCategory =>
+      subOptions.length > 0 && !subOptions.includes(currentSubCategory) ? subOptions[0] : currentSubCategory
+    );
   }, [formCategory]);
 
   // 모달 열기/닫기 제어

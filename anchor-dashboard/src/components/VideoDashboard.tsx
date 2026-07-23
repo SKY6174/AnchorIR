@@ -80,6 +80,7 @@ export default function VideoDashboard({ initialVideoId }: VideoDashboardProps =
 
   useEffect(() => {
     fetchVideos();
+  // oxlint-disable-next-line react/exhaustive-deps -- this dashboard intentionally loads once on mount; later prop changes must not refetch and reset the user's video selection.
   }, []);
 
   return (

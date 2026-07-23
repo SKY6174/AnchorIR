@@ -329,6 +329,7 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
       setActiveSurveyTab("list");
       setSelectedSurveyId(null);
     }
+  // oxlint-disable-next-line react/exhaustive-deps -- selectedYear intentionally owns this refresh; tab changes must not refetch surveys or reset the current view.
   }, [selectedYear]);
 
   // 6대 수행부서 그룹 정의 및 필터기

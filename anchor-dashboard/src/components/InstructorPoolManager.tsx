@@ -195,21 +195,20 @@ export default function InstructorPoolManager({ currentUser, currentRole: _curre
 
   // 💡 교내 여부 및 연도 변경 시 학부(과) 자동 디폴트 셋팅
   useEffect(() => {
-    if (newHistoryForm.is_internal) {
-      const depts = getDeptsByYear(newHistoryForm.year);
-      if (depts.length > 0) {
-        if (!depts.includes(newHistoryForm.department)) {
-          setNewHistoryForm(prev => ({ ...prev, department: depts[0] }));
+    setNewHistoryForm(currentForm => {
+      const depts = getDeptsByYear(currentForm.year);
+      if (currentForm.is_internal) {
+        if (depts.length > 0 && !depts.includes(currentForm.department)) {
+          return { ...currentForm, department: depts[0] };
         }
-      } else {
-        setNewHistoryForm(prev => ({ ...prev, department: "" }));
+        if (depts.length === 0 && currentForm.department) {
+          return { ...currentForm, department: "" };
+        }
+      } else if (depts.includes(currentForm.department)) {
+        return { ...currentForm, department: "" };
       }
-    } else {
-      const depts = getDeptsByYear(newHistoryForm.year);
-      if (depts.includes(newHistoryForm.department)) {
-        setNewHistoryForm(prev => ({ ...prev, department: "" }));
-      }
-    }
+      return currentForm;
+    });
   }, [newHistoryForm.year, newHistoryForm.is_internal]);
 
   // 1. 교∙강사 마스터 리스트 로드 (고정 정보)
