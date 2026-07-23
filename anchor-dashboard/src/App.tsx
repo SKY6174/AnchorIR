@@ -45,7 +45,7 @@ import { useAgreementsAutosave } from "./features/agreements/hooks/use-agreement
 import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchPendingVersionRequests, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
 import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
-import { deleteScholarshipsByYear, deleteUnifiedCertificatesByYear, insertScholarships, insertUnifiedCertificates } from "./features/management/services/management-record-service";
+import { useScholarshipAutosave, useUnifiedCertificateAutosave } from "./features/management/hooks/use-management-record-autosave";
 import { deleteRiseMember, fetchRiseMembers, insertRiseMember, upsertRiseMember, upsertRiseMembers } from "./features/management/services/member-service";
 import { saveMenuVisibility } from "./features/management/services/portal-config-service";
 import { useApprovalDataRefresh, useRegisteredUsersRefresh } from "./features/management/hooks/use-management-refresh";
@@ -3361,145 +3361,31 @@ export default function App() {
   // oxlint-disable-next-line react/exhaustive-deps -- press changes, year, and load guards own synchronization; auth and active-year restoration are safety checks, not write triggers.
   }, [pressReleases, selectedYear, isDbLoaded, isFetchCompleted]);
 
-  // 3-2) Unified Certificates 자동 저장 디바운스 훅 (통합 캐시 사용 및 selectedYear 의존성 배제)
-  useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted || !isUnifiedCertificatesLoaded) return;
-    if (!currentUser || currentRole?.id === "GUEST") return;
+  // 3-2) Unified Certificates 자동 저장
+  useUnifiedCertificateAutosave({
+    unifiedCertificates,
+    selectedYear,
+    isDbLoaded,
+    isFetchCompleted,
+    isLoaded: isUnifiedCertificatesLoaded,
+    canWrite: Boolean(currentUser && currentRole?.id !== "GUEST"),
+    fetchedUnifiedCertificatesRef,
+    safeSetLocalStorage,
+    setSyncStatus
+  });
 
-    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
-    const currentCleanStr = JSON.stringify(unifiedCertificates);
-    if (!fetchedUnifiedCertificatesRef.current || fetchedUnifiedCertificatesRef.current === currentCleanStr) {
-      try {
-        const clean = unifiedCertificates.map(item => {
-          const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
-          const cleanFileData = isUrl ? item.fileData : null;
-          return { ...item, fileData: cleanFileData };
-        });
-        safeSetLocalStorage("anchor_cache_unified_certificates_all", JSON.stringify(clean), selectedYear);
-      } catch (e) {
-        console.warn("Failed to write unified certificates cache:", e);
-      }
-      return;
-    }
-
-    // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
-    if (!unifiedCertificates || unifiedCertificates.length === 0) return;
-    try {
-      const clean = unifiedCertificates.map(item => {
-        const isUrl = item.fileData && (item.fileData.startsWith("http://") || item.fileData.startsWith("https://"));
-        const cleanFileData = isUrl ? item.fileData : null;
-        return { ...item, fileData: cleanFileData };
-      });
-      safeSetLocalStorage("anchor_cache_unified_certificates_all", JSON.stringify(clean), selectedYear);
-    } catch (e) {
-      console.warn("Failed to write unified certificates cache:", e);
-    }
-    setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
-      try {
-        const activeYears = Array.from(new Set([selectedYear, ...unifiedCertificates.map(c => c.year)]));
-        for (const yr of activeYears) {
-          await deleteUnifiedCertificatesByYear(yr);
-          const filtered = unifiedCertificates.filter(c => c.year === yr);
-          if (filtered.length > 0) {
-            const { error } = await insertUnifiedCertificates(
-              filtered.map(c => ({
-                year: c.year,
-                manager_dept: c.managerDept,
-                manager_name: c.managerName,
-                cert_no: c.certNo,
-                cert_type: c.certType,
-                note: c.note,
-                team_name: c.teamName,
-                recipient_name: c.recipientName,
-                student_id: c.studentId,
-                birth_date: c.birthDate,
-                phone: c.phone,
-                issue_date: c.issueDate,
-                project_group: c.projectGroup,
-                issuer: c.issuer,
-                content: c.content,
-                award_type: c.awardType || null
-              }))
-            );
-            if (error) throw error;
-          }
-        }
-        fetchedUnifiedCertificatesRef.current = currentCleanStr; // 🛡️ 성공 시 원본 상태 동기화
-        setSyncStatus("synced");
-      } catch (e) {
-        console.error("Failed to sync unified certificates to Supabase:", e);
-        setSyncStatus("error");
-      }
-    }, 150);
-    return () => clearTimeout(timer);
-  // oxlint-disable-next-line react/exhaustive-deps -- certificate changes and load guards own synchronization; year and auth restoration must not trigger delete-and-reinsert writes.
-  }, [unifiedCertificates, isDbLoaded, isFetchCompleted, isUnifiedCertificatesLoaded]);
-
-  // 3-3) Scholarships 자동 저장 디바운스 훅
-  useEffect(() => {
-    if (!isDbLoaded || !isFetchCompleted || !isScholarshipsLoaded) return;
-    if (!currentUser || currentRole?.id === "GUEST") return;
-
-    // 💡 [정합성 안전 가드] 원격 DB fetch 결과와 일치하면 불필요한 자동 저장(덮어쓰기 오염)을 스킵합니다.
-    const currentCleanStr = JSON.stringify(scholarships);
-    if (!fetchedScholarshipsRef.current || fetchedScholarshipsRef.current === currentCleanStr) {
-      try {
-        const clean = scholarships.map(item => ({ ...item }));
-        safeSetLocalStorage("anchor_cache_scholarships_all", JSON.stringify(clean), selectedYear);
-      } catch (e) {
-        console.warn("Failed to write scholarships cache:", e);
-      }
-      return;
-    }
-
-    // 💡 안전 가드: 데이터 로딩이 완료되지 않았거나 일시적 통신 지연 시 빈 배열([])이 원격 DB를 덮어쓰는 사고 방지
-    if (!scholarships || scholarships.length === 0) return;
-    try {
-      const clean = scholarships.map(item => ({ ...item }));
-      safeSetLocalStorage("anchor_cache_scholarships_all", JSON.stringify(clean), selectedYear);
-    } catch (e) {
-      console.warn("Failed to write scholarships cache:", e);
-    }
-    setSyncStatus("syncing");
-    const timer = setTimeout(async () => {
-      try {
-        const activeYears = Array.from(new Set([selectedYear, ...scholarships.map(c => c.year)]));
-        for (const yr of activeYears) {
-          await deleteScholarshipsByYear(yr);
-          const filtered = scholarships.filter(c => c.year === yr);
-          if (filtered.length > 0) {
-            const payload = filtered.map(item => ({
-              year: item.year,
-              dept: item.dept,
-              major: item.major,
-              course: item.course,
-              student_id: item.studentId,
-              name: item.name,
-              resident_id: item.residentId,
-              grade: item.grade,
-              enroll_status: item.enrollStatus,
-              reg_status: item.regStatus,
-              amount: item.amount,
-              bank_name: item.bankName,
-              account_num: item.accountNum,
-              account_holder: item.accountHolder,
-              approval_date: item.approvalDate
-            }));
-            const { error } = await insertScholarships(payload);
-            if (error) throw error;
-          }
-        }
-        fetchedScholarshipsRef.current = currentCleanStr; // 🛡️ 성공 시 원본 상태 동기화
-        setSyncStatus("synced");
-      } catch (e) {
-        console.error("Failed to sync scholarships to Supabase:", e);
-        setSyncStatus("error");
-      }
-    }, 150);
-    return () => clearTimeout(timer);
-  // oxlint-disable-next-line react/exhaustive-deps -- scholarship changes and load guards own synchronization; year and auth restoration must not trigger delete-and-reinsert writes.
-  }, [scholarships, isDbLoaded, isFetchCompleted, isScholarshipsLoaded]);
+  // 3-3) Scholarships 자동 저장
+  useScholarshipAutosave({
+    scholarships,
+    selectedYear,
+    isDbLoaded,
+    isFetchCompleted,
+    isLoaded: isScholarshipsLoaded,
+    canWrite: Boolean(currentUser && currentRole?.id !== "GUEST"),
+    fetchedScholarshipsRef,
+    safeSetLocalStorage,
+    setSyncStatus
+  });
 
   // 4) Procurement Env 자동 저장 디바운스 훅
   useEffect(() => {
