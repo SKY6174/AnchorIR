@@ -49,6 +49,17 @@ WHERE (u.uuid IS NOT NULL AND a.id IS NULL)
 9. `committee-vote` Edge Function 배포
 
 운영 검증에서 구형 명단 자동복원 write 또는 과도한 연구원 관리 권한이 발견된 환경은 `097_harden_committee_admin_boundary.sql`을 추가 적용한다.
+기존 확정 보고서와 정규화 원장이 불일치하는 운영 환경은 승인된 대상에 한해 `098_reconcile_published_committee_report.sql`을 적용한다. malformed 보고서 스냅샷을 감사 보존하면서 검증 대상에서 제외하려면 `099_invalidate_malformed_report_snapshots.sql`을 적용한다.
+
+`committee-vote`는 공개 회의 조회·외부위원 세션·관리자 JWT를 함수 내부에서 경로별로 검증하므로 플랫폼의 일괄 JWT 검사를 사용하지 않는다. 배포 시 아래 옵션을 반드시 유지한다.
+
+```bash
+npx supabase functions deploy committee-vote \
+  --project-ref <project-ref> \
+  --no-verify-jwt
+```
+
+배포 직후 공개 `verify-report`의 정상/무효 스냅샷과 비허용 Origin을 각각 시험한다. 플랫폼에서 `UNAUTHORIZED_NO_AUTH_HEADER`가 반환되면 잘못 배포된 것이므로 write를 재개하지 않고 `--no-verify-jwt`로 다시 배포한다.
 
 `committee_vote_migration_summary`에서 다음 항목을 사람이 검토한다.
 
@@ -79,7 +90,7 @@ WHERE (u.uuid IS NOT NULL AND a.id IS NULL)
 3. 사전 row count를 다시 기록한다.
 4. 091~096을 파일 번호 순서대로 적용한다. 096 적용 직후 기존 자체 비밀번호 해시는 폐기되므로 구형 대시보드를 다시 열지 않는다.
 5. 검증 SQL을 실행한다.
-6. Edge Function과 환경 비밀값을 배포한다.
+6. Edge Function과 환경 비밀값을 배포한다. `committee-vote`에는 반드시 `--no-verify-jwt`를 사용한다.
 7. 관리자 1명과 시험 외부위원 1명으로 회의 조회·인증·제출·보고서 생성을 확인한다.
 8. 신규 대시보드를 배포하고 write를 재개한다.
 9. 30분 동안 인증 실패율, submit 오류, audit log, 응답/표결 수를 관찰한다.

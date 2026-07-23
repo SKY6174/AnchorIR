@@ -31,7 +31,7 @@ Core Unit Tests:   6 / 6 passed
 Concurrent Test:   10 voters + 1 duplicate request passed
 Production Build:  passed
 Official Result:   total 3 / attended 2 / APPROVED
-PDF Snapshot:      version 3 / SHA-256 64 chars / Blob generated
+PDF Snapshot:      version 4 / SHA-256 64 chars / A4 2-page Poppler pass
 Critical Security Issues: 0 open in completed scope
 ```
 
@@ -69,7 +69,7 @@ Critical Security Issues: 0 open in completed scope
 - SHA-256 및 서버 HMAC 봉인 코드와 공개 검증 API를 적용했다.
 - 다운로드 앵커와 Blob URL을 30초 유지해 브라우저 다운로드 경합을 제거했다.
 - 공식 결과가 없을 때 잘못된 `null` 스냅샷을 저장하지 않고 `409 CONFLICT`로 중단하는 서버 가드를 배포했다.
-- 운영 ECC 보고서에서 정상 스냅샷 version 3과 PDF Blob 링크 생성을 확인했다.
+- 운영 ECC 보고서에서 정상 스냅샷 version 4와 PDF 파일 생성을 확인하고 Poppler로 A4 2쪽을 검증했다.
 
 ### 3.4 Production Migrations
 
@@ -77,6 +77,7 @@ Critical Security Issues: 0 open in completed scope
 |---|---|
 | 091-097 | 인증, 보안 스키마, 데이터 이관, RLS, RPC, Storage, Auth 연동, 관리자 경계 적용 |
 | 098 | 기존 ECC 확정 결과를 정규화 데이터와 대조·복구하고 감사기록 저장 |
+| 099 | malformed 스냅샷 감사 보존·무효화, DB 저장 함수와 공개 검증 API 이중 거부 |
 
 098은 대상 회의, 확정 상태, 공식 회의록의 참석 집계, 기록 위원, 단일 위원장 및 안건 3건을 모두 확인한다. 하나라도 불일치하면 예외로 전체 롤백한다.
 
@@ -91,19 +92,20 @@ Critical Security Issues: 0 open in completed scope
 | Invalid/Partial Commit | 0건 | 0건 | Pass |
 | Official DB/UI/PDF Snapshot Result | 일치 | `APPROVED`, 3/2, 안건 3건·표 6건 | Pass |
 | PDF Snapshot Integrity | SHA-256 64자리 | 64자리 | Pass |
+| Latest PDF Visual | A4 2쪽, 결함 0건 | 2쪽, 결함 0건 | Pass |
 | UI DOM/CSS Intentional Changes | 0건 | 0건 | Pass |
 
 ## 5. Operational Evidence
 
-- 정상 스냅샷 ID: `e3e3aa17-ea3f-45d0-a909-b2ea22a0396b`
-- 스냅샷 version: `3`
+- 정상 스냅샷 ID: `0b77a81c-a0ef-4f66-87c8-0bd26da4e1d5`
+- 스냅샷 version: `4`
 - 공식 결과: 재적 3명, 참석 2명, 필요 참석 2명, 필요 찬성 2명, `APPROVED`
 - 데이터 건수: roster 4, responses 2, agendas 3, agenda votes 6
 - 복구 감사코드: `LEGACY_PUBLISHED_RESULT_RECONCILED`
 - Edge Function: `committee-vote` 운영 재배포 완료
 - 완료 커밋: `d88263c`부터 `26036e1`까지 `main` 반영
 
-실패 과정에서 생성된 result `null` 스냅샷 version 1-2는 삭제하지 않고 감사 흔적으로 보존했다. PDF 재시험은 version 3을 새로 생성해 사용했다.
+실패 과정에서 생성된 result `null` 스냅샷 version 1-2는 삭제하지 않고 감사 흔적으로 보존하되 migration 099로 무효화했다. 공개 검증 API는 version 1을 `valid: false`, 정상 version 4를 `valid: true`로 반환한다. 최신 PDF는 2026-07-23 11:11 KST에 생성됐으며 Poppler에서 A4 2쪽, 한글·표·서명·봉인 영역 결함 0건을 확인했다.
 
 ## 6. Lessons Learned
 
@@ -117,7 +119,7 @@ Critical Security Issues: 0 open in completed scope
 
 - 보안 마이그레이션 이전에 생성된 확정 보고서는 집계 결과와 정규화 원장이 다를 수 있다.
 - 스냅샷 함수가 공식 결과 `null`을 유효 payload로 저장해 클라이언트에서 늦게 실패했다.
-- 인앱 브라우저가 프로그램 방식 Blob 다운로드 파일을 호스트 파일시스템에 노출하지 않아 최신 파일의 Poppler 회수가 제한됐다.
+- Edge Function 배포 시 플랫폼 JWT 검사를 기본값으로 두면 공개 경로가 함수에 도달하기 전에 차단된다. 내부 경로별 인증 설계를 유지하도록 `--no-verify-jwt` 배포 옵션을 runbook에 고정했다.
 
 ### Try
 
@@ -129,7 +131,6 @@ Critical Security Issues: 0 open in completed scope
 
 다음 항목은 이번 운영 장애 해결과 보안 안정화의 완료 조건을 막지 않으며 별도 Check 또는 후속 기능으로 관리한다.
 
-- 운영 HMAC으로 생성된 최신 PDF 파일을 일반 Chrome에서 회수해 Poppler로 A4 2쪽, 한글, 서명 영역, 잘림·겹침을 최종 확인한다.
 - 주요 화면의 수정 전후 픽셀 비교를 자동화한다.
 - 운영 DB PITR 및 row count/hash 기준선을 정기 운영 절차로 확정한다.
 - 실제 계정이 없는 일부 관리자 역할의 CRUD 통합시험을 보강한다.

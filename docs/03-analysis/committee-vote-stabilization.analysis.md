@@ -63,7 +63,7 @@
 - [ ] SQL 정족수 함수와 TypeScript 결과의 자동 parity test
 - [ ] 유효한 외부위원·간사·관리자 계정을 사용한 전체 브라우저 E2E
 - [x] 신규 인증·위원회 프론트 변경을 `anchor-ir` Vercel 프로덕션에 배포
-- [ ] 운영 HMAC 코드로 새로 생성한 PDF에서 A4 2쪽 및 봉인 문구를 최종 재확인
+- [x] 운영 HMAC 코드로 새로 생성한 PDF에서 A4 2쪽 및 봉인 문구를 최종 재확인
 - [ ] 수정 전후 주요 화면 스크린샷 픽셀 비교
 - [ ] 보고서 verification URL 또는 화면 연결
 - [ ] 운영 배포 후 모니터링과 forward rollback 실행 확인
@@ -80,9 +80,9 @@
 - `rise_users.uuid`가 없거나 이메일이 Supabase Auth와 다른 기존 행은 로그인할 수 없다. 096 preflight에서 중복·불일치·고아 UUID를 먼저 해소하고 `MISSING_AUTH_IDENTITY` 목록은 운영 승인 후 Auth 사용자를 발급해야 한다.
 - 기존 `access_pin` 평문 열은 관리자 UI 호환을 위해 남아 있다. 외부 인증은 hash credential만 사용하지만 후속 단계에서 관리자 재발급 UX와 함께 평문 열을 폐기해야 한다.
 - 운영 E2E에서 발견한 구형 명단 자동복원 경로는 제거했지만, 향후 공식 명단 seed/갱신은 별도 승인된 관리자 작업 또는 migration으로만 수행해야 한다.
-- 최신 제공 PDF는 레이아웃 기준을 통과했지만 보안 전환 이전 생성본이라 `공동인증`, `CA`, `100% 보장` 문구가 남아 있다. 현재 코드는 이 문구를 사용하지 않으므로 운영 HMAC 스냅샷으로 PDF를 다시 생성해 최종 확인해야 한다.
+- 운영 HMAC 스냅샷 version 4로 생성한 최신 PDF를 Poppler 144 DPI로 렌더링했다. A4 2쪽, 한글, 표, 본문, 서명, 봉인 상자의 잘림·겹침이 없고 `서버 봉인 검증 코드` 표현을 확인했다.
 - 운영 동시성 시험의 첫 정리 시 `committee_meeting_members.member_id`가 `ON DELETE RESTRICT`임을 확인했다. 트랜잭션 롤백으로 데이터 손실은 없었고, 정리 도구를 회의 선삭제 순서와 전체 종속 테이블 잔존 검증으로 보강했다.
-- 운영 HMAC 스냅샷은 관리자 계정으로 생성되고 검증 API에서 `valid: true`였으나, Codex 인앱 브라우저가 프로그램 방식 Blob 다운로드 이벤트를 노출하지 않아 생성 PDF 파일을 로컬로 회수하지 못했다. 일반 Chrome에서 동일 관리자 계정으로 1회 다운로드한 파일의 Poppler 시각 검증이 남아 있다.
+- malformed result `null` 스냅샷 version 1-2는 감사용으로 보존하되 migration 099의 `invalidated_at`/`invalid_reason`으로 무효화했다. 공개 검증 API는 이들을 `valid: false`, 정상 version 4는 `valid: true`로 반환한다.
 
 ## Recommendations
 
@@ -95,5 +95,5 @@
 
 - [x] 핵심 운영 배포 및 1차 보안 E2E를 완료한다.
 - [x] 갭 분석을 다시 실행하여 90% 이상인지 확인한다.
-- [ ] 전체 역할·운영 HMAC 신규 PDF 시각 검증을 별도 Check 항목으로 완료한다.
+- [x] 운영 HMAC 신규 PDF 시각 검증을 완료한다.
 - [ ] 남은 검증 완료 후 최종 Report 단계로 전환한다.

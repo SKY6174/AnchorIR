@@ -404,11 +404,11 @@ async function verifyReport(snapshotId: string, verificationCode: string) {
   }
   const { data, error } = await service
     .from("committee_report_snapshots")
-    .select("meeting_id, payload, payload_sha256, seal_hmac, finalized_at")
+    .select("meeting_id, payload, payload_sha256, seal_hmac, finalized_at, invalidated_at")
     .eq("id", snapshotId)
     .maybeSingle();
   if (error) throw mapDatabaseError(error);
-  if (!data) return { valid: false };
+  if (!data || data.invalidated_at || !data.payload?.result?.decision_status) return { valid: false };
   const canonicalPayload = JSON.stringify(canonicalize(data.payload));
   const recalculatedHash = await sha256(canonicalPayload);
   const recalculatedSeal = await hmacSha256(canonicalPayload);
