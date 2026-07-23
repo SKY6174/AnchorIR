@@ -46,7 +46,8 @@ import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchPendingVersionRequests, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
 import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
 import { useScholarshipAutosave, useUnifiedCertificateAutosave } from "./features/management/hooks/use-management-record-autosave";
-import { deleteRiseMember, fetchRiseMembers, insertRiseMember, upsertRiseMember, upsertRiseMembers } from "./features/management/services/member-service";
+import { useMemberDirectoryRestore } from "./features/management/hooks/use-member-directory-restore";
+import { deleteRiseMember, insertRiseMember, upsertRiseMember, upsertRiseMembers } from "./features/management/services/member-service";
 import { saveMenuVisibility } from "./features/management/services/portal-config-service";
 import { useApprovalDataRefresh, useRegisteredUsersRefresh } from "./features/management/hooks/use-management-refresh";
 import { usePortalMenuVisibility } from "./features/management/hooks/use-portal-menu-visibility";
@@ -824,93 +825,14 @@ export default function App() {
   };
 
   // Supabase 원격 rise_members 테이블에서 구성원 주소록 실시간 동기화 및 자가 치유 시딩 로드
-  useEffect(() => {
-    // 비로그인 상태이거나 GUEST 권한일 때는 조회를 생략합니다. (401 RLS 방지) (Rule 8 RLS 보안 준수)
-    if (!currentUser || (currentUser.role?.id === "GUEST" || currentUser.role === "GUEST")) return;
-
-    const fetchDbMembers = async () => {
-      try {
-        const { data, error } = await fetchRiseMembers();
-
-        if (error) throw error;
-
-        if (data && data.length > 0) {
-          // DB 테이블에 데이터가 정상 적재되어 있는 경우 최우선 동기화 적용
-          // 기존 구버전 상태값("재직중", "퇴직")을 "참여중", "미참여"로 자가 보정 매핑 로드
-          const formatted = data.map((m) => ({
-            ...m,
-            status: m.status === "재직중" ? "참여중" : (m.status === "퇴직" ? "미참여" : (m.status || "참여중"))
-          }));
-          setMembers(formatted);
-        } else {
-          // DB 테이블은 존재하나 데이터가 비어있을 시 최초 시드 업서트 기동
-          console.log("Supabase members empty. Seeding initial data...");
-          const cleanedSeed = INITIAL_MEMBERS
-            .map((m) => sanitizeMemberForDb({
-              ...m,
-              startDate: m.startDate || m.hireDate || "2026-03-01",
-              endDate: m.endDate || "",
-              status: m.status || "참여중"
-            }))
-            .filter((m): m is RiseMemberInsert => m !== null);
-
-          // 💡 [RLS 보안 가드] 현재 브라우저의 JWT 토큰 세션이 있는지 검사하여, 인증된 사용자일 때만 DB 시딩 시도
-          const runSeeding = async () => {
-            try {
-              const { data: { session } } = await supabase.auth.getSession();
-              if (session) {
-                const { error: seedError } = await upsertRiseMembers(cleanedSeed);
-                if (seedError) {
-                  console.warn("Seeding initial members failed (RLS blocked):", seedError.message);
-                }
-              } else {
-                console.log("Skipping DB write, offline/guest local fallback applied.");
-              }
-            } catch (seedErr) {
-              console.warn("Silent seeding exception caught:", seedErr);
-            }
-            setMembers(cleanedSeed);
-          };
-          runSeeding();
-        }
-      } catch (err) {
-        console.error("Supabase rise_members table sync failed, fallback to localStorage cache:", err);
-
-        // 💡 [인증/세션 만료 예방 안전장치] rise_members 테이블 조회 및 업서트 중 401/403/42501(RLS) 에러 감지 시 자동 로그아웃 유도
-        const errorRecord = err as LegacyAppRecord;
-        const status = errorRecord?.status;
-        const code = String(errorRecord?.code || "");
-        const msg = String(errorRecord?.message || "");
-        if (
-          status === 401 ||
-          status === 403 ||
-          code === "PGRST301" ||
-          code === "42501" ||
-          msg.includes("JWT") ||
-          msg.includes("claims") ||
-          msg.includes("expired") ||
-          msg.includes("permission denied") ||
-          msg.includes("security policy")
-        ) {
-          console.warn(">>> [Supabase Members 동기화 중 세션 만료 감지] 자동으로 로그아웃 처리를 유도합니다. <<<", err);
-          alert("보안 세션이 만료되었거나 데이터베이스 인증 오류가 발생했습니다. 안전한 데이터 저장을 위해 확인을 누르시면 자동 로그아웃 후 다시 로그인 화면으로 이동합니다.");
-          handleLogout();
-          return;
-        }
-
-        const saved = localStorage.getItem("anchor_members");
-        if (saved) {
-          try {
-            setMembers(JSON.parse(saved));
-          } catch (e) {
-            console.error("Failed to restore members from localStorage:", e);
-          }
-        }
-      }
-    };
-
-    fetchDbMembers();
-  }, [currentUser]);
+  useMemberDirectoryRestore({
+    currentUser,
+    setMembers,
+    sanitizeMemberForDb,
+    onSessionExpired: () => {
+      void handleLogout();
+    }
+  });
 
   // members 로컬 상태 갱신 시 로컬스토리지 보조 백업 (네트워크 지연 시 즉시 피드백 및 영속성 보장)
   useLocalStorageJson("anchor_members", members);
