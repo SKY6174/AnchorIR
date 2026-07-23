@@ -52,3 +52,17 @@
   - `npm run build` 검증 **474ms / 0 TS Error** 최종 빌드 성공 및 원격 저장소(`main` 브랜치) 자동 Git Push 완수.
 
 ---
+
+## 🚩 Milestone 5: 위원회 의결 동시성 E2E 검증, HMAC PDF 봉인 및 역할 권한 매트릭스 수립
+- **기간:** 2026년 7월 23일
+- **목표:** 위원회 서면 의결 모듈의 10인 동시성/멱등성 검증, HMAC PDF 서버 봉인, 역할 매트릭스 9종 보안 및 PDCA 완료(일치율 97%)
+
+### 📊 일자별 변화 과정 및 성과
+- **2026-07-23 (개발 22일차)**:
+  - **운영 DB 097/098 마이그레이션 적용**: 위원 명단 조회 시 자동 DELETE/INSERT 로직 제거 및 `RESEARCHER` 관리 권한 403 차단.
+  - **역할 매트릭스 9종 검증 (`supabase/tests/committee-role-matrix-verification.sql`)**: 9개 관리자 역할 런타임 허용 및 게스트 차단 검증.
+  - **동시성 E2E 및 멱등성 검증 완수 (`anchor-dashboard/scripts/committee-concurrency-e2e.mjs`)**: 외부위원 10명 동시 요청 11건(최초 10건 + 멱등 1건), revision 관리 및 원자적 rollback 검증 완료 후 테스트 데이터 100% 삭제 (`supabase/tests/committee-concurrency-cleanup.sql`).
+  - **HMAC PDF 봉인 & 서버 검증 완수**: HMAC 스냅샷 `valid: true`, SHA-256 일치, PDF 출력 정규화 복구 (`098_reconcile_published_committee_report.sql`).
+  - **PDCA 완료 및 문서화**: 갭 분석(`docs/03-analysis/committee-vote-stabilization.analysis.md`) 및 완료 보고서(`docs/04-report/committee-vote-stabilization.report.md`) 작성 완료 (일치율 97%, Complete).
+  - Vercel 프로덕션 배포 완료 (`2f08c79`, `26036e1`, `303eec0`).
+

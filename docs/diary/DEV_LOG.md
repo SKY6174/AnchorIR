@@ -72,3 +72,34 @@
 ### 📌 주요 작업 이벤트
 - **위원회 관리 및 서면 의결 모듈 초기 구축**
   - 앵커 사업단 운영위원회 회의 생성, 안건 등록, 외부 위원 의결 채널 보안 URL 생성 기능 구현.
+
+---
+
+## 🗓️ 2026년 7월 23일 (개발 22일차) - 위원회 의결 안정화 & E2E 동시성 검증 종합 일기
+
+### 📌 1. DB 정규화 마이그레이션 & 역할 권한(Role-Matrix) 보안 강화
+- **운영 DB 097, 098 마이그레이션 적용 (`098_reconcile_published_committee_report.sql`)**
+  - `RESEARCHER` 역할의 위원회 관리자 권한 원천 차단 및 게스트 권한 403 FORBIDDEN 보안 가드 적용.
+  - 위원 명단 조회 시 데이터 가공성을 파괴하던 자동 DELETE/INSERT 로직 전면 제거.
+- **운영 역할 매트릭스 9종 런타임 검증 (`supabase/tests/committee-role-matrix-verification.sql`)**
+  - 관리자 역할 9종 런타임 허용 및 `RESEARCHER` 차단 테스트 통과.
+
+### 📌 2. 위원회 의결 E2E 동시성 & 멱등성 검증 (Concurrency E2E)
+- **외부 위원 동시 제출 및 멱등 재시도 테스트 성공 (`scripts/committee-concurrency-e2e.mjs`)**
+  - 외부위원 10명 기반 동시 요청 11건 수집 성공 (최초 저장 10건, 동시 중복 replay 1건).
+  - 멱등성 replay 10건 및 수정 제출 revision 1 ➔ 2 이력 관리 확인.
+  - 잘못된 점수 제출 발생 시 원자적 rollback 동작 확인.
+  - 테스트 완료 후 임시 생성 서명 11개 및 테스트 DB 데이터 100% 완전 Clean-Up (`supabase/tests/committee-concurrency-cleanup.sql`).
+
+### 📌 3. 서버 봉인 검증 & HMAC PDF 디지털 검증
+- **HMAC 보고서 스냅샷 생성 & 서버 봉인 검증 (`valid: true`)**
+  - SHA-256 일치 확인 및 Blob URL 다운로드 앵커 조기 제거 경합 이슈 패치.
+- **PDF 출력 오류 정규화 복구**
+  - 기존 확정 보고서의 참석 2명 기록을 기준으로 누락된 위원장 응답 복원 (무단 서명 생성 없이 서명 미복구 사실 감사기록 명시).
+- **Vercel 프로덕션 배포 완료 (`2f08c79`, `26036e1`, `303eec0`)**
+
+### 📌 4. PDCA 프로세스 달성 및 분석 보고서 도큐멘테이션
+- **PDCA Complete 완료 (설계 일치율 97%)**
+  - 갭 분석 보고서: `docs/03-analysis/committee-vote-stabilization.analysis.md`
+  - 최종 완료 보고서: `docs/04-report/committee-vote-stabilization.report.md`
+
