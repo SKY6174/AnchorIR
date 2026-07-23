@@ -25,7 +25,7 @@ import PortalConfigManager from "./components/PortalConfigManager";
 import AuthManager from "./components/AuthManager";
 import CommitteeManager from "./components/CommitteeManager";
 import UnitSystemView from "./components/UnitSystemView";
-import { initialProjectsData, userRoles, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
+import { initialProjectsData, YEAR_1_PROGRAMS, Y1_UNIT_META } from "./data/mockData";
 import type { ProjectData } from "./data/mockData";
 import type { AgreementItem } from "./components/AgreementManager";
 import type { ScholarshipItem } from "./components/ScholarshipManager";
@@ -35,6 +35,7 @@ import type { ScheduleCommitteeMember } from "./components/ScheduleManager";
 import { Sun, Moon, LogOut, HelpCircle, Lock as LockIcon, Info, Clock, Edit2, FileText, Upload, Plus, Download, X, BookOpen, FileSpreadsheet } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import type { Tables, TablesInsert } from "./types/supabase";
+import { resolveApprovedRiseUser } from "./services/auth-service";
 import "./styles/dashboard.css";
 
 type LegacyAppRecord = Record<string, any>;
@@ -7272,30 +7273,14 @@ export default function App() {
         return;
       }
 
-      const { data: profile, error } = await supabase
-        .from("rise_users")
-        .select("id, name, role_key, approved, uuid, email")
-        .eq("uuid", session.user.id)
-        .maybeSingle();
-
-      if (error || !profile || !profile.approved || profile.uuid !== session.user.id) {
+      try {
+        const restoredUser = await resolveApprovedRiseUser(session.user);
+        localStorage.setItem("anchor_logged_in_user", JSON.stringify(restoredUser));
+        if (active) setCurrentUser(restoredUser);
+      } catch {
         localStorage.removeItem("anchor_logged_in_user");
         if (active) setCurrentUser(null);
-        await supabase.auth.signOut({ scope: "local" });
-        return;
       }
-
-      const restoredUser = {
-        id: profile.id,
-        loginId: profile.email || session.user.email || profile.id,
-        name: profile.name,
-        role: userRoles[profile.role_key] || userRoles.RESEARCHER,
-        role_key: profile.role_key,
-        uuid: profile.uuid,
-        email: profile.email || session.user.email
-      };
-      localStorage.setItem("anchor_logged_in_user", JSON.stringify(restoredUser));
-      if (active) setCurrentUser(restoredUser);
     };
 
     supabase.auth.getSession().then(({ data, error }) => {

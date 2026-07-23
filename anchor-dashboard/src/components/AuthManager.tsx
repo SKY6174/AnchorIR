@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { userRoles } from "../data/mockData";
 import { Lock, User, LogIn, Award } from "lucide-react";
 import { supabase } from "../supabaseClient";
+import {
+  getApprovedRiseUserErrorMessage,
+  resolveApprovedRiseUser
+} from "../services/auth-service";
 
 export interface AuthManagerProps {
   onLoginSuccess?: (userData: any) => void;
@@ -50,41 +53,14 @@ export default function AuthManager({ onLoginSuccess, members = [] }: AuthManage
         return;
       }
 
-      const { data: profile, error: profileError } = await supabase
-        .from("rise_users")
-        .select("id, name, role_key, approved, uuid, email")
-        .eq("uuid", authData.user.id)
-        .maybeSingle();
+      const sessionUser = await resolveApprovedRiseUser(authData.user, normalizedLoginId);
 
-      if (profileError || !profile || profile.uuid !== authData.user.id) {
-        await supabase.auth.signOut({ scope: "local" });
-        setErrorMsg("승인된 사용자 정보를 찾을 수 없습니다. 관리자에게 문의해 주세요.");
-        return;
-      }
-
-      if (!profile.approved) {
-        await supabase.auth.signOut({ scope: "local" });
-        setErrorMsg("관리자 승인 대기 중인 계정입니다.");
-        return;
-      }
-
-      const mappedRole = userRoles[profile.role_key] || userRoles.RESEARCHER;
-      const sessionUser = {
-        id: profile.id,
-        loginId: normalizedLoginId,
-        name: profile.name,
-        role: mappedRole,
-        role_key: profile.role_key,
-        uuid: profile.uuid,
-        email: profile.email || authData.user.email || email
-      };
-
-      let welcomeDisplayName = profile.name;
+      let welcomeDisplayName = sessionUser.name;
       if (!welcomeDisplayName) {
-        if (profile.role_key === "G_DIRECTOR") welcomeDisplayName = "사업단장";
-        else if (profile.role_key === "ADMIN") welcomeDisplayName = "관리자";
-        else if (profile.role_key === "HQ_HEAD") welcomeDisplayName = "총괄본부장";
-        else if (profile.role_key === "MANAGER") welcomeDisplayName = "운영팀장";
+        if (sessionUser.role_key === "G_DIRECTOR") welcomeDisplayName = "사업단장";
+        else if (sessionUser.role_key === "ADMIN") welcomeDisplayName = "관리자";
+        else if (sessionUser.role_key === "HQ_HEAD") welcomeDisplayName = "총괄본부장";
+        else if (sessionUser.role_key === "MANAGER") welcomeDisplayName = "운영팀장";
         else welcomeDisplayName = "사용자";
       }
 
@@ -95,7 +71,7 @@ export default function AuthManager({ onLoginSuccess, members = [] }: AuthManage
       }, 600);
     } catch (err) {
       console.error("Login process error:", err);
-      setErrorMsg("로그인 처리 중 서버 통신 에러가 발생했습니다.");
+      setErrorMsg(getApprovedRiseUserErrorMessage(err));
     }
   };
 
