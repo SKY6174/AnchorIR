@@ -4,11 +4,11 @@
 
 ---
 
-## Match Rate: 89%
+## Match Rate: 94%
 
 ## Summary
 
-외부위원과 로그인 위원의 인증·제출 신뢰 경계, 정규화·원자적 저장, 공개 RLS 제거, 간사 제외 공식 정족수, private storage 첨부/서명, legacy 변환, 서버 보고서 스냅샷과 HMAC 봉인까지 로컬 구현되었다. Supabase Auth를 유일한 로그인 신원으로 하고 `rise_users.uuid = auth.uid()`를 업무 권한 근거로 삼도록 기존 터널·데모 자동가입·자체 비밀번호 검증도 제거했다. 091~096은 운영 DB에 적용되었고, 원격 anon probe에서 `rise_users`와 위원회 핵심 테이블·RPC가 모두 `401/42501`로 차단됨을 확인했다. `committee-vote` Edge Function과 HMAC/CORS 비밀값도 운영 배포되어 공개 오류·origin 차단·봉인 검증 라우트 smoke test를 통과했다. 대시보드 JSX 태그·className·스타일은 변경하지 않았고 프론트 빌드와 핵심 순수 함수 6개 시험은 통과했다. 다만 신규 프론트의 Vercel 운영 배포, 인증 사용자 역할별 통합시험, 10명 이상 동시 제출, 브라우저 E2E 및 PDF 2쪽 시각 비교가 남아 있다.
+외부위원과 로그인 위원의 인증·제출 신뢰 경계, 정규화·원자적 저장, 공개 RLS 제거, 간사 제외 공식 정족수, private storage 첨부/서명, legacy 변환, 서버 보고서 스냅샷과 HMAC 봉인까지 구현·운영 반영되었다. Supabase Auth를 유일한 로그인 신원으로 하고 `rise_users.uuid = auth.uid()`를 업무 권한 근거로 삼도록 기존 터널·데모 자동가입·자체 비밀번호 검증도 제거했다. 091~097은 운영 DB에 적용되었고, 원격 anon probe에서 `rise_users`와 위원회 핵심 테이블·RPC가 모두 `401/42501`로 차단됨을 확인했다. `committee-vote` Edge Function과 HMAC/CORS 비밀값도 운영 배포되어 공개 오류·origin 차단·봉인 검증 라우트 smoke test를 통과했다. 운영 E2E에서 명단 조회가 fallback 명단의 자동 DELETE/INSERT를 유발하던 경로를 추가 발견해 제거했고, 일반 `RESEARCHER`를 관리 권한에서 제외했다. 후속 Vercel 배포와 게스트 재로그인, 신규 탭 위원 명단 조회, DB/Edge 관리자 차단까지 검증했으며 경고 로그는 0건이었다. 대시보드 JSX 태그·className·스타일은 변경하지 않았고 프론트 빌드와 핵심 순수 함수 6개 시험은 통과했다. 남은 항목은 10명 이상 동시 제출, 전체 역할 CRUD 매트릭스, PDF 시각 비교 및 장기 모니터링이다.
 
 ## Implemented Items
 
@@ -38,19 +38,24 @@
 - [x] `rise_users.pw` 폐기, Auth FK/이메일 가드, 자기조회·관리자 RLS용 096 migration 및 검증 SQL 준비
 - [x] 운영 DB 091~096 적용 완료
 - [x] 운영 anon 직접 조회 차단 확인: `rise_users`, 위원회 핵심 5개 테이블, `get_current_rise_user` RPC 모두 `401/42501`
+- [x] 조회 시 fallback 명단을 자동 삭제·삽입하던 비명시적 write 경로 제거
+- [x] 097 운영 적용: `ADMIN` 포함, 일반 `RESEARCHER` 위원회 관리 권한 제외
+- [x] 로그인 성공 시 이전 사용자 탭 상태를 상속하지 않고 대시보드로 초기화
+- [x] Vercel `main` 운영 배포 및 신규 브라우저 위원 명단 조회 경고 0건 확인
+- [x] 게스트 연구원 `is_committee_admin() = false`, Edge 보고서 확정 `403/FORBIDDEN` 확인
 
 ## Missing Items
 
 - [ ] 운영 DB point-in-time backup 및 row count/hash 기준선 확보
-- [ ] 인증된 본인·관리자 역할별 `rise_users` 및 위원회 RLS 허용 범위 검증
+- [ ] 관리자 전체 역할별 `rise_users` 및 위원회 CRUD 허용 범위 매트릭스 검증
 - [ ] 변환된 legacy 응답과 attachment batch 이관 결과를 staging에서 검토
 - [x] `committee-vote` Edge Function 운영 배포와 HMAC/CORS 비밀값 설정
 - [x] 운영 Edge smoke test: 허용 origin `404/NOT_FOUND`, 비허용 origin `403/FORBIDDEN`, 잘못된 봉인 검증 `200/valid:false`
 - [ ] 10명 이상 동시 제출 반복, idempotency 재시도, 오류 주입 rollback 시험
 - [ ] anon CRUD 거부 및 역할별 관리자 CRUD 허용 통합시험
 - [ ] SQL 정족수 함수와 TypeScript 결과의 자동 parity test
-- [ ] 외부위원·간사·관리자 브라우저 E2E
-- [ ] 신규 인증·위원회 프론트 변경을 `anchor-ir` Vercel 프로덕션에 배포
+- [ ] 유효한 외부위원·간사·관리자 계정을 사용한 전체 브라우저 E2E
+- [x] 신규 인증·위원회 프론트 변경을 `anchor-ir` Vercel 프로덕션에 배포
 - [ ] 기준 PDF와 생성 PDF의 A4 2쪽 Poppler 렌더링 비교
 - [ ] 수정 전후 주요 화면 스크린샷 픽셀 비교
 - [ ] 보고서 verification URL 또는 화면 연결
@@ -67,18 +72,19 @@
 
 - `rise_users.uuid`가 없거나 이메일이 Supabase Auth와 다른 기존 행은 로그인할 수 없다. 096 preflight에서 중복·불일치·고아 UUID를 먼저 해소하고 `MISSING_AUTH_IDENTITY` 목록은 운영 승인 후 Auth 사용자를 발급해야 한다.
 - 기존 `access_pin` 평문 열은 관리자 UI 호환을 위해 남아 있다. 외부 인증은 hash credential만 사용하지만 후속 단계에서 관리자 재발급 UX와 함께 평문 열을 폐기해야 한다.
-- 운영 Supabase CLI 연결과 로컬 Postgres가 없어 이번 작업 환경에서는 신규 SQL을 실제 DB parser로 실행하지 못했다.
+- 운영 E2E에서 발견한 구형 명단 자동복원 경로는 제거했지만, 향후 공식 명단 seed/갱신은 별도 승인된 관리자 작업 또는 migration으로만 수행해야 한다.
 
 ## Recommendations
 
-1. 운영 반영 전에 staging clone에서 091~096을 적용하고 Auth/committee migration issue summary가 0이거나 승인된 예외인지 확인한다.
-2. 첨부자료 storage 이관과 관리자 authenticated-member 제출 RPC를 먼저 완료한다.
-3. 동시성/RLS/E2E/PDF 시각 시험을 통과한 뒤 짧은 점검 시간에 운영 write 경로를 전환한다.
-4. 운영 전환 후에만 전체 TypeScript·lint 정리를 별도 기능으로 시작한다.
+1. 운영 데이터 백업 기준선과 migration issue summary를 보관한다.
+2. 10명 이상 동시 제출·멱등 재시도·rollback 오류 주입 시험을 수행한다.
+3. 유효한 외부위원·간사·각 관리자 역할 계정으로 전체 E2E와 CRUD 권한 매트릭스를 검증한다.
+4. 기준 PDF와 생성 PDF의 A4 2쪽 시각 비교 및 verification 화면 연결을 마친다.
+5. 위 검증 후 전체 TypeScript·lint 정리를 별도 기능으로 시작한다.
 
 ## Next Steps
 
-- [ ] 남은 구현 갭을 보완한다.
-- [ ] staging DB/API 통합검증을 수행한다.
-- [ ] 갭 분석을 다시 실행하여 90% 이상인지 확인한다.
-- [ ] 90% 이상과 운영 검증 완료 후 Check/Report 단계로 전환한다.
+- [x] 핵심 운영 배포 및 1차 보안 E2E를 완료한다.
+- [x] 갭 분석을 다시 실행하여 90% 이상인지 확인한다.
+- [ ] 동시성·전체 역할·PDF 시각 검증을 별도 Check 항목으로 완료한다.
+- [ ] 남은 검증 완료 후 최종 Report 단계로 전환한다.
