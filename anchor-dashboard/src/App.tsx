@@ -3118,9 +3118,9 @@ export default function App() {
 
   // 프로그램 CRUD 상태
   const [showProgramEditor, setShowProgramEditor] = useState(false);
-  const [editingProgram, setEditingProgram] = useState(null);
+  const [editingProgram, setEditingProgram] = useState<LegacyAppRecord | null>(null);
   const [programForm, setProgramForm] = useState({ unitId: "", id: "", title: "", dept: "사업운영팀" });
-  const fileInputRef = React.useRef(null);
+  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
   const [mgmtSubTab, setMgmtSubTab] = useState(() => {
     return localStorage.getItem("anchor_mgmt_sub_tab") || "approvals";
   }); // "approvals", "members", "programs", "users"
@@ -8599,7 +8599,7 @@ export default function App() {
     setShowProgramEditor(true);
   };
 
-  const handleOpenEditProgram = (unitId, prog) => {
+  const handleOpenEditProgram = (unitId: string, prog: LegacyAppRecord) => {
     setEditingProgram(prog);
     setProgramForm({ unitId, id: prog.id, title: prog.title, dept: prog.dept || "사업운영팀" });
     setShowProgramEditor(true);
@@ -8611,12 +8611,12 @@ export default function App() {
       return;
     }
     setProjects((prev) => {
-      const updated = JSON.parse(JSON.stringify(prev));
-      const targetUnit = updated.flatMap(p => p.units).find(u => u.id === programForm.unitId);
+      const updated = JSON.parse(JSON.stringify(prev)) as LegacyAppRecord[];
+      const targetUnit = updated.flatMap((p: LegacyAppRecord) => p.units).find((u: LegacyAppRecord) => u.id === programForm.unitId);
       if (targetUnit) {
         if (editingProgram) {
           // Edit
-          const prog = targetUnit.programs.find(p => p.id === editingProgram.id);
+          const prog = targetUnit.programs.find((p: LegacyAppRecord) => p.id === editingProgram.id);
           if (prog) {
             prog.id = programForm.id;
             prog.title = programForm.title;
@@ -8625,7 +8625,7 @@ export default function App() {
           }
         } else {
           // Add
-          if (targetUnit.programs.some(p => p.id === programForm.id)) {
+          if (targetUnit.programs.some((p: LegacyAppRecord) => p.id === programForm.id)) {
             alert("이미 존재하는 프로그램 ID입니다.");
             return updated;
           }
@@ -8644,22 +8644,22 @@ export default function App() {
     setShowProgramEditor(false);
   };
 
-  const handleDeleteProgram = (unitId, progId) => {
+  const handleDeleteProgram = (unitId: string, progId: string) => {
     if (!window.confirm("정말 이 프로그램을 삭제하시겠습니까? 관련 KPI 및 예산 내역이 있다면 함께 영향 받을 수 있습니다.")) return;
     setProjects((prev) => {
-      const updated = JSON.parse(JSON.stringify(prev));
-      const targetUnit = updated.flatMap(p => p.units).find(u => u.id === unitId);
+      const updated = JSON.parse(JSON.stringify(prev)) as LegacyAppRecord[];
+      const targetUnit = updated.flatMap((p: LegacyAppRecord) => p.units).find((u: LegacyAppRecord) => u.id === unitId);
       if (targetUnit) {
-        targetUnit.programs = targetUnit.programs.filter(p => p.id !== progId);
+        targetUnit.programs = targetUnit.programs.filter((p: LegacyAppRecord) => p.id !== progId);
       }
       return updated;
     });
   };
 
   const handleDownloadExcel = () => {
-    const data = [];
-    displayProjects.flatMap(p => p.units).forEach(u => {
-      u.programs.forEach(prog => {
+    const data: LegacyAppRecord[] = [];
+    displayProjects.flatMap((p: LegacyAppRecord) => p.units).forEach((u: LegacyAppRecord) => {
+      u.programs.forEach((prog: LegacyAppRecord) => {
         data.push({
           "단위과제 ID": u.id,
           "단위과제명": u.title,
@@ -8675,28 +8675,29 @@ export default function App() {
     XLSX.writeFile(wb, `프로그램_배정_${selectedYear}차년도.xlsx`);
   };
 
-  const handleUploadExcel = (e) => {
-    const file = e.target.files[0];
+  const handleUploadExcel = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (evt) => {
-      const bstr = evt.target.result;
+    reader.onload = (evt: ProgressEvent<FileReader>) => {
+      const bstr = evt.target?.result;
+      if (typeof bstr !== "string") return;
       const wb = XLSX.read(bstr, { type: "binary" });
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
-      const data = XLSX.utils.sheet_to_json(ws);
+      const data = XLSX.utils.sheet_to_json<LegacyAppRecord>(ws);
 
-      setProjects(prev => {
-        const updated = JSON.parse(JSON.stringify(prev));
-        data.forEach(row => {
+      setProjects((prev) => {
+        const updated = JSON.parse(JSON.stringify(prev)) as LegacyAppRecord[];
+        data.forEach((row: LegacyAppRecord) => {
           const unitId = row["단위과제 ID"];
           const progId = row["프로그램 ID"];
           const title = row["프로그램명"];
           const assignee = row["담당연구원"];
 
-          const targetUnit = updated.flatMap(p => p.units).find(u => u.id === unitId);
+          const targetUnit = updated.flatMap((p: LegacyAppRecord) => p.units).find((u: LegacyAppRecord) => u.id === unitId);
           if (targetUnit) {
-            let prog = targetUnit.programs.find(p => p.id === progId);
+            let prog = targetUnit.programs.find((p: LegacyAppRecord) => p.id === progId);
             if (!prog) {
               prog = { id: progId, title: title, assignees: {}, years: { [selectedYear]: {} }, kpis: [] };
               targetUnit.programs.push(prog);
@@ -8719,18 +8720,18 @@ export default function App() {
   };
 
   // 연구원 배정 핸들러
-  const handleAssignChange = (unitId, progId, newAssignee) => {
+  const handleAssignChange = (unitId: string, progId: string, newAssignee: string) => {
     if (currentRole.id === "GUEST") {
       alert("게스트(방문자) 계정은 읽기 전용으로만 이용하실 수 있습니다.");
       return;
     }
     const realUnitId = getRealUnitId(unitId, selectedYear);
     setProjects((prevProjects) => {
-      const updated = JSON.parse(JSON.stringify(prevProjects));
-      updated.forEach((p) => {
-        p.units.forEach((u) => {
+      const updated = JSON.parse(JSON.stringify(prevProjects)) as LegacyAppRecord[];
+      updated.forEach((p: LegacyAppRecord) => {
+        p.units.forEach((u: LegacyAppRecord) => {
           if (u.id === realUnitId) {
-            u.programs.forEach((prog) => {
+            u.programs.forEach((prog: LegacyAppRecord) => {
               if (prog.id === progId) {
                 if (!prog.assignees) {
                   prog.assignees = {};
@@ -8765,12 +8766,13 @@ export default function App() {
     const cleanId = currentUser.loginId || currentUser.id;
     const isDemoAccount = ["g_director", "hq_head", "manager"].includes(cleanId);
 
-    const safeMembers = Array.isArray(members) ? members : (members && Array.isArray(members.data) ? members.data : []);
-    const currentMember = isDemoAccount ? null : (safeMembers.find((m) => {
+    const memberSource = members as unknown as LegacyAppRecord;
+    const safeMembers: LegacyAppRecord[] = Array.isArray(members) ? members : (memberSource && Array.isArray(memberSource.data) ? memberSource.data : []);
+    const currentMember = isDemoAccount ? null : (safeMembers.find((m: LegacyAppRecord) => {
       if (!m.email) return false;
       const mId = m.email.trim().toLowerCase().split("@")[0];
       return mId === currentUser.id;
-    }) || safeMembers.find((m) => {
+    }) || safeMembers.find((m: LegacyAppRecord) => {
       const cleanMName = m.name ? m.name.split(" ")[0].split("(")[0].trim() : "";
       const cleanCurrName = currentUser.name ? currentUser.name.split(" ")[0].split("(")[0].trim() : "";
       return cleanMName === cleanCurrName;
@@ -9299,7 +9301,7 @@ export default function App() {
                               sumTotalPrograms += totalProgs;
 
                               if (totalProgs > 0) {
-                                u.programs.forEach((prog) => {
+                                u.programs.forEach((prog: LegacyAppRecord) => {
                                   const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
                                   const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
                                   const progProgress = (completedSteps / 4) * 100;
@@ -9338,7 +9340,7 @@ export default function App() {
                                 let totalProgressSum = 0;
 
                                 if (totalPrograms > 0) {
-                                  u.programs.forEach((prog) => {
+                                  u.programs.forEach((prog: LegacyAppRecord) => {
                                     const pdca = prog.pdca || { p: "대기", d: "대기", c: "대기", a: "대기" };
                                     const completedSteps = [pdca.p, pdca.d, pdca.c, pdca.a].filter(step => step === "완료").length;
                                     const progProgress = (completedSteps / 4) * 100;
@@ -10058,7 +10060,7 @@ export default function App() {
                             return a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
                           })
                           .flatMap((u) => {
-                            return u.programs.map((prog) => {
+                            return u.programs.map((prog: LegacyAppRecord) => {
                               let dept = "사업운영팀";
                               if (selectedYear === 1) {
                                 if (["A1", "A2", "D4"].includes(u.id)) dept = "ECC센터";
@@ -10096,7 +10098,7 @@ export default function App() {
                                               // 체크 해제 시에는 단일 연구원으로 변경할 수 있도록 현재 값의 첫 번째 연구원을 기본값으로 넘김
                                               if (!isChecked) {
                                                 const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                const parts = currentVal.split(/[,\/]/).map((p: string) => p.trim()).filter(Boolean);
                                                 handleAssignChange(u.id, prog.id, parts[0] || "");
                                               }
                                             }}
@@ -10114,12 +10116,12 @@ export default function App() {
                                                 style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
                                                 value={(() => {
                                                   const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                  const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                  const parts = currentVal.split(/[,\/]/).map((p: string) => p.trim()).filter(Boolean);
                                                   return parts[0] || "";
                                                 })()}
                                                 onChange={(e) => {
                                                   const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                  const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                  const parts = currentVal.split(/[,\/]/).map((p: string) => p.trim()).filter(Boolean);
                                                   const first = e.target.value;
                                                   const second = parts[1] || "";
                                                   const combined = second ? `${first}, ${second}` : first;
@@ -10144,12 +10146,12 @@ export default function App() {
                                                 style={{ width: "110px", padding: "0.15rem 0.3rem", fontSize: "0.7rem" }}
                                                 value={(() => {
                                                   const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                  const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                  const parts = currentVal.split(/[,\/]/).map((p: string) => p.trim()).filter(Boolean);
                                                   return parts[1] || "";
                                                 })()}
                                                 onChange={(e) => {
                                                   const currentVal = prog.assignees?.[selectedYear] !== undefined ? prog.assignees[selectedYear] : (prog.assignee || "");
-                                                  const parts = currentVal.split(/[,\/]/).map(p => p.trim()).filter(Boolean);
+                                                  const parts = currentVal.split(/[,\/]/).map((p: string) => p.trim()).filter(Boolean);
                                                   const first = parts[0] || "";
                                                   const second = e.target.value;
                                                   const combined = second ? `${first}, ${second}` : first;
@@ -10278,7 +10280,7 @@ export default function App() {
                             registeredUsers
                               .filter(u => ["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
                               .map((u) => {
-                                const roleNames = {
+                                const roleNames: Record<string, string> = {
                                   ADMIN: "최고 관리자",
                                   G_DIRECTOR: "사업단장",
                                   HQ_HEAD: "총괄본부장",
@@ -10340,7 +10342,7 @@ export default function App() {
                             registeredUsers
                               .filter(u => !["admin", "g_director", "hq_head", "manager", "center_director", "team_leader", "researcher"].includes(u.id.toLowerCase()))
                               .map((u) => {
-                                const roleNames = {
+                                const roleNames: Record<string, string> = {
                                   ADMIN: "최고 관리자",
                                   DIRECTOR: "사업단장",
                                   G_DIRECTOR: "사업단장",
@@ -11053,7 +11055,7 @@ export default function App() {
                   onClick={() => {
                     setKpiSubTab("공통");
                     // 공통 탭에 해당하는 첫 번째 지표 자동 선택
-                    const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "공통");
+                    const first = displayProjects.flatMap((p: LegacyAppRecord) => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find((k: LegacyAppRecord) => k.type === "공통");
                     setSelectedKpi(first || null);
                   }}
                   style={{
@@ -11079,7 +11081,7 @@ export default function App() {
                   onClick={() => {
                     setKpiSubTab("자율");
                     // 자율 탭에 해당하는 첫 번째 지표 자동 선택
-                    const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "자율");
+                    const first = displayProjects.flatMap((p: LegacyAppRecord) => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find((k: LegacyAppRecord) => k.type === "자율");
                     setSelectedKpi(first || null);
                   }}
                   style={{
@@ -11105,7 +11107,7 @@ export default function App() {
                   onClick={() => {
                     setKpiSubTab("중점");
                     // 중점 탭에 해당하는 첫 번째 지표 자동 선택
-                    const first = displayProjects.flatMap(p => p.units.flatMap(u => u.kpis)).find(k => k.type === "중점");
+                    const first = displayProjects.flatMap((p: LegacyAppRecord) => p.units.flatMap((u: LegacyAppRecord) => u.kpis)).find((k: LegacyAppRecord) => k.type === "중점");
                     setSelectedKpi(first || null);
                   }}
                   style={{
@@ -11144,14 +11146,14 @@ export default function App() {
                       {(() => {
                         const kpiMap = new Map();
                         if (displayProjects && Array.isArray(displayProjects)) {
-                          displayProjects.forEach((p) => {
+                          displayProjects.forEach((p: LegacyAppRecord) => {
                             if (p.units && Array.isArray(p.units)) {
-                              p.units.forEach((u) => {
+                              p.units.forEach((u: LegacyAppRecord) => {
                                 if (u.kpis && Array.isArray(u.kpis)) {
-                                  u.kpis.forEach((k) => {
+                                  u.kpis.forEach((k: LegacyAppRecord) => {
                                     if (k.type === kpiSubTab) {
                                       const nk = getNormalizedKpi(k, selectedYear);
-                                      kpiMap.set(nk.id, { k, nk });
+                                      if (nk) kpiMap.set(nk.id, { k, nk });
                                     }
                                   });
                                 }
@@ -11223,7 +11225,7 @@ export default function App() {
                             rate = 138.3;
                           } else if (nk.subItems && nk.subItems.length > 0) {
                             let sumRate = 0;
-                            nk.subItems.forEach((sub) => {
+                            nk.subItems.forEach((sub: LegacyAppRecord) => {
                               const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
                               sumRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
                             });
@@ -11274,6 +11276,7 @@ export default function App() {
                 <div className="glass-card" style={{ border: selectedKpi ? "1px solid var(--accent-color)" : "1px solid var(--border-color-dark)", minHeight: "360px" }}>
                   {selectedKpi ? (() => {
                     const nk = getNormalizedKpi(selectedKpi, selectedYear);
+                    if (!nk) return null;
                     return (
                       <div>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-color-dark)", paddingBottom: "0.75rem" }}>
@@ -11308,7 +11311,7 @@ export default function App() {
                                 </tr>
                               </thead>
                               <tbody>
-                                {nk.subItems && nk.subItems.map((sub, index) => {
+                                {nk.subItems && nk.subItems.map((sub: LegacyAppRecord, index: number) => {
                                   const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
                                   const subRate = yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
                                   const canEditTarget = currentRole.rank <= 4;
@@ -11445,7 +11448,7 @@ export default function App() {
                                     totalKpiRate = 138.3;
                                   } else if (nk.subItems && nk.subItems.length > 0) {
                                     let sumKpiRate = 0;
-                                    nk.subItems.forEach((sub) => {
+                                    nk.subItems.forEach((sub: LegacyAppRecord) => {
                                       const yData = sub.years?.[selectedYear] || { target: 0, current: 0 };
                                       sumKpiRate += yData.target > 0 ? (yData.current / yData.target) * 100 : 0;
                                     });
