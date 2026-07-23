@@ -70,6 +70,8 @@ Measured evidence:
 - XLSX 변경 직전 preload 3,674,350B에서 변경 후 3,227,603B로 446,747B 감소.
 - spreadsheet chunk는 production HTML preload 목록에서 제거됐다.
 - 최대 생성 chunk는 약 425KB로 500KB 미만이다.
+- Rolldown `strictExecutionOrder`로 Recharts/D3 분할 청크의 source execution order를 보존한다.
+- production preview에서 외부위원 로그인과 일반 로그인 모두 runtime exception 0건으로 확인했다.
 
 ### D. Supabase OTP — 4/10
 

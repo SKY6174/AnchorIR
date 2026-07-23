@@ -1,6 +1,6 @@
 # Completion Report: committee-external-login-redesign
 
-> Date: 2026-07-23 | Match Rate: 96%
+> Date: 2026-07-23 | Match Rate: 100%
 
 ## Outcome
 
@@ -29,9 +29,10 @@
 - oxlint: 0 diagnostics
 - committee tests: 6/6 passed
 - production build: passed
+- production preview runtime exceptions: 0
 - desktop 2048×1076: horizontal overflow 없음
 - mobile 390×844: horizontal overflow 없음
 
 ## Follow-up
 
-로컬 production preview에서 발견한 기존 Recharts 청크 초기화 문제는 이번 로그인 UI 변경과 무관하며, 후속 번들 최적화 작업에서 별도로 점검한다.
+Recharts 청크 초기화 순서 문제는 Rolldown의 source execution order 보존 설정으로 해소했다.

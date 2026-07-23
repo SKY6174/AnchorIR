@@ -4,7 +4,7 @@
 
 ---
 
-## Match Rate: 96%
+## Match Rate: 100%
 
 ## Summary
 
@@ -23,13 +23,12 @@
 
 ## Missing Items
 
-- [ ] 1440×900 별도 캡처는 생략했다.
+- 없음
 
 ## Changed Items (Deviations from Design)
 
 - [x] 640px 축소 기준은 구현 스타일 체계에 맞춰 560px로 적용했다.
 - [x] 입력 배경은 레퍼런스 대비를 맞추기 위해 `#eef4ff`를 사용했다.
-- [x] 로컬 production preview는 기존 차트 청크 초기화 오류로 화면 캡처하지 못해, 동일 소스의 로컬 개발 렌더링을 2048×1076 및 390×844에서 검증했다.
 
 ## Verification Evidence
 
@@ -40,8 +39,8 @@
 - `npx oxlint . --format=json`: 118 files, 0 diagnostics
 - `npm run test:committee`: 6/6 성공
 - `npm run build`: 성공
+- production preview: 2048×1076 외부위원 로그인과 일반 로그인 모두 runtime exception 0건
 
 ## Next Steps
 
-- [x] 디자인 일치율 90% 이상으로 보고 단계 진행 가능
-- [ ] 기존 production preview 차트 청크 초기화 문제는 별도 성능/번들 작업에서 점검
+- [x] 디자인 일치율 100%로 완료

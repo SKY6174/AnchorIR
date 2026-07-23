@@ -7,6 +7,7 @@ export default defineConfig({
   build: {
     rolldownOptions: {
       output: {
+        strictExecutionOrder: true,
         codeSplitting: {
           maxSize: 450_000,
           groups: [
@@ -26,7 +27,7 @@ export default defineConfig({
               name: 'charts',
               test: /node_modules[\\/](?:recharts|d3-[^\\/]+)[\\/]/,
               priority: 20,
-              maxSize: 450_000,
+              includeDependenciesRecursively: true,
             },
             {
               name: 'backend',
