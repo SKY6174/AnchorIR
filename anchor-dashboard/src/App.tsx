@@ -39,6 +39,11 @@ import { parseCommitteeVotePath } from "./utils/committee-short-link";
 import type { AssetReservation, Html2PdfFactory, LegacyAppRecord, LegacyYearRecord, ProgramVersionRequest, RiseMemberInsert, ScheduleEventInsert, ScheduleMeetingInsert, ScheduleMonthlyInsert } from "./app/app-types";
 import { INITIAL_AGREEMENTS, INITIAL_MEMBERS } from "./app/app-seed-data";
 import { formatAssignee, formatDataToMultiYear, formatToMillionWon, getCalculatedYearFromDate, getErrorMessage, getNormalizedKpi, getRealUnitId, mergeProjectsWithInitial, migrateProgramIds, recalculateCarryOver } from "./app/app-data-utils";
+import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchPendingVersionRequests, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
+import { deleteRiseUserAccount, fetchRiseUserAccounts } from "./features/management/services/account-service";
+import { deleteRiseMember, fetchRiseMembers, insertRiseMember, upsertRiseMember, upsertRiseMembers } from "./features/management/services/member-service";
+import { fetchMenuVisibility, saveMenuVisibility } from "./features/management/services/portal-config-service";
+import { fetchDashboardSources, updateProjectData, upsertProjectData } from "./features/projects/services/project-data-service";
 import "./styles/dashboard.css";
 
 
@@ -443,13 +448,7 @@ export default function App() {
 
     // Supabase DB에 설정 저장 동기화 (RLS 403 에러 발생 시 콘솔 경고 소멸 후 로컬 캐시 폴백)
     try {
-      const { error } = await supabase
-        .from("portal_configs")
-        .upsert({
-          key: "menu_visibility",
-          value: nextVisibility,
-          updated_at: new Date().toISOString()
-        });
+      const { error } = await saveMenuVisibility(nextVisibility);
       if (error) {
         console.warn("portal_configs DB 적재 스킵 (로컬 스토리지 캐시 전담):", error.message);
       }
@@ -579,11 +578,7 @@ export default function App() {
   useEffect(() => {
     const fetchPortalConfig = async () => {
       try {
-        const { data, error } = await supabase
-          .from("portal_configs")
-          .select("value")
-          .eq("key", "menu_visibility")
-          .maybeSingle();
+        const { data, error } = await fetchMenuVisibility();
 
         if (!error && data && data.value && typeof data.value === "object" && !Array.isArray(data.value)) {
           const merged = {
@@ -1011,9 +1006,7 @@ export default function App() {
         const sanitizedList = uploadPayloads
           .map(p => sanitizeMemberForDb(p))
           .filter((p): p is RiseMemberInsert => p !== null);
-        const { error } = await supabase
-          .from("rise_members")
-          .upsert(sanitizedList);
+        const { error } = await upsertRiseMembers(sanitizedList);
 
         if (error) throw error;
 
@@ -1049,10 +1042,7 @@ export default function App() {
 
     const fetchDbMembers = async () => {
       try {
-        const { data, error } = await supabase
-          .from("rise_members")
-          .select("*")
-          .order("id", { ascending: true });
+        const { data, error } = await fetchRiseMembers();
 
         if (error) throw error;
 
@@ -1081,9 +1071,7 @@ export default function App() {
             try {
               const { data: { session } } = await supabase.auth.getSession();
               if (session) {
-                const { error: seedError } = await supabase
-                  .from("rise_members")
-                  .upsert(cleanedSeed);
+                const { error: seedError } = await upsertRiseMembers(cleanedSeed);
                 if (seedError) {
                   console.warn("Seeding initial members failed (RLS blocked):", seedError.message);
                 }
@@ -1481,9 +1469,7 @@ export default function App() {
 
     try {
       // 2. Supabase DB에서 가입된 회원 로드
-      const { data, error: _error } = await supabase
-        .from("rise_users")
-        .select("id, name, role_key, created_at");
+      const { data, error: _error } = await fetchRiseUserAccounts();
       const dbUsers = data || [];
       const dbMap = new Map<string, LegacyAppRecord>(dbUsers.map(u => [u.id.trim().toLowerCase(), u]));
 
@@ -1660,10 +1646,7 @@ export default function App() {
     }
 
     try {
-      const { error } = await supabase
-        .from("rise_users")
-        .delete()
-        .eq("id", userId);
+      const { error } = await deleteRiseUserAccount(userId);
 
       if (error) {
         alert("계정 삭제 중 오류가 발생했습니다.");
@@ -2627,20 +2610,7 @@ export default function App() {
           meetRes,
           pressRes,
           execRes
-        ] = await Promise.all([
-          supabase.from("projects_data").select("*").eq("year", selectedYear).single(),
-          supabase.from("agreements").select("*"),
-          supabase.from("unified_certificates").select("*"),
-          supabase.from("scholarships_view").select("*"),
-          supabase.from("procurement_env").select("*").eq("year", selectedYear),
-          supabase.from("procurement_equipment").select("*").eq("year", selectedYear),
-          supabase.from("procurement_services").select("*").eq("year", selectedYear),
-          supabase.from("schedule_monthly").select("*").eq("year", selectedYear),
-          supabase.from("schedule_events").select("*").eq("year", selectedYear),
-          supabase.from("schedule_meetings").select("*").eq("year", selectedYear),
-          supabase.from("press_releases").select("*").gte("broadcast_date", startDateStr).lt("broadcast_date", endDateStr),
-          supabase.from("budget_executions").select("*").eq("year", selectedYear)
-        ]);
+        ] = await fetchDashboardSources(selectedYear, startDateStr, endDateStr);
 
         if (!active) return;
 
@@ -2694,11 +2664,7 @@ export default function App() {
           // 일반 연구원(실무진)이 기획 변경 신청을 완료하여 '승인대기' 상태인 요청 정보가 존재하는 경우,
           // 새로고침 시 이 변경 기획 데이터(changes.after)를 세부 프로그램에 오버레이 덮어씌워 렌더링을 유지시킵니다.
           try {
-            const { data: pendReqs } = await supabase
-              .from("program_version_requests")
-              .select("*")
-              .eq("year", selectedYear)
-              .eq("status", "승인대기");
+            const { data: pendReqs } = await fetchPendingVersionRequests(selectedYear);
 
             if (pendReqs && pendReqs.length > 0) {
               mergedProjData.forEach((strat: LegacyAppRecord) => {
@@ -2921,7 +2887,7 @@ export default function App() {
 
           safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}_v56`, JSON.stringify(getCleanProjectsForStorage(mergedProjData)), selectedYear);
           if (currentUser && currentRole?.id !== "GUEST") {
-            await supabase.from("projects_data").upsert({ year: selectedYear, data: mergedProjData }, { onConflict: "year" });
+            await upsertProjectData(selectedYear, mergedProjData);
           }
         } else {
           const multiYearInitialData = migrateProgramIds(formatDataToMultiYear(initialProjectsData));
@@ -2931,7 +2897,7 @@ export default function App() {
 
           safeSetLocalStorage(`anchor_cache_proj_y${selectedYear}_v56`, JSON.stringify(getCleanProjectsForStorage(multiYearInitialData)), selectedYear);
           if (currentUser && currentRole?.id !== "GUEST") {
-            await supabase.from("projects_data").upsert({ year: selectedYear, data: multiYearInitialData }, { onConflict: "year" });
+            await upsertProjectData(selectedYear, multiYearInitialData);
           }
         }
 
@@ -3494,9 +3460,11 @@ export default function App() {
     setSyncStatus("syncing");
     const timer = setTimeout(async () => {
       try {
-        const { error } = await supabase
-          .from("projects_data")
-          .upsert({ year: selectedYear, data: projects, updated_at: new Date().toISOString() }, { onConflict: "year" });
+        const { error } = await upsertProjectData(
+          selectedYear,
+          projects,
+          new Date().toISOString()
+        );
         if (error) throw error;
 
         // 💡 [저장 완료 동기화] DB 업로드가 성공적으로 완료되었으므로 레퍼런스 값을 현재 값으로 갱신하여 중복 업로드를 차단합니다.
@@ -5731,10 +5699,7 @@ export default function App() {
   // 결재 변경 승인요청 DB 조회 및 갱신 API 연동
   const fetchVersionRequests = async () => {
     try {
-      const { data, error: _error } = await supabase
-        .from("program_version_requests")
-        .select("*")
-        .order("requested_at", { ascending: false });
+      const { data, error: _error } = await fetchVersionRequestRecords();
       if (data) setVersionRequests(data as ProgramVersionRequest[]);
     } catch (e) {
       console.error("Failed to fetch version requests:", e);
@@ -5745,11 +5710,7 @@ export default function App() {
   const fetchReservations = async () => {
     try {
       if (!supabase) return;
-      const { data, error: _error } = await supabase
-        .from("asset_reservations")
-        .select("*")
-        .order("reserved_date", { ascending: false })
-        .order("start_time", { ascending: false });
+      const { data, error: _error } = await fetchAssetReservations();
       if (data) setReservations(data);
     } catch (e) {
       console.error("Failed to fetch reservations:", e);
@@ -5796,10 +5757,7 @@ export default function App() {
     }
 
     try {
-      const { error } = await supabase
-        .from("asset_reservations")
-        .update({ status: "승인완료" })
-        .eq("id", res.id);
+      const { error } = await updateAssetReservation(res.id, { status: "승인완료" });
 
       if (error) throw error;
       alert("✨ 해당 공간 사용 예약이 최종 승인 처리되었습니다.");
@@ -5815,10 +5773,7 @@ export default function App() {
       return;
     }
     try {
-      const { error } = await supabase
-        .from("asset_reservations")
-        .delete()
-        .eq("id", res.id);
+      const { error } = await deleteAssetReservation(res.id);
 
       if (error) throw error;
       alert("🗑️ 예약이 성공적으로 반려 및 삭제 처리되었습니다.");
@@ -5880,14 +5835,11 @@ export default function App() {
     }
 
     try {
-      const { error } = await supabase
-        .from("asset_reservations")
-        .update({
-          reserved_date: editResFormData.reserved_date,
-          start_time: editResFormData.start_time,
-          end_time: editResFormData.end_time
-        })
-        .eq("id", editingRes.id);
+      const { error } = await updateAssetReservation(editingRes.id, {
+        reserved_date: editResFormData.reserved_date,
+        start_time: editResFormData.start_time,
+        end_time: editResFormData.end_time
+      });
 
       if (error) throw error;
       alert("✨ 예약 일시가 성공적으로 조정되었습니다.");
@@ -5902,14 +5854,11 @@ export default function App() {
   const handleApproveRequest = async (req: ProgramVersionRequest) => {
     try {
       const approverName = currentUser ? currentUser.name : "승인자";
-      const { error: updateErr } = await supabase
-        .from("program_version_requests")
-        .update({
-          status: "승인완료",
-          approved_by: approverName,
-          approved_at: new Date().toISOString()
-        })
-        .eq("id", req.id);
+      const { error: updateErr } = await updateVersionRequestStatus(
+        req.id,
+        "승인완료",
+        approverName
+      );
 
       if (updateErr) throw updateErr;
 
@@ -5953,9 +5902,7 @@ export default function App() {
 
             // Supabase 반영
             if (dataUpdated) {
-              supabase.from("projects_data")
-                .update({ data: p.data || p }) // p 통째로 갱신하여 JSON 트리 동기화
-                .eq("year", 2024 + selectedYear)
+              updateProjectData(2024 + selectedYear, p.data || p)
                 .then(({ error }) => {
                   if (error) console.error("Failed to sync project data after approval:", error);
                 });
@@ -5978,14 +5925,7 @@ export default function App() {
   const handleRejectRequest = async (req: ProgramVersionRequest) => {
     try {
       const approverName = currentUser ? currentUser.name : "승인자";
-      const { error } = await supabase
-        .from("program_version_requests")
-        .update({
-          status: "반려",
-          approved_by: approverName,
-          approved_at: new Date().toISOString()
-        })
-        .eq("id", req.id);
+      const { error } = await updateVersionRequestStatus(req.id, "반려", approverName);
 
       if (error) throw error;
 
@@ -6011,10 +5951,7 @@ export default function App() {
 
     try {
       // 2) DB에서 해당 결재 내역 삭제
-      const { error: deleteErr } = await supabase
-        .from("program_version_requests")
-        .delete()
-        .eq("id", req.id);
+      const { error: deleteErr } = await deleteVersionRequest(req.id);
 
       if (deleteErr) throw deleteErr;
 
@@ -6058,9 +5995,7 @@ export default function App() {
 
               // Supabase 반영
               if (dataUpdated) {
-                supabase.from("projects_data")
-                  .update({ data: p.data || p }) // p 통째로 갱신하여 JSON 트리 동기화
-                  .eq("year", 2024 + selectedYear)
+                updateProjectData(2024 + selectedYear, p.data || p)
                   .then(({ error }) => {
                     if (error) console.error("Failed to sync project data after rollback deletion:", error);
                   });
@@ -6372,7 +6307,7 @@ export default function App() {
       });
       // 💡 [DB 실시간 연동 가드] 프로그램 기획/예산 상세 변경 시, 원격 Supabase DB에도 즉각 동기화 저장합니다.
       if (supabase && currentUser && currentRole?.id !== "GUEST") {
-        supabase.from("projects_data").upsert({ year: selectedYear, data: updated }, { onConflict: "year" })
+        upsertProjectData(selectedYear, updated)
           .then(({ error }) => {
             if (error) console.error("프로그램 기획 상세 DB 업데이트 실패:", error);
             else console.log("프로그램 기획 상세 DB 업데이트 성공!");
@@ -6545,7 +6480,7 @@ export default function App() {
       });
       // 💡 [DB 실시간 연동 가드] 프로그램 추가 시, 원격 Supabase DB에도 즉각 동기화 저장합니다.
       if (supabase && currentUser && currentRole?.id !== "GUEST") {
-        supabase.from("projects_data").upsert({ year: selectedYear, data: updated }, { onConflict: "year" })
+        upsertProjectData(selectedYear, updated)
           .then(({ error }) => {
             if (error) console.error("프로그램 추가 DB 업데이트 실패:", error);
             else console.log("프로그램 추가 DB 업데이트 성공!");
@@ -6866,7 +6801,7 @@ export default function App() {
       });
       // 💡 [DB 실시간 연동 가드] 로컬 상태 갱신 직후, 원격 Supabase DB의 projects_data 테이블에도 즉각 동기화 저장합니다.
       if (supabase && currentUser && currentRole?.id !== "GUEST") {
-        supabase.from("projects_data").upsert({ year: selectedYear, data: updated }, { onConflict: "year" })
+        upsertProjectData(selectedYear, updated)
           .then(({ error }) => {
             if (error) console.error("연구원 배정 DB 업데이트 실패:", error);
             else console.log("연구원 배정 DB 업데이트 성공!");
@@ -8048,10 +7983,7 @@ export default function App() {
                                         if (window.confirm(`정말 ${m.name} 구성원을 삭제하시겠습니까?`)) {
                                           setMembers(members.filter((item) => item.id !== m.id));
                                           try {
-                                            const { error } = await supabase
-                                              .from("rise_members")
-                                              .delete()
-                                              .eq("id", m.id);
+                                            const { error } = await deleteRiseMember(m.id);
                                             if (error) throw error;
                                           } catch (err) {
                                             console.error("Failed to delete member from DB:", err);
@@ -10216,9 +10148,7 @@ export default function App() {
                   try {
                     const sanitized = sanitizeMemberForDb(editingMember);
                     if (!sanitized) throw new Error("저장할 구성원 정보가 올바르지 않습니다.");
-                    const { error } = await supabase
-                      .from("rise_members")
-                      .upsert(sanitized);
+                    const { error } = await upsertRiseMember(sanitized);
                     if (error) throw error;
                   } catch (err) {
                     console.error("Failed to update member in DB:", err);
@@ -10237,9 +10167,7 @@ export default function App() {
                   try {
                     const sanitized = sanitizeMemberForDb(newMember);
                     if (!sanitized) throw new Error("추가할 구성원 정보가 올바르지 않습니다.");
-                    const { error } = await supabase
-                      .from("rise_members")
-                      .insert(sanitized);
+                    const { error } = await insertRiseMember(sanitized);
                     if (error) throw error;
                   } catch (err) {
                     console.error("Failed to insert member into DB:", err);
