@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import * as XLSX from "xlsx";
 import { 
@@ -68,25 +69,48 @@ export interface SurveyResponse {
   id: number | string;
   responder: string;
   scores: number[];
-  comment?: string;
+  comment?: string | null;
   date?: string;
 }
 
 export interface SatisfactionSurvey {
   id: string;
   title: string;
-  purpose?: string;
-  startDate?: string;
-  endDate?: string;
-  target?: string;
-  department?: string;
-  status?: string;
-  googleSheetUrl?: string;
+  purpose?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  target?: string | null;
+  department?: string | null;
+  status?: string | null;
+  googleSheetUrl?: string | null;
   questions: string[];
   responses: SurveyResponse[];
-  aiReport?: any;
+  aiReport?: string | null;
   created_at?: string;
 }
+
+interface DebateLog {
+  sender: "system" | "gpt" | "gemini";
+  message: string;
+}
+
+interface AiSurveyData {
+  title: string;
+  target: string;
+  startDate: string;
+  endDate: string;
+  purpose: string;
+  questions: string[];
+  responsesCount: number;
+  averageScore: number;
+  comments: string[];
+  gptOpinion?: string;
+  geminiOpinion?: string;
+  consensusOpinion?: string;
+}
+
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 export interface SatisfactionManagerProps {
   currentRole?: any;
@@ -124,18 +148,18 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
   const [simulatedScores, setSimulatedScores] = useState([5, 5, 5, 5, 5]);
   const [simulatedComment, setSimulatedComment] = useState("");
 
-  const [copiedId, setCopiedId] = useState(null);
-  const [syncingId, setSyncingId] = useState(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
   const [showSheetsViewer, setShowSheetsViewer] = useState(false); // 구글 시트 연동 뷰어 모달 상태
-  const [aiReport, setAiReport] = useState(null); // AI 총평 결과
+  const [aiReport, setAiReport] = useState<string | null>(null); // AI 총평 결과
   const [generatingAi, setGeneratingAi] = useState(false); // AI 제너레이션 로더
 
   // AI 기반 외부 만족도 결과 자동분석 및 입력 모달 관련 상태
   const [showAiInputModal, setShowAiInputModal] = useState(false);
   const [aiInputRawText, setAiInputRawText] = useState("");
   const [aiAnalysisStep, setAiAnalysisStep] = useState(1); // 1: 파일 업로드 대기, 2: GPT-4o vs Gemini 토론 룸 진행, 3: 최종 추출 데이터 검토 및 수정
-  const [uploadedFile, setUploadedFile] = useState(null); // 업로드된 파일 객체 (name, size, type)
-  const [debateLogs, setDebateLogs] = useState([]); // 토론 대화 로그 배열
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null); // 업로드된 파일 객체 (name, size, type)
+  const [debateLogs, setDebateLogs] = useState<DebateLog[]>([]); // 토론 대화 로그 배열
   const [debatePhase, setDebatePhase] = useState("extract"); // "extract" | "draft" | "debate" | "consensus"
   const [isGeneratingAiInput, setIsGeneratingAiInput] = useState(false); // 분석 및 토론 진행 상태 로더
   const [customQuestionInputExt, setCustomQuestionInputExt] = useState(""); // 디베이트 편집 폼의 커스텀 문항 입력값
@@ -155,7 +179,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
     ],
     responsesCount: 15,
     averageScore: 90.0,
-    comments: []
+    comments: [] as string[]
   });
 
   // 선택된 만족도 조사가 바뀌거나 surveys가 갱신되면 해당 조사의 AI 총평 복원 로드
@@ -197,7 +221,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
           .map(r => ({
             id: r.id,
             responder: r.responder_info || "익명 응답자",
-            scores: [r.score_q1, r.score_q2, r.score_q3, r.score_q4, r.score_q5].filter(v => v !== null),
+            scores: [r.score_q1, r.score_q2, r.score_q3, r.score_q4, r.score_q5].filter((v): v is number => v !== null),
             comment: r.comments,
             date: r.created_at ? r.created_at.split("T")[0] : new Date().toISOString().split("T")[0]
           }));
@@ -212,7 +236,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
           department: s.department,
           status: s.status,
           googleSheetUrl: s.google_sheet_url,
-          aiReport: s.ai_report || null,
+          aiReport: typeof s.ai_report === "string" ? s.ai_report : null,
           questions: [
             "제공된 교육 프로그램의 전문성 및 실무 연계성에 만족하십니까?",
             "프로그램 진행자의 전문성과 원활한 일정 소통 방식에 만족하십니까?",
@@ -265,7 +289,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
             .map(r => ({
               id: r.id,
               responder: r.responder_info || "익명 응답자",
-              scores: [r.score_q1, r.score_q2, r.score_q3, r.score_q4, r.score_q5].filter(v => v !== null),
+              scores: [r.score_q1, r.score_q2, r.score_q3, r.score_q4, r.score_q5].filter((v): v is number => v !== null),
               comment: r.comments,
               date: r.created_at ? r.created_at.split("T")[0] : new Date().toISOString().split("T")[0]
             }));
@@ -279,7 +303,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
             department: s.department,
             status: s.status,
             googleSheetUrl: s.google_sheet_url,
-            aiReport: s.ai_report || null,
+            aiReport: typeof s.ai_report === "string" ? s.ai_report : null,
             questions: defaultSurveys[0].questions,
             responses: matching
           };
@@ -317,7 +341,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
     { key: "SEVeN", name: "신산업특화센터 (SEVeN)" }
   ];
 
-  const getSurveysByDept = (deptKey) => {
+  const getSurveysByDept = (deptKey: string) => {
     return surveys.filter(s => {
       const d = s.department ? s.department.toUpperCase() : "";
       if (deptKey === "AIDX") {
@@ -331,9 +355,9 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
   };
 
   // 부서별 새 조사 ID 자동 추천 생성기 (연차, 일정 시작일 연도 및 부서 접두사 실시간 연동)
-  const getNextSurveyId = (depts, customYear = null) => {
+  const getNextSurveyId = (depts: string | string[], customYear: string | null = null) => {
     // [교육용 주석] customYear(일정 시작일 연도)가 명시되면 우선 사용하고, 없을 시 글로벌 selectedYear 기준으로 매핑
-    const currentYear = customYear ? parseInt(customYear, 10) : (2024 + selectedYear);
+    const currentYear = customYear ? parseInt(customYear, 10) : (2024 + Number(selectedYear ?? 1));
     const mainDept = Array.isArray(depts) ? (depts.length > 0 ? depts[0] : "ECC") : (depts || "ECC");
     const sameDeptSurveys = surveys.filter(s => s.id.startsWith(`${currentYear}-${mainDept}-`));
     
@@ -349,7 +373,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
     return `${currentYear}-${mainDept}-${maxNum + 1}`;
   };
 
-  const handleCreateSurvey = async (e) => {
+  const handleCreateSurvey = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newTitle.trim() || !newPurpose.trim()) {
       alert("조사제목과 조사목적은 필수 항목입니다.");
@@ -399,7 +423,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       alert("만족도 조사 기획서가 DB와 연동되어 안전하게 생성되었습니다!");
     } catch (err) {
       console.error("Failed to insert survey in Supabase:", err);
-      alert(`DB 저장 중 에러가 발생했습니다: ${err.message}`);
+      alert(`DB 저장 중 에러가 발생했습니다: ${getErrorMessage(err)}`);
     }
   };
 
@@ -411,7 +435,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
   };
 
   // 문항 제거 헬퍼
-  const handleRemoveQuestion = (index) => {
+  const handleRemoveQuestion = (index: number) => {
     if (newQuestions.length <= 1) {
       alert("최소 1개 이상의 질문이 유지되어야 합니다.");
       return;
@@ -420,7 +444,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
   };
 
   // 단축 주소 복사 액션 시뮬레이션
-  const handleCopyUrl = (id) => {
+  const handleCopyUrl = (id: string) => {
     const surveyUrl = `https://uc-anchor.vercel.app/sv/${id}`;
     navigator.clipboard.writeText(surveyUrl).then(() => {
       setCopiedId(id);
@@ -429,7 +453,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
   };
 
   // 구글 시트 연동 동기화 및 실시간 데이터 뷰어 활성화
-  const handleSyncToGoogleSheets = async (id) => {
+  const handleSyncToGoogleSheets = async (id: string) => {
     setSyncingId(id);
     const mockSheetUrl = `https://docs.google.com/spreadsheets/d/live_${id}/edit?usp=sharing`;
     
@@ -452,14 +476,14 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       setShowSheetsViewer(true);
     } catch (err) {
       console.error("Failed to sync sheets url:", err);
-      alert("구글 시트 동기화 실패: " + err.message);
+      alert("구글 시트 동기화 실패: " + getErrorMessage(err));
     } finally {
       setSyncingId(null);
     }
   };
 
   // 100점 만점 환산용 통계 가중평균치 계산 (5점 리커트 척도 반영)
-  const getLikertConvertedScore = (responses, questionsCount) => {
+  const getLikertConvertedScore = (responses: SurveyResponse[], questionsCount: number) => {
     if (!responses || responses.length === 0 || questionsCount === 0) return 0;
     
     let totalScore = 0;
@@ -476,7 +500,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
   };
 
   // 문항별 만족도 점수 계산
-  const getQuestionAverageScores = (survey) => {
+  const getQuestionAverageScores = (survey: SatisfactionSurvey) => {
     if (!survey.responses || survey.responses.length === 0) {
       return survey.questions.map((q, i) => ({ name: `문항 ${i + 1}`, score: 0 }));
     }
@@ -495,7 +519,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
   };
 
   // 10명 모의 응답 일괄 대량 생성기 (테스트 데이터 생성)
-  const handleGenerateSimulatedData = async (id) => {
+  const handleGenerateSimulatedData = async (id: string) => {
     const targetSurvey = surveys.find(s => s.id === id);
     if (!targetSurvey) return;
 
@@ -548,7 +572,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       alert("모의 응답 10건이 생성되어 Supabase DB에 실시간 저장되었습니다!");
     } catch (err) {
       console.error("Failed to generate simulated responses in DB:", err);
-      alert("모의 데이터 DB 입력 실패: " + err.message);
+      alert("모의 데이터 DB 입력 실패: " + getErrorMessage(err));
     }
   };
 
@@ -564,7 +588,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       // 1. API 키 확인 (환경변수 또는 로컬스토리지)
       let apiKey = import.meta.env.VITE_OPENAI_API_KEY || localStorage.getItem("user_openai_api_key") || "";
       let isSuccess = false;
-      let parsed = null;
+      let parsed: AiSurveyData | null = null;
 
       const systemPrompt = `당신은 대학 RISE 사업단의 만족도조사 텍스트 분석기입니다. 
 제시된 만족도조사 보고서/통계 원본 텍스트를 파싱하여 아래의 JSON 구조로 정보를 추출해 주세요.
@@ -606,7 +630,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
             const resData = await response.json();
             const rawJson = resData.choices?.[0]?.message?.content?.trim();
             if (rawJson) {
-              parsed = JSON.parse(rawJson);
+              parsed = JSON.parse(rawJson) as AiSurveyData;
               isSuccess = true;
             }
           }
@@ -667,7 +691,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
         }
 
         // 주관식 피드백 추출 (큰따옴표 안의 문장 매칭 또는 개선사항/피드백 줄바꿈 추출)
-        let comments = [];
+        let comments: string[] = [];
         const commentRegex = /"([^"]{10,100})"/g;
         let match;
         while ((match = commentRegex.exec(text)) !== null && comments.length < 4) {
@@ -706,6 +730,8 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       }
 
       // 3. 추출된 데이터를 편집 상태 데이터에 세팅하고 2단계 폼 리뷰로 진입
+      if (!parsed) throw new Error("분석 결과가 비어 있습니다.");
+
       setExtractedData({
         title: parsed.title || "외부 연동 만족도 조사",
         target: parsed.target || "프로그램 대상 전체",
@@ -728,7 +754,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       setAiAnalysisStep(2); // 2단계 (폼 수정 검토)로 단계 전환
     } catch (err) {
       console.error("AI 만족도 분석 실패:", err);
-      alert("분석 오류: " + err.message);
+      alert("분석 오류: " + getErrorMessage(err));
     } finally {
       setIsGeneratingAiInput(false);
     }
@@ -830,15 +856,15 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       setAiAnalysisStep(1);
     } catch (err) {
       console.error("Failed to save extracted survey data:", err);
-      alert("만족도조사 저장 처리 실패: " + err.message);
+      alert("만족도조사 저장 처리 실패: " + getErrorMessage(err));
     } finally {
       setIsGeneratingAiInput(false);
     }
   };
 
   // 파일 업로드 접수 및 데이터 추출기 (xlsx 실제 파싱, hwp/pdf 메타 파싱)
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     setUploadedFile(file);
 
@@ -847,7 +873,8 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       const reader = new FileReader();
       reader.onload = (evt) => {
         try {
-          const bstr = evt.target.result;
+          const bstr = evt.target?.result;
+          if (!bstr) return;
           const workbook = XLSX.read(bstr, { type: "binary" });
           const firstSheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[firstSheetName];
@@ -886,7 +913,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
   };
 
   // [교육용 주석] 만족도 조사의 초안을 OpenAI GPT-4o-mini API를 활용해 생성하는 헬퍼 함수
-  const callOpenAiGptForSatisfaction = async (rawText) => {
+  const callOpenAiGptForSatisfaction = async (rawText: string): Promise<AiSurveyData> => {
     const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     if (!apiKey) throw new Error("OpenAI API Key가 설정되지 않았습니다.");
 
@@ -931,11 +958,14 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
     }
 
     const data = await response.json();
-    return JSON.parse(data.choices[0].message.content);
+    return JSON.parse(data.choices[0].message.content) as AiSurveyData;
   };
 
   // [교육용 주석] 만족도 조사의 초안을 Google Gemini API를 활용해 검토 및 보완 의견을 도출하는 헬퍼 함수
-  const callGeminiApiForSatisfaction = async (rawText, gptDraft) => {
+  const callGeminiApiForSatisfaction = async (
+    rawText: string,
+    gptDraft: AiSurveyData
+  ): Promise<AiSurveyData> => {
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
     if (!apiKey) throw new Error("Gemini API Key가 설정되지 않았습니다.");
 
@@ -988,11 +1018,14 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
     const data = await response.json();
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) throw new Error("Gemini response is empty");
-    return JSON.parse(text);
+    return JSON.parse(text) as AiSurveyData;
   };
 
   // [교육용 주석] GPT-4o와 Gemini의 검토 의견을 종합하여 최종 합의(Consensus) 데이터를 도출하는 헬퍼 함수
-  const callConsensusCompilerForSatisfaction = async (gptDraft, geminiDraft) => {
+  const callConsensusCompilerForSatisfaction = async (
+    gptDraft: AiSurveyData,
+    geminiDraft: AiSurveyData
+  ): Promise<AiSurveyData> => {
     const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     if (!apiKey) throw new Error("OpenAI API Key가 설정되지 않았습니다.");
 
@@ -1041,7 +1074,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
     }
 
     const data = await response.json();
-    return JSON.parse(data.choices[0].message.content);
+    return JSON.parse(data.choices[0].message.content) as AiSurveyData;
   };
 
   // GPT-4o vs Gemini 크로스 디베이트(Cross Debate) 토론 구동 엔진 (실제 API 연동 버전)
@@ -1064,7 +1097,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
     setAiAnalysisStep(2);
     setDebatePhase("extract");
 
-    const delay = (ms) => new Promise(res => setTimeout(res, ms));
+    const delay = (ms: number) => new Promise<void>(res => setTimeout(res, ms));
 
     try {
       // 1단계: 파일 텍스트 추출 진행
@@ -1161,7 +1194,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
     setAiAnalysisStep(2);
     setDebatePhase("extract");
 
-    const delay = (ms) => new Promise(res => setTimeout(res, ms));
+    const delay = (ms: number) => new Promise<void>(res => setTimeout(res, ms));
 
     // 1단계: 파일 텍스트 추출 진행
     setDebateLogs(prev => [...prev, { sender: "system", message: `[시스템] 업로드된 파일 '${uploadedFile?.name || "만족도조사"}' 으로부터 텍스트 데이터 추출을 시도합니다...` }]);
@@ -1209,7 +1242,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       averageScore = scoreVal <= 5.0 ? parseFloat((scoreVal * 20).toFixed(1)) : scoreVal;
     }
 
-    let comments = [];
+    let comments: string[] = [];
     const commentRegex = /"([^"]{10,100})"/g;
     let match;
     while ((match = commentRegex.exec(text)) !== null && comments.length < 4) {
@@ -1301,7 +1334,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
   };
 
   // 개별 모의 응답 직접 수집 등록
-  const handleAddSingleResponse = async (id) => {
+  const handleAddSingleResponse = async (id: string) => {
     const targetSurvey = surveys.find(s => s.id === id);
     if (!targetSurvey) return;
 
@@ -1335,12 +1368,12 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       alert("새 응답이 Supabase DB에 성공적으로 등록 저장되었습니다!");
     } catch (err) {
       console.error("Failed to insert single response:", err);
-      alert("응답 DB 저장 실패: " + err.message);
+      alert("응답 DB 저장 실패: " + getErrorMessage(err));
     }
   };
 
   // 설문조사 완료(마감) 처리
-  const handleCompleteSurveyStatus = async (id) => {
+  const handleCompleteSurveyStatus = async (id: string) => {
     if (!confirm("해당 만족도 조사를 마감하시겠습니까? 마감 시 상태가 '완료'로 잠기게 됩니다.")) return;
     
     try {
@@ -1364,7 +1397,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
   };
 
   // 조사지 삭제
-  const handleDeleteSurvey = async (id) => {
+  const handleDeleteSurvey = async (id: string) => {
     if (!confirm("해당 만족도 조사와 수집된 모든 응답이 영구 삭제됩니다. 진행하시겠습니까?")) return;
     
     try {
@@ -1383,12 +1416,16 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
       alert("해당 조사가 DB에서 깨끗이 삭제되었습니다.");
     } catch (err) {
       console.error("Failed to delete survey:", err);
-      alert("삭제 실패: " + err.message);
+      alert("삭제 실패: " + getErrorMessage(err));
     }
   };
 
   // AI 총평 제작 프롬프트
-  const makePrompt = (survey, avgScore, responsesCount) => {
+  const makePrompt = (
+    survey: SatisfactionSurvey,
+    avgScore: number,
+    responsesCount: number
+  ) => {
     const qList = survey.questions.map((q, i) => `문항 ${i+1}: ${q}`).join("\n");
     const commentList = survey.responses.filter(r => r.comment).map(r => `- ${r.comment}`).join("\n");
     return `
@@ -1418,7 +1455,7 @@ ${commentList || "(없음)"}
   };
 
   // OpenAI GPT-4o-mini 만족도조사 환류 총평 생성기
-  const generateAiAnalysis = async (survey) => {
+  const generateAiAnalysis = async (survey: SatisfactionSurvey) => {
     const avgScore = getLikertConvertedScore(survey.responses, survey.questions.length);
     const count = survey.responses.length;
     if (count === 0) {
@@ -1534,7 +1571,7 @@ ${commentList || "(없음)"}
   };
 
   // 수집 결과 Excel 파일로 내보내기 시뮬레이션 (xlsx 연동 라이브러리)
-  const handleExportToExcel = (survey) => {
+  const handleExportToExcel = (survey: SatisfactionSurvey) => {
     if (!survey.responses || survey.responses.length === 0) {
       alert("수집된 응답 데이터가 없어 엑셀 파일 생성이 불가합니다.");
       return;
@@ -1581,7 +1618,7 @@ ${commentList || "(없음)"}
   };
 
   // Google Sheets 웹 문서 자동 복사 및 다이렉트 브릿지 이동
-  const handleOpenGoogleSheetsDirect = (survey) => {
+  const handleOpenGoogleSheetsDirect = (survey: SatisfactionSurvey) => {
     if (!survey.responses || survey.responses.length === 0) {
       alert("연동할 실제 응답 데이터가 없습니다.");
       return;
@@ -1604,7 +1641,7 @@ ${commentList || "(없음)"}
   };
 
   const selectedSurvey = surveys.find(s => s.id === selectedSurveyId);
-  const selectedYearFull = 2024 + selectedYear;
+  const selectedYearFull = 2024 + Number(selectedYear ?? 1);
 
   // 차트 렌더링에 적합한 데이터 정의
   const chartData = selectedSurvey ? getQuestionAverageScores(selectedSurvey) : [];
@@ -1745,7 +1782,7 @@ ${commentList || "(없음)"}
               <tbody>
                 {surveys
                   .filter(s => {
-                    const targetYearStr = String(2024 + selectedYear);
+                    const targetYearStr = String(2024 + Number(selectedYear ?? 1));
                     const idMatch = s.id && s.id.startsWith(targetYearStr);
                     const dateMatch = s.startDate && s.startDate.startsWith(targetYearStr);
                     return idMatch || dateMatch;
@@ -1934,7 +1971,7 @@ ${commentList || "(없음)"}
                 if (!deptMatch) return false;
 
                 // 2. 글로벌 연차 매칭 검사 (ID 연도 또는 시작일 연도가 해당 연차에 부합하는 조사만 필터링)
-                const targetYearStr = String(2024 + selectedYear);
+                const targetYearStr = String(2024 + Number(selectedYear ?? 1));
                 const idMatch = s.id && s.id.startsWith(targetYearStr);
                 const dateMatch = s.startDate && s.startDate.startsWith(targetYearStr);
                 return idMatch || dateMatch;
@@ -2031,7 +2068,7 @@ ${commentList || "(없음)"}
 
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", fontSize: "0.75rem", background: "rgba(255,255,255,0.01)", padding: "0.5rem", borderRadius: "0.25rem", marginBottom: "1rem" }}>
                             <div style={{ gridColumn: "span 2", whiteSpace: "nowrap" }}>일정: <span style={{ color: "var(--text-secondary)" }}>{survey.startDate} ~ {survey.endDate}</span></div>
-                            <div style={{ gridColumn: "span 2", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>대상: <span style={{ color: "var(--text-secondary)" }} title={survey.target}>{survey.target}</span></div>
+                            <div style={{ gridColumn: "span 2", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>대상: <span style={{ color: "var(--text-secondary)" }} title={survey.target || undefined}>{survey.target}</span></div>
                             <div>질문수: <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>{survey.questions.length}문항</span></div>
                             <div>수집응답: <span style={{ color: "var(--text-secondary)", fontWeight: "700" }}>{survey.responses.length}건</span></div>
                           </div>
@@ -2898,7 +2935,7 @@ ${commentList || "(없음)"}
                   </p>
 
                   <div 
-                    onClick={() => document.getElementById("satisfaction-file-input").click()}
+                    onClick={() => document.getElementById("satisfaction-file-input")?.click()}
                     style={{
                       border: "2px dashed var(--border-color)",
                       borderRadius: "0.5rem",
