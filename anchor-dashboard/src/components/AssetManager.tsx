@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { supabase } from "../supabaseClient";
 import { Plus, Trash2, Edit2, Calendar, Clipboard, CheckCircle, AlertTriangle, Search, Home, Laptop, Check, Clock, TrendingUp, Upload, Download, X } from "lucide-react";
 import * as XLSX from "xlsx";
+
+type LegacyAssetRecord = Record<string, any>;
+
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
 
 export interface SpaceReservation {
   id?: number | string;
@@ -61,7 +67,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     if (DEFAULT_APPROVERS.some(appr => userName.includes(appr))) return true;
     
     // 2. 공간별 특화 승인선
-    const SPACE_SPECIFIC_APPROVERS = {
+    const SPACE_SPECIFIC_APPROVERS: Record<string, string[]> = {
       "AI∙DX다목적강의실": ["이규상", "임은애"],
       "AI∙DX강의실1": ["이규상", "임은애"],
       "AI∙DX강의실2": ["이규상", "임은애"],
@@ -79,7 +85,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   };
 
   // 취소/반려 가능 조건 판별 (신청자 본인 또는 해당 공간의 승인권자)
-  const canCancelOrReject = (res) => {
+  const canCancelOrReject = (res: LegacyAssetRecord) => {
     if (!currentUser) return false;
     if (hasReservationApprovalPower(res.space_name)) return true;
     const userName = currentUser.name || "";
@@ -91,7 +97,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   // [1] 교육환경 관리 (공간 예약 시스템) 상태 및 핸들러
   // ==============================================================================
   const SPACES = ["AI∙DX다목적강의실", "AI∙DX강의실1", "AI∙DX강의실2", "울산늘봄누리센터", "앵커사업단회의실"];
-  const SPACE_ROOMS = {
+  const SPACE_ROOMS: Record<string, string> = {
     "AI∙DX다목적강의실": "M-404",
     "AI∙DX강의실1": "M-402",
     "AI∙DX강의실2": "M-405",
@@ -99,7 +105,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     "앵커사업단회의실": "앵커사업단"
   };
   const [selectedSpace, setSelectedSpace] = useState(SPACES[0]);
-  const [reservations, setReservations] = useState([]);
+  const [reservations, setReservations] = useState<LegacyAssetRecord[]>([]);
   const [isResModalOpen, setIsResModalOpen] = useState(false);
   
   // 예약 신청 시 사용되는 폼 상태
@@ -118,7 +124,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
 
   // 승인권자가 일시를 강제로 조정/수정할 때 쓰는 임시 상태
   const [isEditTimeModalOpen, setIsEditTimeModalOpen] = useState(false);
-  const [editingRes, setEditingRes] = useState(null);
+  const [editingRes, setEditingRes] = useState<LegacyAssetRecord | null>(null);
   const [editResFormData, setEditResFormData] = useState({
     reserved_date: "",
     start_time: "",
@@ -143,7 +149,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       setCurrentMonth(todayMonth);
       setSelectedCalendarDate(today.toISOString().split("T")[0]);
     } else {
-      const targetFiscalYear = 2025 + (selectedYear - 1);
+      const targetFiscalYear = 2025 + (Number(selectedYear || 1) - 1);
       setCurrentYear(targetFiscalYear);
       setCurrentMonth(2); // 3월 (0-indexed ➔ 2)
       setSelectedCalendarDate(`${targetFiscalYear}-03-01`);
@@ -163,17 +169,17 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       if (error) throw error;
       setReservations(data || []);
     } catch (err) {
-      console.error("예약 목록 로드 실패:", err.message);
+      console.error("예약 목록 로드 실패:", getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   // 시간대 겹침 충돌 확인 헬퍼 함수
-  const isTimeOverlapping = (newStart, newEnd, existStart, existEnd) => {
-    const parseTimeToMinutes = (t) => {
+  const isTimeOverlapping = (newStart: string, newEnd: string, existStart: string, existEnd: string) => {
+    const parseTimeToMinutes = (t: string) => {
       const parts = t.split(":");
-      return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || 0, 10);
+      return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
     };
 
     const ns = parseTimeToMinutes(newStart);
@@ -186,7 +192,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   };
 
   // 공간 예약 신청 등록 (일반 및 대행 예약)
-  const handleAddReservation = async (e) => {
+  const handleAddReservation = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentRole.id === "GUEST") {
       alert("⚠️ 게스트 계정은 예약을 신청할 수 없습니다.");
@@ -272,14 +278,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       });
       fetchReservations();
     } catch (err) {
-      alert("예약 등록 에러: " + err.message);
+      alert("예약 등록 에러: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   // 승인권자의 예약 승인 처리
-  const handleApproveReservation = async (res) => {
+  const handleApproveReservation = async (res: LegacyAssetRecord) => {
     if (!hasReservationApprovalPower(res.space_name)) {
       alert(`⚠️ 승인 권한이 없습니다. (${res.space_name}의 지정 승인권자 또는 송경영, 김현수, 심현미만 승인 가능)`);
       return;
@@ -314,14 +320,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       alert("✨ 예약이 최종 승인 완료되었습니다.");
       fetchReservations();
     } catch (err) {
-      alert("예약 승인 에러: " + err.message);
+      alert("예약 승인 에러: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   // 승인권자의 일시 변경 모달 기동
-  const handleOpenEditTime = (res) => {
+  const handleOpenEditTime = (res: LegacyAssetRecord) => {
     setEditingRes(res);
     setEditResFormData({
       reserved_date: res.reserved_date,
@@ -332,8 +338,9 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   };
 
   // 승인권자의 일시 변경 저장
-  const handleSaveEditedTime = async (e) => {
+  const handleSaveEditedTime = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!editingRes) return;
     if (!hasReservationApprovalPower(editingRes?.space_name)) {
       alert("⚠️ 권한이 없습니다.");
       return;
@@ -379,14 +386,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       setEditingRes(null);
       fetchReservations();
     } catch (err) {
-      alert("일시 조정 실패: " + err.message);
+      alert("일시 조정 실패: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   // 예약 취소 / 반려
-  const handleDeleteReservation = async (id) => {
+  const handleDeleteReservation = async (id: string) => {
     if (currentRole.id === "GUEST") {
       alert("⚠️ 게스트 계정은 예약을 삭제할 수 없습니다.");
       return;
@@ -409,7 +416,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       alert("🗑️ 예약이 성공적으로 취소/반려되었습니다.");
       fetchReservations();
     } catch (err) {
-      alert("예약 삭제 실패: " + err.message);
+      alert("예약 삭제 실패: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -418,7 +425,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   // ==============================================================================
   // [2] 기자재 관리 (AI∙DX 및 기타 자산 현황) 상태 및 핸들러
   // ==============================================================================
-  const [equipments, setEquipments] = useState([]);
+  const [equipments, setEquipments] = useState<LegacyAssetRecord[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("all"); // "all", "ai_dx", "other", or "scan"
   const [isEquipModalOpen, setIsEquipModalOpen] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState(() => {
@@ -455,12 +462,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   }, [visibleColumns]);
 
   const [isColMenuOpen, setIsColMenuOpen] = useState(false);
-  const [sortKey, setSortKey] = useState(null);
+  const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState("asc");
-  const [editingEquipId, setEditingEquipId] = useState(null);
+  const [editingEquipId, setEditingEquipId] = useState<number | null>(null);
   const [equipSearchQuery, setEquipSearchQuery] = useState("");
 
-  const handleSort = (key) => {
+  const handleSort = (key: string) => {
     if (sortKey === key) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -469,18 +476,18 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     }
   };
 
-  const renderSortArrow = (key) => {
+  const renderSortArrow = (key: string) => {
     if (sortKey !== key) return " ↕";
     return sortDirection === "asc" ? " ▲" : " ▼";
   };
 
   // 구매 완료 기자재 목록을 보관할 상태
-  const [completedProcuredItems, setCompletedProcuredItems] = useState([]);
+  const [completedProcuredItems, setCompletedProcuredItems] = useState<LegacyAssetRecord[]>([]);
 
   // 활용 실적 모달 관련 상태
   const [isUtilModalOpen, setIsUtilModalOpen] = useState(false);
-  const [selectedUtilEquip, setSelectedUtilEquip] = useState(null);
-  const [utilRecords, setUtilRecords] = useState([]);
+  const [selectedUtilEquip, setSelectedUtilEquip] = useState<LegacyAssetRecord | null>(null);
+  const [utilRecords, setUtilRecords] = useState<LegacyAssetRecord[]>([]);
   const [utilFormData, setUtilFormData] = useState({
     semester: "2026학년도 1학기",
     usage_details: ""
@@ -488,14 +495,15 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   
   // 자산 바코드 실시간 스캔을 위한 추가 상태
   const [scanInput, setScanInput] = useState("");
-  const [scannedAsset, setScannedAsset] = useState(null);
+  const [scannedAsset, setScannedAsset] = useState<LegacyAssetRecord | null>(null);
   const [scanError, setScanError] = useState("");
   const [scanSuccess, setScanSuccess] = useState(false);
 
   // Web Audio API를 활용한 바코드 비프(Beep) 효과음 발생기
   const playBeep = (type = "success") => {
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const ctx = new AudioContextClass();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = "sine";
@@ -532,12 +540,13 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       if (error) throw error;
       setCompletedProcuredItems(data || []);
     } catch (err) {
-      console.error("구매 완료 기자재 목록 로드 실패:", err.message);
+      console.error("구매 완료 기자재 목록 로드 실패:", getErrorMessage(err));
     }
   };
 
   // 학기별 활용 실적 로드
-  const fetchUtilizationRecords = async (equipId) => {
+  const fetchUtilizationRecords = async (equipId?: number) => {
+    if (equipId === undefined) return;
     try {
       const { data, error } = await supabase
         .from("equipment_utilization_records")
@@ -548,12 +557,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       if (error) throw error;
       setUtilRecords(data || []);
     } catch (err) {
-      console.error("실적 로드 실패:", err.message);
+      console.error("실적 로드 실패:", getErrorMessage(err));
     }
   };
 
   // 실적 관리 모달 팝업 기동
-  const handleOpenUtilizationModal = (item) => {
+  const handleOpenUtilizationModal = (item: LegacyAssetRecord) => {
     setSelectedUtilEquip(item);
     setUtilFormData({
       semester: "2026학년도 1학기",
@@ -564,7 +573,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   };
 
   // 실적 저장 (추가)
-  const handleSaveUtilization = async (e) => {
+  const handleSaveUtilization = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedUtilEquip) return;
     if (!utilFormData.usage_details.trim()) {
@@ -586,12 +595,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       setUtilFormData(prev => ({ ...prev, usage_details: "" }));
       fetchUtilizationRecords(selectedUtilEquip.id);
     } catch (err) {
-      alert("실적 저장 실패: " + err.message);
+      alert("실적 저장 실패: " + getErrorMessage(err));
     }
   };
 
   // 실적 삭제
-  const handleDeleteUtilization = async (recordId) => {
+  const handleDeleteUtilization = async (recordId: number) => {
     if (!window.confirm("정말로 이 학기 실적을 삭제하시겠습니까?")) return;
     try {
       const { error } = await supabase
@@ -600,9 +609,9 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
         .eq("id", recordId);
 
       if (error) throw error;
-      fetchUtilizationRecords(selectedUtilEquip.id);
+      fetchUtilizationRecords(selectedUtilEquip?.id);
     } catch (err) {
-      alert("실적 삭제 실패: " + err.message);
+      alert("실적 삭제 실패: " + getErrorMessage(err));
     }
   };
 
@@ -618,14 +627,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       if (error) throw error;
       setEquipments(data || []);
     } catch (err) {
-      console.error("기자재 현황 로드 실패:", err.message);
+      console.error("기자재 현황 로드 실패:", getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   // 기자재 추가/수정 저장
-  const handleSaveEquipment = async (e) => {
+  const handleSaveEquipment = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentRole.id === "GUEST") {
       alert("⚠️ 게스트 계정은 기자재 정보를 수정할 수 없습니다.");
@@ -655,7 +664,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       }
 
       // memo JSON 내부의 inspect_date 또는 pay_date 에도 현재 연도 정보가 매핑되도록 보강합니다.
-      let memoObj = {};
+      let memoObj: LegacyAssetRecord = {};
       try {
         if (equipFormData.memo && equipFormData.memo.trim().startsWith("{")) {
           memoObj = JSON.parse(equipFormData.memo);
@@ -709,14 +718,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       });
       fetchEquipments();
     } catch (err) {
-      alert("기자재 저장 에러: " + err.message);
+      alert("기자재 저장 에러: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   // 기자재 수정 모달 열기
-  const handleOpenEditEquip = (equip) => {
+  const handleOpenEditEquip = (equip: LegacyAssetRecord) => {
     setEditingEquipId(equip.id);
     setEquipFormData({
       asset_number: equip.asset_number,
@@ -731,7 +740,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   };
 
   // 기자재 삭제
-  const handleDeleteEquipment = async (id) => {
+  const handleDeleteEquipment = async (id: number) => {
     if (currentRole.id === "GUEST") {
       alert("⚠️ 게스트 계정은 기자재를 삭제할 수 없습니다.");
       return;
@@ -745,14 +754,14 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       alert("🗑️ 기자재가 삭제되었습니다.");
       fetchEquipments();
     } catch (err) {
-      alert("기자재 삭제 실패: " + err.message);
+      alert("기자재 삭제 실패: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   // 바코드 리더기 실시간 스캔 완료 처리
-  const handleBarcodeScan = async (e) => {
+  const handleBarcodeScan = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!scanInput.trim()) return;
 
@@ -795,15 +804,15 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       setScanInput("");
       fetchEquipments(); // 목록 전체 리로드
     } catch (err) {
-      console.error("바코드 스캔 오류:", err.message);
-      setScanError("자산 검색 중 장애 발생: " + err.message);
+      console.error("바코드 스캔 오류:", getErrorMessage(err));
+      setScanError("자산 검색 중 장애 발생: " + getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   // 전체 기자재대장 엑셀 일괄 업로드 핸들러
-  const handleExcelImportEquipment = async (e) => {
+  const handleExcelImportEquipment = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -816,11 +825,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     const reader = new FileReader();
     reader.onload = async (evt) => {
       try {
-        const bstr = evt.target.result;
+        const bstr = evt.target?.result;
+        if (typeof bstr !== "string") throw new Error("파일 내용을 읽을 수 없습니다.");
         const wb = XLSX.read(bstr, { type: "binary" });
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
-        const rawRows = XLSX.utils.sheet_to_json(ws, { defval: "" });
+        const rawRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: "" });
 
         if (rawRows.length === 0) {
           alert("⚠️ 업로드된 엑셀 파일 내에 데이터가 존재하지 않습니다.");
@@ -921,7 +931,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
         alert(`✨ 총 ${upsertData.length}건의 기자재 대장이 성공적으로 일괄 등록/갱신되었습니다.`);
         fetchEquipments();
       } catch (err) {
-        alert("Excel 파일 파싱 및 DB 업로드 실패: " + err.message);
+        alert("Excel 파일 파싱 및 DB 업로드 실패: " + getErrorMessage(err));
       } finally {
         setLoading(false);
       }
@@ -1012,12 +1022,12 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       document.body.removeChild(a);
     } catch (err) {
       console.error("Equipment Excel export error:", err);
-      alert("엑셀 내보내기 중 오류가 발생했습니다: " + err.message);
+      alert("엑셀 내보내기 중 오류가 발생했습니다: " + getErrorMessage(err));
     }
   };
 
   // AI∙DX 자산여부 체크박스 토글 핸들러
-  const toggleEquipCategory = async (itemId, currentCategory) => {
+  const toggleEquipCategory = async (itemId: number, currentCategory: string) => {
     if (currentRole.id === "GUEST") {
       alert("⚠️ 게스트 계정은 자산 분류를 변경할 권한이 없습니다.");
       return;
@@ -1033,8 +1043,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
       if (error) throw error;
       fetchEquipments();
     } catch (err) {
-      console.error("자산 분류 토글 오류:", err.message);
-      alert("자산 분류 변경 중 오류가 발생했습니다: " + err.message);
+      console.error("자산 분류 토글 오류:", getErrorMessage(err));
+      alert("자산 분류 변경 중 오류가 발생했습니다: " + getErrorMessage(err));
     }
   };
 
@@ -1854,7 +1864,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                       if (!equipSearchQuery.trim()) return true;
                       const query = equipSearchQuery.toLowerCase();
                       
-                      let memoObj = {};
+                      let memoObj: LegacyAssetRecord = {};
                       try {
                         if (e.memo && e.memo.trim().startsWith("{")) {
                           memoObj = JSON.parse(e.memo);
@@ -1891,8 +1901,8 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                     let valA = "";
                     let valB = "";
                     
-                    let metaA = {};
-                    let metaB = {};
+                    let metaA: LegacyAssetRecord = {};
+                    let metaB: LegacyAssetRecord = {};
                     try {
                       if (a.memo && a.memo.trim().startsWith("{")) metaA = JSON.parse(a.memo);
                     } catch(e){}
@@ -2019,7 +2029,7 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
                           </thead>
                           <tbody>
                             {sortedData.map((item) => {
-                              let originalMeta = {};
+                              let originalMeta: LegacyAssetRecord = {};
                               try {
                                 if (item.memo && item.memo.trim().startsWith("{")) {
                                   originalMeta = JSON.parse(item.memo);
