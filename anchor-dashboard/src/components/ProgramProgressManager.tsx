@@ -557,7 +557,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                               border: darkMode ? "1px solid rgba(255, 255, 255, 0.08)" : "1px solid #cbd5e1"
                             }}>
                               {monthlyPDCA.map((val, idx) => {
-                                const steps = val ? val.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s)) : [];
+                                const steps = val ? val.split(/[/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s)) : [];
                                 
                                 const getSingleColor = (
                                   char: string,
@@ -600,7 +600,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                                   if (prog.actual_timeline) {
                                     const actualMonths = parseTimelineToMonths(prog.actual_timeline);
                                     const targetActualVal = actualMonths[idx] || "";
-                                    const actualSteps = targetActualVal ? targetActualVal.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s)) : [];
+                                    const actualSteps = targetActualVal ? targetActualVal.split(/[/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s)) : [];
                                     
                                     if (actualSteps.length === 0) return "transparent";
                                     if (actualSteps.length === 1) {
@@ -638,7 +638,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
                                     const actualMonths = parseTimelineToMonths(prog.actual_timeline) || [];
                                     const actVal = actualMonths[i];
                                     if (!actVal || typeof actVal !== "string") return false;
-                                    const sList = actVal.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
+                                    const sList = actVal.split(/[/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
                                     return sList.some(char => {
                                       if (!char || typeof char !== "string") return false;
                                       const status = prog.pdca?.[char.toLowerCase()] || "대기";
@@ -648,7 +648,7 @@ export default function ProgramProgressManager({ projects, selectedYear = 2, dar
 
                                   const v = monthlyPDCA[i];
                                   if (!v || typeof v !== "string") return false;
-                                  const sList = v.split(/[\/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
+                                  const sList = v.split(/[/+&,]/).map(s => s.trim().toUpperCase()).filter(s => ["P", "D", "C", "A"].includes(s));
                                   return sList.some(char => {
                                     if (!char || typeof char !== "string") return false;
                                     const status = prog.pdca?.[char.toLowerCase()] || "대기";

@@ -649,7 +649,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
         const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
         if (lines.length > 0) {
           const matchLine = lines.find(l => l.includes("만족도") || l.includes("조사") || l.includes("결과"));
-          title = matchLine ? matchLine.replace(/[#*=\[\]]/g, "").trim() : lines[0];
+          title = matchLine ? matchLine.replace(/[#*=\x5B\x5D]/g, "").trim() : lines[0];
         }
 
         // 대상 추출
@@ -1213,7 +1213,7 @@ export default function SatisfactionManager({ currentRole, currentUser, selected
     const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
     if (lines.length > 0) {
       const matchLine = lines.find(l => l.includes("만족도") || l.includes("조사") || l.includes("결과"));
-      title = matchLine ? matchLine.replace(/[#*=\[\]]/g, "").trim() : lines[0];
+      title = matchLine ? matchLine.replace(/[#*=\x5B\x5D]/g, "").trim() : lines[0];
     }
     let target = "프로그램 참여 학생 및 기업체 관계자";
     const targetMatch = text.match(/(?:대상|참여자|참여대상)(?:\s*:\s*|\s*은\s*|\s*)([^.\n]+)/);
