@@ -17,6 +17,8 @@
     "src/utils/committee-vote-validation.ts",
     "src/utils/committee-vote-validation.test.ts",
     "src/utils/quorumEvaluator.ts",
-    "src/utils/quorumEvaluator.test.ts"
+    "src/utils/quorumEvaluator.test.ts",
+    "src/services/otp-auth-core.ts",
+    "src/services/otp-auth-service.test.ts"
   ]
 }

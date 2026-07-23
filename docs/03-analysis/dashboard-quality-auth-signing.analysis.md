@@ -5,9 +5,9 @@
 
 ---
 
-## Match Rate: 55%
+## Match Rate: 67%
 
-총 42개 검증 항목 중 23개가 구현·검증되었다. TypeScript, JSX 접근성 lint, 위원회 회귀시험, 초기 번들 개선과 공통 승인 프로필 resolver가 완료됐다. 반면 이메일·SMS OTP, PAdES 서명 스키마·서버 경계·검증은 구현되지 않았다.
+총 42개 검증 항목 중 28개가 구현·검증되었다. TypeScript, JSX 접근성 lint, 위원회 회귀시험, 초기 번들 개선, 공통 승인 프로필 resolver와 provider-neutral OTP 경계가 완료됐다. 운영 SMTP/SMS provider E2E와 PAdES 서명 스키마·서버 경계·검증은 아직 남아 있다.
 
 외부 사업자와 인증서가 필요한 항목은 임의 구현하지 않은 것이 설계와 일치하지만, provider 미설정 상태를 안전하게 표현하는 서버 adapter와 데이터 경계까지 아직 없으므로 구현 완료로 계산하지 않았다.
 
@@ -16,7 +16,7 @@
 - 설계의 Workstream A~E와 Test/Operations 요구를 42개 독립 항목으로 분해했다.
 - 구현 코드, 설정, migration, Edge Function, 테스트 파일이 존재하고 현재 검사로 확인된 항목만 완료로 계산했다.
 - 일부 구현 또는 수동 확인만 있는 항목은 완료 점수에 포함하지 않았다.
-- 계산식: `23 / 42 × 100 = 54.76%`, 반올림하여 55%.
+- 계산식: `28 / 42 × 100 = 66.67%`, 반올림하여 67%.
 
 ## Workstream Results
 
@@ -25,10 +25,10 @@
 | A. TypeScript | 5 | 5 | 100% | Match |
 | B. Lint and accessibility | 5 | 5 | 100% | Match |
 | C. Bundle and performance | 6 | 7 | 86% | Partial |
-| D. Supabase OTP | 4 | 10 | 40% | Partial |
+| D. Supabase OTP | 9 | 10 | 90% | Partial |
 | E. Certificate PDF signature | 1 | 10 | 10% | Missing |
 | Tests and operations | 2 | 5 | 40% | Partial |
-| **Total** | **23** | **42** | **55%** | **Act required** |
+| **Total** | **28** | **42** | **67%** | **Act required** |
 
 ## Implemented Items
 
@@ -76,25 +76,28 @@ Measured evidence:
 - Rolldown `strictExecutionOrder`로 Recharts/D3 분할 청크의 source execution order를 보존한다.
 - production preview에서 외부위원 로그인과 일반 로그인 모두 runtime exception 0건으로 확인했다.
 
-### D. Supabase OTP — 4/10
+### D. Supabase OTP — 9/10
 
 - [x] 기존 Supabase 비밀번호 로그인과 세션 복원은 유지된다.
 - [x] 로그인과 복원 경로에 `rise_users.uuid`, `approved` 확인이 존재한다.
 - [x] 로그인과 세션 복원이 공통 `resolveApprovedRiseUser` adapter를 사용한다.
 - [x] 알 수 없는 `role_key`는 local 세션 폐기와 일반화된 인증 실패로 처리한다.
-- [ ] `signInWithOtp` 이메일 요청 adapter가 없다.
-- [ ] `verifyOtp` 이메일 검증 adapter가 없다.
-- [ ] E.164 정규화와 SMS OTP 요청 adapter가 없다.
-- [ ] SMS OTP 검증 adapter가 없다.
-- [ ] 이메일/SMS 기능 flag와 provider preflight가 없다.
-- [ ] resend cooldown, 실패 횟수, 일반화된 OTP 오류 처리와 OTP E2E가 없다.
+- [x] `signInWithOtp` 이메일 요청 adapter가 있다.
+- [x] `verifyOtp` 이메일 검증 adapter가 있다.
+- [x] E.164 정규화와 SMS OTP 요청 adapter가 있다.
+- [x] SMS OTP 검증 adapter가 있다.
+- [x] 이메일/SMS 기능 flag와 provider preflight가 있다.
+- [ ] resend cooldown, 실패 횟수와 일반화된 OTP 오류 처리는 구현됐으나 구성된 운영 provider OTP E2E가 없다.
 
 Evidence:
 
 - `anchor-dashboard/src/components/AuthManager.tsx`는 `signInWithPassword`만 사용한다.
 - `src/services/auth-service.ts`가 UUID, 승인 여부와 허용 역할을 한 경계에서 검사한다.
-- `AuthManager.tsx`와 `App.tsx`가 동일 resolver를 사용하며 unknown role fallback이 제거됐다.
+- `AuthManager.tsx`, `App.tsx`와 OTP adapter가 동일 resolver를 사용하며 unknown role fallback이 제거됐다.
 - migration 096은 Auth와 `rise_users`의 DB 계약을 강화했지만 OTP 요청·검증 기능은 제공하지 않는다.
+- `otp-auth-core.ts`는 email/SMS 요청·검증, `shouldCreateUser: false`, E.164, destination mask, cooldown과 실패 한도를 provider-neutral 경계로 제공한다.
+- feature flag와 provider readiness flag는 모두 기본 false이며 UI에는 아직 연결되지 않는다.
+- OTP 단위시험 6건이 통과한다. 운영 SMTP/SMS provider 구성 환경 E2E가 없으므로 마지막 항목은 완료로 계산하지 않았다.
 
 ### E. Certificate PDF signature — 1/10
 
@@ -153,8 +156,8 @@ Evidence:
 
 - [x] Act 1: 승인 프로필 resolver 통합과 unknown role fail-closed
 - [x] Act 2: JSX 접근성 검사 gate 정상화
-- [ ] Act 3: 이메일 OTP adapter·feature flag·시험
-- [ ] Act 4: SMS OTP adapter·provider preflight·시험
+- [x] Act 3: 이메일 OTP adapter·feature flag·단위시험
+- [x] Act 4: SMS OTP adapter·provider preflight·단위시험
 - [ ] Act 5: signature schema/storage/RLS migration
 - [ ] Act 6: provider-neutral signing Function과 client adapter
 - [ ] Act 7: 외부 인증서/TSA 결정 후 PAdES 검증
