@@ -38,6 +38,7 @@ import { parseCommitteeVotePath } from "./utils/committee-short-link";
 import type { AssetReservation, Html2PdfFactory, LegacyAppRecord, LegacyYearRecord, ProgramVersionRequest, RiseMemberInsert, ScheduleEventInsert, ScheduleMeetingInsert, ScheduleMonthlyInsert } from "./app/app-types";
 import { INITIAL_AGREEMENTS, INITIAL_MEMBERS } from "./app/app-seed-data";
 import { formatAssignee, formatDataToMultiYear, formatToMillionWon, getCalculatedYearFromDate, getCleanProjectsForStorage, getErrorMessage, getNormalizedKpi, getRealUnitId, mergeProjectsWithInitial, migrateProgramIds, recalculateCarryOver } from "./app/app-data-utils";
+import { useDashboardUiLifecycle } from "./app/hooks/use-dashboard-ui-lifecycle";
 import { deleteAgreementsByYear, insertAgreements } from "./features/agreements/services/agreement-service";
 import { useApprovedAuthSession } from "./features/auth/hooks/use-approved-auth-session";
 import { deleteAssetReservation, deleteVersionRequest, fetchAssetReservations, fetchPendingVersionRequests, fetchVersionRequests as fetchVersionRequestRecords, updateAssetReservation, updateVersionRequestStatus } from "./features/management/services/approval-service";
@@ -5052,26 +5053,14 @@ export default function App() {
   // Supabase Auth 세션을 기준으로 rise_users 업무 프로필을 복원합니다.
   useApprovedAuthSession({ setCurrentUser });
 
-  // 다크모드 바인딩
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.remove("light-mode");
-      document.documentElement.classList.remove("light-mode");
-    } else {
-      document.body.classList.add("light-mode");
-      document.documentElement.classList.add("light-mode");
-    }
-    localStorage.setItem("anchor_dark_mode", JSON.stringify(darkMode));
-  }, [darkMode]);
-
-  // 비활성화된 메뉴에 접근 시 대시보드로 자동 리다이렉트하는 가드 (총감독/단장 권한은 예외 허용)
-  useEffect(() => {
-    if (activeTab && activeTab !== "dashboard" && menuVisibility[activeTab] === false) {
-      if (!isSongDirector) {
-        setActiveTab("dashboard");
-      }
-    }
-  }, [activeTab, menuVisibility, isSongDirector]);
+  // 다크모드 바인딩 및 비활성 메뉴 접근 가드
+  useDashboardUiLifecycle({
+    darkMode,
+    activeTab,
+    menuVisibility,
+    isPrivilegedUser: isSongDirector,
+    setActiveTab
+  });
 
   // projects 상태 변경 시 localStorage 자동 기입 (새로고침 휘발 방지 우회책)
   useProjectLocalBackup(projects);
