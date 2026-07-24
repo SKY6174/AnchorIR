@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
   BookOpen, Settings, Compass,
-  Calendar, Activity, CheckCircle, Search, Plus, Trash2, ArrowRight,
+  Activity, Search, Plus, Trash2, ArrowRight,
   FileSpreadsheet, Download, Pencil
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { MajorProgramUnitNavigation } from "../features/major-programs/components/major-program-unit-navigation";
 import { MajorProgramSeminarModal } from "../features/major-programs/components/major-program-seminar-modal";
+import { OrderlyCourseTabNavigation } from "../features/major-programs/components/orderly-course-tab-navigation";
 import { majorProgramsData, ORDERLY_COURSES, PM_PROFESSORS } from "../features/major-programs/data/major-program-data";
 import { getOverallStatus } from "../features/major-programs/utils/major-program-utils";
 import type {
@@ -1104,37 +1105,10 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                       </div>
 
                       {/* 계획 / 과정 / 결과 3단 서브탭 컨트롤바 */}
-                      <div style={{ display: "flex", gap: "0.25rem", background: "rgba(255,255,255,0.02)", padding: "0.25rem", borderRadius: "30px", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-                        {[
-                          { key: "plan", label: "운영 계획", icon: <Calendar size={13} /> },
-                          { key: "process", label: "운영 과정", icon: <Activity size={13} /> },
-                          { key: "result", label: "운영 결과 & 이수", icon: <CheckCircle size={13} /> }
-                        ].map((subTab) => (
-                          <button
-                            key={subTab.key}
-                            onClick={() => setOrderlyTab(subTab.key)}
-                            style={{
-                              border: "none",
-                              padding: "0.5rem 1.1rem",
-                              borderRadius: "20px",
-                              cursor: "pointer",
-                              fontSize: "0.8rem",
-                              fontWeight: "800",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "0.4rem",
-                              transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                              background: orderlyTab === subTab.key ? "linear-gradient(135deg, #10b981, #059669)" : "transparent",
-                              color: orderlyTab === subTab.key ? "#fff" : "var(--text-secondary)",
-                              boxShadow: orderlyTab === subTab.key ? "0 4px 12px rgba(16, 185, 129, 0.35)" : "none",
-                              transform: orderlyTab === subTab.key ? "translateY(-1px)" : "none"
-                            }}
-                          >
-                            {subTab.icon}
-                            {subTab.label}
-                          </button>
-                        ))}
-                      </div>
+                      <OrderlyCourseTabNavigation
+                        orderlyTab={orderlyTab}
+                        setOrderlyTab={setOrderlyTab}
+                      />
                     </div>
 
                     {/* 1. 운영 계획 탭 */}
