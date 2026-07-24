@@ -3,6 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import { supabase } from "../supabaseClient";
 import { Plus, Trash2, Edit2, Calendar, Search, Check, Clock, TrendingUp, Upload, Download, X } from "lucide-react";
 import { SPACES, SPACE_ROOMS, USAGE_TYPES } from "../features/assets/asset-constants";
+import { AssetSubtabNavigation } from "../features/assets/components/asset-subtab-navigation";
 import type { AssetManagerProps, LegacyAssetRecord } from "../features/assets/asset-types";
 import { getErrorMessage, isTimeOverlapping } from "../features/assets/utils/asset-utils";
 
@@ -997,46 +998,10 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem", color: "var(--text-primary)" }}>
 
       {/* [A] 자산 관리 대분류 서브메뉴 가로 탭바 (첫번째 예산 탭바와 디자인 100% 동기화) */}
-      <div style={{
-        display: "flex",
-        gap: "1.5rem",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-        paddingBottom: "0.2rem",
-        marginBottom: "0.5rem"
-      }}>
-        <button
-          onClick={() => onChangeSubTab && onChangeSubTab("education_env")}
-          style={{
-            background: "transparent",
-            border: "none",
-            fontSize: "1rem",
-            fontWeight: "800",
-            cursor: "pointer",
-            padding: "0.5rem 1rem",
-            color: activeSubTab === "education_env" ? "var(--accent-color)" : "var(--text-secondary)",
-            borderBottom: activeSubTab === "education_env" ? "2px solid var(--accent-color)" : "none",
-            transition: "all 0.15s ease"
-          }}
-        >
-          교육환경 사용예약 관리
-        </button>
-        <button
-          onClick={() => onChangeSubTab && onChangeSubTab("equipment")}
-          style={{
-            background: "transparent",
-            border: "none",
-            fontSize: "1rem",
-            fontWeight: "800",
-            cursor: "pointer",
-            padding: "0.5rem 1rem",
-            color: activeSubTab === "equipment" ? "var(--accent-color)" : "var(--text-secondary)",
-            borderBottom: activeSubTab === "equipment" ? "2px solid var(--accent-color)" : "none",
-            transition: "all 0.15s ease"
-          }}
-        >
-          기자재 대장 관리
-        </button>
-      </div>
+      <AssetSubtabNavigation
+        activeSubTab={activeSubTab}
+        onChangeSubTab={onChangeSubTab}
+      />
 
       {/* 본문 콘텐츠만 glass-card 로 감싸주어 가로형 탭바가 프레임 밖(위)에 오도록 적용 */}
       <div className="glass-card" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
