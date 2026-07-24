@@ -3,7 +3,7 @@ import { FileSpreadsheet } from "lucide-react";
 
 type StringSetter = Dispatch<SetStateAction<string>>;
 
-interface SeminarResultModalProps {
+interface MajorProgramSeminarModalProps {
   isEditMode: boolean;
   setIsSeminarModalOpen: Dispatch<SetStateAction<boolean>>;
   isAiAnalyzing: boolean;
@@ -30,7 +30,7 @@ interface SeminarResultModalProps {
   setFormSeminarEtc: StringSetter;
 }
 
-export function SeminarResultModal({
+export function MajorProgramSeminarModal({
   isEditMode,
   setIsSeminarModalOpen,
   isAiAnalyzing,
@@ -55,7 +55,7 @@ export function SeminarResultModal({
   setFormSeminarSatisfaction,
   formSeminarEtc,
   setFormSeminarEtc
-}: SeminarResultModalProps) {
+}: MajorProgramSeminarModalProps) {
   return (
                       <div style={{
                         position: "fixed",

@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { MajorProgramUnitNavigation } from "../features/major-programs/components/major-program-unit-navigation";
-import { SeminarResultModal } from "../features/major-programs/components/seminar-result-modal";
+import { MajorProgramSeminarModal } from "../features/major-programs/components/major-program-seminar-modal";
 import { majorProgramsData, ORDERLY_COURSES, PM_PROFESSORS } from "../features/major-programs/data/major-program-data";
 import { getOverallStatus } from "../features/major-programs/utils/major-program-utils";
 import type {
@@ -1826,7 +1826,7 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
 
                     {/* 4. 지산학 세미나 추가 결과보고 모달창 UI */}
                     {isSeminarModalOpen && (
-                      <SeminarResultModal
+                      <MajorProgramSeminarModal
                         isEditMode={isEditMode}
                         setIsSeminarModalOpen={setIsSeminarModalOpen}
                         isAiAnalyzing={isAiAnalyzing}
