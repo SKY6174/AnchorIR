@@ -49,3 +49,9 @@ export interface ReservationFormData {
   purpose: string;
   status: string;
 }
+
+export interface ReservationTimeFormData {
+  reserved_date: string;
+  start_time: string;
+  end_time: string;
+}
