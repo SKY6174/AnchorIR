@@ -10,6 +10,19 @@ import {
   Compass, Sparkles
 } from "lucide-react";
 import { supabase } from "../supabaseClient"; // Supabase 클라이언트 의존성 주입
+import type {
+  AiSurveyData,
+  DebateLog,
+  SatisfactionSurvey,
+} from "../features/satisfaction/satisfaction-types";
+import {
+  getLikertConvertedScore,
+  getQuestionAverageScores,
+} from "../features/satisfaction/utils/satisfaction-analysis";
+export type {
+  SatisfactionSurvey,
+  SurveyResponse,
+} from "../features/satisfaction/satisfaction-types";
 
 // 초기 기본 만족도 조사 데이터 셋 (로컬 스토리지에 유지 가능하도록 구성)
 const defaultSurveys = [
@@ -63,50 +76,6 @@ const defaultSurveys = [
     ]
   }
 ];
-
-export interface SurveyResponse {
-  id: number | string;
-  responder: string;
-  scores: number[];
-  comment?: string | null;
-  date?: string;
-}
-
-export interface SatisfactionSurvey {
-  id: string;
-  title: string;
-  purpose?: string | null;
-  startDate?: string | null;
-  endDate?: string | null;
-  target?: string | null;
-  department?: string | null;
-  status?: string | null;
-  googleSheetUrl?: string | null;
-  questions: string[];
-  responses: SurveyResponse[];
-  aiReport?: string | null;
-  created_at?: string;
-}
-
-interface DebateLog {
-  sender: "system" | "gpt" | "gemini";
-  message: string;
-}
-
-interface AiSurveyData {
-  title: string;
-  target: string;
-  startDate: string;
-  endDate: string;
-  purpose: string;
-  questions: string[];
-  responsesCount: number;
-  averageScore: number;
-  comments: string[];
-  gptOpinion?: string;
-  geminiOpinion?: string;
-  consensusOpinion?: string;
-}
 
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
@@ -480,42 +449,6 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
     } finally {
       setSyncingId(null);
     }
-  };
-
-  // 100점 만점 환산용 통계 가중평균치 계산 (5점 리커트 척도 반영)
-  const getLikertConvertedScore = (responses: SurveyResponse[], questionsCount: number) => {
-    if (!responses || responses.length === 0 || questionsCount === 0) return 0;
-
-    let totalScore = 0;
-    let totalItems = 0;
-
-    responses.forEach(res => {
-      res.scores.forEach(s => {
-        totalScore += s * 20; // 5점 만점 -> 100점 만점 환산 (1=20, 2=40, 3=60, 4=80, 5=100)
-        totalItems++;
-      });
-    });
-
-    return parseFloat((totalScore / totalItems).toFixed(1));
-  };
-
-  // 문항별 만족도 점수 계산
-  const getQuestionAverageScores = (survey: SatisfactionSurvey) => {
-    if (!survey.responses || survey.responses.length === 0) {
-      return survey.questions.map((q, i) => ({ name: `문항 ${i + 1}`, score: 0 }));
-    }
-
-    return survey.questions.map((q, i) => {
-      let sum = 0;
-      survey.responses.forEach(res => {
-        sum += (res.scores[i] || 0) * 20; // 100점 만점 환산
-      });
-      return {
-        name: `문항 ${i + 1}`,
-        score: parseFloat((sum / survey.responses.length).toFixed(1)),
-        questionText: q
-      };
-    });
   };
 
   // 10명 모의 응답 일괄 대량 생성기 (테스트 데이터 생성)
