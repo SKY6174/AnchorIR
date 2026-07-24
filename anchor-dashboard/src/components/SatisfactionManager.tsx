@@ -19,6 +19,13 @@ import { SatisfactionSheetsModal } from "../features/satisfaction/components/sat
 import { SatisfactionListTab } from "../features/satisfaction/components/satisfaction-list-tab";
 import { SatisfactionDetailTab } from "../features/satisfaction/components/satisfaction-detail-tab";
 import { SatisfactionAiInputModal } from "../features/satisfaction/components/satisfaction-ai-input-modal";
+import {
+  callConsensusCompilerForSatisfaction,
+  callGeminiApiForSatisfaction,
+  callOpenAiGptForSatisfaction,
+} from "../features/satisfaction/services/satisfaction-ai-service";
+import { exportSatisfactionSurveyToExcel } from "../features/satisfaction/services/satisfaction-export-service";
+import { buildSatisfactionReportPrompt } from "../features/satisfaction/utils/satisfaction-report-prompt";
 export type {
   SatisfactionSurvey,
   SurveyResponse,
@@ -846,171 +853,6 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
     }
   };
 
-  // [교육용 주석] 만족도 조사의 초안을 OpenAI GPT-4o-mini API를 활용해 생성하는 헬퍼 함수
-  const callOpenAiGptForSatisfaction = async (rawText: string): Promise<AiSurveyData> => {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-    if (!apiKey) throw new Error("OpenAI API Key가 설정되지 않았습니다.");
-
-    const prompt = `당신은 대학 RISE(앵커) 사업 만족도 조사 분석가(GPT-4o)입니다.
-    다음 만족도 조사 텍스트를 정밀 분석하여 아래 JSON 스키마를 만족하는 분석 요약본을 출력하십시오.
-    응답은 반드시 마크다운(예: \`\`\`json 등)이나 불필요한 사설 없이 순수 JSON 객체만 반환해야 합니다.
-
-    [JSON 스키마]:
-    {
-      "title": "설문조사 혹은 보고서의 공식 제목",
-      "target": "조사 대상 (예: 울산지역 혁신기관 임직원 및 교수 30명)",
-      "startDate": "시작일 (YYYY-MM-DD 형식, 본문에 명시되지 않았으면 오늘 날짜 기준으로 가상 생성)",
-      "endDate": "종료일 (YYYY-MM-DD 형식, 본문에 명시되지 않았으면 시작일로부터 5일 뒤로 가상 생성)",
-      "purpose": "설문조사 목적",
-      "responsesCount": 응답자수 (정수형 숫자),
-      "averageScore": 만족도 평균점수 (100점 만점 기준 실수형 숫자. 만약 5점 만점 등 다른 기준이라면 100점 만점으로 자동 환산할 것),
-      "comments": ["대표적인 주관식 피드백 의견 2~4개"],
-      "gptOpinion": "GPT-4o가 작성한 분석 및 파싱 검토 의견 (예: '텍스트에서 응답자 30명과 평균점수 92.8%를 정확히 추출하여 요약 초안을 작성했습니다. 날짜 형식을 표준 YYYY-MM-DD로 검증했습니다.')"
-    }
-
-    [텍스트 내용]:
-    ${rawText}`;
-
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are a helpful AI assistant that always replies in JSON format according to the user schema." },
-          { role: "user", content: prompt }
-        ],
-        response_format: { type: "json_object" }
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI API HTTP Error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return JSON.parse(data.choices[0].message.content) as AiSurveyData;
-  };
-
-  // [교육용 주석] 만족도 조사의 초안을 Google Gemini API를 활용해 검토 및 보완 의견을 도출하는 헬퍼 함수
-  const callGeminiApiForSatisfaction = async (
-    rawText: string,
-    gptDraft: AiSurveyData
-  ): Promise<AiSurveyData> => {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey) throw new Error("Gemini API Key가 설정되지 않았습니다.");
-
-    const prompt = `당신은 대학 RISE(앵커) 사업 만족도 조사 분석 전문가(Google Gemini)입니다.
-    다음 만족도 조사 원본 텍스트와 파트너 AI(GPT-4o)가 1차로 분석한 요약 초안 JSON을 제공합니다.
-    두 데이터를 정밀 대조하여 날짜 오차, 응답자수 계산 착오, 주관식 의견 왜곡 등 오류가 없는지 팩트체크를 하십시오.
-    그 검토 및 보완 의견을 작성하고, 수정이 완료된 최종 JSON 데이터를 출력해 주십시오.
-    응답은 반드시 마크다운이나 불필요한 사설 없이 순수 JSON 객체만 반환해야 합니다.
-
-    [원본 텍스트]:
-    ${rawText}
-
-    [GPT-4o 초안 JSON]:
-    ${JSON.stringify(gptDraft)}
-
-    [출력 JSON 스키마]:
-    {
-      "title": "보완 조율된 조사 제목",
-      "target": "보완 조율된 조사 대상",
-      "startDate": "보완 조율된 시작일 (YYYY-MM-DD)",
-      "endDate": "보완 조율된 종료일 (YYYY-MM-DD)",
-      "purpose": "보완 조율된 설문 목적",
-      "responsesCount": 보완 조율된 응답자수 (정수형 숫자),
-      "averageScore": 보완 조율된 평균점수 (100점 만점 기준 실수형 숫자),
-      "comments": ["보완 조율된 대표 의견 리스트"],
-      "geminiOpinion": "Google Gemini가 작성한 반론 및 팩트체크 검토 의견 (예: 'GPT의 초안을 검증한 결과 응답자 수와 평균 점수는 모두 원본과 일치합니다. 다만, 원본 일정표 기준 시작일이 2026-05-10이 맞는지 팩트 확인을 거쳐 조율안을 확정했습니다.')"
-    }`;
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
-        generationConfig: {
-          responseMimeType: "application/json"
-        }
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Gemini API HTTP Error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error("Gemini response is empty");
-    return JSON.parse(text) as AiSurveyData;
-  };
-
-  // [교육용 주석] GPT-4o와 Gemini의 검토 의견을 종합하여 최종 합의(Consensus) 데이터를 도출하는 헬퍼 함수
-  const callConsensusCompilerForSatisfaction = async (
-    gptDraft: AiSurveyData,
-    geminiDraft: AiSurveyData
-  ): Promise<AiSurveyData> => {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-    if (!apiKey) throw new Error("OpenAI API Key가 설정되지 않았습니다.");
-
-    const prompt = `당신은 최종 조율 위원장 AI입니다.
-    만족도 조사 데이터 요약 및 검토를 거친 GPT-4o의 초안과 Google Gemini의 보완 검토안을 제공합니다.
-    두 모델 간의 의견과 데이터를 최종 비교 분석하여, 이견을 매끄럽게 조율하고 모순이 없는 완벽한 만족도 조사 최종 합의 JSON을 도출해 주십시오.
-    최종 조율 결과 요약 의견을 \`consensusOpinion\` 필드에 기술하고, 마크다운이나 사설 없이 순수 JSON 형식으로만 응답해 주십시오.
-
-    [GPT-4o 초안]:
-    ${JSON.stringify(gptDraft)}
-
-    [Gemini 검토안]:
-    ${JSON.stringify(geminiDraft)}
-
-    [최종 합의 JSON 스키마]:
-    {
-      "title": "최종 합의된 조사 제목",
-      "target": "최종 합의된 조사 대상",
-      "startDate": "최종 합의된 시작일 (YYYY-MM-DD)",
-      "endDate": "최종 합의된 종료일 (YYYY-MM-DD)",
-      "purpose": "최종 합의된 설문 목적",
-      "responsesCount": 최종 합의된 응답자수 (정수형 숫자),
-      "averageScore": 최종 합의된 평균점수 (100점 만점 기준 실수형 숫자),
-      "comments": ["최종 합의된 대표 의견 리스트"],
-      "consensusOpinion": "최종 조율 위원장 AI의 합의 서머리 의견 (예: '두 모델의 분석 데이터를 종합하고, 날짜 및 응답자 수의 정합성을 최종 확정하여 완벽히 합의된 만족도 조사 결과를 컴파일 완료했습니다.')"
-    }`;
-
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: "You are a master consensus compiler that output JSON format." },
-          { role: "user", content: prompt }
-        ],
-        response_format: { type: "json_object" }
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI API HTTP Error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return JSON.parse(data.choices[0].message.content) as AiSurveyData;
-  };
-
   // GPT-4o vs Gemini 크로스 디베이트(Cross Debate) 토론 구동 엔진 (실제 API 연동 버전)
   const runDebateSimulation = async () => {
     if (!uploadedFile) {
@@ -1354,40 +1196,6 @@ export default function SatisfactionManager({ currentRole: _currentRole, current
     }
   };
 
-  // AI 총평 제작 프롬프트
-  const makePrompt = (
-    survey: SatisfactionSurvey,
-    avgScore: number,
-    responsesCount: number
-  ) => {
-    const qList = survey.questions.map((q, i) => `문항 ${i+1}: ${q}`).join("\n");
-    const commentList = survey.responses.filter(r => r.comment).map(r => `- ${r.comment}`).join("\n");
-    return `
-당신은 대학 RISE(앵커) 사업의 만족도 조사 전문 분석관입니다.
-아래 만족도 조사 데이터를 분석하여 200~300자 이내의 한글 종합 평가(총평)를 작성해 주세요.
-
-[조사 개요]
-- 조사 ID: ${survey.id}
-- 수행부서: ${survey.department}
-- 조사제목: ${survey.title}
-- 조사목적: ${survey.purpose}
-- 대상: ${survey.target}
-- 참여 인원: ${responsesCount}명
-- 100점 환산 평균 점수: ${avgScore}점 / 100점
-
-[조사 문항]
-${qList}
-
-[수집된 주관식 피드백]
-${commentList || "(없음)"}
-
-[요구사항]
-1. 분석 결과를 근거로 잘된 부분(강점)과 개선이 필요한 부분(보안점)을 명확하게 도출하세요.
-2. 약 200~300자 분량으로 작성하세요 (존댓말로 정중하고 신뢰감 있게).
-3. "종합 의견:" 이나 "총평:" 등의 접두사는 제외하고 바로 본문만 출력하세요.
-`;
-  };
-
   // OpenAI GPT-4o-mini 만족도조사 환류 총평 생성기
   const generateAiAnalysis = async (survey: SatisfactionSurvey) => {
     const avgScore = getLikertConvertedScore(survey.responses, survey.questions.length);
@@ -1447,7 +1255,7 @@ ${commentList || "(없음)"}
     }
 
     try {
-      const promptText = makePrompt(survey, avgScore, count);
+      const promptText = buildSatisfactionReportPrompt(survey, avgScore, count);
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -1502,54 +1310,6 @@ ${commentList || "(없음)"}
     } finally {
       setGeneratingAi(false);
     }
-  };
-
-  // 수집 결과 Excel 파일로 내보내기 시뮬레이션 (xlsx 연동 라이브러리)
-  const handleExportToExcel = async (survey: SatisfactionSurvey) => {
-    if (!survey.responses || survey.responses.length === 0) {
-      alert("수집된 응답 데이터가 없어 엑셀 파일 생성이 불가합니다.");
-      return;
-    }
-
-    // 1. 헤더 행 정의
-    const headers = ["응답 ID", "응답자명", "제출 일시"];
-    survey.questions.forEach((q, idx) => {
-      headers.push(`질문 ${idx + 1} 점수 (5점만점)`);
-      headers.push(`질문 ${idx + 1} 만족도 (%)`);
-    });
-    headers.push("기타 건의사항 및 주관식 피드백");
-
-    // 2. 데이터 행 정의
-    const dataRows = survey.responses.map(res => {
-      const row = [res.id, res.responder, res.date];
-      res.scores.forEach(s => {
-        row.push(s);
-        row.push(s * 20); // 100점 환산
-      });
-      row.push(res.comment || "");
-      return row;
-    });
-
-    const worksheetData = [
-      [`만족도조사 보고서 (ID: ${survey.id})`],
-      [`조사제목: ${survey.title}`],
-      [`조사목적: ${survey.purpose}`],
-      [`수행부서: ${survey.department} | 대상: ${survey.target} | 기간: ${survey.startDate} ~ ${survey.endDate}`],
-      [],
-      headers,
-      ...dataRows
-    ];
-
-    // XLSX 생성
-    const XLSX = await import("xlsx");
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(worksheetData);
-
-    // 스타일을 위한 열 넓이 설정 자동화
-    ws["!cols"] = [{ wch: 15 }, { wch: 15 }, { wch: 15 }, ...survey.questions.map(() => ({ wch: 22 })), { wch: 45 }];
-
-    XLSX.utils.book_append_sheet(wb, ws, "만족도 조사 결과");
-    XLSX.writeFile(wb, `satisfaction_survey_${survey.id}.xlsx`);
   };
 
   // Google Sheets 웹 문서 자동 복사 및 다이렉트 브릿지 이동
@@ -1756,7 +1516,7 @@ ${commentList || "(없음)"}
           handleAddSingleResponse={handleAddSingleResponse}
           handleSyncToGoogleSheets={handleSyncToGoogleSheets}
           syncingId={syncingId}
-          handleExportToExcel={handleExportToExcel}
+          handleExportToExcel={exportSatisfactionSurveyToExcel}
           currentLikertAverage={currentLikertAverage}
           chartData={chartData}
         />
@@ -1768,7 +1528,7 @@ ${commentList || "(없음)"}
           selectedSurvey={selectedSurvey}
           setShowSheetsViewer={setShowSheetsViewer}
           handleOpenGoogleSheetsDirect={handleOpenGoogleSheetsDirect}
-          handleExportToExcel={handleExportToExcel}
+          handleExportToExcel={exportSatisfactionSurveyToExcel}
           currentLikertAverage={currentLikertAverage}
         />
       )}
