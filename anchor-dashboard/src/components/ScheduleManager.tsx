@@ -45,6 +45,10 @@ import {
   applyMeetingAiDataRules,
   buildOperatingAgendaDistribution
 } from "../features/schedule/utils/schedule-ai-form-utils";
+import {
+  buildSchedulesByDate,
+  getSchedulesForDay
+} from "../features/schedule/utils/schedule-calendar-utils";
 import { ScheduleEventsPanel } from "../features/schedule/components/schedule-events-panel";
 import { ScheduleCommitteesPanel } from "../features/schedule/components/schedule-committees-panel";
 import { ScheduleMeetingsPanel } from "../features/schedule/components/schedule-meetings-panel";
@@ -3624,23 +3628,7 @@ Gemini 피드백: \n${geminiCritiqueText}
   // 이 문제를 해결하기 위해, monthlySchedules나 필터 기준이 변경될 때만 해시맵(schedulesByDate)을 딱 한 번 생성하도록 useMemo를 사용합니다.
   // 각 날짜별 일정을 YYYY-MM-DD 키로 미리 묶어둠으로써, 날짜를 그릴 때는 O(1) 수준으로 빠르게 가져올 수 있습니다.
   const schedulesByDate = useMemo(() => {
-    // 부서 필터링을 루프 밖에서 단 한 번만 수행하여 공통 필터링 결과 생성
-    const filtered = selectedDeptFilter === "전체"
-      ? monthlySchedules
-      : monthlySchedules.filter(s => s.dept && (s.dept === "전체" || s.dept.split(",").map((x: string) => x.trim()).includes(selectedDeptFilter)));
-
-    // 날짜별로 일정을 그룹화하는 해시 맵 빌드
-    const mapped: Record<string, ScheduleItem[]> = {};
-    filtered.forEach(s => {
-      if (s.startAt && s.year === selectedYear) {
-        const dateKey = s.startAt.substring(0, 10);
-        if (!mapped[dateKey]) {
-          mapped[dateKey] = [];
-        }
-        mapped[dateKey].push(s);
-      }
-    });
-    return mapped;
+    return buildSchedulesByDate(monthlySchedules, selectedDeptFilter, selectedYear);
   }, [monthlySchedules, selectedDeptFilter, selectedYear]);
 
   const renderCalendar = () => {
@@ -3764,9 +3752,8 @@ Gemini 피드백: \n${geminiCritiqueText}
   };
 
   const getSelectedDaySchedules = () => {
-    const dateString = `${displayYear}-${currentMonth < 10 ? "0" + currentMonth : currentMonth}-${selectedDay < 10 ? "0" + selectedDay : selectedDay}`;
     // 이미 계산 완료된 해시맵에서 클릭한 날짜의 일정을 간결하게 반환합니다.
-    return schedulesByDate[dateString] || [];
+    return getSchedulesForDay(schedulesByDate, displayYear, currentMonth, selectedDay);
   };
 
   return (
