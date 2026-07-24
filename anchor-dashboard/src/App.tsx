@@ -2169,7 +2169,7 @@ export default function App() {
       });
     }
 
-    // 1차년도에 A1나 및 공통 E는 필터링 제외
+    // 1차년도에 A1나 및 공통 X는 필터링 제외
     const mapping: Record<string, { id: string; title: string }> = {
       "A1가": { id: "A1", title: "지역과 미래를 만드는 UC-HYPER 전문기술인재 양성" },
       "A2": { id: "A2", title: "지역 창업 생태계 혁신을 위한 글로컬 창업 문화 조성" },
@@ -2186,7 +2186,7 @@ export default function App() {
     };
 
     return cloned.map((p: LegacyAppRecord) => {
-      if (p.id === "E") return null;
+      if (p.id === "X") return null;
 
       const newUnits = p.units
         .filter((u: LegacyAppRecord) => u.id !== "A1나")

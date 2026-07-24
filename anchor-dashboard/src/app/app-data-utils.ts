@@ -64,6 +64,9 @@ export const formatAssignee = (assigneeText?: string): string => {
 export const migrateProgramIds = <T extends LegacyAppRecord[] | null | undefined,>(data: T): T => {
   if (!data || !Array.isArray(data)) return data;
   for (const strategy of data) {
+    if (strategy.id === "E") {
+      strategy.id = "X";
+    }
     if (strategy.units && Array.isArray(strategy.units)) {
       for (const unit of strategy.units) {
         if (unit.programs && Array.isArray(unit.programs)) {

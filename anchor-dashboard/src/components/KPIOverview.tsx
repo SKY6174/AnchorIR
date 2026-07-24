@@ -75,9 +75,9 @@ export default function KPIOverview({ projects = [], currentRole: _currentRole, 
   // 안전 방어 코드: projects가 배열이 아닐 경우 빈 배열로 처리하여 TypeError 방지
   const safeProjects = Array.isArray(projects) ? projects : [];
 
-  // 1차년도에는 공통경비(프로젝트 ID: E)가 존재하지 않으므로 필터링 처리
+  // 1차년도에는 공통경비(프로젝트 ID: X)가 존재하지 않으므로 필터링 처리
   const activeProjects = selectedYear === 1
-    ? safeProjects.filter((p) => p && p.id !== "E")
+    ? safeProjects.filter((p) => p && p.id !== "X")
     : safeProjects;
 
   // 예산 합계 및 재원 구분 계산
@@ -218,7 +218,7 @@ export default function KPIOverview({ projects = [], currentRole: _currentRole, 
     const pSpentCarry = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.spent_carry || 0), 0) : 0;
 
     return {
-      name: p.id === "E" ? "공통운영경비" : (p.title ? p.title.split(":")[0] : ""),
+      name: p.id === "X" ? "공통운영경비" : (p.title ? p.title.split(":")[0] : ""),
       "본예산": Math.round(pBudgetMain / 1000000),
       "본집행": Math.round(pSpentMain / 1000000),
       "이월예산": Math.round(pBudgetCarry / 1000000),
@@ -231,7 +231,7 @@ export default function KPIOverview({ projects = [], currentRole: _currentRole, 
     const pBudgetMain = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_main || 0), 0) : 0;
     const pBudgetCarry = hasUnits ? p.units.reduce((s: number, u: any) => s + (u.years?.[selectedYear]?.budget_carry || 0), 0) : 0;
     return {
-      name: p.id === "E" ? "공통운영경비" : (p.title ? p.title.split(":")[0] : ""),
+      name: p.id === "X" ? "공통운영경비" : (p.title ? p.title.split(":")[0] : ""),
       value: Math.round((pBudgetMain + pBudgetCarry) / 1000000)
     };
   });

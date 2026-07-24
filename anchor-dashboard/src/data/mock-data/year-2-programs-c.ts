@@ -1,6 +1,6 @@
 import type { ProjectData } from "./data-types";
 
-export const PROJECT_C: ProjectData = {
+export const YEAR_2_PROGRAMS_C: ProjectData = {
     id: "C",
     title: "프로젝트 C: 다시 뛰게 만드는 생애 '직무 도약' 체계 구축",
     budget: 1050000000,
