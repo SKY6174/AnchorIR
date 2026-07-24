@@ -55,3 +55,13 @@ export interface ReservationTimeFormData {
   start_time: string;
   end_time: string;
 }
+
+export interface EquipmentFormData {
+  asset_number: string;
+  barcode_id: string;
+  stock_location: string;
+  category: string;
+  usage_type: string;
+  item_name: string;
+  memo: string;
+}
