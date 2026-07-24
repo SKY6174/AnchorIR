@@ -2,7 +2,33 @@
  * GPT & Gemini AI 교차 검증 및 합의 (Debate & Consensus) URL 분석 엔진
  * 두 최고 수준의 AI 모델이 병렬적으로 초안을 뽑고, 판정사(Judge)가 교차 검증하여 할루시네이션을 최소화합니다.
  */
-export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey, openaiApiKey }) {
+export interface PressAnalysisData {
+  pressType: string;
+  pressMedia: string;
+  title: string;
+  pressDate: string;
+  pressTime: string;
+  pressContent: string;
+}
+
+export interface AnalyzePressUrlInput {
+  url: string;
+  selectedYear: number | string | undefined;
+  apiKey?: string;
+  openaiApiKey?: string;
+}
+
+export interface PressAnalysisResult {
+  parsed: PressAnalysisData;
+  usedModel: string;
+}
+
+export async function analyzePressUrlWithAiConsensus({
+  url,
+  selectedYear,
+  apiKey,
+  openaiApiKey
+}: AnalyzePressUrlInput): Promise<PressAnalysisResult> {
   // --- [하이브리드 스마트 라우터 가동] ---
   // 프로덕션 배포(PROD) 환경일 때는 Vercel 서버리스 백엔드로 안전하게 요청을 전송합니다.
   if (import.meta.env.PROD) {
@@ -159,7 +185,7 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
 
   // 2. 만약 API Key가 둘 중 하나라도 없는 특수 상황일 때는 단독/로컬 스마트 엔진으로 즉각 폴백
   if (isMockOpenai || isMockGemini) {
-    let fallbackParsed = null;
+    let fallbackParsed: PressAnalysisData | null = null;
     let fallbackModel = "";
 
     if (!isMockGemini) {
@@ -349,6 +375,6 @@ export async function analyzePressUrlWithAiConsensus({ url, selectedYear, apiKey
   
   if (!responseText) throw new Error("Gemini response is empty");
 
-  const parsed = JSON.parse(responseText.trim());
+  const parsed = JSON.parse(responseText.trim()) as PressAnalysisData;
   return { parsed, usedModel: "GPT-4o & Gemini 2.5 Virtual Debate Consensus" };
 }

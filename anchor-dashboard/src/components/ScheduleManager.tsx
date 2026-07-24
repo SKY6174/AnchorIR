@@ -2595,8 +2595,7 @@ Gemini 피드백: \n${geminiCritiqueText}
 
     try {
       // [1] 외부 AI 교차 검증 및 합의 분석 엔진 실행
-      // @ts-expect-error 레거시 JavaScript 분석기는 런타임 동적 로딩 경계를 유지합니다.
-      const { analyzePressUrlWithAiConsensus } = await import("../utils/pressAnalyzer");
+      const { analyzePressUrlWithAiConsensus } = await import("../utils/press-analyzer");
       const { parsed, usedModel } = await analyzePressUrlWithAiConsensus({
         url,
         selectedYear,
