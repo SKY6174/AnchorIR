@@ -36,3 +36,16 @@ export interface AssetManagerProps {
   darkMode?: boolean;
   selectedYear?: number | string;
 }
+
+export interface ReservationFormData {
+  space_name: string;
+  reserved_date: string;
+  start_time: string;
+  end_time: string;
+  dept: string;
+  custom_dept: string;
+  reserver_name: string;
+  actual_user_name: string;
+  purpose: string;
+  status: string;
+}
