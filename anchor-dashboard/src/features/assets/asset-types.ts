@@ -65,3 +65,8 @@ export interface EquipmentFormData {
   item_name: string;
   memo: string;
 }
+
+export interface UtilizationFormData {
+  semester: string;
+  usage_details: string;
+}
