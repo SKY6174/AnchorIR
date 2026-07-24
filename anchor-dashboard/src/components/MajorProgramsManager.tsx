@@ -5,6 +5,7 @@ import {
   FileSpreadsheet, Download, Pencil
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
+import { MajorProgramUnitNavigation } from "../features/major-programs/components/major-program-unit-navigation";
 import { majorProgramsData, ORDERLY_COURSES, PM_PROFESSORS } from "../features/major-programs/data/major-program-data";
 import { getOverallStatus } from "../features/major-programs/utils/major-program-utils";
 import type {
@@ -1025,84 +1026,13 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
 
         {/* 💡 상단 가로형 단위과제 선택 배지 목록 (기존 세로형 3D 휠 실린더 다이얼에서 전면 개편) */}
         {/* 초보 개발자용 설명: 세로 롤링 휠 대신 가로로 일렬 정렬하여 한눈에 들어오고 호버링 시 하이라이트가 되는 직관적인 UI입니다. */}
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.75rem",
-          background: "rgba(255, 255, 255, 0.01)",
-          border: "1px solid var(--border-color)",
-          borderRadius: "12px",
-          padding: "1rem"
-        }}>
-          <div style={{
-            fontSize: "0.8rem",
-            fontWeight: "800",
-            color: "var(--text-secondary)",
-            textTransform: "uppercase",
-            letterSpacing: "1px"
-          }}>
-            과제 선택 (단위과제 목록)
-          </div>
-          <div style={{
-            display: "flex",
-            flexDirection: "row",
-            gap: "0.5rem",
-            flexWrap: "wrap",
-            alignItems: "center"
-          }}>
-            {unitKeys.length > 0 ? (
-              unitKeys.map((unit) => {
-                const isSelected = selectedUnit === unit;
-                const isHovered = hoveredUnit === unit;
-
-                return (
-                  <button
-                    key={unit}
-                    onClick={() => handleUnitChange(unit)}
-                    onMouseEnter={() => setHoveredUnit(unit)}
-                    onMouseLeave={() => setHoveredUnit(null)}
-                    style={{
-                      padding: "0.4rem 1rem",
-                      borderRadius: "20px",
-                      fontSize: "0.85rem",
-                      fontWeight: "800",
-                      cursor: "pointer",
-                      border: isSelected
-                        ? "1.5px solid rgba(255,255,255,0.4)"
-                        : isHovered
-                          ? "1.5px solid rgba(59, 130, 246, 0.5)"
-                          : "1.5px solid rgba(255,255,255,0.08)",
-                      background: isSelected
-                        ? "linear-gradient(135deg, var(--accent-color), #3b82f6)"
-                        : isHovered
-                          ? "rgba(59, 130, 246, 0.15)"
-                          : "rgba(255, 255, 255, 0.04)",
-                      color: isSelected
-                        ? "#fff"
-                        : isHovered
-                          ? "var(--accent-color)"
-                          : "var(--text-secondary)",
-                      boxShadow: isSelected
-                        ? "0 4px 12px rgba(59, 130, 246, 0.3)"
-                        : "none",
-                      transform: isSelected
-                        ? "translateY(-1px) scale(1.03)"
-                        : isHovered
-                          ? "translateY(-1px)"
-                          : "none",
-                      transition: "all 0.2s ease",
-                      outline: "none"
-                    }}
-                  >
-                    {unit}
-                  </button>
-                );
-              })
-            ) : (
-              <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>과제 없음</div>
-            )}
-          </div>
-        </div>
+        <MajorProgramUnitNavigation
+          unitKeys={unitKeys}
+          selectedUnit={selectedUnit}
+          hoveredUnit={hoveredUnit}
+          handleUnitChange={handleUnitChange}
+          setHoveredUnit={setHoveredUnit}
+        />
 
         {/* 하단 프로그램 선택 및 세부 화면 */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
