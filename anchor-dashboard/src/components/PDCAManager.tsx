@@ -1,156 +1,17 @@
 import React, { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { Check, ClipboardList, PenTool, Layers, LayoutList, FileSpreadsheet, FileText, Download } from "lucide-react";
-
-type LegacyPdcaRecord = Record<string, any>;
-
-const getErrorDetails = (error: unknown): string => {
-  if (error && typeof error === "object") {
-    const record = error as LegacyPdcaRecord;
-    return record.message || record.details || JSON.stringify(record);
-  }
-  return String(error);
-};
-
-// 담당연구원이 2명일 때 정/부 표기 헬퍼 함수
-const formatAssignee = (assigneeText?: string): string => {
-  if (!assigneeText) return "미배정";
-  const parts = assigneeText.split(/[,/]/).map((p) => p.trim()).filter(Boolean);
-  if (parts.length === 2) {
-    return `${parts[0]}(정), ${parts[1]}(부)`;
-  }
-  return assigneeText;
-};
-
-// 백만원 단위 포맷팅 헬퍼 함수 (소수점 첫째자리까지 표현)
-const formatToMillionWon = (value?: number | null): string => {
-  if (value === undefined || value === null || isNaN(value)) return "0.0";
-  return (value / 1000000).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-};
-
-// 천 단위 구분 쉼표 포맷팅 헬퍼 함수
-const _formatNumberWithCommas = (value?: number | string | null): string => {
-  if (value === undefined || value === null) return "";
-  const clean = String(value).replace(/[^0-9]/g, "");
-  if (!clean) return "";
-  return Number(clean).toLocaleString("ko-KR");
-};
-
-const _parseNumberFromCommas = (value?: number | string | null): number => {
-  if (!value) return 0;
-  return parseInt(String(value).replace(/,/g, ""), 10) || 0;
-};
-
-// "YYYY-MM-DD ~ YYYY-MM-DD" 포맷 파서
-const parseTimelineDates = (timelineStr: string) => {
-  if (!timelineStr || !timelineStr.includes("~")) return { start: "", end: "" };
-  const parts = timelineStr.split("~").map((p: string) => p.trim());
-
-  const toYYYYMMDD = (str: string) => {
-    if (!str) return "";
-    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
-    const dotted = str.replace(/\./g, "-");
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dotted)) return dotted;
-    if (/^\d{4}-\d{2}$/.test(dotted)) return `${dotted}-01`;
-    return dotted;
-  };
-
-  return {
-    start: toYYYYMMDD(parts[0]),
-    end: toYYYYMMDD(parts[1] || parts[0])
-  };
-};
-
-const getRequesterRoleName = (user: LegacyPdcaRecord | null | undefined) => {
-  if (!user) return "실무자";
-  if (typeof user.role === "string") return user.role;
-  if (user.role && typeof user.role === "object") {
-    return user.role.name || user.role.role || "실무자";
-  }
-  if (user.role_key) {
-    const roleNames: Record<string, string> = {
-      ADMIN: "최고 관리자",
-      G_DIRECTOR: "사업단장",
-      HQ_HEAD: "총괄본부장",
-      TEAM_LEADER: "팀장교수",
-      MANAGER: "운영팀장",
-      RESEARCHER: "실무 연구원",
-      RESEARCH: "연구원"
-    };
-    return roleNames[user.role_key] || user.role_key;
-  }
-  return "실무자";
-};
-
-const _MONTHS_LIST = ["26.3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월", "27.1월", "2월"];
-
-const BUDGET_CATEGORIES_OPTIONS = [
-  { value: "", label: "선택 안 함" },
-  { value: "인건비", label: "인건비" },
-  { value: "장학금", label: "장학금" },
-  { value: "교육∙연구 프로그램 개발∙운영비", label: "프로그램개발운영비" },
-  { value: "교육∙연구 환경개선비", label: "환경개선비" },
-  { value: "실험∙실습장비 및 기자재 구입∙운영비", label: "실험실습장비비" },
-  { value: "지역 연계∙협업 지원비", label: "지역연계협업비" },
-  { value: "기업 지원∙협력 활동비", label: "기업지원협력비" },
-  { value: "성과 활용∙확산 지원비", label: "성과활용확산비" },
-  { value: "그 밖의 사업운영경비", label: "기타사업운영경비" },
-  { value: "간접비", label: "간접비" }
-];
-
-const parseTimelineToMonths = (timelineStr: string) => {
-  const defaultValue = Array(12).fill("");
-  if (!timelineStr) return defaultValue;
-
-  if (timelineStr.includes(",")) {
-    const parts = timelineStr.split(",");
-    if (parts.length === 12) {
-      return parts.map((p: string) => {
-        const trimmed = p.trim().toUpperCase();
-        if (trimmed.split("").some((char: string) => ["P", "D", "C", "A"].includes(char))) {
-          return trimmed;
-        }
-        return "";
-      });
-    }
-  }
-
-  const dates = parseTimelineDates(timelineStr);
-  if (dates.start && dates.end) {
-    try {
-      const startMonth = parseInt(dates.start.split("-")[1], 10);
-      const endMonth = parseInt(dates.end.split("-")[1], 10);
-
-      const getMonthIndex = (m: number) => {
-        if (m >= 3 && m <= 12) return m - 3;
-        if (m === 1 || m === 2) return m + 9;
-        return -1;
-      };
-
-      const startIndex = getMonthIndex(startMonth);
-      const endIndex = getMonthIndex(endMonth);
-
-      if (startIndex !== -1 && endIndex !== -1) {
-        const arr = Array(12).fill("");
-        const start = Math.min(startIndex, endIndex);
-        const end = Math.max(startIndex, endIndex);
-        for (let i = start; i <= end; i++) {
-          arr[i] = "P";
-        }
-        return arr;
-      }
-    } catch (e) {
-      console.error("Parse timeline to months error:", e);
-    }
-  }
-
-  return defaultValue;
-};
-
-const parseDecimalFromCommas = (val: number | string | null | undefined) => {
-  if (!val) return 0;
-  return parseFloat(String(val).replace(/,/g, "")) || 0;
-};
+import type { LegacyPdcaRecord } from "../features/pdca/utils/pdca-utils";
+import {
+  BUDGET_CATEGORIES_OPTIONS,
+  formatAssignee,
+  formatToMillionWon,
+  getErrorDetails,
+  getRequesterRoleName,
+  parseDecimalFromCommas,
+  parseTimelineDates,
+  parseTimelineToMonths,
+} from "../features/pdca/utils/pdca-utils";
 
 /**
  * PDCAManager Component
