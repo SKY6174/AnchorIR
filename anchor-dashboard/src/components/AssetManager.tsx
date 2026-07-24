@@ -2,48 +2,11 @@ import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { supabase } from "../supabaseClient";
 import { Plus, Trash2, Edit2, Calendar, Search, Check, Clock, TrendingUp, Upload, Download, X } from "lucide-react";
+import { SPACES, SPACE_ROOMS, USAGE_TYPES } from "../features/assets/asset-constants";
+import type { AssetManagerProps, LegacyAssetRecord } from "../features/assets/asset-types";
+import { getErrorMessage, isTimeOverlapping } from "../features/assets/utils/asset-utils";
 
-type LegacyAssetRecord = Record<string, any>;
-
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : String(error);
-
-export interface SpaceReservation {
-  id?: number | string;
-  space_name: string;
-  reserved_date: string;
-  start_time: string;
-  end_time: string;
-  dept: string;
-  reserver_name: string;
-  actual_user_name?: string;
-  purpose?: string;
-  status: string;
-  created_at?: string;
-}
-
-export interface Equipment {
-  id?: number | string;
-  name: string;
-  spec?: string;
-  dept_name?: string;
-  qty?: number;
-  status?: string;
-  price?: number;
-  acquired_date?: string;
-  location?: string;
-  mng_person?: string;
-  note?: string;
-}
-
-export interface AssetManagerProps {
-  currentRole?: any;
-  currentUser?: any;
-  activeSubTab?: string;
-  onChangeSubTab?: (subTab: string) => void;
-  darkMode?: boolean;
-  selectedYear?: number | string;
-}
+export type { AssetManagerProps, Equipment, SpaceReservation } from "../features/assets/asset-types";
 
 export default function AssetManager({ currentRole, currentUser, activeSubTab, onChangeSubTab, darkMode, selectedYear }: AssetManagerProps) {
   // 공통 로딩 상태
@@ -95,14 +58,6 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
   // ==============================================================================
   // [1] 교육환경 관리 (공간 예약 시스템) 상태 및 핸들러
   // ==============================================================================
-  const SPACES = ["AI∙DX다목적강의실", "AI∙DX강의실1", "AI∙DX강의실2", "울산늘봄누리센터", "앵커사업단회의실"];
-  const SPACE_ROOMS: Record<string, string> = {
-    "AI∙DX다목적강의실": "M-404",
-    "AI∙DX강의실1": "M-402",
-    "AI∙DX강의실2": "M-405",
-    "울산늘봄누리센터": "1-108",
-    "앵커사업단회의실": "앵커사업단"
-  };
   const [selectedSpace, setSelectedSpace] = useState(SPACES[0]);
   const [reservations, setReservations] = useState<LegacyAssetRecord[]>([]);
   const [isResModalOpen, setIsResModalOpen] = useState(false);
@@ -172,22 +127,6 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     } finally {
       setLoading(false);
     }
-  };
-
-  // 시간대 겹침 충돌 확인 헬퍼 함수
-  const isTimeOverlapping = (newStart: string, newEnd: string, existStart: string, existEnd: string) => {
-    const parseTimeToMinutes = (t: string) => {
-      const parts = t.split(":");
-      return parseInt(parts[0], 10) * 60 + parseInt(parts[1] || "0", 10);
-    };
-
-    const ns = parseTimeToMinutes(newStart);
-    const ne = parseTimeToMinutes(newEnd);
-    const es = parseTimeToMinutes(existStart);
-    const ee = parseTimeToMinutes(existEnd);
-
-    // 겹침 여부: (ns < ee) && (ne > es)
-    return ns < ee && ne > es;
   };
 
   // 공간 예약 신청 등록 (일반 및 대행 예약)
@@ -517,7 +456,6 @@ export default function AssetManager({ currentRole, currentUser, activeSubTab, o
     }
   };
 
-  const USAGE_TYPES = ["정규교과", "비정규교과", "평생직업교육", "재직자과정", "기타"];
   const [equipFormData, setEquipFormData] = useState({
     asset_number: "",
     barcode_id: "",
