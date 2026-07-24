@@ -5,52 +5,23 @@ import {
   FileSpreadsheet, Download, Pencil
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
+import type {
+  CourseStatus,
+  CourseStatusKey,
+  MajorProgram,
+  MajorProgramsManagerProps,
+  MajorUnitData,
+  OrderlyCourse,
+  PmProfessor,
+  SeminarRecord,
+  StudentRecord
+} from "../features/major-programs/major-program-types";
 
-interface PmProfessor {
-  dept: string;
-  name: string;
-  courses: string;
-  totalStudents: number;
-  uniqueStudents: number;
-  note: string;
-}
-
-interface OrderlyCourse {
-  id: string;
-  type: string;
-  dept: string;
-  name: string;
-  professor: string;
-  students: number;
-  budget: number;
-  year: number;
-  isForeign?: boolean;
-}
-
-type CourseStatus = "미참여" | "진행중" | "이수완료";
-type CourseStatusKey = "capstone" | "pbl" | "omnibus" | "ai";
-
-interface StudentRecord {
-  id: string;
-  name: string;
-  dept: string;
-  capstone: CourseStatus;
-  pbl: CourseStatus;
-  omnibus: CourseStatus;
-  ai: CourseStatus;
-}
-
-interface SeminarRecord {
-  id: number;
-  date: string;
-  speaker: string;
-  title: string;
-  attendees: number;
-  mainCost: number;
-  carryCost: number;
-  satisfaction: number;
-  etc: string;
-}
+export type {
+  MajorProgram,
+  MajorProgramsManagerProps,
+  MajorUnitData
+} from "../features/major-programs/major-program-types";
 
 // 💡 주문식 교육과정 전체 54개 교과목 실 정산 데이터 정의
 const ORDERLY_COURSES: OrderlyCourse[] = [
@@ -450,25 +421,6 @@ const majorProgramsData = {
     }
   }
 };
-
-export interface MajorProgram {
-  id: string;
-  name: string;
-  desc?: string;
-  [key: string]: any;
-}
-
-export interface MajorUnitData {
-  label: string;
-  programs: MajorProgram[];
-}
-
-export interface MajorProgramsManagerProps {
-  selectedYear?: number | string;
-  darkMode?: boolean;
-  currentUser?: any;
-  currentRole?: any;
-}
 
 export default function MajorProgramsManager({ selectedYear = 2 }: MajorProgramsManagerProps) {
   // 현재 연도에 해당하는 단위과제 목록 추출
