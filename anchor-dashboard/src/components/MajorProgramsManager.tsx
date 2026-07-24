@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
   BookOpen, Settings, Compass,
-  Activity, Plus, Trash2,
-  Pencil
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { MajorProgramUnitNavigation } from "../features/major-programs/components/major-program-unit-navigation";
 import { MajorProgramSeminarModal } from "../features/major-programs/components/major-program-seminar-modal";
+import { MajorProgramSeminarHeader } from "../features/major-programs/components/major-program-seminar-header";
+import { MajorProgramSeminarSummary } from "../features/major-programs/components/major-program-seminar-summary";
+import { MajorProgramSeminarLedger } from "../features/major-programs/components/major-program-seminar-ledger";
 import { OrderlyCourseTabNavigation } from "../features/major-programs/components/orderly-course-tab-navigation";
 import { OrderlyCoursePlanTab } from "../features/major-programs/components/orderly-course-plan-tab";
 import { OrderlyCourseProcessTab } from "../features/major-programs/components/orderly-course-process-tab";
@@ -945,6 +946,52 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
     alert(`제${parsedId}차 지산학 이음 세미나 결과보고 등록이 정상 완료되었습니다.`);
   };
 
+  const handleCreateSeminar = () => {
+    setIsEditMode(false);
+    setFormSeminarId("");
+    setFormSeminarDate("");
+    setFormSeminarSpeaker("");
+    setFormSeminarTitle("");
+    setFormSeminarAttendees("");
+    setFormSeminarMainCost("");
+    setFormSeminarCarryCost("");
+    setFormSeminarSatisfaction("");
+    setFormSeminarEtc("");
+    setIsSeminarModalOpen(true);
+  };
+
+  const handleEditSeminar = (seminar: SeminarRecord) => {
+    setIsEditMode(true);
+    setFormSeminarId(String(seminar.id));
+    setFormSeminarDate(seminar.date);
+    setFormSeminarSpeaker(seminar.speaker);
+    setFormSeminarTitle(seminar.title);
+    setFormSeminarAttendees(String(seminar.attendees));
+    setFormSeminarMainCost(String(seminar.mainCost || 0));
+    setFormSeminarCarryCost(String(seminar.carryCost || 0));
+    setFormSeminarSatisfaction(String(seminar.satisfaction));
+    setFormSeminarEtc(seminar.etc || "");
+    setIsSeminarModalOpen(true);
+  };
+
+  const handleDeleteSeminar = (seminarId: number) => {
+    if (confirm(`제${seminarId}차 세미나 결과보고를 목록에서 삭제하시겠습니까?`)) {
+      const deleteFromDb = async () => {
+        const { error } = await supabase
+          .from("seminar_reports")
+          .delete()
+          .eq("seminar_id", seminarId);
+        if (error) {
+          console.error("Supabase 삭제 에러:", error);
+          alert("DB 삭제에 실패했습니다: " + error.message);
+        } else {
+          setSeminarList(seminarList.filter(s => s.id !== seminarId));
+        }
+      };
+      deleteFromDb();
+    }
+  };
+
   // 💡 가로형 단위과제 배지 마우스 호버 상태 관리 (하이라이팅 연동용)
   // 초보 개발자용 설명:
   // 사용자가 단위과제 배지 위에 마우스를 올렸을 때 어떤 과제인지 식별하고
@@ -1161,212 +1208,20 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
                   // 🌟 지산학 이음 세미나 탭 상세 성과/관리 화면
                   <div className="glass-card" style={{ padding: "1.8rem", display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", border: "1px solid rgba(59, 130, 246, 0.25)", boxShadow: "0 8px 32px rgba(59, 130, 246, 0.04)" }}>
                     {/* 1. 상단 헤더 영역 */}
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "1.2rem", flexWrap: "wrap", gap: "1rem" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.9rem" }}>
-                        <div style={{
-                          width: "46px",
-                          height: "46px",
-                          borderRadius: "12px",
-                          background: "linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(59, 130, 246, 0.05))",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "var(--accent-color)",
-                          border: "1px solid rgba(59, 130, 246, 0.35)",
-                          boxShadow: "0 4px 10px rgba(59, 130, 246, 0.15)"
-                        }}>
-                          <Activity size={22} />
-                        </div>
-                        <div>
-                          <h4 style={{ fontSize: "1.1rem", fontWeight: "800", color: "var(--text-primary)" }}>
-                            지산학 이음 세미나 성과 및 결과 대장
-                          </h4>
-                          <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.2rem" }}>
-                            {selectedProg.desc}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* 추가 결과보고 등록 모달 열기 버튼 */}
-                      <button
-                        onClick={() => {
-                          setIsEditMode(false);
-                          setFormSeminarId("");
-                          setFormSeminarDate("");
-                          setFormSeminarSpeaker("");
-                          setFormSeminarTitle("");
-                          setFormSeminarAttendees("");
-                          setFormSeminarMainCost("");
-                          setFormSeminarCarryCost("");
-                          setFormSeminarSatisfaction("");
-                          setFormSeminarEtc("");
-                          setIsSeminarModalOpen(true);
-                        }}
-                        style={{
-                          background: "linear-gradient(135deg, var(--accent-color), #2563eb)",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "30px",
-                          fontSize: "0.78rem",
-                          padding: "0.5rem 1.2rem",
-                          fontWeight: "800",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.4rem",
-                          boxShadow: "0 4px 12px rgba(59, 130, 246, 0.25)",
-                          transition: "transform 0.2s, box-shadow 0.2s"
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = "translateY(-1px)";
-                          e.currentTarget.style.boxShadow = "0 6px 15px rgba(59, 130, 246, 0.35)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = "translateY(0)";
-                          e.currentTarget.style.boxShadow = "0 4px 12px rgba(59, 130, 246, 0.25)";
-                        }}
-                      >
-                        <Plus size={14} />
-                        <span>+ 결과보고 등록</span>
-                      </button>
-                    </div>
+                    <MajorProgramSeminarHeader
+                      description={selectedProg.desc}
+                      onCreate={handleCreateSeminar}
+                    />
 
                     {/* 2. 통계 요약 카드 영역 */}
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem" }}>
-                      <div className="stat-card" style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                        <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>총 세미나 개최</span>
-                        <span style={{ fontSize: "1.4rem", fontWeight: "800", color: "var(--text-primary)" }}>{seminarList.length}회</span>
-                      </div>
-                      <div className="stat-card" style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                        <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>누적 참석자 수</span>
-                        <span style={{ fontSize: "1.4rem", fontWeight: "800", color: "#3b82f6" }}>
-                          {seminarList.reduce((sum, s) => sum + s.attendees, 0)}명
-                        </span>
-                      </div>
-                      <div className="stat-card" style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                        <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>누적 소요 예산 (본 / 이월)</span>
-                        <div style={{ display: "flex", flexDirection: "column" }}>
-                          <span style={{ fontSize: "1.25rem", fontWeight: "800", color: "#10b981" }}>
-                            ₩{seminarList.reduce((sum, s) => sum + ((s.mainCost || 0) + (s.carryCost || 0)), 0).toLocaleString()}
-                          </span>
-                          <span style={{ fontSize: "0.65rem", color: "var(--text-secondary)", marginTop: "0.1rem" }}>
-                            본: ₩{seminarList.reduce((sum, s) => sum + (s.mainCost || 0), 0).toLocaleString()} / 이월: ₩{seminarList.reduce((sum, s) => sum + (s.carryCost || 0), 0).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="stat-card" style={{ background: "rgba(255, 255, 255, 0.02)", border: "1px solid var(--border-color)", borderRadius: "8px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-                        <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", fontWeight: "700" }}>평균 만족도</span>
-                        <span style={{ fontSize: "1.4rem", fontWeight: "800", color: "#eab308" }}>
-                          ★ {seminarList.length > 0 ? (seminarList.reduce((sum, s) => sum + s.satisfaction, 0) / seminarList.length).toFixed(2) : "0.0"} / 5.0
-                        </span>
-                      </div>
-                    </div>
+                    <MajorProgramSeminarSummary seminarList={seminarList} />
 
                     {/* 3. 결과 테이블 대장 */}
-                    <div style={{ background: "rgba(255,255,255,0.01)", border: "1px solid var(--border-color)", borderRadius: "10px", padding: "1rem", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-                      <h6 style={{ fontSize: "0.82rem", fontWeight: "800", color: "var(--text-primary)" }}>지산학 이음 세미나 개최 결과 요약 대장</h6>
-                      <div style={{ overflowX: "auto" }}>
-                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem", textAlign: "left" }}>
-                          <thead>
-                            <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-secondary)", fontWeight: "800" }}>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "40px", textAlign: "center" }}>순번</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "140px" }}>일시</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "120px" }}>강사</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "220px" }}>주제(제목)</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "70px", textAlign: "center" }}>참석자 수</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "95px", textAlign: "right" }}>본예산</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "95px", textAlign: "right" }}>이월예산</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "80px", textAlign: "center" }}>만족도</th>
-                              <th style={{ padding: "0.6rem 0.5rem" }}>기타 및 특이사항</th>
-                              <th style={{ padding: "0.6rem 0.5rem", width: "50px", textAlign: "center" }}>관리</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {seminarList.length > 0 ? (
-                              seminarList.map((seminar) => (
-                                <tr
-                                  key={seminar.id}
-                                  style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}
-                                  className="course-tr-hover"
-                                >
-                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center", fontWeight: "700" }}>{seminar.id}</td>
-                                  <td style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)", whiteSpace: "pre-line" }}>{seminar.date}</td>
-                                  <td style={{ padding: "0.6rem 0.5rem", fontWeight: "700", color: "var(--text-primary)" }}>{seminar.speaker}</td>
-                                  <td style={{ padding: "0.6rem 0.5rem", color: "var(--text-primary)", fontWeight: "600" }}>{seminar.title}</td>
-                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center" }}>{seminar.attendees}명</td>
-                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#10b981" }}>
-                                    ₩{(seminar.mainCost || 0).toLocaleString()}
-                                  </td>
-                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "right", fontWeight: "700", color: "#6366f1" }}>
-                                    ₩{(seminar.carryCost || 0).toLocaleString()}
-                                  </td>
-                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center" }}>
-                                    <span style={{ background: "rgba(234,179,8,0.1)", color: "#eab308", padding: "0.15rem 0.35rem", borderRadius: "3px", fontWeight: "800" }}>
-                                      ★ {seminar.satisfaction.toFixed(1)}
-                                    </span>
-                                  </td>
-                                  <td style={{ padding: "0.6rem 0.5rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>{seminar.etc}</td>
-                                  <td style={{ padding: "0.6rem 0.5rem", textAlign: "center" }}>
-                                    <div style={{ display: "flex", gap: "0.35rem", justifyContent: "center" }}>
-                                      <button
-                                        aria-label={`제${seminar.id}차 세미나 결과 수정`}
-                                        onClick={() => {
-                                          setIsEditMode(true);
-                                          setFormSeminarId(String(seminar.id));
-                                          setFormSeminarDate(seminar.date);
-                                          setFormSeminarSpeaker(seminar.speaker);
-                                          setFormSeminarTitle(seminar.title);
-                                          setFormSeminarAttendees(String(seminar.attendees));
-                                          setFormSeminarMainCost(String(seminar.mainCost || 0));
-                                          setFormSeminarCarryCost(String(seminar.carryCost || 0));
-                                          setFormSeminarSatisfaction(String(seminar.satisfaction));
-                                          setFormSeminarEtc(seminar.etc || "");
-                                          setIsSeminarModalOpen(true);
-                                        }}
-                                        title="수정"
-                                        style={{ border: "none", background: "rgba(59, 130, 246, 0.1)", color: "#3b82f6", fontSize: "0.65rem", padding: "0.25rem 0.45rem", borderRadius: "4px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-                                      >
-                                        <Pencil size={11} />
-                                      </button>
-                                      <button
-                                        aria-label={`제${seminar.id}차 세미나 결과 삭제`}
-                                        onClick={() => {
-                                          if (confirm(`제${seminar.id}차 세미나 결과보고를 목록에서 삭제하시겠습니까?`)) {
-                                            const deleteFromDb = async () => {
-                                              const { error } = await supabase
-                                                .from("seminar_reports")
-                                                .delete()
-                                                .eq("seminar_id", seminar.id);
-                                              if (error) {
-                                                console.error("Supabase 삭제 에러:", error);
-                                                alert("DB 삭제에 실패했습니다: " + error.message);
-                                              } else {
-                                                setSeminarList(seminarList.filter(s => s.id !== seminar.id));
-                                              }
-                                            };
-                                            deleteFromDb();
-                                          }
-                                        }}
-                                        title="삭제"
-                                        style={{ border: "none", background: "rgba(239, 68, 68, 0.1)", color: "#ef4444", fontSize: "0.65rem", padding: "0.25rem 0.45rem", borderRadius: "4px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-                                      >
-                                        <Trash2 size={11} />
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))
-                            ) : (
-                              <tr>
-                                <td colSpan={10} style={{ padding: "2rem", textAlign: "center", color: "var(--text-secondary)" }}>
-                                  등록된 세미나 결과보고서가 없습니다. [+ 결과보고 등록] 버튼을 통해 추가해 보세요.
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                    <MajorProgramSeminarLedger
+                      seminarList={seminarList}
+                      onEdit={handleEditSeminar}
+                      onDelete={handleDeleteSeminar}
+                    />
 
                     {/* 4. 지산학 세미나 추가 결과보고 모달창 UI */}
                     {isSeminarModalOpen && (
