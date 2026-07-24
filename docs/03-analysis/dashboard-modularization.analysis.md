@@ -4,6 +4,11 @@
 > Design: `docs/02-design/features/dashboard-modularization.design.md`
 > Implementation range: `1a504fb` through `12a7069`
 
+> Finalization addendum (2026-07-24): 후속
+> `dashboard-conversion-finalization`에서 Satisfaction과 PDCA의 부분 충족
+> 항목 및 시각 회귀 자동화를 모두 완료했다. 현재 유효 일치율은 25/25,
+> **100%**다. 아래 92% 내용은 최초 완료 시점의 분석 기록으로 보존한다.
+
 ## Match Rate: 92%
 
 설계의 핵심 목표인 호환 facade, App 책임 축소, 기능별 service/hook/screen 경계,
@@ -88,6 +93,15 @@ App 내부 직접 Supabase query와 `useEffect`는 기능 service/hook으로 이
 
 위 항목은 현재 기능·UI·보안 계약의 완료를 막지 않으며 후속 구조 개선 batch로
 독립 수행할 수 있다.
+
+### Finalization status
+
+1. Playwright screenshot/DOM snapshot: `dashboard-visual-regression`에서 완료
+2. Satisfaction AI/prompt/export 경계: `dashboard-conversion-finalization`에서 완료
+3. PDCA P/D stage 및 PDF/Markdown 경계: `dashboard-conversion-finalization`에서 완료
+
+최종 근거는
+`docs/03-analysis/dashboard-conversion-finalization.analysis.md`를 참조한다.
 
 ## Conclusion
 

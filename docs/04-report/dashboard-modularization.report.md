@@ -4,6 +4,10 @@
 > Result: Completed  
 > Design match rate: 92%
 
+> Finalization addendum (2026-07-24): 후속 변환 종료 작업으로 아래 세 권고를
+> 모두 완료했으며 현재 유효 design match rate는 **100%**다. 본문의 92% 수치는
+> 최초 보고 시점의 기록이다.
+
 ## 1. Executive Summary
 
 앵커사업 대시보드의 대형 파일을 UI/UX, 기능, DB 계약을 보존하면서 기능 책임
@@ -108,6 +112,15 @@
 
 이 후속 작업도 이번과 동일하게 한 책임씩 이동하고 네 가지 품질 gate를 매
 배치 실행하는 방식이 적합하다.
+
+### Resolution
+
+- Playwright pixel/DOM regression: 완료
+- Satisfaction AI/prompt/export 추가 분리: 완료
+- PDCA P/D stage와 PDF/Markdown 분리: 완료
+
+완료 내역과 최종 gate는
+`docs/04-report/dashboard-conversion-finalization.report.md`를 참조한다.
 
 ## 9. Final Assessment
 
