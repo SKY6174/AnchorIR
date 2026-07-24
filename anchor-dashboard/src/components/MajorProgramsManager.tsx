@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import { majorProgramsData, ORDERLY_COURSES, PM_PROFESSORS } from "../features/major-programs/data/major-program-data";
+import { getOverallStatus } from "../features/major-programs/utils/major-program-utils";
 import type {
   CourseStatus,
   CourseStatusKey,
@@ -432,14 +433,6 @@ export default function MajorProgramsManager({ selectedYear = 2 }: MajorPrograms
   const [_debateLogs, _setDebateLogs] = useState([]);
   const [aiStatusText, setAiStatusText] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
-
-  // 종합 이수 상태 판정 알고리즘
-  const getOverallStatus = (student: StudentRecord): CourseStatus => {
-    const statuses = [student.capstone, student.pbl, student.omnibus, student.ai];
-    if (statuses.includes("진행중")) return "진행중";
-    if (statuses.includes("이수완료")) return "이수완료";
-    return "미참여";
-  };
 
   // 엑셀 결과 템플릿 다운로드 핸들러
   const downloadResultSample = async () => {
